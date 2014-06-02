@@ -10,15 +10,10 @@
 
 
 #include "ei_geometrymanager.h"
+#include <stdlib.h>
 
 
-
-
-
-
-
-
-
+static ei_geometrymanager_t *first = NULL;
 
 /**
  * \brief	Registers a geometry manager to the program so that it can be called to manager
@@ -26,8 +21,21 @@
  *
  * @param	geometrymanager		The structure describing the geometry manager.
  */
-void			ei_geometrymanager_register	(ei_geometrymanager_t* geometrymanager){
-        ;
+void ei_geometrymanager_register(ei_geometrymanager_t* geometrymanager)
+{
+	ei_geometrymanager_t *current, *next;
+
+        current = first;
+        next = current;
+        while (next) {
+                current = next;
+                next = current->next;
+        }
+
+        current->next = geometrymanager;
+
+        /* Make sure it is the last geometry manager */
+        geometrymanager->next = NULL;
 }
 
 
