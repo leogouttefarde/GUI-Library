@@ -9,10 +9,11 @@ INCFLAGS	:= -I${INCLUDES}
 #OPTFLAGS	:= -Os -DNDEBUG
 OPTFLAGS	:= -g
 CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
+SRCDIR		:= ./src
 
 # The list of objects to include in the library
 
-LIBEIOBJS	:= 	
+LIBEIOBJS	:= objs/ei_application.o objs/ei_widget.o objs/ei_geometrymanager.o objs/ei_event.o
 
 
 
@@ -116,6 +117,8 @@ ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/puzzle.c -o ${OBJDIR}/puzzle.o
 
 
+${OBJDIR}/%.o: ${SRCDIR}/%.c
+	$(CC) $(CCFLAGS) ${INCFLAGS} $< -o $@
 
 # Building of the library libei
 
