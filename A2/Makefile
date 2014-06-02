@@ -1,3 +1,7 @@
+# LOG
+# Ajout compilation unitaire (copier coler pour faire pareil
+# avec les autres fichiers)
+
 # Variable definitions.
 
 PLATFORM	= $(shell uname)
@@ -9,10 +13,11 @@ INCFLAGS	:= -I${INCLUDES}
 #OPTFLAGS	:= -Os -DNDEBUG
 OPTFLAGS	:= -g
 CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
-
+SRC 		= ./src
 # The list of objects to include in the library
 
-LIBEIOBJS	:= 	
+# A REMPLIR
+LIBEIOBJS	:= ${OBJDIR}/ei_widget.o 	
 
 
 
@@ -20,49 +25,58 @@ LIBEIOBJS	:=
 
 ifeq (${PLATFORM},Darwin)
 
-	# Building for Mac OS X
-	
-	PLATDIR		= _osx
-	INCFLAGS	:= ${INCFLAGS} -I/opt/local/include/SDL
-	LINK		= ${CC}
-	LIBEI		= ${OBJDIR}/libei.a
-	LIBEIBASE	= ${PLATDIR}/libeibase.a
-	LIBS		= ${LIBEIBASE} -L/opt/local/lib -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image -framework AppKit
+# Building for Mac OS X
+
+PLATDIR		= _osx
+INCFLAGS	:= ${INCFLAGS} -I/opt/local/include/SDL
+LINK		= ${CC}
+LIBEI		= ${OBJDIR}/libei.a
+LIBEIBASE	= ${PLATDIR}/libeibase.a
+LIBS		= ${LIBEIBASE} -L/opt/local/lib -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image -framework AppKit
 
 else
-	ifeq (${PLATFORM},Linux)
+   ifeq (${PLATFORM},Linux)
 
-	# Building for Linux
-	
-	PLATDIR		= _x11
-	INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL
-	LINK		= ${CC}
-	LIBEI		= ${OBJDIR}/libei.a
-	LIBEIBASE	= ${PLATDIR}/libeibase.a
-	LIBS		= ${LIBEIBASE} -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image
+# Building for Linux
+
+PLATDIR		= _x11
+INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL
+LINK		= ${CC}
+LIBEI		= ${OBJDIR}/libei.a
+LIBEIBASE	= ${PLATDIR}/libeibase.a
+LIBS		= ${LIBEIBASE} -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image
 
 	else
 
-	# Building for Windows
-	
-	PLATDIR		= _win
-	INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL -I/usr/local/include/SDL
-	LINK		= ${CC} -mwindows -mno-cygwin
-	LIBEI		= ${OBJDIR}/libei.lib
-	LIBEIBASE	= ${PLATDIR}/libeibase.lib
-	LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a /usr/lib/SDL_image.lib -L/usr/lib -lSDL
+# Building for Windows
+
+PLATDIR		= _win
+INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL -I/usr/local/include/SDL
+LINK		= ${CC} -mwindows -mno-cygwin
+LIBEI		= ${OBJDIR}/libei.lib
+LIBEIBASE	= ${PLATDIR}/libeibase.lib
+LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a /usr/lib/SDL_image.lib -L/usr/lib -lSDL
 
 	endif
-endif
+ endif
 
 
 
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-			minimal frame button hello_world_absolute hello_world_relative puzzle
+				minimal frame button hello_world_absolute hello_world_relative puzzle
 all : ${TARGETS}
 
+########## Compilation séparée des sources
+
+# Editions des liens
+ei_widget : ${OBJDIR}/ei_widget.o ${LIBEIBASE}
+	${LINK} -o ei_widget ${OBJDIR}/ei_widget.o  ${LIBS}
+
+# Compilation
+${OBJDIR}/ei_widget.o : ${SRC}/ei_widget.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${SRC}/ei_widget.c -o ${OBJDIR}/ei_widget.o
 
 
 ########## Test-programs
