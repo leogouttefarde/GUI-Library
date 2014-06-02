@@ -76,15 +76,27 @@ void	ei_frame_register_class (){
                 ;
         }
 
+        // Allocation
         ei_widgetclass_t *frame;
         frame->allocfunc= &frame_alloc;
         frame->drawfunc = &frame_draw;
         frame->releasefunc = &frame_release;
         frame->setdefaultsfunc = &frame_setdefaults;
         frame->geomnotifyfunc = &frame_geomnotify;
+        frame->name = "frame";
+        frame->next = NULL;
 
+        //Definition du type
+        typedef struct ei_frame_t {
+                ei_widget_t widget;
+                ei_relief_t relief;
+                ei_font_t font;
+                struct {bool txt; 
+                        union{ char* txt;
+                        uint32_t* img}
+                } foreground;
 
-
+        }
         /**
          * \brief	Registers the "button" widget class in the program. This must be called only
          *		once before widgets of the class "button" can be created and configured with

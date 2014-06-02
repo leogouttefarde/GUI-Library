@@ -34,8 +34,7 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
         // Configuration grace au paramètres
         // Une fonction permet de generer une structure de la classe
         wclass = ei_widgetclass_from_name(class_name);
-        // après allocation, widget aura les champs communs + les champs 
-        // de sa classe 
+        // après allocation, widget aura les champs communs UNIQUEMENT
         (*(wclass->allocfunc))(widget);
         if (widget) {
                 // Initialisation des attributs uniques

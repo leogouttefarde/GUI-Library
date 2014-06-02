@@ -3,4 +3,4 @@
 ei_button_configure	ei_widget.c	/^void	ei_button_configure (ei_widget_t*		widget,$/;"	f
 ei_frame_configure	ei_widget.c	/^void	ei_frame_configure (ei_widget_t* widget,$/;"	f
 ei_toplevel_configure	ei_widget.c	/^void			ei_toplevel_configure		(ei_widget_t*		widget,$/;"	f
-ei_widget_create	ei_widget.c	/^ei_widget_t* ei_widget_
+ei_widgetclass_stringname	ei_widgetclass.c	/^static in
