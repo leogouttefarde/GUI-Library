@@ -7,11 +7,10 @@
  *  Copyright 2011 Ensimag. All rights reserved.
  */
 
+// pour malloc et NULL
+#include <stdlib.h>
 
 #include "ei_widget.h"
-
-// la valeur NULL est définie dans les bibliotheques standards
-#define NULL 0
 
 
 /**
@@ -30,21 +29,27 @@
 // Quels paramètres faut-il initialiser ici ?
 ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name, 
                 ei_widget_t* parent){
-        ei_widget *widget;
-        malloc(widget, sizeof(ei_widget_t));
+        ei_widget_t *widget;
+        ei_widgetclass_t *wclass;
+        // Configuration grace au paramètres
+        // Une fonction permet de generer une structure de la classe
+        wclass = ei_widgetclass_from_name(class_name);
+        (*(wclass->allocfunc))(widget);
         if (widget) {
-                // Configuration grace au paramètres
-                // Une fonction permet de generer une structure de la classe
-                // frame
-                widget->wclass = ei_widget_class_from_name(class_name);
-                widget = widget->wclass->setdefaultsfunc_t(widget);
+                // Initialisation des attributs uniques
+                (*(wclass->setdefaultsfunc))(widget);
+
+                // Initialisation des attributs communs
                 widget->parent = parent;
-
-                // Ajout du widget à la liste d'enfant du parent
                 widget->next_sibling = parent->children_head;
-                parent->children_head = widget;
 
+                //
+                parent->children_head = widget;
+                // ............................. autres ? 
+                return widget;
         }
+        else {
+                return NULL;}
 }
 
 /**
@@ -124,7 +129,7 @@ void	ei_frame_configure (ei_widget_t* widget,
                 ei_surface_t*		img,
                 ei_rect_t**		img_rect,
                 ei_anchor_t*		img_anchor){
-        widget->wclass->setdefaultsfunc
+        ;
 }
 
 

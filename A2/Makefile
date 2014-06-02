@@ -17,7 +17,7 @@ SRC 		= ./src
 # The list of objects to include in the library
 
 # A REMPLIR
-LIBEIOBJS	:= ${OBJDIR}/ei_widget.o 	
+LIBEIOBJS	:= ${OBJDIR}/ei_widget.o ${OBJDIR}/ei_widgetclass.o
 
 
 
@@ -71,12 +71,10 @@ all : ${TARGETS}
 ########## Compilation séparée des sources
 
 # Editions des liens
-ei_widget : ${OBJDIR}/ei_widget.o ${OBJDIR}/ei_widgetclass.o ${LIBEIBASE}
-	${LINK} -o ei_widget ${OBJDIR}/ei_widget.o  ${LIBS}
+ei_widget : ${OBJDIR}/ei_widget.o
 
-# Compilation
-#${OBJDIR}/ei_widget.o : ${SRC}/ei_widget.c
-#	${CC} ${CCFLAGS} ${INCFLAGS} ${SRC}/ei_widget.c -o ${OBJDIR}/ei_widget.o
+ei_widgetclass : ${OBJDIR}/ei_widgetclass.o
+	# Compilation
 ${OBJDIR}/%.o: ${SRC}/%.c
 	$(CC) $(CCFLAGS) ${INCFLAGS} $< -o $@
 
