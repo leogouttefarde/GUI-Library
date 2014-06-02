@@ -7,22 +7,13 @@
  *  Copyright 2011 Ensimag. All rights reserved.
  *
  */
-
+#include <stdbool.h>
+#include <string.h>
 #include "ei_widgetclass.h"
 
 
 
-/**
- * \brief	Returns the string of the name of a class.
- *
- * @param	name		The class name.
- *
- * @return			The string representing the name of the class.
- */
-static inline char*	ei_widgetclass_stringname	(ei_widget_tidgetclass_name_t name){
-        return (char*)name;
-}
-
+struct ei_widget_t;
 /**
  * @brief	Registers a class to the program so that widgets of this class can be created.
  *		This must be done only once in the application.
@@ -43,7 +34,7 @@ void ei_widgetclass_register	(ei_widgetclass_t* widgetclass){
  */
 ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
 {
-        if (name == "frame"){
+        if (strcmp(ei_widgetclass_stringname(name),"frame")){
                 // Les fonctions liées à la classe frame sont déja declarées
                 return NULL;
         }
@@ -61,7 +52,7 @@ void	ei_frame_register_class (){
 
         // pointeur generique
         void *frame_alloc(){
-                ;}
+                return NULL;}
         void frame_release(struct ei_widget_t* widget){
                 ;
         }
@@ -72,7 +63,7 @@ void	ei_frame_register_class (){
         void frame_setdefaults(struct ei_widget_t* widget){
                 ;
         }
-        void frame_geomnotify(struct ei_widget_t* widget){
+        void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
                 ;
         }
 
@@ -83,7 +74,9 @@ void	ei_frame_register_class (){
         frame->releasefunc = &frame_release;
         frame->setdefaultsfunc = &frame_setdefaults;
         frame->geomnotifyfunc = &frame_geomnotify;
-        frame->name = "frame";
+        ei_widgetclass_name_t *name;
+        // IMPOSSIBLE D4INITIALISER
+        frame->name = *name ;
         frame->next = NULL;
 
         //Definition du type
@@ -91,35 +84,38 @@ void	ei_frame_register_class (){
                 ei_widget_t widget;
                 ei_relief_t relief;
                 ei_font_t font;
-                struct {bool txt; 
+                struct {bool is_txt; 
                         union{ char* txt;
-                        uint32_t* img}
+                                uint32_t* img;
+                        } type;
                 } foreground;
-
+                // POSITIONNEMENT
+                // SOUS RECTANGLE page 19
         }
-        /**
-         * \brief	Registers the "button" widget class in the program. This must be called only
-         *		once before widgets of the class "button" can be created and configured with
-         *		\ref ei_button_configure.
-         */
-        void	ei_button_register_class(){
-                ;
-        }
+}
+/**
+ * \brief	Registers the "button" widget class in the program. This must be called only
+ *		once before widgets of the class "button" can be created and configured with
+ *		\ref ei_button_configure.
+ */
+void	ei_button_register_class(){
+        ;
+}
 
-        /**
-         * \brief	Registers the "toplevel" widget class in the program. This must be called only
-         *		once before widgets of the class "toplevel" can be created and configured with
-         *		\ref ei_toplevel_configure.
-         */
-        void ei_toplevel_register_class	(){
-                ;
-        }
+/**
+ * \brief	Registers the "toplevel" widget class in the program. This must be called only
+ *		once before widgets of the class "toplevel" can be created and configured with
+ *		\ref ei_toplevel_configure.
+ */
+void ei_toplevel_register_class	(){
+        ;
+}
 
 
-        /* Inline function definitions. */
+/* Inline function definitions. */
 
-        static inline char* ei_widgetclass_stringname (ei_widgetclass_name_t name)
-        {
-                return (char*)name;
-        }
+static inline char* ei_widgetclass_stringname (ei_widgetclass_name_t name)
+{
+        return (char*)name;
+}
 
