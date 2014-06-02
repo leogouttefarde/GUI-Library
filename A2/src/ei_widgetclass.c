@@ -9,9 +9,11 @@
  */
 #include <stdbool.h>
 #include <string.h>
+#include <stdlib.h>
 #include "ei_widgetclass.h"
 
-
+// variable globale pour sotcker les tables de pointeur
+static ei_widgetclass_t *frame_table;
 
 struct ei_widget_t;
 /**
@@ -36,9 +38,9 @@ ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
 {
         if (strcmp(ei_widgetclass_stringname(name),"frame")){
                 // Les fonctions liées à la classe frame sont déja declarées
-                return NULL;
+                return frame_table;
         }
-
+        return NULL;
 }
 
 
@@ -47,6 +49,8 @@ ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
  *		once before widgets of the class "frame" can be created and configured with
  *		\ref ei_frame_configure.
  */
+// On utilise des pointeurs sur fonction
+// Cette procedure leur donne une valeur
 void	ei_frame_register_class (){
         // Declaration des fonctions liées à la classe frame
 
@@ -68,30 +72,33 @@ void	ei_frame_register_class (){
         }
 
         // Allocation
-        ei_widgetclass_t *frame;
-        frame->allocfunc= &frame_alloc;
-        frame->drawfunc = &frame_draw;
-        frame->releasefunc = &frame_release;
-        frame->setdefaultsfunc = &frame_setdefaults;
-        frame->geomnotifyfunc = &frame_geomnotify;
-        ei_widgetclass_name_t *name;
-        // IMPOSSIBLE D4INITIALISER
-        frame->name = *name ;
-        frame->next = NULL;
-
+        extern ei_widgetclass_t *frame_table;
+        frame_table->allocfunc= &frame_alloc;
+        frame_table->drawfunc = &frame_draw;
+        frame_table->releasefunc = &frame_release;
+        frame_table->setdefaultsfunc = &frame_setdefaults;
+        frame_table->geomnotifyfunc = &frame_geomnotify;
+        frame_table->name[0] = 'f';
+        frame_table->name[1] = 'r';
+        frame_table->name[2] = 'a';
+        frame_table->name[3] = 'm';
+        frame_table->name[4] = 'e';
+        frame_table->name[5] = '\0';
+        frame_table->next = NULL;
+        /*
         //Definition du type
         typedef struct ei_frame_t {
-                ei_widget_t widget;
-                ei_relief_t relief;
-                ei_font_t font;
-                struct {bool is_txt; 
-                        union{ char* txt;
-                                uint32_t* img;
-                        } type;
-                } foreground;
-                // POSITIONNEMENT
-                // SOUS RECTANGLE page 19
-        }
+        ei_widget_t widget;
+        ei_relief_t relief;
+        ei_font_t font;
+        struct {bool is_txt; 
+        union{ char* txt;
+        uint32_t* img;
+        } type;
+        } foreground;
+        // POSITIONNEMENT
+        // SOUS RECTANGLE page 19
+        } */
 }
 /**
  * \brief	Registers the "button" widget class in the program. This must be called only
@@ -110,12 +117,3 @@ void	ei_button_register_class(){
 void ei_toplevel_register_class	(){
         ;
 }
-
-
-/* Inline function definitions. */
-
-static inline char* ei_widgetclass_stringname (ei_widgetclass_name_t name)
-{
-        return (char*)name;
-}
-
