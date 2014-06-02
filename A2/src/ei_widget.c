@@ -30,20 +30,26 @@
 ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name, 
                 ei_widget_t* parent){
         ei_widget_t *widget;
-        widget = malloc(sizeof(ei_widget_t));
+        ei_widgetclass_t *wclass;
+        // Configuration grace au paramètres
+        // Une fonction permet de generer une structure de la classe
+        wclass = ei_widgetclass_from_name(class_name);
+        (*(wclass->allocfunc))(widget);
         if (widget) {
-                // Configuration grace au paramètres
-                // Une fonction permet de generer une structure de la classe
-                widget->wclass = ei_widgetclass_from_name(class_name);
-                // met les valeurs par defaut selon la classe de widget
-                (*(widget->wclass->setdefaultsfunc))(widget);
-                widget->parent = parent;
+                // Initialisation des attributs uniques
+                (*(wclass->setdefaultsfunc))(widget);
 
-                // Ajout du widget à la liste d'enfant du parent
+                // Initialisation des attributs communs
+                widget->parent = parent;
                 widget->next_sibling = parent->children_head;
+
+                //
                 parent->children_head = widget;
+                // ............................. autres ? 
+                return widget;
         }
-        return widget;
+        else {
+                return NULL;}
 }
 
 /**

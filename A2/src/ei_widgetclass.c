@@ -8,7 +8,7 @@
  *
  */
 
-struct ei_widget_t;
+#include "ei_widgetclass.h"
 
 
 
@@ -19,7 +19,9 @@ struct ei_widget_t;
  *
  * @return			The string representing the name of the class.
  */
-static inline char*	ei_widgetclass_stringname	(ei_widgetclass_name_t name);
+static inline char*	ei_widgetclass_stringname	(ei_widget_tidgetclass_name_t name){
+        return (char*)name;
+}
 
 /**
  * @brief	Registers a class to the program so that widgets of this class can be created.
@@ -41,10 +43,11 @@ void ei_widgetclass_register	(ei_widgetclass_t* widgetclass){
  */
 ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
 {
-        switch(name){
-        case frame: return NULL; break;
-        case default: return NULL; break;
+        if (name == "frame"){
+                // Les fonctions liées à la classe frame sont déja declarées
+
         }
+
 }
 
 
@@ -54,6 +57,7 @@ ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
  *		\ref ei_frame_configure.
  */
 void	ei_frame_register_class (){
+        // Declaration des fonctions liées à la classe frame
         ;
 }
 
