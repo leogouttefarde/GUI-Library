@@ -9,12 +9,9 @@
  *
  */
 
-#ifndef EI_APPLICATION_H
-#define EI_APPLICATION_H
 
 
-#include "ei_types.h"
-#include "ei_widget.h"
+#include "ei_application.h"
 
 
 
@@ -36,19 +33,25 @@
  * @param	fullScreen		If true, the root window is the entire screen. Otherwise, it
  *					is a system window.
  */
-void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen);
+void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen){
+        ;
+}
 
 /**
  * \brief	Releases all the resources of the application, and releases the hardware
  *		(ie. calls \ref hw_quit).
  */
-void ei_app_free();
+void ei_app_free(){
+        ;
+}
 
 /**
  * \brief	Runs the application: enters the main event loop. Exits when
  *		\ref ei_app_quit_request is called.
  */
-void ei_app_run();
+void ei_app_run(){
+        ;
+}
 
 /**
  * \brief	Adds a rectangle to the list of rectangles that must be updated on screen. The real
@@ -57,13 +60,13 @@ void ei_app_run();
  * @param	rect		The rectangle to add, expressed in the root window coordinates.
  *				A copy is made, so it is safe to release the rectangle on return.
  */
-void ei_app_invalidate_rect(ei_rect_t* rect);
+void ei_app_invalidate_rect(ei_rect_t* rect){;}
 
 /**
  * \brief	Tells the application to quite. Is usually called by an event handler (for example
  *		when pressing the "Escape" key).
  */
-void ei_app_quit_request();
+void ei_app_quit_request(){;}
 
 /**
  * \brief	Returns the "root widget" of the application: a "frame" widget that encapsulate the
@@ -71,7 +74,7 @@ void ei_app_quit_request();
  *
  * @return 			The root widget.
  */
-ei_widget_t* ei_app_root_widget();
+ei_widget_t* ei_app_root_widget(){;}
 
 /**
  * \brief	Returns the surface of the root window. Used to create surfaces with similar r, g, b
@@ -79,10 +82,9 @@ ei_widget_t* ei_app_root_widget();
  *
  * @return 			The surface of the root window.
  */
-ei_surface_t ei_app_root_surface();
+ei_surface_t ei_app_root_surface(){;}
 
 
 
 
-#endif
 

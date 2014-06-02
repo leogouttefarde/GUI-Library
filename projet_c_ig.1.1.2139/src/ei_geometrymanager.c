@@ -8,54 +8,12 @@
  *
  */
 
-#ifndef EI_GEOMETRYMANAGER_H
-#define EI_GEOMETRYMANAGER_H
 
-#include "ei_types.h"
-#include "ei_widget.h"
+#include "ei_geometrymanager.h"
 
 
-/**
- * \brief	A name of a geometry manager.
- */
-typedef char	ei_geometrymanager_name_t[20];
 
-/**
- * \brief	A function that runs the geometry computation for this widget. This may trigger
- *		geometry computation for this widget's master and the other slaves of the master.
- *
- * @param	widget		The widget instance for which to compute geometry.
- */
-typedef void	(*ei_geometrymanager_runfunc_t)		(struct ei_widget_t*	widget);
 
-/**
- * \brief	A function called when a widget cease to be managed by its geometry manager.
- *		Most of the work is done in \ref ei_geometrymanager_unmap. This function hook is
- *		only provided to trigger recomputation when the disappearance of a widget has an
- *		effect on the geometry of other widgets.
- *
- * @param	widget		The widget instance that must be forgotten by the geometry manager.
- */
-typedef void	(*ei_geometrymanager_releasefunc_t)	(struct ei_widget_t*	widget);
-
-/**
- * \brief	The structure that stores information about a geometry manager.
- */
-typedef struct ei_geometrymanager_t {
-	ei_geometrymanager_name_t		name;
-	ei_geometrymanager_runfunc_t		runfunc;
-	ei_geometrymanager_releasefunc_t	releasefunc;
-	struct ei_geometrymanager_t*		next;
-} ei_geometrymanager_t;
-
-/**
- * \brief 	A structure that stores information about the geometry manager managing a widget,
- *		and the widget's geometry management parameters. This a the generic type. Each
- *		geometry manager adds field after "manager".
- */
-typedef struct ei_geometry_param_t {
-	ei_geometrymanager_t*			manager;	/**< Points to the geometry manager's structure 	*/
-} ei_geometry_param_t;
 
 
 
@@ -68,7 +26,9 @@ typedef struct ei_geometry_param_t {
  *
  * @param	geometrymanager		The structure describing the geometry manager.
  */
-void			ei_geometrymanager_register	(ei_geometrymanager_t* geometrymanager);
+void			ei_geometrymanager_register	(ei_geometrymanager_t* geometrymanager){
+        ;
+}
 
 
 
@@ -141,16 +101,15 @@ void 			ei_register_placer_manager 	();
  *				1.0 to the height of the master (defaults to 0.0).
  */
 void			ei_place			(ei_widget_t*		widget,
-							 ei_anchor_t*		anchor,
-							 int*			x,
-							 int*			y,
-							 int*			width,
-							 int*			height,
-							 float*			rel_x,
-							 float*			rel_y,
-							 float*			rel_width,
-							 float*			rel_height);
+                ei_anchor_t*		anchor,
+                int*			x,
+                int*			y,
+                int*			width,
+                int*			height,
+                float*			rel_x,
+                float*			rel_y,
+                float*			rel_width,
+                float*			rel_height){;}
 
 
 
-#endif
