@@ -32,21 +32,21 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
         ei_widget_t *widget;
         ei_widgetclass_t *wclass;
         // Configuration grace au paramètres
-        // Une fonction permet de generer une structure de la classe
         wclass = ei_widgetclass_from_name(class_name);
-        // après allocation, widget aura les champs communs UNIQUEMENT
+        // après allocation, widget aura les champs communs + les champs uniques 
         (*(wclass->allocfunc))(widget);
         if (widget) {
-                // Initialisation des attributs uniques
+                // Initialisation des attributs
                 (*(wclass->setdefaultsfunc))(widget);
 
                 // Initialisation des attributs communs
                 widget->parent = parent;
                 widget->next_sibling = parent->children_head;
+                widget->children_tail = NULL;
+                widget->geom_params = NULL;
 
-                //
                 parent->children_head = widget;
-                // ............................. autres ? 
+
                 return widget;
         }
         else {
@@ -130,6 +130,7 @@ void	ei_frame_configure (ei_widget_t* widget,
                 ei_surface_t*		img,
                 ei_rect_t**		img_rect,
                 ei_anchor_t*		img_anchor){
+
         ;
 }
 

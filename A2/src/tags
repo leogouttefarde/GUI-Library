@@ -1,8 +1,14 @@
 !_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
 !_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+ei_button_configure	ei_widget.c	/^void	ei_button_configure (ei_widget_t*		widget,$/;"	f
 ei_button_register_class	ei_widgetclass.c	/^void	ei_button_register_class(){$/;"	f
+ei_frame_configure	ei_widget.c	/^void	ei_frame_configure (ei_widget_t* widget,$/;"	f
 ei_frame_register_class	ei_widgetclass.c	/^void	ei_frame_register_class (){$/;"	f
+ei_toplevel_configure	ei_widget.c	/^void			ei_toplevel_configure		(ei_widget_t*		widget,$/;"	f
 ei_toplevel_register_class	ei_widgetclass.c	/^void ei_toplevel_register_class	(){$/;"	f
+ei_widget_create	ei_widget.c	/^ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name, $/;"	f
+ei_widget_destroy	ei_widget.c	/^void ei_widget_destroy (ei_widget_t* widget){$/;"	f
+ei_widget_pick	ei_widget.c	/^ei_widget_t* ei_widget_pick (ei_point_t* where){$/;"	f
 ei_widgetclass_from_name	ei_widgetclass.c	/^ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)$/;"	f
 ei_widgetclass_register	ei_widgetclass.c	/^void ei_widgetclass_register	(ei_widgetclass_t* widgetclass){$/;"	f
 frame_table	ei_widgetclass.c	/^static ei_widgetclass_t *frame_table;$/;"	v	file:
