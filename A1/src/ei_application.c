@@ -9,11 +9,11 @@
  *
  */
 
-
-
-#include "ei_application.h"
-
-
+#include "../include/ei_application.h"
+#include <stdlib.h>
+#include <stdio.h>
+static ei_surface_t main_window;
+static ei_widget_t root_widget;
 
 /**
  * \brief	Creates an application.
@@ -34,7 +34,9 @@
  *					is a system window.
  */
 void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen){
-        ;
+	hw_init();
+	main_window = hw_create_window(main_window_size, fullscreen);
+	root_widget.parent=NULL;
 }
 
 /**
@@ -42,7 +44,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen){
  *		(ie. calls \ref hw_quit).
  */
 void ei_app_free(){
-        ;
+	;
 }
 
 /**
@@ -50,7 +52,10 @@ void ei_app_free(){
  *		\ref ei_app_quit_request is called.
  */
 void ei_app_run(){
-        ;
+	int c;
+	do {
+		c=getchar();
+	} while (c != '\n');
 }
 
 /**
