@@ -16,6 +16,7 @@ EI_UTILS_H	ei_utils.h	9;"	d
 EI_WIDGETCLASS_H	ei_widgetclass.h	12;"	d
 EI_WIDGET_H	ei_widget.h	11;"	d
 HW_INTERFACE_H	hw_interface.h	12;"	d
+NULL	ei_widget.c	14;"	d	file:
 allocfunc	ei_widgetclass.h	/^	ei_widgetclass_allocfunc_t		allocfunc;		\/\/\/< The function that allocated instances of this class of widget.$/;"	m	struct:ei_widgetclass_t
 alpha	ei_types.h	/^	unsigned char			alpha;	\/\/\/< The transparency of the color. 0 is invisible, 255 is totally opaque.$/;"	m	struct:__anon11
 application	ei_event.c	/^                ei_app_event_t		application;	\/\/\/< Event parameters for application-related events (see \\ref ei_app_event_t).$/;"	m	union:ei_event_t::__anon6	file:

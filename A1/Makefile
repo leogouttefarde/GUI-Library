@@ -16,7 +16,8 @@ CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 SRC 		= ./src
 # The list of objects to include in the library
 
-LIBEIOBJS	:= 	
+# A REMPLIR
+LIBEIOBJS	:= ${OBJDIR}/ei_widget.o 	
 
 
 
