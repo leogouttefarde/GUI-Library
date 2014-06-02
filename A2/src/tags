@@ -16,6 +16,7 @@ EI_UTILS_H	ei_utils.h	9;"	d
 EI_WIDGETCLASS_H	ei_widgetclass.h	12;"	d
 EI_WIDGET_H	ei_widget.h	11;"	d
 HW_INTERFACE_H	hw_interface.h	12;"	d
+NULL	ei_widget.c	14;"	d	file:
 allocfunc	ei_widgetclass.h	/^	ei_widgetclass_allocfunc_t		allocfunc;		\/\/\/< The function that allocated instances of this class of widget.$/;"	m	struct:ei_widgetclass_t
 alpha	ei_types.h	/^	unsigned char			alpha;	\/\/\/< The transparency of the color. 0 is invisible, 255 is totally opaque.$/;"	m	struct:__anon11
 application	ei_event.c	/^                ei_app_event_t		application;	\/\/\/< Event parameters for application-related events (see \\ref ei_app_event_t).$/;"	m	union:ei_event_t::__anon6	file:
@@ -47,7 +48,7 @@ ei_axis_x	ei_types.h	/^	ei_axis_x,			\/\/\/< Horizontal axis.$/;"	e	enum:__anon1
 ei_axis_y	ei_types.h	/^	ei_axis_y,			\/\/\/< Vertical axis.$/;"	e	enum:__anon14
 ei_bind	ei_event.c	/^void		ei_bind			(ei_eventtype_t		eventtype,$/;"	f
 ei_bool_t	ei_types.h	/^} ei_bool_t;$/;"	t	typeref:enum:__anon7
-ei_button_configure	ei_widget.c	/^void			ei_button_configure		(ei_widget_t*		widget,$/;"	f
+ei_button_configure	ei_widget.c	/^void	ei_button_configure (ei_widget_t*		widget,$/;"	f
 ei_callback_t	ei_widget.h	/^typedef ei_bool_t	(*ei_callback_t)	(ei_widget_t*		widget,$/;"	t
 ei_color_t	ei_types.h	/^} ei_color_t;$/;"	t	typeref:struct:__anon11
 ei_default_background_color	ei_types.h	/^static const ei_color_t	ei_default_background_color	= { 0xA0, 0xA0, 0xA0, 0xff };$/;"	v
@@ -78,7 +79,7 @@ ei_font_default_color	ei_types.h	/^static const ei_color_t	ei_font_default_color
 ei_font_default_size	ei_types.h	/^static const int	ei_font_default_size		= 22;	\/\/\/< Default font color$/;"	v
 ei_font_t	ei_types.h	/^typedef void*		ei_font_t;$/;"	t
 ei_fontstyle_t	ei_types.h	/^} ei_fontstyle_t;$/;"	t	typeref:enum:__anon15
-ei_frame_configure	ei_widget.c	/^void			ei_frame_configure		(ei_widget_t*		widget,$/;"	f
+ei_frame_configure	ei_widget.c	/^void	ei_frame_configure (ei_widget_t* widget,$/;"	f
 ei_geometry_param_t	ei_geometrymanager.h	/^typedef struct ei_geometry_param_t {$/;"	s
 ei_geometry_param_t	ei_geometrymanager.h	/^} ei_geometry_param_t;$/;"	t	typeref:struct:ei_geometry_param_t
 ei_geometrymanager_name_t	ei_geometrymanager.h	/^typedef char	ei_geometrymanager_name_t[20];$/;"	t
@@ -148,8 +149,9 @@ ei_tag_t	ei_event.c	/^typedef char* ei_tag_t;$/;"	t	file:
 ei_tag_t	ei_event.h	/^typedef char* ei_tag_t;$/;"	t
 ei_toplevel_configure	ei_widget.c	/^void			ei_toplevel_configure		(ei_widget_t*		widget,$/;"	f
 ei_unbind	ei_event.c	/^void		ei_unbind		(ei_eventtype_t		eventtype,$/;"	f
-ei_widget_create	ei_widget.c	/^ei_widget_t*		ei_widget_create		(ei_widgetclass_name_t	class_name,$/;"	f
-ei_widget_pick	ei_widget.c	/^ei_widget_t*		ei_widget_pick			(ei_point_t*		where){;}$/;"	f
+ei_widget_create	ei_widget.c	/^ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name, $/;"	f
+ei_widget_destroy	ei_widget.c	/^void ei_widget_destroy (ei_widget_t* widget){$/;"	f
+ei_widget_pick	ei_widget.c	/^ei_widget_t* ei_widget_pick (ei_point_t* where){$/;"	f
 ei_widget_t	ei_widget.h	/^typedef struct ei_widget_t {$/;"	s
 ei_widget_t	ei_widget.h	/^} ei_widget_t;$/;"	t	typeref:struct:ei_widget_t
 ei_widgetclass_allocfunc_t	ei_widgetclass.h	/^typedef void*	(*ei_widgetclass_allocfunc_t)		();$/;"	t
