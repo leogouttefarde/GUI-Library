@@ -45,7 +45,7 @@ ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
 {
         if (name == "frame"){
                 // Les fonctions liées à la classe frame sont déja declarées
-
+                return NULL;
         }
 
 }
@@ -58,32 +58,56 @@ ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
  */
 void	ei_frame_register_class (){
         // Declaration des fonctions liées à la classe frame
-        ;
-}
 
-/**
- * \brief	Registers the "button" widget class in the program. This must be called only
- *		once before widgets of the class "button" can be created and configured with
- *		\ref ei_button_configure.
- */
-void	ei_button_register_class(){
-        ;
-}
+        // pointeur generique
+        void *frame_alloc(){
+                ;}
+        void frame_release(struct ei_widget_t* widget){
+                ;
+        }
+        void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
+                        ei_surface_t pick_surface, ei_rect_t* clipper){
+                ;
+        }
+        void frame_setdefaults(struct ei_widget_t* widget){
+                ;
+        }
+        void frame_geomnotify(struct ei_widget_t* widget){
+                ;
+        }
 
-/**
- * \brief	Registers the "toplevel" widget class in the program. This must be called only
- *		once before widgets of the class "toplevel" can be created and configured with
- *		\ref ei_toplevel_configure.
- */
-void ei_toplevel_register_class	(){
-        ;
-}
+        ei_widgetclass_t *frame;
+        frame->allocfunc= &frame_alloc;
+        frame->drawfunc = &frame_draw;
+        frame->releasefunc = &frame_release;
+        frame->setdefaultsfunc = &frame_setdefaults;
+        frame->geomnotifyfunc = &frame_geomnotify;
 
 
-/* Inline function definitions. */
 
-static inline char* ei_widgetclass_stringname (ei_widgetclass_name_t name)
-{
-        return (char*)name;
-}
+        /**
+         * \brief	Registers the "button" widget class in the program. This must be called only
+         *		once before widgets of the class "button" can be created and configured with
+         *		\ref ei_button_configure.
+         */
+        void	ei_button_register_class(){
+                ;
+        }
+
+        /**
+         * \brief	Registers the "toplevel" widget class in the program. This must be called only
+         *		once before widgets of the class "toplevel" can be created and configured with
+         *		\ref ei_toplevel_configure.
+         */
+        void ei_toplevel_register_class	(){
+                ;
+        }
+
+
+        /* Inline function definitions. */
+
+        static inline char* ei_widgetclass_stringname (ei_widgetclass_name_t name)
+        {
+                return (char*)name;
+        }
 
