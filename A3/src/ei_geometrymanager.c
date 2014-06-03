@@ -23,19 +23,26 @@ static ei_geometrymanager_t *first = NULL;
  */
 void ei_geometrymanager_register(ei_geometrymanager_t* geometrymanager)
 {
-	ei_geometrymanager_t *current, *next;
+	if (geometrymanager) {
+		ei_geometrymanager_t *current, *next;
 
-	current = first;
-	next = current;
-	while (next) {
-		current = next;
-		next = current->next;
+		if (first) {
+			current = first;
+			next = current;
+
+			do {
+				current = next;
+				next = current->next;
+			} while (next);
+
+			current->next = geometrymanager;
+		}
+		else
+			first = geometrymanager;
+
+		/* Make sure it is the last geometry manager */
+		geometrymanager->next = NULL;
 	}
-
-	current->next = geometrymanager;
-
-	/* Make sure it is the last geometry manager */
-	geometrymanager->next = NULL;
 }
 
 

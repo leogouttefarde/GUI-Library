@@ -162,7 +162,7 @@ void	ei_frame_register_class (){
                 frame->text_color = tc;
                 frame->text_font = ei_style_normal;
                 ei_color_t bg = {0xFF,0x00,0x00,0xFF};
-                frame->bg_color = &bg;
+                frame->bg_color = bg;
         }
 
         void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){

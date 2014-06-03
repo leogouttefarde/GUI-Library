@@ -104,6 +104,7 @@ void	ei_frame_register_class (){
         frame_table->name[5] = '\0';
         frame_table->next = NULL;
 }
+
 /**
  * \brief	Registers the "button" widget class in the program. This must be called only
  *		once before widgets of the class "button" can be created and configured with
