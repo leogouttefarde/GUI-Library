@@ -182,7 +182,7 @@ void	ei_frame_configure (ei_widget_t* widget,
                         frame->img = *img;
                 }
                 if (img_rect){
-                        frame->img_rect = **img_rect;
+                        frame->img_rect = *img_rect;
                 }
                 if (img_anchor){
                         frame->img_anchor = *img_anchor;
@@ -209,22 +209,65 @@ void	ei_frame_configure (ei_widget_t* widget,
  * @param	user_param	A programmer supplied parameter that will be passed to the callback
  *				when called. Defaults to NULL.
  */
-void	ei_button_configure (ei_widget_t*		widget,
-                ei_size_t*		requested_size,
-                const ei_color_t*	color,
-                int*			border_width,
-                int*			corner_radius,
-                ei_relief_t*		relief,
-                char**			text,
-                ei_font_t*		text_font,
-                ei_color_t*		text_color,
-                ei_anchor_t*		text_anchor,
-                ei_surface_t*		img,
-                ei_rect_t**		img_rect,
-                ei_anchor_t*		img_anchor,
-                ei_callback_t*		callback,
-                void**			user_param){
-        ;
+void	ei_button_configure (ei_widget_t*	widget,
+                ei_size_t*	requested_size,
+                const ei_color_t* color,
+                int*		border_width,
+                int*		corner_radius,
+                ei_relief_t*	relief,
+                char**		text,
+                ei_font_t*	text_font,
+                ei_color_t*	text_color,
+                ei_anchor_t*	text_anchor,
+                ei_surface_t*	img,
+                ei_rect_t**	img_rect,
+                ei_anchor_t*	img_anchor,
+                ei_callback_t*	callback,
+                void**		user_param){
+
+        ei_button_t *button = (ei_button_t*)widget;
+        if(requested_size){
+                button->widget.requested_size = *requested_size;
+        }
+        if (color) {
+                button->color = color;
+        }
+        if (border_width) {
+                button->border_width = *border_width;
+        }
+        if (corner_radius) {
+                button->corner_radius = *corner_radius;
+        }
+        if(relief){
+                button->relief = *relief;
+        }
+        if (text) {
+                button->text = *text;
+        }
+        if(text_font){
+                button->text_font = *text_font;
+        }
+        if(text_color){
+                button->text_color = *text_color;
+        }
+        if(text_anchor){
+                button->text_anchor = *text_anchor;
+        }
+        if(img) {
+                button->img = *img;
+        }
+        if(img_rect){
+                button->img_rect = *img_rect;
+        }
+        if(img_anchor) {
+                button->img_anchor = *img_anchor;
+        }
+        if(callback) {
+                button->callback = *callback;
+        }
+        if (user_param){
+                button->user_param = *user_param;
+        }
 }
 
 /**
@@ -254,7 +297,28 @@ void			ei_toplevel_configure		(ei_widget_t*		widget,
                 ei_bool_t*		closable,
                 ei_axis_set_t*		resizable,
                 ei_size_t**		min_size){
-        ;
+        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+        if (requested_size){
+                toplevel->widget.requested_size = *requested_size;
+        }
+        if (color){
+                toplevel->color = *color;
+        }
+        if (border_width) {
+                toplevel->border_width = *border_width;
+        }
+        if(title){
+                toplevel->title = *title;
+        }
+        if (closable){
+                toplevel->closable = *closable;
+        }
+        if(resizable){
+                toplevel->resizable = *resizable;
+        }
+        if(min_size){
+                toplevel->min_size = *min_size;
+        }
 }
 
 

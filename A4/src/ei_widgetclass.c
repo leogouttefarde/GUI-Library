@@ -151,9 +151,9 @@ void	ei_frame_register_class (){
                 frame->img = NULL;
                 frame->img_anchor = ei_anc_center;
                 ei_point_t p = {0,0};
-                (frame->img_rect).top_left = p;
+                frame->img_rect->top_left = p;
                 ei_size_t s = {10,10};
-                (frame->img_rect).size = s;
+                frame->img_rect->size = s;
                 frame->relief = ei_relief_none;
                 frame->text = "Frame" ;
                 frame->text_anchor = ei_anc_center;
