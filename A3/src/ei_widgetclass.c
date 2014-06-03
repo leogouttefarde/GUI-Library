@@ -67,24 +67,73 @@ void	ei_frame_register_class (){
         void frame_release(struct ei_widget_t* widget){
                 free((ei_frame_t*)widget);
         }
+
         void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                         ei_surface_t pick_surface, ei_rect_t* clipper){
                 ei_frame_t *frame;
                 frame = (ei_frame_t*)widget;
-                if (frame->relief) {
-                        ;               
+                // lock de la surface
+                hw_lock_surface(surface);
+                ei_fill(surface, frame->bg_color,clipper);
+                switch (frame->relief) {
+                        // on dessine simplement la surface
+                case ei_relief_none :
+                        break;
+                case ei_relief_raised :
+                        // on recupere les 4 points du bord de la surface
+                        ei_rect_t rect;
+                        rect = hw_surface_get_rect(surface);
+                        int w = rect.size.width;
+                        int h = rect.size.height;
+
+                        ei_point_t top_left = rect.top_left;
+                        ei_point_t top_right = top_left;
+                        top_right.x = top_right.x+w;
+                        ei_point_t bottom_left = top_left;
+                        bottom_left.y = top_left.y-h;
+                        ei_point_t bottom_right = top_right;
+                        bottom_right.y = top_right.y-h;
+                        // on relie les 4 bords pour obtenir les deux moities du cadre
+                        ei_linked_point_t dark;
+                        ei_linked_point_t light;
+
+
+                        dark = {bottom_left; &{top_left, &{top_right, NULL}}}; 
+                        light = {top_right, &{bottom_right, &{bottom_left, NULL}}};
+                        // A IMPLEMENTER : gestion d'une bordure de taille >1
+                        ei_polyline_draw(surface, &dark,{0x11, 0x11, 0x11, 0xFF},
+                                        clipper);
+                        ei_polyline_draw(surface, &light,{0xDD, 0xDD, 0xDD, 0xDD}, 
+                                        clipper);
+
+                        break;
+                case ei_relief_sunken : 
+                        break;
+                default : hw_unlock_surface(surface); exit -1; break;
                 }
-                else{
-                        // dessin sans relief
-                        ;
-                }
+                //unlock de la surface
+                hw_unlock_surface(surface);
+
 
         }
         void frame_setdefaults(struct ei_widget_t* widget){
                 // on commence par effectuer un recast
                 ei_frame_t *frame;
                 frame = (ei_frame_t*)widget;
+                frame->border_width = 3;
+                // ei_surface_t represente un pointeur générique
+                frame->img = NULL;
+                frame->img_anchor = ei_anc_center; 
+                frame->img_rect = {10,10};
+                frame->relief = ei_relief_none;
+                frame->text = "Frame" ;
+                frame->text_anchor = ei_anc_center;
+                // red blue green A
+                frame->text_color = {0x00, 0x00, 0xFF, 0xFF};
+                frame->text_font = ei_style_normal;
+                frame->bg_color = {0xFF,0x00,0x00,0xFF};
         }
+
         void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
                 ;
         }
