@@ -56,16 +56,27 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
         // après allocation, widget aura les champs communs + les champs uniques 
         widget = (ei_widget_t*)(*(wclass->allocfunc))();
         if (widget) {
-                // Initialisation des attributs
-                (*(wclass->setdefaultsfunc))(widget);
-
                 // Initialisation des attributs communs
-                widget->parent = parent;
-                widget->next_sibling = parent->children_head;
+                widget->wclass = wclass;
+                widget->children_head = NULL;
                 widget->children_tail = NULL;
+                widget->content_rect = NULL;
                 widget->geom_params = NULL;
+                // le widget devient la tete
+                widget->next_sibling =  parent->children_head;
+                widget->parent = parent;
+                parent->children_head= widget;
+                ei_color_t pc = {0x00,0x00, 0x00, 0x00};
+                widget->pick_color = &pc;
 
-                parent->children_head = widget;
+                widget->pick_id = 0;
+                ei_size_t rs = {10,10};
+                widget->requested_size = rs;
+                ei_rect_t sl = {{0,0}, {10,10}};
+                widget->screen_location = sl;
+                widget->content_rect = &sl;
+                // Initialisation des attributs uniques
+                (*(wclass->setdefaultsfunc))(widget);
 
                 return widget;
         }
