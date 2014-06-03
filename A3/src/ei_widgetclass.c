@@ -67,104 +67,24 @@ void	ei_frame_register_class (){
         void frame_release(struct ei_widget_t* widget){
                 free((ei_frame_t*)widget);
         }
-
         void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                         ei_surface_t pick_surface, ei_rect_t* clipper){
                 ei_frame_t *frame;
                 frame = (ei_frame_t*)widget;
-                // lock de la surface
-                hw_surface_lock(surface);
-                ei_fill(surface, frame->bg_color,clipper);
                 if (frame->relief) {
-                        // on recupere les 4 points du bord de la surface
-                        ei_rect_t rect;
-                        rect = hw_surface_get_rect(surface);
-                        int w = rect.size.width;
-                        int h = rect.size.height;
-
-                        ei_point_t top_left = rect.top_left;
-                        ei_point_t top_right = top_left;
-                        top_right.x = top_right.x+w;
-                        ei_point_t bottom_left = top_left;
-                        bottom_left.y = top_left.y-h;
-                        ei_point_t bottom_right = top_right;
-                        bottom_right.y = top_right.y-h;
-                        // on relie les 4 bords pour obtenir les deux moities du cadre
-                        ei_linked_point_t* dark;
-                        ei_linked_point_t* light;
-                        ei_linked_point_t* tmp;
-
-                        dark = malloc(sizeof(ei_linked_point_t));
-                        light = malloc(sizeof(ei_linked_point_t));
-
-                        ei_color_t dark_color = {0x11, 0x11, 0x11, 0xFF};
-                        ei_color_t light_color = {0xDD, 0xDD, 0xDD, 0xDD};
-                        tmp = dark;
-                        tmp->point = bottom_left;
-                        tmp->next = malloc(sizeof(ei_linked_point_t));
-                        tmp = tmp->next;
-                        tmp->point = top_left;
-                        tmp->next = malloc(sizeof(ei_linked_point_t));
-                        tmp = tmp->next;
-                        tmp->point = top_right;
-                        tmp->next = NULL;
-
-                        tmp = light;
-                        tmp->point = top_right;
-                        tmp->next = malloc(sizeof(ei_linked_point_t));
-                        tmp = tmp->next;
-                        tmp->point = bottom_right;
-                        tmp->next = malloc(sizeof(ei_linked_point_t));
-                        tmp = tmp->next;
-                        tmp->point = bottom_left;
-                        tmp->next = NULL;
-
-                        // la disjonction sunken/raised commence ici
-                        if (frame->relief == ei_relief_raised) {
-                                // A IMPLEMENTER : gestion d'une bordure de taille >1
-                                ei_draw_polyline(surface, dark, dark_color,
-                                                clipper);
-                                ei_draw_polyline(surface, light,light_color, 
-                                                clipper);
-
-                        }
-                        else{
-
-                                ei_draw_polyline(surface, dark, light_color,
-                                                clipper);
-                                ei_draw_polyline(surface, light,dark_color, 
-                                                clipper);
-                                // A FAIRE
-                        }
+                        ;               
                 }
-                //unlock de la surface
-                hw_surface_unlock(surface);
-
+                else{
+                        // dessin sans relief
+                        ;
+                }
 
         }
         void frame_setdefaults(struct ei_widget_t* widget){
                 // on commence par effectuer un recast
                 ei_frame_t *frame;
                 frame = (ei_frame_t*)widget;
-                frame->border_width = 3;
-                // ei_surface_t represente un pointeur générique
-                frame->img = NULL;
-                frame->img_anchor = ei_anc_center;
-                ei_point_t p = {0,0};
-                (frame->img_rect).top_left = p;
-                ei_size_t s = {10,10};
-                (frame->img_rect).size = s;
-                frame->relief = ei_relief_none;
-                frame->text = "Frame" ;
-                frame->text_anchor = ei_anc_center;
-                // red blue green A
-                ei_color_t tc = {0x00, 0x00, 0xFF, 0xFF};
-                frame->text_color = tc;
-                frame->text_font = ei_style_normal;
-                ei_color_t bg = {0xFF,0x00,0x00,0xFF};
-                frame->bg_color = &bg;
         }
-
         void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
                 ;
         }
