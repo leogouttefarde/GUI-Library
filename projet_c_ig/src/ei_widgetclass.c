@@ -86,7 +86,7 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
            */
         // ICI plante
         ei_rect_t rect = {{0,0}, frame->widget.requested_size}; 
-        ei_fill(surface, &frame->bg_color, &rect);
+        ei_fill(surface, &frame->bg_color, clipper);
         int w;
         int h;
         w = frame->widget.requested_size.width;
