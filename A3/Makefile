@@ -13,7 +13,7 @@ SRCDIR		:= ./src
 
 # The list of objects to include in the library
 
-LIBEIOBJS	:= objs/ei_application.o objs/ei_widget.o objs/ei_geometrymanager.o objs/ei_event.o
+LIBEIOBJS	:= objs/ei_application.o objs/ei_widget.o objs/ei_geometrymanager.o objs/ei_event.o ${OBJDIR}/ei_widgetclass.o
 
 
 
@@ -117,6 +117,13 @@ ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/puzzle.c -o ${OBJDIR}/puzzle.o
 
 
+########## Compilation séparée des sources
+
+ei_widget : ${OBJDIR}/ei_widget.o
+
+ei_widgetclass : ${OBJDIR}/ei_widgetclass.o
+
+# Compilation
 ${OBJDIR}/%.o: ${SRCDIR}/%.c
 	$(CC) $(CCFLAGS) ${INCFLAGS} $< -o $@
 
