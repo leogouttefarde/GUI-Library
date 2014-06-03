@@ -12,27 +12,7 @@
 #include <string.h>
 #include "ei_widget.h"
 #include "ei_widgettypes.h"
-/*//Definition du type frame
-typedef struct ei_frame_t {
-        ei_widget_t widget;
-        int border_width; 
-        ei_relief_t relief;
-        char* text;
-        ei_font_t text_font;
-        ei_color_t text_color;
-        ei_anchor_t text_anchor;
-        ei_surface_t img;
-        ei_rect_t* img_rect;
-        ei_anchor_t img_anchor;
-        struct {bool is_txt; 
-        union{ char* txt;
-        uint32_t* img;
-        } type;
-        } foreground;
 
-// POSITIONNEMENT
-// SOUS RECTANGLE page 19
-} ei_frame_t;*/
 /**
  * @brief	Creates a new instance of a widget of some particular class, as a descendant of
  *		an existing widget.
@@ -91,7 +71,36 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
  * @param	widget		The widget that is to be destroyed.
  */
 void ei_widget_destroy (ei_widget_t* widget){
-        ;
+        // on veille a ne pas casser la chaine du parent
+        ei_widget_t *current;
+        ei_widget_t *prec;
+        current = widget->parent->children_head;
+        // si le widget est le premier fils on remplace par le suivant
+        if(current == widget->parent->children_head){
+                widget->parent->children_head = widget->next_sibling; 
+        }
+        else{
+                // on cherche la position du widget
+                while(current != widget) {
+                        prec = current;
+                        current = current->next_sibling;
+                }
+                // le widget precedent "widget" est relié a celui qui suit
+                prec->next_sibling = current->next_sibling;
+                // si le widget est le dernier fils on le remplace par prec
+                if(current == widget->parent->children_tail) {
+                        widget->parent->children_tail = prec;
+                }
+        }
+
+        // destruction des descendants
+        prec = widget->children_head;
+        while (prec) {
+                current = prec->next_sibling;
+                ei_widget_destroy(prec);
+                prec = current;
+        }
+        (*(widget->wclass->releasefunc))(widget);
 }
 
 
