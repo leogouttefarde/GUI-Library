@@ -5,6 +5,7 @@
 //Definition du type frame
 typedef struct ei_frame_t {
         ei_widget_t widget;
+        ei_color_t bg_color;
         int border_width; 
         ei_relief_t relief;
         char* text;
