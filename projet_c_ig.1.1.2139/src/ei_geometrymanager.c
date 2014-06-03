@@ -10,15 +10,10 @@
 
 
 #include "ei_geometrymanager.h"
+#include <stdlib.h>
 
 
-
-
-
-
-
-
-
+static ei_geometrymanager_t *first = NULL;
 
 /**
  * \brief	Registers a geometry manager to the program so that it can be called to manager
@@ -26,8 +21,28 @@
  *
  * @param	geometrymanager		The structure describing the geometry manager.
  */
-void			ei_geometrymanager_register	(ei_geometrymanager_t* geometrymanager){
-        ;
+void ei_geometrymanager_register(ei_geometrymanager_t* geometrymanager)
+{
+	if (geometrymanager) {
+		ei_geometrymanager_t *current, *next;
+
+		if (first) {
+			current = first;
+			next = current;
+
+			do {
+				current = next;
+				next = current->next;
+			} while (next);
+
+			current->next = geometrymanager;
+		}
+		else
+			first = geometrymanager;
+
+		/* Make sure it is the last geometry manager */
+		geometrymanager->next = NULL;
+	}
 }
 
 
@@ -39,7 +54,24 @@ void			ei_geometrymanager_register	(ei_geometrymanager_t* geometrymanager){
  *
  * @return			The structure describing the geometry manager.
  */
-ei_geometrymanager_t*	ei_geometrymanager_from_name	(ei_geometrymanager_name_t name);
+ei_geometrymanager_t*	ei_geometrymanager_from_name	(ei_geometrymanager_name_t name)
+{
+	ei_geometrymanager_t *current, *next;
+	ei_geometrymanager_t *geometrymanager = NULL;
+	ei_bool_t fail = EI_TRUE;
+
+	current = first;
+	next = current;
+	while (current && (fail = strncmp(current, name, sizeof(ei_geometrymanager_name_t))) && next) {
+		current = next;
+		next = current->next;
+	}
+
+	if (!fail)
+		geometrymanager = current;
+
+	return geometrymanager;
+}
 
 
 
@@ -59,7 +91,10 @@ ei_geometrymanager_t*	ei_geometrymanager_from_name	(ei_geometrymanager_name_t na
  *
  * @param	widget		The widget to unmap from the screen.
  */
-void			ei_geometrymanager_unmap	(ei_widget_t*		widget);
+void ei_geometrymanager_unmap(ei_widget_t* widget)
+{
+
+}
 
 
 
@@ -67,7 +102,28 @@ void			ei_geometrymanager_unmap	(ei_widget_t*		widget);
  * \brief	Registers the "placer" geometry manager in the program. This must be called only
  *		once before the \ref ei_place function can be called.
  */
-void 			ei_register_placer_manager 	();
+void  ei_register_placer_manager()
+{
+	ei_geometrymanager_t *placer = malloc(sizeof(ei_geometrymanager_t));
+	memset(placer, 0, sizeof(ei_geometrymanager_t));
+	strcpy(placer->name, "placer");
+
+
+	void ei_place_runfunc() {
+		
+	}
+
+	void ei_place_releasefunc() {
+		
+	}
+
+
+	placer->runfunc = ei_place_runfunc;
+	placer->releasefunc = ei_place_releasefunc;
+	placer->next = NULL;
+
+	ei_geometrymanager_register(placer);
+}
 
 
 
@@ -100,16 +156,26 @@ void 			ei_register_placer_manager 	();
  * @param	rel_height	The relative height of the widget: 0.0 corresponds to a height of 0,
  *				1.0 to the height of the master (defaults to 0.0).
  */
-void			ei_place			(ei_widget_t*		widget,
-                ei_anchor_t*		anchor,
-                int*			x,
-                int*			y,
-                int*			width,
-                int*			height,
-                float*			rel_x,
-                float*			rel_y,
-                float*			rel_width,
-                float*			rel_height){;}
+void ei_place(ei_widget_t *widget,
+		ei_anchor_t	*anchor,
+		int *x,
+		int *y,
+		int *width,
+		int *height,
+		float *rel_x,
+		float *rel_y,
+		float *rel_width,
+		float *rel_height)
+{
+	ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
 
+	if (placer) {
+		if (widget && widget->geom_params && widget->geom_params->manager != placer)
+			widget->geom_params->manager = placer;
+	}
+
+
+
+}
 
 
