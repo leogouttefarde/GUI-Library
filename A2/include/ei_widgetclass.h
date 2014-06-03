@@ -16,7 +16,6 @@
 
 
 
-
 /**
  * \brief	A name of a class of widget.
  */

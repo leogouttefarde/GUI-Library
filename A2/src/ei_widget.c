@@ -33,7 +33,6 @@ typedef struct ei_frame_t {
         // POSITIONNEMENT
         // SOUS RECTANGLE page 19
 } ei_frame_t;
-
 /**
  * @brief	Creates a new instance of a widget of some particular class, as a descendant of
  *		an existing widget.
@@ -55,7 +54,7 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
         // Configuration grace au paramètres
         wclass = ei_widgetclass_from_name(class_name);
         // après allocation, widget aura les champs communs + les champs uniques 
-        widget = (ei_widget_t*)(*(wclass->allocfunc));
+        widget = (ei_widget_t*)(*(wclass->allocfunc))();
         if (widget) {
                 // Initialisation des attributs
                 (*(wclass->setdefaultsfunc))(widget);

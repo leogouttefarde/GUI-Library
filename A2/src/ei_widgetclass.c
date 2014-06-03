@@ -12,6 +12,8 @@
 #include <stdlib.h>
 #include "ei_widgetclass.h"
 
+struct ei_widget_t;
+
 // variable globale pour sotcker les tables de pointeur
 static ei_widgetclass_t *frame_table;
 static ei_widgetclass_t *button_table;
@@ -61,62 +63,37 @@ void	ei_frame_register_class (){
 
         // pointeur generique
         void *frame_alloc(){
-                //Definition du type
-                typedef struct ei_frame_t {
-                        ei_widget_t widget;
-                        int border_width; 
-                        ei_relief_t relief;
-                        char* text;
-                        ei_font_t text_font;
-                        ei_color_t text_color;
-                        ei_anchor_t text_anchor;
-                        ei_surface_t img;
-                        ei_rect_t* img_rect;
-                        ei_anchor_t img_anchor;
-                        /*struct {bool is_txt; 
-                          union{ char* txt;
-                          uint32_t* img;
-                          } type;
-                          } foreground;*/
-
-                        // POSITIONNEMENT
-                        // SOUS RECTANGLE page 19
-                } ei_frame_t;
-                ei_frame_t *frame;
-                frame = malloc(sizeof(ei_frame_t));
-                // Faire un cast ou non ?
-                return frame;
+                return NULL;
         } 
 
-        return NULL;}
         void frame_release(struct ei_widget_t* widget){
                 ;
         }
-void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
-                ei_surface_t pick_surface, ei_rect_t* clipper){
-        ;
-}
-void frame_setdefaults(struct ei_widget_t* widget){
-        ;
-}
-void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
-        ;
-}
+        void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
+                        ei_surface_t pick_surface, ei_rect_t* clipper){
+                ;
+        }
+        void frame_setdefaults(struct ei_widget_t* widget){
+                ;
+        }
+        void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
+                ;
+        }
 
-// Allocation
-extern ei_widgetclass_t *frame_table;
-frame_table->allocfunc= &frame_alloc;
-frame_table->drawfunc = &frame_draw;
-frame_table->releasefunc = &frame_release;
-frame_table->setdefaultsfunc = &frame_setdefaults;
-frame_table->geomnotifyfunc = &frame_geomnotify;
-frame_table->name[0] = 'f';
-frame_table->name[1] = 'r';
-frame_table->name[2] = 'a';
-frame_table->name[3] = 'm';
-frame_table->name[4] = 'e';
-frame_table->name[5] = '\0';
-frame_table->next = NULL;
+        // Allocation
+        extern ei_widgetclass_t *frame_table;
+        frame_table->allocfunc= &frame_alloc;
+        frame_table->drawfunc = &frame_draw;
+        frame_table->releasefunc = &frame_release;
+        frame_table->setdefaultsfunc = &frame_setdefaults;
+        frame_table->geomnotifyfunc = &frame_geomnotify;
+        frame_table->name[0] = 'f';
+        frame_table->name[1] = 'r';
+        frame_table->name[2] = 'a';
+        frame_table->name[3] = 'm';
+        frame_table->name[4] = 'e';
+        frame_table->name[5] = '\0';
+        frame_table->next = NULL;
 }
 /**
  * \brief	Registers the "button" widget class in the program. This must be called only
