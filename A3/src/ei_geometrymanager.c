@@ -149,16 +149,26 @@ void  ei_register_placer_manager()
  * @param	rel_height	The relative height of the widget: 0.0 corresponds to a height of 0,
  *				1.0 to the height of the master (defaults to 0.0).
  */
-void			ei_place			(ei_widget_t*		widget,
-		ei_anchor_t*		anchor,
-		int*			x,
-		int*			y,
-		int*			width,
-		int*			height,
-		float*			rel_x,
-		float*			rel_y,
-		float*			rel_width,
-		float*			rel_height){;}
+void ei_place(ei_widget_t *widget,
+		ei_anchor_t	*anchor,
+		int *x,
+		int *y,
+		int *width,
+		int *height,
+		float *rel_x,
+		float *rel_y,
+		float *rel_width,
+		float *rel_height)
+{
+	ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
 
+	if (placer) {
+		if (widget && widget->geom_params && widget->geom_params->manager != placer)
+			widget->geom_params->manager = placer;
+	}
+
+
+
+}
 
 
