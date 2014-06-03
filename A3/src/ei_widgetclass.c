@@ -73,13 +73,9 @@ void	ei_frame_register_class (){
                 ei_frame_t *frame;
                 frame = (ei_frame_t*)widget;
                 // lock de la surface
-                hw_lock_surface(surface);
+                hw_surface_lock(surface);
                 ei_fill(surface, frame->bg_color,clipper);
-                switch (frame->relief) {
-                        // on dessine simplement la surface
-                case ei_relief_none :
-                        break;
-                case ei_relief_raised :
+                if (frame->relief) {
                         // on recupere les 4 points du bord de la surface
                         ei_rect_t rect;
                         rect = hw_surface_get_rect(surface);
@@ -94,25 +90,55 @@ void	ei_frame_register_class (){
                         ei_point_t bottom_right = top_right;
                         bottom_right.y = top_right.y-h;
                         // on relie les 4 bords pour obtenir les deux moities du cadre
-                        ei_linked_point_t dark;
-                        ei_linked_point_t light;
+                        ei_linked_point_t* dark;
+                        ei_linked_point_t* light;
+                        ei_linked_point_t* tmp;
 
+                        dark = malloc(sizeof(ei_linked_point_t));
+                        light = malloc(sizeof(ei_linked_point_t));
 
-                        dark = {bottom_left; &{top_left, &{top_right, NULL}}}; 
-                        light = {top_right, &{bottom_right, &{bottom_left, NULL}}};
-                        // A IMPLEMENTER : gestion d'une bordure de taille >1
-                        ei_polyline_draw(surface, &dark,{0x11, 0x11, 0x11, 0xFF},
-                                        clipper);
-                        ei_polyline_draw(surface, &light,{0xDD, 0xDD, 0xDD, 0xDD}, 
-                                        clipper);
+                        ei_color_t dark_color = {0x11, 0x11, 0x11, 0xFF};
+                        ei_color_t light_color = {0xDD, 0xDD, 0xDD, 0xDD};
+                        tmp = dark;
+                        tmp->point = bottom_left;
+                        tmp->next = malloc(sizeof(ei_linked_point_t));
+                        tmp = tmp->next;
+                        tmp->point = top_left;
+                        tmp->next = malloc(sizeof(ei_linked_point_t));
+                        tmp = tmp->next;
+                        tmp->point = top_right;
+                        tmp->next = NULL;
 
-                        break;
-                case ei_relief_sunken : 
-                        break;
-                default : hw_unlock_surface(surface); exit -1; break;
+                        tmp = light;
+                        tmp->point = top_right;
+                        tmp->next = malloc(sizeof(ei_linked_point_t));
+                        tmp = tmp->next;
+                        tmp->point = bottom_right;
+                        tmp->next = malloc(sizeof(ei_linked_point_t));
+                        tmp = tmp->next;
+                        tmp->point = bottom_left;
+                        tmp->next = NULL;
+
+                        // la disjonction sunken/raised commence ici
+                        if (frame->relief == ei_relief_raised) {
+                                // A IMPLEMENTER : gestion d'une bordure de taille >1
+                                ei_draw_polyline(surface, dark, dark_color,
+                                                clipper);
+                                ei_draw_polyline(surface, light,light_color, 
+                                                clipper);
+
+                        }
+                        else{
+
+                                ei_draw_polyline(surface, dark, light_color,
+                                                clipper);
+                                ei_draw_polyline(surface, light,dark_color, 
+                                                clipper);
+                                // A FAIRE
+                        }
                 }
                 //unlock de la surface
-                hw_unlock_surface(surface);
+                hw_surface_unlock(surface);
 
 
         }
@@ -123,15 +149,20 @@ void	ei_frame_register_class (){
                 frame->border_width = 3;
                 // ei_surface_t represente un pointeur générique
                 frame->img = NULL;
-                frame->img_anchor = ei_anc_center; 
-                frame->img_rect = {10,10};
+                frame->img_anchor = ei_anc_center;
+                ei_point_t p = {0,0};
+                (frame->img_rect).top_left = p;
+                ei_size_t s = {10,10};
+                (frame->img_rect).size = s;
                 frame->relief = ei_relief_none;
                 frame->text = "Frame" ;
                 frame->text_anchor = ei_anc_center;
                 // red blue green A
-                frame->text_color = {0x00, 0x00, 0xFF, 0xFF};
+                ei_color_t tc = {0x00, 0x00, 0xFF, 0xFF};
+                frame->text_color = tc;
                 frame->text_font = ei_style_normal;
-                frame->bg_color = {0xFF,0x00,0x00,0xFF};
+                ei_color_t bg = {0xFF,0x00,0x00,0xFF};
+                frame->bg_color = &bg;
         }
 
         void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){

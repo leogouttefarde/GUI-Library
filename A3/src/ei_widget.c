@@ -158,7 +158,7 @@ void	ei_frame_configure (ei_widget_t* widget,
                         frame->widget.requested_size = *requested_size;
                 }
                 if (color) {
-                        frame->bg_color = *color;
+                        frame->bg_color = color;
                 }
                 if (border_width) {
                         frame->border_width = *border_width;
