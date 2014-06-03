@@ -55,7 +55,7 @@ ei_geometrymanager_t*	ei_geometrymanager_from_name	(ei_geometrymanager_name_t na
 
 	current = first;
 	next = current;
-	while ((fail = strncmp(current, name, sizeof(ei_geometrymanager_name_t))) && next) {
+	while (current && (fail = strncmp(current, name, sizeof(ei_geometrymanager_name_t))) && next) {
 		current = next;
 		next = current->next;
 	}

@@ -49,10 +49,12 @@ typedef struct ei_frame_t {
 // Quels paramètres faut-il initialiser ici ?
 ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name, 
                 ei_widget_t* parent){
-        ei_widget_t *widget;
+        ei_widget_t *widget = NULL;
         ei_widgetclass_t *wclass;
         // Configuration grace au paramètres
         wclass = ei_widgetclass_from_name(class_name);
+
+        if (wclass)
         // après allocation, widget aura les champs communs + les champs uniques 
         widget = (ei_widget_t*)(*(wclass->allocfunc))();
         if (widget) {
@@ -151,14 +153,14 @@ void	ei_frame_configure (ei_widget_t* widget,
                 ei_rect_t**		img_rect,
                 ei_anchor_t*		img_anchor){
 
-        if (strcmp(ei_widgetclass_stringname(widget->wclass->name), "frame")){
+        if (widget && widget->wclass && strcmp(ei_widgetclass_stringname(widget->wclass->name), "frame")){
                 // on recaste pour passer a un type frame
                 ei_frame_t *frame = (ei_frame_t*)widget;
                 if (requested_size) {
                         frame->widget.requested_size = *requested_size;
                 }
                 if (color) {
-                        frame->bg_color = color;
+                        frame->bg_color = *color;
                 }
                 if (border_width) {
                         frame->border_width = *border_width;
@@ -182,7 +184,7 @@ void	ei_frame_configure (ei_widget_t* widget,
                         frame->img = *img;
                 }
                 if (img_rect){
-                        frame->img_rect = **img_rect;
+                        frame->img_rect = *img_rect;
                 }
                 if (img_anchor){
                         frame->img_anchor = *img_anchor;

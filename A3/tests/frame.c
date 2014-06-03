@@ -7,7 +7,7 @@
 #include "ei_widget.h"
 #include "ei_geometrymanager.h"
 
-frame->bg_color
+
 /*
  * ei_main --
  *
@@ -29,6 +29,7 @@ int ei_main(int argc, char** argv)
         /* Create the application and change the color of the background. */
         ei_app_create(&screen_size, EI_FALSE);
         ei_frame_configure(ei_app_root_widget(), NULL, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+ 
 
         /* Create, configure and place the frame on screen. */
         frame = ei_widget_create("frame", ei_app_root_widget());
