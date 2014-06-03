@@ -7,99 +7,19 @@
  *  Copyright 2011 Ensimag. All rights reserved.
  *
  */
+#include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
+#include "ei_widgetclass.h"
+#include "ei_widgettypes.h"
 
-#ifndef EI_WIDGETCLASS_H
-#define EI_WIDGETCLASS_H
+// variable globale pour sotcker les tables de pointeur
+static ei_widgetclass_t *frame_table;
+static ei_widgetclass_t *button_table;
+static ei_widgetclass_t *toplevel_table;
+// Pour gérer les classes supplémentaires, on utilise l'attribut next
+static ei_widgetclass_t *others_table;
 
-#include "hw_interface.h"
-#include "ei_draw.h"
-
-
-
-
-/**
- * \brief	A name of a class of widget.
- */
-typedef char 		ei_widgetclass_name_t[20];
-
-struct ei_widget_t;
-
-/**
- * \brief	A function that allocates a block of memory that is big enough to store the
- *		attributes of a widget of a class. After allocation, the function *must*
- *		initialize the memory to 0.
- *
- * @return		A block of memory with all bytes set to 0.
- */
-typedef void*	(*ei_widgetclass_allocfunc_t)		();
-
-/**
- * \brief	A function that releases the memory used by a widget before it is destroyed.
- *		The \ref ei_widget_t structure itself, passed as parameter, must *not* by freed by
- *		these functions. Can be set to NULL in \ref ei_widgetclass_t if no memory is used by
- *		a class of widget.
- *
- * @param	widget		The widget which resources are to be freed.
- */
-typedef void	(*ei_widgetclass_releasefunc_t)		(struct ei_widget_t*	widget);
-
-/**
- * \brief	A function that draws widgets of a class.
- *
- * @param	widget		A pointer to the widget instance to draw.
- * @param	surface		Where to draw the widget. The actual location of the widget in the
- *				surface is stored in its "screen_location" field.
- * @param	clipper		If not NULL, the drawing is restricted within this rectangle
- *				(expressed in the surface reference frame).
- */
-typedef void	(*ei_widgetclass_drawfunc_t)		(struct ei_widget_t*	widget,
-                ei_surface_t		surface,
-                ei_surface_t		pick_surface,
-                ei_rect_t*		clipper);
-
-/**
- * \brief	A function that sets the default values for a class.
- *
- * @param	widget		A pointer to the widget instance to intialize.
- */
-typedef void	(*ei_widgetclass_setdefaultsfunc_t)	(struct ei_widget_t*	widget);
-
-/**
- * \brief 	A function that is called to notify the widget that its geometry has been modified
- *		by its geometry manager. Can set to NULL in \ref ei_widgetclass_t.
- *
- * @param	widget		The widget instance to notify of a geometry change.
- * @param	rect		The new rectangular screen location of the widget
- *				(i.e. = widget->screen_location).
- */
-typedef void	(*ei_widgetclass_geomnotifyfunc_t)	(struct ei_widget_t*	widget,
-                ei_rect_t		rect);
-
-/**
- * \brief	A structure that stores information about a class of widgets.
- */
-typedef struct ei_widgetclass_t {
-        ei_widgetclass_name_t			name;			///< The string name of this class of widget.
-        ei_widgetclass_allocfunc_t		allocfunc;		///< The function that allocated instances of this class of widget.
-        ei_widgetclass_releasefunc_t		releasefunc;		///< The function that releases all the resources used by an instance of this class of widget.
-        ei_widgetclass_drawfunc_t		drawfunc;		///< The function that draws on screen an instance of this class of widget.
-        ei_widgetclass_setdefaultsfunc_t	setdefaultsfunc;	///< The function that sets the default values to all the parameters of an instance of this class of widget.
-        ei_widgetclass_geomnotifyfunc_t		geomnotifyfunc;		///< The function that is called to notify an instance of widget of this class that its geometry has changed.
-        struct ei_widgetclass_t*		next;			///< A pointer to the next instance of ei_widget_class_t, allows widget class descriptions to be chained.
-} ei_widgetclass_t;
-
-
-
-
-
-/**
- * \brief	Returns the string of the name of a class.
- *
- * @param	name		The class name.
- *
- * @return			The string representing the name of the class.
- */
-static inline char*	ei_widgetclass_stringname	(ei_widgetclass_name_t name);
 
 /**
  * @brief	Registers a class to the program so that widgets of this class can be created.
@@ -107,7 +27,9 @@ static inline char*	ei_widgetclass_stringname	(ei_widgetclass_name_t name);
  *
  * @param	widgetclass	The structure describing the class.
  */
-void			ei_widgetclass_register		(ei_widgetclass_t* widgetclass);
+void ei_widgetclass_register	(ei_widgetclass_t* widgetclass){
+        ;
+}
 
 
 /**
@@ -117,35 +39,165 @@ void			ei_widgetclass_register		(ei_widgetclass_t* widgetclass);
  *
  * @return			The structure describing the class.
  */
-ei_widgetclass_t*	ei_widgetclass_from_name	(ei_widgetclass_name_t name);
+ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
+{
+        if (strcmp(ei_widgetclass_stringname(name),"frame")){
+                // Les fonctions liées à la classe frame sont déja declarées
+                return frame_table;
+        }
+        return NULL;
+}
+
 
 /**
  * \brief	Registers the "frame" widget class in the program. This must be called only
  *		once before widgets of the class "frame" can be created and configured with
  *		\ref ei_frame_configure.
  */
-void			ei_frame_register_class 	();
+// On utilise des pointeurs sur fonction
+// Cette procedure leur donne une valeur
+void	ei_frame_register_class (){
+        // Declaration des fonctions liées à la classe frame
 
+        // pointeur generique
+        void *frame_alloc(){
+                return (ei_frame_t*)malloc(sizeof(ei_frame_t));
+        } 
+
+        void frame_release(struct ei_widget_t* widget){
+                free((ei_frame_t*)widget);
+        }
+
+        void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
+                        ei_surface_t pick_surface, ei_rect_t* clipper){
+                ei_frame_t *frame;
+                frame = (ei_frame_t*)widget;
+                // lock de la surface
+                hw_surface_lock(surface);
+                ei_fill(surface, frame->bg_color,clipper);
+                if (frame->relief) {
+                        // on recupere les 4 points du bord de la surface
+                        ei_rect_t rect;
+                        rect = hw_surface_get_rect(surface);
+                        int w = rect.size.width;
+                        int h = rect.size.height;
+
+                        ei_point_t top_left = rect.top_left;
+                        ei_point_t top_right = top_left;
+                        top_right.x = top_right.x+w;
+                        ei_point_t bottom_left = top_left;
+                        bottom_left.y = top_left.y-h;
+                        ei_point_t bottom_right = top_right;
+                        bottom_right.y = top_right.y-h;
+                        // on relie les 4 bords pour obtenir les deux moities du cadre
+                        ei_linked_point_t* dark;
+                        ei_linked_point_t* light;
+                        ei_linked_point_t* tmp;
+
+                        dark = malloc(sizeof(ei_linked_point_t));
+                        light = malloc(sizeof(ei_linked_point_t));
+
+                        ei_color_t dark_color = {0x11, 0x11, 0x11, 0xFF};
+                        ei_color_t light_color = {0xDD, 0xDD, 0xDD, 0xDD};
+                        tmp = dark;
+                        tmp->point = bottom_left;
+                        tmp->next = malloc(sizeof(ei_linked_point_t));
+                        tmp = tmp->next;
+                        tmp->point = top_left;
+                        tmp->next = malloc(sizeof(ei_linked_point_t));
+                        tmp = tmp->next;
+                        tmp->point = top_right;
+                        tmp->next = NULL;
+
+                        tmp = light;
+                        tmp->point = top_right;
+                        tmp->next = malloc(sizeof(ei_linked_point_t));
+                        tmp = tmp->next;
+                        tmp->point = bottom_right;
+                        tmp->next = malloc(sizeof(ei_linked_point_t));
+                        tmp = tmp->next;
+                        tmp->point = bottom_left;
+                        tmp->next = NULL;
+
+                        // la disjonction sunken/raised commence ici
+                        if (frame->relief == ei_relief_raised) {
+                                // A IMPLEMENTER : gestion d'une bordure de taille >1
+                                ei_draw_polyline(surface, dark, dark_color,
+                                                clipper);
+                                ei_draw_polyline(surface, light,light_color, 
+                                                clipper);
+
+                        }
+                        else{
+
+                                ei_draw_polyline(surface, dark, light_color,
+                                                clipper);
+                                ei_draw_polyline(surface, light,dark_color, 
+                                                clipper);
+                                // A FAIRE
+                        }
+                }
+                //unlock de la surface
+                hw_surface_unlock(surface);
+
+
+        }
+        void frame_setdefaults(struct ei_widget_t* widget){
+                // on commence par effectuer un recast
+                ei_frame_t *frame;
+                frame = (ei_frame_t*)widget;
+                frame->border_width = 3;
+                // ei_surface_t represente un pointeur générique
+                frame->img = NULL;
+                frame->img_anchor = ei_anc_center;
+                ei_point_t p = {0,0};
+                frame->img_rect->top_left = p;
+                ei_size_t s = {10,10};
+                frame->img_rect->size = s;
+                frame->relief = ei_relief_none;
+                frame->text = "Frame" ;
+                frame->text_anchor = ei_anc_center;
+                // red blue green A
+                ei_color_t tc = {0x00, 0x00, 0xFF, 0xFF};
+                frame->text_color = tc;
+                frame->text_font = ei_style_normal;
+                ei_color_t bg = {0xFF,0x00,0x00,0xFF};
+                frame->bg_color = &bg;
+        }
+
+        void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
+                ;
+        }
+
+        // Allocation
+        extern ei_widgetclass_t *frame_table;
+        frame_table->allocfunc= &frame_alloc;
+        frame_table->drawfunc = &frame_draw;
+        frame_table->releasefunc = &frame_release;
+        frame_table->setdefaultsfunc = &frame_setdefaults;
+        frame_table->geomnotifyfunc = &frame_geomnotify;
+        frame_table->name[0] = 'f';
+        frame_table->name[1] = 'r';
+        frame_table->name[2] = 'a';
+        frame_table->name[3] = 'm';
+        frame_table->name[4] = 'e';
+        frame_table->name[5] = '\0';
+        frame_table->next = NULL;
+}
 /**
  * \brief	Registers the "button" widget class in the program. This must be called only
  *		once before widgets of the class "button" can be created and configured with
  *		\ref ei_button_configure.
  */
-void			ei_button_register_class 	();
+void	ei_button_register_class(){
+        ;
+}
 
 /**
  * \brief	Registers the "toplevel" widget class in the program. This must be called only
  *		once before widgets of the class "toplevel" can be created and configured with
  *		\ref ei_toplevel_configure.
  */
-void			ei_toplevel_register_class 	();
-
-
-/* Inline function definitions. */
-
-static inline char*	ei_widgetclass_stringname	(ei_widgetclass_name_t name)
-{
-        return (char*)name;
+void ei_toplevel_register_class	(){
+        ;
 }
-
-#endif

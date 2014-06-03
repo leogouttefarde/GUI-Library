@@ -7,7 +7,6 @@
 #include "ei_widget.h"
 #include "ei_geometrymanager.h"
 
-
 /*
  * ei_main --
  *
