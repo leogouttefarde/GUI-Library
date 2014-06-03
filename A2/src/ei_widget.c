@@ -11,8 +11,8 @@
 #include <stdlib.h>
 #include <string.h>
 #include "ei_widget.h"
-
-//Definition du type frame
+#include "ei_widgettypes.h"
+/*//Definition du type frame
 typedef struct ei_frame_t {
         ei_widget_t widget;
         int border_width; 
@@ -24,15 +24,15 @@ typedef struct ei_frame_t {
         ei_surface_t img;
         ei_rect_t* img_rect;
         ei_anchor_t img_anchor;
-        /*struct {bool is_txt; 
-          union{ char* txt;
-          uint32_t* img;
-          } type;
-          } foreground;*/
+        struct {bool is_txt; 
+        union{ char* txt;
+        uint32_t* img;
+        } type;
+        } foreground;
 
-        // POSITIONNEMENT
-        // SOUS RECTANGLE page 19
-} ei_frame_t;
+// POSITIONNEMENT
+// SOUS RECTANGLE page 19
+} ei_frame_t;*/
 /**
  * @brief	Creates a new instance of a widget of some particular class, as a descendant of
  *		an existing widget.

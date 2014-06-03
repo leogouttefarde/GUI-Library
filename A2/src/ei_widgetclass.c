@@ -11,8 +11,7 @@
 #include <string.h>
 #include <stdlib.h>
 #include "ei_widgetclass.h"
-
-struct ei_widget_t;
+#include "ei_widgettypes.h"
 
 // variable globale pour sotcker les tables de pointeur
 static ei_widgetclass_t *frame_table;
