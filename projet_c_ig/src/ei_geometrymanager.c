@@ -10,7 +10,7 @@
 
 
 #include "ei_geometrymanager.h"
-#include <stdlib.h>
+#include "ei_common.h"
 
 
 static ei_geometrymanager_t *first = NULL;
@@ -97,6 +97,15 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 }
 
 
+void ei_place_runfunc(struct ei_widget_t*	widget)
+{
+	widget->wclass->drawfunc(widget, ei_app_root_surface(), NULL, widget->parent ? &widget->screen_location : NULL);
+}
+
+void ei_place_releasefunc(struct ei_widget_t*	widget)
+{
+	SAFE_FREE(widget->geom_params);
+}
 
 /**
  * \brief	Registers the "placer" geometry manager in the program. This must be called only
@@ -107,16 +116,6 @@ void  ei_register_placer_manager()
 	ei_geometrymanager_t *placer = malloc(sizeof(ei_geometrymanager_t));
 	memset(placer, 0, sizeof(ei_geometrymanager_t));
 	strcpy(placer->name, "placer");
-
-
-	void ei_place_runfunc() {
-		
-	}
-
-	void ei_place_releasefunc() {
-		
-	}
-
 
 	placer->runfunc = ei_place_runfunc;
 	placer->releasefunc = ei_place_releasefunc;
@@ -170,12 +169,33 @@ void ei_place(ei_widget_t *widget,
 	ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
 
 	if (placer) {
-		if (widget && widget->geom_params && widget->geom_params->manager != placer)
+		if (widget && (!widget->geom_params || (widget->geom_params->manager != placer))) {
+			if (widget->geom_params && widget->geom_params->manager)
+				widget->geom_params->manager->releasefunc(widget);
+
+			widget->geom_params = malloc(sizeof(ei_placer_param_t));
 			widget->geom_params->manager = placer;
+		}
+
+		if (x)
+			widget->screen_location.top_left.x = *x;
+		else
+			widget->screen_location.top_left.x = 0;
+
+		if (y)
+			widget->screen_location.top_left.y = *y;
+		else
+			widget->screen_location.top_left.y = 0;
+
+
+		widget->screen_location.size = widget->requested_size;
+
+		if (width)
+			widget->screen_location.size.width = *width;
+
+		if (height)
+			widget->screen_location.size.height = *height;
 	}
-
-
-
 }
 
 

@@ -46,6 +46,8 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	root_widget = ei_widget_create ("frame", NULL);
 
 	ei_register_placer_manager();
+
+	ei_place(root_widget, NULL,NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
 }
 
 /**
@@ -61,15 +63,16 @@ void ei_app_free()
  * \brief	Runs the application: enters the main event loop. Exits when
  *		\ref ei_app_quit_request is called.
  */
-void ei_app_run(){
+void ei_app_run()
+{
 	int c;
 
 	do {
 		ei_widget_t *widget = ei_app_root_widget();
 
 		while (widget) {
-			if (widget->wclass && widget->wclass->drawfunc)
-				widget->wclass->drawfunc(widget, ei_app_root_surface(), NULL, NULL);
+			if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)
+				widget->geom_params->manager->runfunc(widget);
 
 			if (widget->next_sibling)
 				widget = widget->next_sibling;

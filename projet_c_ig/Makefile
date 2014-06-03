@@ -147,3 +147,6 @@ clean:
 	rm -f ${TARGETS}
 	rm -f *.exe
 	rm -f ${OBJDIR}/*
+
+runf: all
+	./frame
