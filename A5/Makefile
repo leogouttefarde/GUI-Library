@@ -12,7 +12,8 @@ CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 
 # The list of objects to include in the library
 
-LIBEIOBJS	:= 	
+LIBEIOBJS	:= objs/ei_application.o objs/ei_widget.o objs/ei_geometrymanager.o objs/ei_event.o objs/ei_button.o
+
 
 
 
