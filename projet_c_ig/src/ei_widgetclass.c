@@ -28,7 +28,7 @@ static ei_widgetclass_t *others_table = NULL;
  * @param	widgetclass	The structure describing the class.
  */
 void ei_widgetclass_register	(ei_widgetclass_t* widgetclass){
-	;
+        ;
 }
 
 
@@ -41,11 +41,11 @@ void ei_widgetclass_register	(ei_widgetclass_t* widgetclass){
  */
 ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
 {
-	if (!strcmp(name,"frame")) {
-		// Les fonctions liées à la classe frame sont déja declarées
-		return frame_table;
-	}
-	return NULL;
+        if (!strcmp(name,"frame")) {
+                // Les fonctions liées à la classe frame sont déja declarées
+                return frame_table;
+        }
+        return NULL;
 }
 
 /***************************************** frame ****************/
@@ -209,11 +209,6 @@ void	ei_frame_register_class (){
 }
 
 /*************************************** button ***************/
-/**
- * \brief	Registers the "button" widget class in the program. This must be called only
- *		once before widgets of the class "button" can be created and configured with
- *		\ref ei_button_configure.
- */
 // pointeur generique
 void *button_alloc(){
         return (ei_button_t*)malloc(sizeof(ei_button_t));
@@ -244,6 +239,11 @@ void button_setdefaults(struct ei_widget_t* widget){
 void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
         ;
 }
+/**
+ * \brief	Registers the "button" widget class in the program. This must be called only
+ *		once before widgets of the class "button" can be created and configured with
+ *		\ref ei_button_configure.
+ */
 void	ei_button_register_class(){
         // Allocation
         extern ei_widgetclass_t *button_table;
@@ -256,11 +256,50 @@ void	ei_button_register_class(){
         button_table->next = NULL;
 }
 
+/*************************** toplevel **************/
+// pointeur generique
+void *toplevel_alloc(){
+        return (ei_toplevel_t*)malloc(sizeof(ei_toplevel_t));
+} 
+
+void toplevel_release(struct ei_widget_t* widget){
+        free((ei_toplevel_t*)widget);
+}
+
+void toplevel_draw(struct ei_widget_t* widget, ei_surface_t surface,
+                ei_surface_t pick_surface, ei_rect_t* clipper){
+        ei_toplevel_t *toplevel;
+        toplevel = (ei_toplevel_t*)widget;
+        // lock de la surface
+        hw_surface_lock(surface);
+        ei_fill(surface, &toplevel->color,clipper);
+        //unlock de la surface
+        hw_surface_unlock(surface);
+
+
+}
+void toplevel_setdefaults(struct ei_widget_t* widget){
+        // on commence par effectuer un recast
+        ei_toplevel_t *toplevel;
+        toplevel = (ei_toplevel_t*)widget;
+}
+
+void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
+        ;
+}
 /**
  * \brief	Registers the "toplevel" widget class in the program. This must be called only
  *		once before widgets of the class "toplevel" can be created and configured with
  *		\ref ei_toplevel_configure.
  */
-void ei_toplevel_register_class	(){
-        ;
+void	ei_toplevel_register_class(){
+        // Allocation
+        extern ei_widgetclass_t *toplevel_table;
+        toplevel_table->allocfunc= &toplevel_alloc;
+        toplevel_table->drawfunc = &toplevel_draw;
+        toplevel_table->releasefunc = &toplevel_release;
+        toplevel_table->setdefaultsfunc = &toplevel_setdefaults;
+        toplevel_table->geomnotifyfunc = &toplevel_geomnotify;
+        strcpy(toplevel_table->name, "toplevel");
+        toplevel_table->next = NULL;
 }
