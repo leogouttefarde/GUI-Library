@@ -10,6 +10,7 @@
 #include <stdbool.h>
 #include <string.h>
 #include <stdlib.h>
+#include <stdio.h>
 #include "ei_widgetclass.h"
 #include "ei_widgettypes.h"
 
@@ -63,8 +64,14 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
         ei_frame_t *frame;
         frame = (ei_frame_t*)widget;
 
-        // lock de la surface
+        // definition de la surface de la fenetre
+        ei_surface_t frame_surface;
         hw_surface_lock(surface);
+        frame_surface = hw_surface_create(&surface, &frame->widget.requested_size
+                        , false);
+        hw_surface_unlock(surface);
+        // lock de la surface
+        hw_surface_lock(frame_surface);
 
         /*
            printf("surface %X\n", surface);
@@ -83,14 +90,14 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
            else
            printf("No clipper\n");
            */
-
-        ei_fill(surface, &frame->bg_color, clipper);
+        // ICI plante
+        ei_fill(frame_surface, &frame->bg_color, clipper);
 
 
         if (frame->relief) {
                 // on recupere les 4 points du bord de la surface
                 ei_rect_t rect;
-                rect = hw_surface_get_rect(surface);
+                rect = hw_surface_get_rect(frame_surface);
                 int w = rect.size.width;
                 int h = rect.size.height;
 
@@ -134,24 +141,25 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 // la disjonction sunken/raised commence ici
                 if (frame->relief == ei_relief_raised) {
                         // A IMPLEMENTER : gestion d'une bordure de taille >1
-                        ei_draw_polyline(surface, dark, dark_color,
+                        ei_draw_polyline(frame_surface, dark, dark_color,
                                         clipper);
-                        ei_draw_polyline(surface, light,light_color, 
+                        ei_draw_polyline(frame_surface, light,light_color, 
                                         clipper);
 
                 }
                 else{
 
-                        ei_draw_polyline(surface, dark, light_color,
+                        ei_draw_polyline(frame_surface, dark, light_color,
                                         clipper);
-                        ei_draw_polyline(surface, light,dark_color, 
+                        ei_draw_polyline(frame_surface, light,dark_color, 
                                         clipper);
                         // A FAIRE
                 }
         }
 
         //unlock de la surface
-        hw_surface_unlock(surface);
+        hw_surface_unlock(frame_surface);
+        // hw_surface_free avant ou apres le unlock ??
 }
 
 void frame_release(struct ei_widget_t* widget){
