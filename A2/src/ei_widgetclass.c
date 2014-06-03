@@ -69,7 +69,16 @@ void	ei_frame_register_class (){
         }
         void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                         ei_surface_t pick_surface, ei_rect_t* clipper){
-                ;
+                ei_frame_t *frame;
+                frame = (ei_frame_t*)widget;
+                if (frame->relief) {
+                        ;               
+                }
+                else{
+                        // dessin sans relief
+                        ;
+                }
+
         }
         void frame_setdefaults(struct ei_widget_t* widget){
                 // on commence par effectuer un recast
