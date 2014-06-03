@@ -50,7 +50,25 @@ void ei_app_free(){
  *		\ref ei_app_quit_request is called.
  */
 void ei_app_run(){
-        ;
+	int c;
+
+	do {
+		c=getchar();
+
+
+		ei_widget_t *widget = ei_app_root_widget();
+
+		while (widget) {
+			if (widget->wclass && widget->wclass->drawfunc)
+				widget->wclass->drawfunc(widget, ei_app_root_surface(), NULL, NULL);
+
+			if (widget->next_sibling)
+				widget = widget->next_sibling;
+
+			else
+				widget = widget->children_head;
+		}
+	} while (c != '\n');
 }
 
 /**

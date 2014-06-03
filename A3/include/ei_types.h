@@ -13,6 +13,7 @@
 
 #include "SDL_keysym.h"
 #include <stdint.h>
+#include <stdlib.h>
 
 
 

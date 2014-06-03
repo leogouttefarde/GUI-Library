@@ -13,7 +13,7 @@ SRCDIR		:= ./src
 
 # The list of objects to include in the library
 
-LIBEIOBJS	:= objs/ei_application.o objs/ei_widget.o objs/ei_geometrymanager.o objs/ei_event.o ${OBJDIR}/ei_widgetclass.o
+LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o ${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o ${OBJDIR}/ei_widgetclass.o
 
 
 
