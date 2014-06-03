@@ -20,7 +20,6 @@ static ei_widgetclass_t *toplevel_table;
 // Pour gérer les classes supplémentaires, on utilise l'attribut next
 static ei_widgetclass_t *others_table;
 
-struct ei_frame_t;
 
 /**
  * @brief	Registers a class to the program so that widgets of this class can be created.
@@ -62,18 +61,20 @@ void	ei_frame_register_class (){
 
         // pointeur generique
         void *frame_alloc(){
-                return NULL;
+                return (ei_frame_t*)malloc(sizeof(ei_frame_t));
         } 
 
         void frame_release(struct ei_widget_t* widget){
-                ;
+                free((ei_frame_t*)widget);
         }
         void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                         ei_surface_t pick_surface, ei_rect_t* clipper){
                 ;
         }
         void frame_setdefaults(struct ei_widget_t* widget){
-                ;
+                // on commence par effectuer un recast
+                ei_frame_t *frame;
+                frame = (ei_frame_t*)widget;
         }
         void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
                 ;
