@@ -1,14 +1,20 @@
 !_TAG_FILE_FORMAT	2	/extended format; --format=1 will not append ;" to lines/
 !_TAG_FILE_SORTED	1	/0=unsorted, 1=sorted, 2=foldcase/
+border_width	ei_widget.c	/^        int border_width; $/;"	m	struct:ei_frame_t	file:
 ei_button_configure	ei_widget.c	/^void	ei_button_configure (ei_widget_t*		widget,$/;"	f
-ei_button_register_class	ei_widgetclass.c	/^void	ei_button_register_class(){$/;"	f
 ei_frame_configure	ei_widget.c	/^void	ei_frame_configure (ei_widget_t* widget,$/;"	f
-ei_frame_register_class	ei_widgetclass.c	/^void	ei_frame_register_class (){$/;"	f
+ei_frame_t	ei_widget.c	/^typedef struct ei_frame_t {$/;"	s	file:
+ei_frame_t	ei_widget.c	/^} ei_frame_t;$/;"	t	typeref:struct:ei_frame_t	file:
 ei_toplevel_configure	ei_widget.c	/^void			ei_toplevel_configure		(ei_widget_t*		widget,$/;"	f
-ei_toplevel_register_class	ei_widgetclass.c	/^void ei_toplevel_register_class	(){$/;"	f
 ei_widget_create	ei_widget.c	/^ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name, $/;"	f
 ei_widget_destroy	ei_widget.c	/^void ei_widget_destroy (ei_widget_t* widget){$/;"	f
 ei_widget_pick	ei_widget.c	/^ei_widget_t* ei_widget_pick (ei_point_t* where){$/;"	f
-ei_widgetclass_from_name	ei_widgetclass.c	/^ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)$/;"	f
-ei_widgetclass_register	ei_widgetclass.c	/^void ei_widgetclass_register	(ei_widgetclass_t* widgetclass){$/;"	f
-frame_table	ei_widgetclass.c	/^static ei_widgetclass_t *frame_table;$/;"	v	file:
+img	ei_widget.c	/^        ei_surface_t img;$/;"	m	struct:ei_frame_t	file:
+img_anchor	ei_widget.c	/^        ei_anchor_t img_anchor;$/;"	m	struct:ei_frame_t	file:
+img_rect	ei_widget.c	/^        ei_rect_t* img_rect;$/;"	m	struct:ei_frame_t	file:
+relief	ei_widget.c	/^        ei_relief_t relief;$/;"	m	struct:ei_frame_t	file:
+text	ei_widget.c	/^        char* text;$/;"	m	struct:ei_frame_t	file:
+text_anchor	ei_widget.c	/^        ei_anchor_t text_anchor;$/;"	m	struct:ei_frame_t	file:
+text_color	ei_widget.c	/^        ei_color_t text_color;$/;"	m	struct:ei_frame_t	file:
+text_font	ei_widget.c	/^        ei_font_t text_font;$/;"	m	struct:ei_frame_t	file:
+widget	ei_widget.c	/^        ei_widget_t widget;$/;"	m	struct:ei_frame_t	file:

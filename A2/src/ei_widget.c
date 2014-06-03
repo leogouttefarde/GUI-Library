@@ -9,9 +9,30 @@
 
 // pour malloc et NULL
 #include <stdlib.h>
-
+#include <string.h>
 #include "ei_widget.h"
 
+//Definition du type frame
+typedef struct ei_frame_t {
+        ei_widget_t widget;
+        int border_width; 
+        ei_relief_t relief;
+        char* text;
+        ei_font_t text_font;
+        ei_color_t text_color;
+        ei_anchor_t text_anchor;
+        ei_surface_t img;
+        ei_rect_t* img_rect;
+        ei_anchor_t img_anchor;
+        /*struct {bool is_txt; 
+          union{ char* txt;
+          uint32_t* img;
+          } type;
+          } foreground;*/
+
+        // POSITIONNEMENT
+        // SOUS RECTANGLE page 19
+} ei_frame_t;
 
 /**
  * @brief	Creates a new instance of a widget of some particular class, as a descendant of
@@ -34,7 +55,7 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
         // Configuration grace au paramètres
         wclass = ei_widgetclass_from_name(class_name);
         // après allocation, widget aura les champs communs + les champs uniques 
-        (*(wclass->allocfunc))(widget);
+        widget = (ei_widget_t*)(*(wclass->allocfunc));
         if (widget) {
                 // Initialisation des attributs
                 (*(wclass->setdefaultsfunc))(widget);
@@ -131,7 +152,48 @@ void	ei_frame_configure (ei_widget_t* widget,
                 ei_rect_t**		img_rect,
                 ei_anchor_t*		img_anchor){
 
-        ;
+        if (strcmp(ei_widgetclass_stringname(widget->wclass->name), "frame")){
+                // on recaste pour passer a un type frame
+                ei_frame_t *frame = (ei_frame_t*)widget;
+                if (requested_size) {
+                        frame->widget.requested_size = *requested_size;
+                }
+                if (color) {
+                        ei_color_t *color_copy;
+                        color_copy = malloc(sizeof(ei_color_t));
+                        *color_copy = *color;
+                        frame->widget.pick_color = color_copy;
+                }
+                if (border_width) {
+                        frame->border_width = *border_width;
+                }
+                if (relief) {
+                        frame->relief = *relief;
+                }
+                if (text) {
+                        frame->text = *text;
+                }
+                if (text_font){
+                        frame->text_font = *text_font;
+                }
+                if (text_color){
+                        frame->text_color = *text_color;
+                }
+                if (text_anchor){
+                        frame->text_anchor = *text_anchor;
+                }
+                if (img){
+                        frame->img = *img;
+                }
+                if (img_rect){
+                        frame->img_rect = *img_rect;
+                }
+                if (img_anchor){
+                        frame->img_anchor = *img_anchor;
+                }
+
+
+        }
 }
 
 

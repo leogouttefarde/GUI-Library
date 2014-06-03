@@ -14,8 +14,13 @@
 
 // variable globale pour sotcker les tables de pointeur
 static ei_widgetclass_t *frame_table;
+static ei_widgetclass_t *button_table;
+static ei_widgetclass_t *toplevel_table;
+// Pour gérer les classes supplémentaires, on utilise l'attribut next
+static ei_widgetclass_t *others_table;
 
-struct ei_widget_t;
+struct ei_frame_t;
+
 /**
  * @brief	Registers a class to the program so that widgets of this class can be created.
  *		This must be done only once in the application.
@@ -56,29 +61,37 @@ void	ei_frame_register_class (){
 
         // pointeur generique
         void *frame_alloc(){
-                /*//Definition du type
-                  typedef struct ei_frame_t {
-                  ei_widget_t widget;
-                  ei_relief_t relief;
-                  ei_font_t font;
-                  struct {bool is_txt; 
-                  union{ char* txt;
-                  uint32_t* img;
-                  } type;
-                  } foreground;
-                // POSITIONNEMENT
-                // SOUS RECTANGLE page 19
-                }
+                //Definition du type
+                typedef struct ei_frame_t {
+                        ei_widget_t widget;
+                        int border_width; 
+                        ei_relief_t relief;
+                        char* text;
+                        ei_font_t text_font;
+                        ei_color_t text_color;
+                        ei_anchor_t text_anchor;
+                        ei_surface_t img;
+                        ei_rect_t* img_rect;
+                        ei_anchor_t img_anchor;
+                        /*struct {bool is_txt; 
+                          union{ char* txt;
+                          uint32_t* img;
+                          } type;
+                          } foreground;*/
+
+                        // POSITIONNEMENT
+                        // SOUS RECTANGLE page 19
+                } ei_frame_t;
                 ei_frame_t *frame;
-                frame->widget = malloc(sizeof(ei_widget_t));
+                frame = malloc(sizeof(ei_frame_t));
                 // Faire un cast ou non ?
                 return frame;
-                } */
+        } 
 
-                return NULL;}
-                void frame_release(struct ei_widget_t* widget){
-                        ;
-                }
+        return NULL;}
+        void frame_release(struct ei_widget_t* widget){
+                ;
+        }
 void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 ei_surface_t pick_surface, ei_rect_t* clipper){
         ;
