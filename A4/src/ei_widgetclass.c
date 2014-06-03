@@ -190,7 +190,54 @@ void	ei_frame_register_class (){
  *		\ref ei_button_configure.
  */
 void	ei_button_register_class(){
-        ;
+        // Declaration des fonctions liées à la classe button
+
+        // pointeur generique
+        void *button_alloc(){
+                return (ei_button_t*)malloc(sizeof(ei_button_t));
+        } 
+
+        void button_release(struct ei_widget_t* widget){
+                free((ei_button_t*)widget);
+        }
+
+        void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
+                        ei_surface_t pick_surface, ei_rect_t* clipper){
+                ei_button_t *button;
+                button = (ei_button_t*)widget;
+                // lock de la surface
+                hw_surface_lock(surface);
+                ei_fill(surface, button->color,clipper);
+                //unlock de la surface
+                hw_surface_unlock(surface);
+
+
+        }
+        void button_setdefaults(struct ei_widget_t* widget){
+                // on commence par effectuer un recast
+                ei_button_t *button;
+                button = (ei_button_t*)widget;
+        }
+
+        void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
+                ;
+        }
+
+        // Allocation
+        extern ei_widgetclass_t *button_table;
+        button_table->allocfunc= &button_alloc;
+        button_table->drawfunc = &button_draw;
+        button_table->releasefunc = &button_release;
+        button_table->setdefaultsfunc = &button_setdefaults;
+        button_table->geomnotifyfunc = &button_geomnotify;
+        button_table->name[0] = 'b';
+        button_table->name[1] = 'u';
+        button_table->name[2] = 't';
+        button_table->name[3] = 't';
+        button_table->name[4] = 'o';
+        button_table->name[5] = 'n';
+        button_table->name[6] = '\0';
+        button_table->next = NULL;
 }
 
 /**
