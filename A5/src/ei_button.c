@@ -48,67 +48,89 @@ ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_
 	int hauteur=rectangle->size->heigth-2*rayon;
 	int longueur=rectangle->size->width-2*rayon;
 
-	ei_point_t tete_temp;
-	ei_point_t queue_temp;
-	ei_point_t centre_temp;
+	ei_point_t top_gauche={rectangle->x+rayon,rectangle->y};
+	ei_point_t top_droit={rectangle->x+longueur-rayon,rectangle->y};
+	ei_point_t gauche_top={rectangle->x,rectangle->y+rayon};
+	ei_point_t gauche_bot={rectangle->x,rectangle->y+hauteur-rayon};
+	ei_point_t droite_top={rectangle->x+longueur,rectangle->y+r};
+	ei_point_t droite_bot={rectangle->x+longueur,rectangle->y+hauteur-r};
+	ei_point_t bot_gauche={rectangle->x+rayon,rectangle->y+hauteur};
+	ei_point_t bot_droite={rectangle->x+longueur-rayon,rectangle->y+hauteur};
+
+	ei_point_t centre_tg={rectangle->x+rayon,rectangle->y+rayon};
+	ei_point_t centre_bg={rectangle->x+rayon,rectangle->y+hauteur-rayon};
+	ei_point_t centre_td={rectangle->x+longueur-rayon,rectangle->y+rayon};
+	ei_point_t centre_bd={rectangle->x+longueur-rayon,rectangle->y+hauteur-rayon};
 
 	if (partie==complet) {
-		queue_temp={rectangle->x+rayon,rectangle->y};
-		tete_temp={queue_temp->x+longueur,queue_temp->y};
-		Liste=trait(queue_temp,tete_temp,Liste);
+		Liste=trait(top_gauche,top_droit,Liste);
+		
+		Liste=arc(centre_td,rayon,0,90,Liste);
 
-		centre_temp={tete_temp->x,tete_temp->y+rayon};
-		Liste=arc(centre_temp,rayon,0,90,Liste);
+		Liste=trait(droite_top,droite_bot,Liste);
 
-		queue_temp={centre_temp->x+rayon,centre_temp->y};
-		tete_temp={queue_temp->x,queue_temp->y+hauteur};
-		Liste=trait(queue_temp,tete_temp,Liste);
+		Liste=arc(centre_bd,rayon,-90,0,Liste);
 
-		centre_temp={tete_temp->x-rayon,tete_temp->y};
-		Liste=arc(centre_temp,rayon,-90,0,Liste);
+		Liste=trait(bot_droite,boite_gauche,Liste);
 
-		queue_temp={centre_temp->x,centre_temp->y+rayon};
-		tete_temp={queue_temp->x-longueur,queue_temp->y};
-		Liste=trait(queue_temp,tete_temp,Liste);
+		Liste=arc(centre_bg,rayon,-180,-90,Liste);
 
-		centre_temp={tete_temp->x,tete_temp->y-rayon};
-		Liste=arc(centre_temp,rayon,-180,-90,Liste);
+		Liste=trait(gauche_bot,gauche_top,Liste);
 
-		queue_temp={centre_temp->x-rayon,centre_temp->y};
-		tete_temp={queue_temp->x,queue_temp->y-hauteur};
-		Liste=trait(queue_temp,tete_temp,Liste);
-
-		centre_temp={tete_temp->x+rayon,tete_temp->y};
-		Liste=arc(centre_temp,rayon,-270,-180,Liste);
+		Liste=arc(centre_tg,rayon,-270,-180,Liste);
 	}
 	else {
 		int h = min(longueur/2,largeur/2);
-		tete_temp={rectangle->x+h,rectangle->y+h};
-		queue_temp={rectangle->x+r-r*cos(-3*Pi/4);rectangle->y+hauteur-r+r*sin(-3*Pi/4)};
-		Liste=trait(queue_temp,tete_temp,Liste);
+		ei_point_t arrondi_bg={rectangle->x+r-r*cos(-3*Pi/4);rectangle->y+hauteur-r+r*sin(-3*Pi/4)};
+		ei_point_ arrondi_td={rectangle->x+longueur-r+rcos(Pi/4),rectangle->y+r-r*sin(Pi/4)};
+		ei_point_t pt_int_bg={rectangle->x+h,rectangle->y+hauteur-h};
+		ei_point_t pt_int_td={rectangle->x+longeur-h,rectangle->y+h};
 
-		queue_temp=tete_temp;
-		tete_temp={rectangle->x+longueur-h,rectangle->y+h};
-		Liste=trait(queue_temp,tete_temp,Liste);
+		Liste=trait(arrondi_bg,pt_int_bg,Liste);
 
-		queue_temp=tete_temp;
-		tete_temp={rectangle->x+longueur-r+rcos(Pi/4),rectangle->y+r-r*sin(Pi/4)};
-		Liste=trait(queue_temp,tete_temp,Liste);
+		Liste=trait(pt_int_bg,pt_int_td,Liste);
+
+		Liste=trait(pt_int_td,arrondi_td,Liste);
 
 		if (partie==haute) {
-			Liste=arc(
+			Liste=arc(centre_td,rayon,90,45,Liste);
 
+			Liste=trait(top_droite,top_gauche,Liste);
 
+			Liste=arc(centre_tg,180,90,Liste);
 
+			Liste=trait(gauche_top,gauche_bot,Liste);
+	
+			Liste=arc(centre_bg,225,180,Liste);
+
+		}
+		else {
+			Liste=arc(centre_td,rayon,0,45,Liste);
+
+			Liste=trait(droite_top,droite_bot,Liste);
+
+			Liste=arc(centre_tg,-90,0,Liste);
+
+			Liste=trait(bot_droite,bot_gauche,Liste);
+	
+			Liste=arc(centre_bg,-135,-90,Liste);
+
+		}
 
 	return Liste;
 }
 
+void ei_button_draw(ei_rect_t rectangle,int rayon,int marge) {
+	ei_linked_point_t* partie_haute=ei_button_rounded_frame(rectangle,rayon,1);
+	ei_draw_polygon();
+	ei_linked_point_t* partie_basse=ei_button_rounded_frame(rectangle,rayon,-1);
+	ei_draw_polygon();
 
-
-
-
-
-
+	ei_rectangle_t rectangle_interieur;
+	rectangle_interieur->top_left={rectangle->x+marge,rectangle->y+marge};
+	rectangle_interieur->size={rectangle->size->width-2*marge,rectangle->size->height-2*marge};
+	ei_linked_point_t* rec_interieur=ei_button_rounded_frame(rectangl_interieur,rayon-marge);
+	ei_draw_polygon();
+}
 
 	
