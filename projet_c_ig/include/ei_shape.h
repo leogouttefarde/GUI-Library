@@ -65,7 +65,9 @@ void ei_sym_vert(ei_linked_point_t *lp);
 // Transforme un rectangle en une liste de point
 ei_linked_point_t ei_rect_to_points(ei_rect_t rect);
 
-
+// Ajoute un point a la fin de la liste, avec en entrée un
+// pointeur sur la fin
+void ei_direct_append(ei_linked_point_t *lp, ei_point_t point);
 /*************** Frame related functions *******/
 
 // Genere un morceau de cadre avec l'orientation voulue

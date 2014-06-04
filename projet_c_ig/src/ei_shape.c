@@ -39,6 +39,7 @@ ei_point_t ei_search_max(ei_linked_point_t l){
                 if (current->point.y > max.y){
                         max.y = current->point.y;
                 }
+                current = current->next;
         }
         return max;
 }
@@ -94,8 +95,8 @@ ei_size_t ei_search_size(ei_linked_point_t l){
 
 // un vecteur est représenté par le type point
 void ei_translate_point(ei_point_t *pt, ei_point_t u){
-                pt->x = pt->x + u.x;
-                pt->y = pt->y + u.y;
+        pt->x = pt->x + u.x;
+        pt->y = pt->y + u.y;
 }
 
 // un vecteur est représenté par le type point
@@ -184,7 +185,7 @@ ei_linked_point_t ei_rect_to_points(ei_rect_t rect){
         point[0].next = &point[1];
         // bottom_right
         point[2] = point[1];
-        point[2].point.y = point[2].point.y - h;
+        point[2].point.y = point[2].point.y + h;
         point[1].next = &point[2];
         // bottom_left
         point[3] = point[2];
