@@ -11,8 +11,10 @@
 
 
 
-#include <ei_application.h>
+#include "ei_application.h"
 
+static ei_surface_t root_surface;
+static ei_widget_t *root_widget;
 
 
 /**
@@ -33,15 +35,25 @@
  * @param	fullScreen		If true, the root window is the entire screen. Otherwise, it
  *					is a system window.
  */
-void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen){
-        ;
+void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
+{
+	hw_init();
+
+	root_surface = hw_create_window(main_window_size, fullscreen);
+
+	ei_frame_register_class();
+
+	root_widget = ei_widget_create ("frame", NULL);
+
+	ei_register_placer_manager();
 }
 
 /**
  * \brief	Releases all the resources of the application, and releases the hardware
  *		(ie. calls \ref hw_quit).
  */
-void ei_app_free(){
+void ei_app_free()
+{
         ;
 }
 
@@ -50,7 +62,26 @@ void ei_app_free(){
  *		\ref ei_app_quit_request is called.
  */
 void ei_app_run(){
-        ;
+	int c;
+
+	do {
+		ei_widget_t *widget = ei_app_root_widget();
+
+		while (widget) {
+			if (widget->wclass && widget->wclass->drawfunc)
+				widget->wclass->drawfunc(widget, ei_app_root_surface(), NULL, NULL);
+
+			if (widget->next_sibling)
+				widget = widget->next_sibling;
+
+			else
+				widget = widget->children_head;
+		}
+
+		hw_surface_update_rects(root_surface, NULL);
+
+		c = getchar();
+	} while (c != '.');
 }
 
 /**
@@ -74,7 +105,10 @@ void ei_app_quit_request(){;}
  *
  * @return 			The root widget.
  */
-ei_widget_t* ei_app_root_widget(){;}
+ei_widget_t* ei_app_root_widget()
+{
+	return root_widget;
+}
 
 /**
  * \brief	Returns the surface of the root window. Used to create surfaces with similar r, g, b
@@ -82,9 +116,9 @@ ei_widget_t* ei_app_root_widget(){;}
  *
  * @return 			The surface of the root window.
  */
-ei_surface_t ei_app_root_surface(){;}
-
-
-
+ei_surface_t ei_app_root_surface()
+{
+	return root_surface;
+}
 
 

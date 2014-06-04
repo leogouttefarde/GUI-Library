@@ -13,7 +13,7 @@ SRCDIR		:= ./src
 
 # The list of objects to include in the library
 
-LIBEIOBJS	:= objs/ei_application.o objs/ei_widget.o objs/ei_geometrymanager.o objs/ei_event.o
+LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o ${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o ${OBJDIR}/ei_widgetclass.o
 
 
 
@@ -44,24 +44,24 @@ else
 
 	else
 
-	# Building for Windows
-	
-	PLATDIR		= _win
-	INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL -I/usr/local/include/SDL
-	LINK		= ${CC} -mwindows -mno-cygwin
-	LIBEI		= ${OBJDIR}/libei.lib
-	LIBEIBASE	= ${PLATDIR}/libeibase.lib
-	LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a /usr/lib/SDL_image.lib -L/usr/lib -lSDL
+# Building for Windows
+
+PLATDIR		= _win
+INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL -I/usr/local/include/SDL
+LINK		= ${CC} -mwindows -mno-cygwin
+LIBEI		= ${OBJDIR}/libei.lib
+LIBEIBASE	= ${PLATDIR}/libeibase.lib
+LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a /usr/lib/SDL_image.lib -L/usr/lib -lSDL
 
 	endif
-endif
+ endif
 
 
 
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-			minimal frame button hello_world_absolute hello_world_relative puzzle
+				minimal frame button hello_world_absolute hello_world_relative puzzle
 all : ${TARGETS}
 
 
@@ -117,8 +117,15 @@ ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/puzzle.c -o ${OBJDIR}/puzzle.o
 
 
-${OBJDIR}/%.o: ${SRCDIR}/%.c
-	$(CC) $(CCFLAGS) ${INCFLAGS} $< -o $@
+########## Compilation séparée des sources
+
+ei_widget : ${OBJDIR}/ei_widget.o
+
+ei_widgetclass : ${OBJDIR}/ei_widgetclass.o
+
+# Compilation
+${OBJDIR}/%.o: ${SRCDIR}/%.c 
+	$(CC) $(CCFLAGS) ${INCFLAGS} ${LIBEIBASE} $< -o $@
 
 # Building of the library libei
 

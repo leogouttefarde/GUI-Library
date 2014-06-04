@@ -9,10 +9,11 @@ INCFLAGS	:= -I${INCLUDES}
 #OPTFLAGS	:= -Os -DNDEBUG
 OPTFLAGS	:= -g
 CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
+SRCDIR		:= ./src
 
 # The list of objects to include in the library
 
-LIBEIOBJS	:= 	
+LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o ${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o ${OBJDIR}/ei_widgetclass.o
 
 
 
@@ -43,24 +44,24 @@ else
 
 	else
 
-	# Building for Windows
-	
-	PLATDIR		= _win
-	INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL -I/usr/local/include/SDL
-	LINK		= ${CC} -mwindows -mno-cygwin
-	LIBEI		= ${OBJDIR}/libei.lib
-	LIBEIBASE	= ${PLATDIR}/libeibase.lib
-	LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a /usr/lib/SDL_image.lib -L/usr/lib -lSDL
+# Building for Windows
+
+PLATDIR		= _win
+INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL -I/usr/local/include/SDL
+LINK		= ${CC} -mwindows -mno-cygwin
+LIBEI		= ${OBJDIR}/libei.lib
+LIBEIBASE	= ${PLATDIR}/libeibase.lib
+LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a /usr/lib/SDL_image.lib -L/usr/lib -lSDL
 
 	endif
-endif
+ endif
 
 
 
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-			minimal frame button hello_world_absolute hello_world_relative puzzle
+				minimal frame button hello_world_absolute hello_world_relative puzzle
 all : ${TARGETS}
 
 
@@ -116,6 +117,17 @@ ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/puzzle.c -o ${OBJDIR}/puzzle.o
 
 
+########## Compilation séparée des sources
+
+ei_widget : ${OBJDIR}/ei_widget.o
+
+ei_widgetclass : ${OBJDIR}/ei_widgetclass.o
+
+ei_shape : ${OBJDIR}/ei_shape.o
+	
+# Compilation
+${OBJDIR}/%.o: ${SRCDIR}/%.c 
+	$(CC) $(CCFLAGS) ${INCFLAGS} ${LIBEIBASE} $< -o $@
 
 # Building of the library libei
 
@@ -137,3 +149,6 @@ clean:
 	rm -f ${TARGETS}
 	rm -f *.exe
 	rm -f ${OBJDIR}/*
+
+runf: all
+	./frame

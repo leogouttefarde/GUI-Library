@@ -13,6 +13,8 @@
 
 #include "ei_application.h"
 
+static ei_surface_t main_window;
+static ei_widget_t root_widget;
 
 
 /**
@@ -34,7 +36,9 @@
  *					is a system window.
  */
 void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen){
-        ;
+	hw_init();
+	main_window = hw_create_window(main_window_size, fullscreen);
+	root_widget.parent=NULL;
 }
 
 /**
@@ -50,7 +54,25 @@ void ei_app_free(){
  *		\ref ei_app_quit_request is called.
  */
 void ei_app_run(){
-        ;
+	int c;
+
+	do {
+		c=getchar();
+
+
+		ei_widget_t *widget = ei_app_root_widget();
+
+		while (widget) {
+			if (widget->wclass && widget->wclass->drawfunc)
+				widget->wclass->drawfunc(widget, ei_app_root_surface(), NULL, NULL);
+
+			if (widget->next_sibling)
+				widget = widget->next_sibling;
+
+			else
+				widget = widget->children_head;
+		}
+	} while (c != '\n');
 }
 
 /**

@@ -13,6 +13,7 @@
 
 #include "SDL_keysym.h"
 #include <stdint.h>
+#include <stdlib.h>
 
 
 
@@ -109,19 +110,19 @@ typedef enum {
  * @brief	Type of relief.
  */
 typedef enum {
-	ei_relief_none		= 0,	///< No relief (i.e. flat).
-	ei_relief_raised,		///< Above the screen.
-	ei_relief_sunken		///< Inside the screen.
+        ei_relief_none		= 0,	///< No relief (i.e. flat).
+        ei_relief_raised,		///< Above the screen.
+        ei_relief_sunken		///< Inside the screen.
 } ei_relief_t;
 
 /**
  * @brief	Set of axis.
  */
 typedef enum {
-	ei_axis_none		= 0,	///< No axis.
-	ei_axis_x,			///< Horizontal axis.
-	ei_axis_y,			///< Vertical axis.
-	ei_axis_both			///< Both horizontal and vertical axis.
+        ei_axis_none		= 0,	///< No axis.
+        ei_axis_x,			///< Horizontal axis.
+        ei_axis_y,			///< Vertical axis.
+        ei_axis_both			///< Both horizontal and vertical axis.
 } ei_axis_set_t;
 
 
@@ -138,11 +139,11 @@ typedef enum {
  * @brief	Font style.
  */
 typedef enum {
-	ei_style_normal		= 0,
-	ei_style_bold		= 1,
-	ei_style_italic		= 2,
-	ei_style_underline	= 4,
-	ei_style_strikethrough	= 8
+        ei_style_normal		= 0,
+        ei_style_bold		= 1,
+        ei_style_italic		= 2,
+        ei_style_underline	= 4,
+        ei_style_strikethrough	= 8
 } ei_fontstyle_t;
 
 /**
