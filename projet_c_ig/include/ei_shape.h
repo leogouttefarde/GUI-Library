@@ -10,7 +10,7 @@
  *
  */
 #include "ei_types.h"
-
+#include "math.h"
 //**************** Basic functions ****************/
 
 /**
