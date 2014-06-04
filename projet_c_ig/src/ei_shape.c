@@ -116,21 +116,55 @@ void ei_center(ei_linked_point_t *lp){
 
 // Rotation autour d'un point donné
 // THETA EN DEGRES
-void ei_rotate(ei_linked_point_t *lp, ei_point_t center, int theta){
+// A EVITER (PRECISION...)
+void ei_rotate(ei_linked_point_t *lp, ei_point_t center, float theta){
         ei_linked_point_t *current;
         current = lp;
         while (current){
-                current->point.x = (current->point.x -
-                                center.x)*cos(RAD_TO_DEG(theta)) + center.x;
-                current->point.y = (current->point.x -
-                                center.y)*sin(RAD_TO_DEG(theta)) + center.y;
+                current->point.x = (int)((float)(current->point.x -
+                                        center.x))*cos(RAD_TO_DEG(theta)) + center.x;
+                current->point.y = (int)((float)(current->point.y -
+                                        center.y))*cos(RAD_TO_DEG(theta)) + center.y;
                 current = current->next;
         }
 }
 
-void ei_sym_horiz(ei_linked_point_t *lp){;}
+// la rotation est peu précise, on préfère faire une série de translation
+void ei_sym_horiz(ei_linked_point_t *lp){
+        ei_point_t max;
+        ei_point_t min;
+        max = ei_search_max(*lp);
+        min = ei_search_min(*lp);
+        ei_point_t mid = {(max.x+min.x)/2, (max.y+min.y)/2};
 
-void ei_sym_vert(ei_linked_point_t *lp){;}
+        ei_linked_point_t *current;
+        current = lp;
+        while (current){
+                // seul y varie 
+                current->point.y = current->point.y - 2*(current->point.y - mid.y);
+                current = current->next;
+        }
+
+
+
+}
+
+void ei_sym_vert(ei_linked_point_t *lp){
+        ei_point_t max;
+        ei_point_t min;
+        max = ei_search_max(*lp);
+        min = ei_search_min(*lp);
+        ei_point_t mid = {(max.x+min.x)/2, (max.y+min.y)/2};
+
+        ei_linked_point_t *current;
+        current = lp;
+        while (current){
+                // seul y varie 
+                current->point.x = current->point.x - 2*(current->point.x - mid.x);
+                current = current->next;
+        }
+}
+
 // Transforme un rectangle en une liste de point
 // premier point = top left, puis sens horaire
 ei_linked_point_t ei_rect_to_points(ei_rect_t rect){
