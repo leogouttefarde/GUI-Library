@@ -128,6 +128,9 @@ void ei_rotate(ei_linked_point_t *lp, ei_point_t center, int theta){
         }
 }
 
+void ei_sym_horiz(ei_linked_point_t *lp){;}
+
+void ei_sym_vert(ei_linked_point_t *lp){;}
 // Transforme un rectangle en une liste de point
 // premier point = top left, puis sens horaire
 ei_linked_point_t ei_rect_to_points(ei_rect_t rect){
