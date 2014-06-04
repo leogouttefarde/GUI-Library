@@ -83,4 +83,49 @@ void ei_unbind(ei_eventtype_t eventtype,
 	;
 }
 
+void ei_event_process(ei_event_t *event)
+{
+	ei_binding_t *binding = first;
+	ei_bool_t ev_match;
+	while (binding) {
+		ev_match = EI_FALSE;
+
+		if (binding->callback && (event->type == binding->event.type)) {
+			if (!strcmp(binding->ltag.tag, "all"))
+				ev_match = EI_TRUE;
+
+			else {
+				switch (event->type) {
+					case ei_ev_app:
+						break;
+
+					case ei_ev_keydown:
+					case ei_ev_keyup:
+						break;
+
+					case ei_ev_mouse_move:
+						// if (event->param.mouse.where.x)
+						// 	ei_app_picking_surface();
+						// if (pick == binding->widget->pick)
+						// 	ev_match = EI_TRUE;
+
+					case ei_ev_mouse_buttondown:
+					case ei_ev_mouse_buttonup:
+						//if (event->param.mouse.button)
+						break;
+
+				}
+			}
+
+			if (ev_match) {
+				ei_bool_t result;
+				result = binding->callback(NULL, event, NULL);
+			}
+		}
+
+
+		binding = binding->ltag.next;
+	}
+}
+
 

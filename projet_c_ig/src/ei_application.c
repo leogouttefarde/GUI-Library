@@ -13,12 +13,14 @@
 
 #include "ei_application.h"
 #include "ei_common.h"
+#include "ei_event.h"
 
 static ei_surface_t root_surface = NULL;
 static ei_widget_t *root_widget = NULL;
 static ei_bool_t quit_request = EI_FALSE;
 static ei_linked_rect_t *rects_first = NULL;
 static ei_linked_rect_t *rects_last = NULL;
+static ei_surface_t picking = NULL;
 
 
 /**
@@ -54,9 +56,13 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 
 	ei_place(root_widget, NULL,NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
 
-	ei_rect_t rect = { 0, 0 };
+	ei_rect_t rect;
+	rect.top_left.x = 0;
+	rect.top_left.y = 0;
 	rect.size = *main_window_size;
 	ei_app_invalidate_rect(&rect);
+
+	picking = hw_surface_create(root_surface, main_window_size, EI_TRUE);
 }
 
 /**
@@ -65,7 +71,8 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
  */
 void ei_app_free()
 {
-	;
+	if (picking)
+		hw_surface_free(picking);
 }
 
 /**
@@ -74,6 +81,7 @@ void ei_app_free()
  */
 void ei_app_run()
 {
+	ei_event_t event;
 	do {
 		ei_widget_t *widget = ei_app_root_widget();
 
@@ -98,6 +106,10 @@ void ei_app_run()
 		}
 		memset(&rects_first->rect, 0, sizeof(ei_rect_t));
 		rects_last = rects_first;
+
+		hw_event_wait_next(&event);
+
+		ei_event_process(&event);
 
 	} while (!quit_request);
 }
@@ -154,6 +166,11 @@ ei_widget_t* ei_app_root_widget()
 ei_surface_t ei_app_root_surface()
 {
 	return root_surface;
+}
+
+ei_surface_t ei_app_picking_surface()
+{
+	return picking;
 }
 
 
