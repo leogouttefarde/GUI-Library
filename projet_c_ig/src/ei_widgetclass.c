@@ -297,6 +297,16 @@ void toplevel_setdefaults(struct ei_widget_t* widget){
         // on commence par effectuer un recast
         ei_toplevel_t *toplevel;
         toplevel = (ei_toplevel_t*)widget;
+        ei_size_t s = {100, 100};
+        toplevel->widget.requested_size = s;
+        ei_color_t c = {0x00, 0xFF, 0xFF, 0xFF};
+        toplevel->color = c;
+        toplevel->border_width = 4;
+        toplevel->title = "Toplevel";
+        toplevel->closable = true;
+        toplevel->resizable = true;
+        ei_size_t ms = {50,50};
+        toplevel->min_size = &ms;
 }
 
 void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
@@ -309,7 +319,6 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
  */
 void	ei_toplevel_register_class(){
         // Allocation
-
         toplevel_table = malloc(sizeof(ei_widgetclass_t));
         toplevel_table->allocfunc= &toplevel_alloc;
         toplevel_table->drawfunc = &toplevel_draw;
