@@ -12,9 +12,13 @@
 
 
 #include "ei_application.h"
+#include "ei_common.h"
 
-static ei_surface_t root_surface;
-static ei_widget_t *root_widget;
+static ei_surface_t root_surface = NULL;
+static ei_widget_t *root_widget = NULL;
+static ei_bool_t quit_request = EI_FALSE;
+static ei_linked_rect_t *rects_first = NULL;
+static ei_linked_rect_t *rects_last = NULL;
 
 
 /**
@@ -42,13 +46,17 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	root_surface = hw_create_window(main_window_size, fullscreen);
 
 	ei_frame_register_class();
-        ei_button_register_class();
-        ei_toplevel_register_class();
-        root_widget = ei_widget_create ("frame", NULL);
+	ei_button_register_class();
+	ei_toplevel_register_class();
+	root_widget = ei_widget_create ("frame", NULL);
 
-        ei_register_placer_manager();
+	ei_register_placer_manager();
 
-        ei_place(root_widget, NULL,NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
+	ei_place(root_widget, NULL,NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
+
+	ei_rect_t rect = { 0, 0 };
+	rect.size = *main_window_size;
+	ei_app_invalidate_rect(&rect);
 }
 
 /**
@@ -57,7 +65,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
  */
 void ei_app_free()
 {
-        ;
+	;
 }
 
 /**
@@ -66,26 +74,32 @@ void ei_app_free()
  */
 void ei_app_run()
 {
-        int c;
+	do {
+		ei_widget_t *widget = ei_app_root_widget();
 
-        do {
-                ei_widget_t *widget = ei_app_root_widget();
+		while (widget) {
+			if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)
+				widget->geom_params->manager->runfunc(widget);
 
-                while (widget) {
-                        if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)
-                                widget->geom_params->manager->runfunc(widget);
+			if (widget->next_sibling)
+				widget = widget->next_sibling;
 
-                        if (widget->next_sibling)
-                                widget = widget->next_sibling;
+			else
+				widget = widget->children_head;
+		}
 
-                        else
-                                widget = widget->children_head;
-                }
+		hw_surface_update_rects(root_surface, rects_first);
 
-                hw_surface_update_rects(root_surface, NULL);
+		/* Empty rects list */
+		while (rects_first && rects_first->next) {
+			ei_linked_rect_t *next = rects_first->next;
+			SAFE_FREE(rects_first);
+			rects_first = next;
+		}
+		memset(&rects_first->rect, 0, sizeof(ei_rect_t));
+		rects_last = rects_first;
 
-                c = getchar();
-        } while (c != '.');
+	} while (!quit_request);
 }
 
 /**
@@ -95,13 +109,30 @@ void ei_app_run()
  * @param	rect		The rectangle to add, expressed in the root window coordinates.
  *				A copy is made, so it is safe to release the rectangle on return.
  */
-void ei_app_invalidate_rect(ei_rect_t* rect){;}
+void ei_app_invalidate_rect(ei_rect_t* rect)
+{
+	ei_linked_rect_t *linked_rect = malloc(sizeof(ei_linked_rect_t));
+	linked_rect->rect = *rect;
+	linked_rect->next = NULL;
+
+	if (rects_last) {
+		rects_last->next = linked_rect;
+		rects_last = linked_rect;
+	}
+	else {
+		rects_first = linked_rect;
+		rects_last = linked_rect;
+	}
+}
 
 /**
  * \brief	Tells the application to quite. Is usually called by an event handler (for example
  *		when pressing the "Escape" key).
  */
-void ei_app_quit_request(){;}
+void ei_app_quit_request()
+{
+	quit_request = EI_TRUE;
+}
 
 /**
  * \brief	Returns the "root widget" of the application: a "frame" widget that encapsulate the
@@ -111,7 +142,7 @@ void ei_app_quit_request(){;}
  */
 ei_widget_t* ei_app_root_widget()
 {
-        return root_widget;
+	return root_widget;
 }
 
 /**
@@ -122,7 +153,7 @@ ei_widget_t* ei_app_root_widget()
  */
 ei_surface_t ei_app_root_surface()
 {
-        return root_surface;
+	return root_surface;
 }
 
 

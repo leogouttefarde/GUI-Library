@@ -40,7 +40,7 @@ else
 	LINK		= ${CC}
 	LIBEI		= ${OBJDIR}/libei.a
 	LIBEIBASE	= ${PLATDIR}/libeibase.a
-	LIBS		= ${LIBEIBASE} -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image
+	LIBS		= ${LIBEIBASE} -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image -lm
 
 	else
 

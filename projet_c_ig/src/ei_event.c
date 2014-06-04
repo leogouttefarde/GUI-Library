@@ -1,15 +1,27 @@
 /**
- *  @file	ei_event.h
+ *  @file	ei_event.c
  *  @brief	Allows the binding and unbinding of callbacks to events.
  *
  *  \author 
- *  Created by François Bérard on 30.12.11.
- *  Copyright 2011 Ensimag. All rights reserved.
+ *  Created by Léo Gouttefarde on 04.06.14.
+ *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
 
 #include "ei_event.h"
 
+
+
+typedef struct ei_binding_t {
+	ei_linked_tag_t ltag;
+	ei_widget_t *widget;
+	ei_event_t event;
+	ei_callback_t callback;
+} ei_binding_t;
+
+
+ei_binding_t *first = NULL;
+ei_binding_t *last = NULL;
 
 
 /**
@@ -25,12 +37,34 @@
  * @param	user_param	A user parameter that will be passed to the callback when it is
  *				called.
  */
-void		ei_bind			(ei_eventtype_t		eventtype,
-                ei_widget_t*		widget,
-                ei_tag_t		tag,
-                ei_callback_t		callback,
-                void*			user_param){
-        ;
+void ei_bind(ei_eventtype_t eventtype,
+	     ei_widget_t *widget,
+	     ei_tag_t tag,
+	     ei_callback_t callback,
+	     void *user_param)
+{
+	ei_binding_t *binding = malloc(sizeof(ei_binding_t));
+	memset(binding, 0, sizeof(ei_binding_t));
+
+	binding->event.type = eventtype;
+	binding->callback = callback;
+
+	if (eventtype == ei_ev_app)
+		binding->event.param.application.user_param = user_param;
+
+	if (widget)
+		binding->widget = widget;
+	else
+		binding->ltag.tag = tag;
+
+	if (!first) {
+		first = binding;
+		last = first;
+	}
+	else {
+		last->ltag.next = binding;
+		last = binding;
+	}
 }
 
 /**
@@ -40,13 +74,13 @@ void		ei_bind			(ei_eventtype_t		eventtype,
  *				All parameters must have the same value as when \ref ei_bind was
  *				called to create the binding.
  */
-void		ei_unbind		(ei_eventtype_t		eventtype,
-                ei_widget_t*		widget,
-                ei_tag_t		tag,
-                ei_callback_t		callback,
-                void*			user_param){
-        ;
+void ei_unbind(ei_eventtype_t eventtype,
+	       ei_widget_t *widget,
+	       ei_tag_t tag,
+	       ei_callback_t callback,
+	       void *user_param)
+{
+	;
 }
-
 
 
