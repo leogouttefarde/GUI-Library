@@ -168,33 +168,6 @@ void ei_sym_vert(ei_linked_point_t *lp){
         }
 }
 
-// Transforme un rectangle en une liste de point
-// premier point = top left, puis sens horaire
-ei_linked_point_t ei_rect_to_points(ei_rect_t rect){
-        // cf minimal.c pour un exemple d'utilisation des tableaux
-        ei_linked_point_t point[4];
-        int w = rect.size.width;
-        int h = rect.size.height;
-
-        // top_left;
-        ei_linked_point_t tl = {rect.top_left, NULL};
-        point[0] = tl;
-        // top_right
-        point[1] = point[0];
-        point[1].point.x = point[1].point.x + w;
-        point[0].next = &point[1];
-        // bottom_right
-        point[2] = point[1];
-        point[2].point.y = point[2].point.y + h;
-        point[1].next = &point[2];
-        // bottom_left
-        point[3] = point[2];
-        point[3].point.x = point[3].point.x - w;
-        point[2].next = &point[3];
-        point[3].next = NULL;
-
-        return point[0];
-}
 
 void ei_append_point(ei_linked_point_t *lp, ei_point_t point) {
         ei_linked_point_t *prec;
@@ -217,6 +190,29 @@ void ei_direct_append(ei_linked_point_t *lp, ei_point_t point){
 }
 
 
+// Transforme un rectangle en une liste de point
+// premier point = top left, puis sens horaire
+ei_linked_point_t ei_rect_to_points(ei_rect_t rect){
+        // cf minimal.c pour un exemple d'utilisation des tableaux
+        int w = rect.size.width;
+        int h = rect.size.height;
+        ei_linked_point_t res;
+        ei_linked_point_t *current;
+        ei_point_t tl = rect.top_left;
+        ei_point_t tr = {tl.x + w, tl.y};
+        ei_point_t br = {tr.x, tr.y+h};
+        ei_point_t bl = {br.x - w, br.y};
+
+        res = (ei_linked_point_t){tl, NULL};
+        current = &res;
+        ei_direct_append(current, tr);
+        current = current->next;
+        ei_direct_append(current, br);
+        current=current->next;
+        ei_direct_append(current, bl);
+
+        return res;
+}
 
 /*************** Frame related functions *******/
 
