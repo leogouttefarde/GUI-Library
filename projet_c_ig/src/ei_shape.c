@@ -121,6 +121,7 @@ void ei_center(ei_linked_point_t *lp){
         ei_translate(lp, u);
 }
 
+/*
 // Rotation autour d'un point donné
 // THETA EN DEGRES
 // A EVITER (PRECISION...)
@@ -135,7 +136,7 @@ void ei_rotate(ei_linked_point_t *lp, ei_point_t center, float theta){
                 current = current->next;
         }
 }
-
+*/
 // la rotation est peu précise, on préfère faire une série de translation
 void ei_sym_horiz(ei_linked_point_t *lp){
         ei_point_t max;
@@ -226,13 +227,12 @@ ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int
         if (!strcmp(side,"bottom")){
                 result = ei_relief(top_left, "top", size, bw);
                 ei_sym_horiz(&result);
-                return result;
-                ei_point_t u = {0,size.height-bw};
-                ei_translate(&result,u);
+                ei_translate(&result,(ei_point_t){0,size.height-bw});
         } 
         else if (!strcmp(side,"right")){
                 result = ei_relief(top_left, "left", size, bw);
-                ei_sym_vert(&result);        
+                ei_sym_vert(&result);
+                ei_translate(&result, (ei_point_t){size.width-bw,0});      
         }
         else {  
                 ei_linked_point_t *current;
@@ -259,7 +259,7 @@ ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int
                         current = current->next;
                         //bottom_left;
                         ei_translate_point(&tmp, (ei_point_t){-w+2*h, 0});
-                        current->next = NULL;
+                        ei_direct_append(current, tmp);
                 }
                 else if (!strcmp(side, "left"))
                 {
@@ -285,7 +285,7 @@ ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int
                         current = current->next;
                         //bottom_left;
                         ei_translate_point(&tmp, (ei_point_t){-w, w});
-                        current->next = NULL;
+                        ei_direct_append(current, tmp);
                 }
         }
 
