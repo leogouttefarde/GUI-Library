@@ -7,6 +7,7 @@
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
+#include "string.h"
 #include "ei_shape.h"
 // ne pas oublier les parenthèse, M_PI definie dans math.h
 #ifndef M_PI
@@ -92,12 +93,17 @@ ei_size_t ei_search_size(ei_linked_point_t l){
 
 
 // un vecteur est représenté par le type point
+void ei_translate_point(ei_point_t *pt, ei_point_t u){
+                pt->x = pt->x + u.x;
+                pt->y = pt->y + u.y;
+}
+
+// un vecteur est représenté par le type point
 void ei_translate(ei_linked_point_t *lp, ei_point_t u){
         ei_linked_point_t *current;
         current = lp;
         while(current){
-                current->point.x = current->point.x + u.x;
-                current->point.y = current->point.y + u.y;
+                ei_translate_point(&(current->point), u);
                 current = current->next;
         }
 }
@@ -135,17 +141,14 @@ void ei_sym_horiz(ei_linked_point_t *lp){
         ei_point_t min;
         max = ei_search_max(*lp);
         min = ei_search_min(*lp);
-        ei_point_t mid = {(max.x+min.x)/2, (max.y+min.y)/2};
-
+        float y = (float)(max.y + min.y) / 2.; 
         ei_linked_point_t *current;
         current = lp;
         while (current){
                 // seul y varie 
-                current->point.y = current->point.y - 2*(current->point.y - mid.y);
+                current->point.y = current->point.y - (int)(2.*((float)current->point.y - y));
                 current = current->next;
         }
-
-
 
 }
 
@@ -154,13 +157,12 @@ void ei_sym_vert(ei_linked_point_t *lp){
         ei_point_t min;
         max = ei_search_max(*lp);
         min = ei_search_min(*lp);
-        ei_point_t mid = {(max.x+min.x)/2, (max.y+min.y)/2};
-
+        float x = (float)(max.x + min.x) / 2.; 
         ei_linked_point_t *current;
         current = lp;
         while (current){
                 // seul y varie 
-                current->point.x = current->point.x - 2*(current->point.x - mid.x);
+                current->point.x = current->point.x - (int)(2.*((float)current->point.x - x));
                 current = current->next;
         }
 }
@@ -193,13 +195,101 @@ ei_linked_point_t ei_rect_to_points(ei_rect_t rect){
         return point[0];
 }
 
+void ei_append_point(ei_linked_point_t *lp, ei_point_t point) {
+        ei_linked_point_t *prec;
+        ei_linked_point_t *current;
+        current = lp;
+        while(current) {
+                prec = current;
+                current = current->next;
+        }
+        if (prec){
+                prec->next = malloc(sizeof(ei_linked_point_t));
+                prec->next->point = point;
+        }
+}
+
+void ei_direct_append(ei_linked_point_t *lp, ei_point_t point){
+        lp->next = malloc(sizeof(ei_linked_point_t));
+        lp->next->point = point;
+        lp->next->next = NULL;
+}
+
+
 
 /*************** Frame related functions *******/
 
 // Genere un morceau de cadre avec l'orientation voulue
 // size est la taille totale (bordure incluse !)
 ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int
-                border_width){
+                bw){
 
-        ;
+        ei_linked_point_t result;
+
+        if (!strcmp(side,"bottom")){
+                result = ei_relief(top_left, "top", size, bw);
+                ei_sym_horiz(&result);
+                ei_point_t u = {0,size.height-bw};
+                ei_translate(&result,u);
+        } 
+        else if (!strcmp(side,"right")){
+                result = ei_relief(top_left, "left", size, bw);
+                ei_sym_vert(&result);        
+        }
+        else {  
+                ei_linked_point_t *current;
+                int w;
+                int h;
+                ei_point_t tmp;
+                if (!strcmp(side, "top")) {
+                        /*  hauteur : bw      X---------X
+                         *  longueur : lg      X-------X
+                         */
+                        w = size.width;
+                        h = bw;
+
+                        current = &result;
+                        result.point = top_left;
+                        // top_right
+                        tmp = top_left;
+                        ei_translate_point(&tmp, (ei_point_t){w,0});
+                        ei_direct_append(current, tmp);
+                        current = current->next;
+                        // bottom_right
+                        ei_translate_point(&tmp, (ei_point_t){-h, +h});
+                        ei_direct_append(current, tmp);
+                        current = current->next;
+                        //bottom_left;
+                        ei_translate_point(&tmp, (ei_point_t){-w+2*h, 0});
+                        current->next = NULL;
+                }
+                else if (!strcmp(side, "left"))
+                {
+
+                        /*  hauteur : size.height      X-----X
+                         *  longueur : bw              X-------X
+                         *                             X-----X
+                         */
+
+                        w = bw;
+                        h = size.height;
+
+                        current = &result;
+                        result.point = top_left;
+                        // top_right
+                        tmp = top_left;
+                        ei_translate_point(&tmp, (ei_point_t){w,w});
+                        ei_direct_append(current, tmp);
+                        current = current->next;
+                        // bottom_right
+                        ei_translate_point(&tmp, (ei_point_t){0, h-2*w});
+                        ei_direct_append(current, tmp);
+                        current = current->next;
+                        //bottom_left;
+                        ei_translate_point(&tmp, (ei_point_t){-w, w});
+                        current->next = NULL;
+                }
+        }
+
+        return result;
 }

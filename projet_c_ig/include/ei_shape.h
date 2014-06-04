@@ -46,6 +46,10 @@ ei_point_t ei_search_min(ei_linked_point_t l);
 ei_size_t ei_search_size(ei_linked_point_t l);
 
 
+// translation d'un point
+void ei_translate_point(ei_point_t *pt, ei_point_t u);
+
+// translation d'une liste de point
 void ei_translate(ei_linked_point_t *lp, ei_point_t u);
 
 // Translation de (-min.x, -max.y) => (0,0) est le "top_left"
@@ -66,8 +70,7 @@ ei_linked_point_t ei_rect_to_points(ei_rect_t rect);
 
 // Genere un morceau de cadre avec l'orientation voulue
 // size est la taille totale (bordure incluse !)
-ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int
-                border_width);
+ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int bw);
 
 
 
