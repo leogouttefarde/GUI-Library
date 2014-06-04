@@ -10,10 +10,11 @@ INCFLAGS	:= -I${INCLUDES}
 OPTFLAGS	:= -g
 CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 SRCDIR		:= ./src
+MATHFLAGS 	:= -lm
 
 # The list of objects to include in the library
 
-LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o ${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o ${OBJDIR}/ei_widgetclass.o
+LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o ${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o ${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o
 
 
 
@@ -21,26 +22,26 @@ LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o ${OBJDIR}/ei_geome
 
 ifeq (${PLATFORM},Darwin)
 
-	# Building for Mac OS X
-	
-	PLATDIR		= _osx
-	INCFLAGS	:= ${INCFLAGS} -I/opt/local/include/SDL
-	LINK		= ${CC}
-	LIBEI		= ${OBJDIR}/libei.a
-	LIBEIBASE	= ${PLATDIR}/libeibase.a
-	LIBS		= ${LIBEIBASE} -L/opt/local/lib -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image -framework AppKit
+# Building for Mac OS X
+
+PLATDIR		= _osx
+INCFLAGS	:= ${INCFLAGS} -I/opt/local/include/SDL
+LINK		= ${CC}
+LIBEI		= ${OBJDIR}/libei.a
+LIBEIBASE	= ${PLATDIR}/libeibase.a
+LIBS		= ${LIBEIBASE} -L/opt/local/lib -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image -framework AppKit
 
 else
-	ifeq (${PLATFORM},Linux)
+   ifeq (${PLATFORM},Linux)
 
-	# Building for Linux
-	
-	PLATDIR		= _x11
-	INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL
-	LINK		= ${CC}
-	LIBEI		= ${OBJDIR}/libei.a
-	LIBEIBASE	= ${PLATDIR}/libeibase.a
-	LIBS		= ${LIBEIBASE} -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image
+# Building for Linux
+
+PLATDIR		= _x11
+INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL
+LINK		= ${CC}
+LIBEI		= ${OBJDIR}/libei.a
+LIBEIBASE	= ${PLATDIR}/libeibase.a
+LIBS		= ${LIBEIBASE} -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image
 
 	else
 
@@ -116,6 +117,15 @@ puzzle : ${OBJDIR}/puzzle.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/puzzle.c -o ${OBJDIR}/puzzle.o
 
+########## Tests personnels
+
+# test_shape
+# ATTENTION a LINKER LES BIBLIOTHEQUES MATHEMATIQUES
+test_shape : ${OBJDIR}/test_shape.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o test_shape ${OBJDIR}/test_shape.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/test_shape.o : ${TESTS}/test_shape.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_shape.c -o ${OBJDIR}/test_shape.o ${MATHFLAGS} 
 
 ########## Compilation séparée des sources
 
@@ -124,7 +134,7 @@ ei_widget : ${OBJDIR}/ei_widget.o
 ei_widgetclass : ${OBJDIR}/ei_widgetclass.o
 
 ei_shape : ${OBJDIR}/ei_shape.o
-	
+
 # Compilation
 ${OBJDIR}/%.o: ${SRCDIR}/%.c 
 	$(CC) $(CCFLAGS) ${INCFLAGS} ${LIBEIBASE} $< -o $@

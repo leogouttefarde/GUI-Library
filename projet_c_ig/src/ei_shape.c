@@ -229,6 +229,7 @@ ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int
         if (!strcmp(side,"bottom")){
                 result = ei_relief(top_left, "top", size, bw);
                 ei_sym_horiz(&result);
+                return result;
                 ei_point_t u = {0,size.height-bw};
                 ei_translate(&result,u);
         } 
