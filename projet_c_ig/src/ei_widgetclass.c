@@ -13,6 +13,7 @@
 #include <stdio.h>
 #include "ei_widgetclass.h"
 #include "ei_widgettypes.h"
+#include "ei_shape.h"
 
 // variable globale pour sotcker les tables de pointeur
 static ei_widgetclass_t *frame_table = NULL;
@@ -29,7 +30,15 @@ static ei_widgetclass_t *others_table = NULL;
  * @param	widgetclass	The structure describing the class.
  */
 void ei_widgetclass_register	(ei_widgetclass_t* widgetclass){
-	;
+        if (others_table){
+                ei_widgetclass_t *tmp = others_table->next;
+                others_table = widgetclass;
+                widgetclass->next = tmp;
+        }
+        else {
+                others_table = widgetclass;
+                others_table->next = NULL;
+        }
 }
 
 
@@ -95,46 +104,39 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
         ei_fill(surface, &frame->bg_color, clipper);
 
         if (clipper) {
-                int w;
-                int h;
-                int bw;
-                w = clipper->size.width;
-                h = clipper->size.height;
-                bw = frame->border_width;
+                int bw = frame->border_width;
+                ei_size_t size = frame->widget.requested_size;
 
                 if (frame->relief) {
                         ei_point_t tl = clipper->top_left;
-                        // on génère les 4 bords sous forme de rectangle
-                        ei_rect_t left = {tl, {bw, h}};
-                        ei_rect_t top = {tl, {w, bw}};
-
-                        // tr n'est pas tout a fait le top_right (décalé en x)
-                        ei_point_t tr = {tl.x+w-bw, tl.y};
-                        ei_rect_t right = {tr, {bw, h}};
-
-                        // idem bl n'est pas tout a fait bottom_left (decalé en y)
-                        //  AXE Y decroissant
-                        ei_point_t bl = {tl.x, tl.y+h-bw};
-                        ei_rect_t bottom = {bl, {w,bw}};
-
+                        ei_linked_point_t top;
+                        ei_linked_point_t bottom;
+                        ei_linked_point_t right;
+                        ei_linked_point_t left;
                         // definition des couleurs
-                        ei_color_t dark = {0x11, 0x11, 0x11, 0xFF};
-                        ei_color_t light = {0xDD, 0xDD, 0xDD, 0xDD};
+                        ei_color_t dark = {0x22, 0x22, 0x22, 0xFF};
+                        ei_color_t light = {0xCC, 0xCC, 0xCC, 0xFF};
+                        ei_color_t darker = {0x11, 0x11, 0x11, 0xFF};
+                        ei_color_t lighter = {0xDD, 0xDD, 0xDD, 0xFF};
+
+                        top = ei_relief(tl, "top", size, bw);
+                        right = ei_relief(tl, "right", size, bw);
+                        left = ei_relief(tl, "left", size, bw);
+                        bottom = ei_relief(tl, "bottom", size, bw);
 
                         // la disjonction sunken/raised commence ici
                         if (frame->relief == ei_relief_raised) {
-                                ei_fill(surface, &dark,&left);
-                                ei_fill(surface, &dark, &top);
 
-                                ei_fill(surface, &light, &bottom);
-                                ei_fill(surface, &light, &right);
+                                ei_draw_polygon(surface, &top, lighter, clipper);
+                                ei_draw_polygon(surface, &left, lighter,clipper);
+                                ei_draw_polygon(surface, &bottom, dark,clipper);
+                                ei_draw_polygon(surface, &right, dark, clipper);
                         }
                         else{
-                                ei_fill(surface, &light,&left);
-                                ei_fill(surface, &light, &top);
-
-                                ei_fill(surface, &dark, &bottom);
-                                ei_fill(surface, &dark, &right);
+                                ei_draw_polygon(surface, &top, darker, clipper);
+                                ei_draw_polygon(surface, &left, darker,clipper);
+                                ei_draw_polygon(surface, &bottom, light,clipper);
+                                ei_draw_polygon(surface, &right, light, clipper);
                         }
                 }
         }
@@ -295,7 +297,7 @@ void toplevel_draw(struct ei_widget_t* widget, ei_surface_t surface,
 }
 void toplevel_setdefaults(struct ei_widget_t* widget){
         // on commence par effectuer un recast
-        &ei_toplevel_t *toplevel;
+        ei_toplevel_t *toplevel;
         toplevel = (ei_toplevel_t*)widget;
         ei_size_t s = {100, 100};
         toplevel->widget.requested_size = s;
