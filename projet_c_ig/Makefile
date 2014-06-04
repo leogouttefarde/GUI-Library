@@ -123,6 +123,8 @@ ei_widget : ${OBJDIR}/ei_widget.o
 
 ei_widgetclass : ${OBJDIR}/ei_widgetclass.o
 
+ei_shape : ${OBJDIR}/ei_shape.o
+	
 # Compilation
 ${OBJDIR}/%.o: ${SRCDIR}/%.c 
 	$(CC) $(CCFLAGS) ${INCFLAGS} ${LIBEIBASE} $< -o $@

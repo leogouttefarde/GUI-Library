@@ -295,7 +295,7 @@ void toplevel_draw(struct ei_widget_t* widget, ei_surface_t surface,
 }
 void toplevel_setdefaults(struct ei_widget_t* widget){
         // on commence par effectuer un recast
-        ei_toplevel_t *toplevel;
+        &ei_toplevel_t *toplevel;
         toplevel = (ei_toplevel_t*)widget;
         ei_size_t s = {100, 100};
         toplevel->widget.requested_size = s;
