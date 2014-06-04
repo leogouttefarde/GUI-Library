@@ -52,7 +52,8 @@ void ei_translate(ei_linked_point_t *lp, ei_point_t u);
 void ei_center(ei_linked_point_t *lp);
 
 // Rotation autour d'un point donné
-void ei_rotate(ei_linked_point_t *lp, ei_point_t center, int theta);
+// a eviter a cause de la precision (rotation flottante contre coord entieres)
+void ei_rotate(ei_linked_point_t *lp, ei_point_t center, float theta);
 
 void ei_sym_horiz(ei_linked_point_t *lp);
 
