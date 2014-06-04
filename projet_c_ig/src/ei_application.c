@@ -42,12 +42,13 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	root_surface = hw_create_window(main_window_size, fullscreen);
 
 	ei_frame_register_class();
+        ei_button_register_class();
+        ei_toplevel_register_class();
+        root_widget = ei_widget_create ("frame", NULL);
 
-	root_widget = ei_widget_create ("frame", NULL);
+        ei_register_placer_manager();
 
-	ei_register_placer_manager();
-
-	ei_place(root_widget, NULL,NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
+        ei_place(root_widget, NULL,NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
 }
 
 /**
@@ -65,26 +66,26 @@ void ei_app_free()
  */
 void ei_app_run()
 {
-	int c;
+        int c;
 
-	do {
-		ei_widget_t *widget = ei_app_root_widget();
+        do {
+                ei_widget_t *widget = ei_app_root_widget();
 
-		while (widget) {
-			if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)
-				widget->geom_params->manager->runfunc(widget);
+                while (widget) {
+                        if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)
+                                widget->geom_params->manager->runfunc(widget);
 
-			if (widget->next_sibling)
-				widget = widget->next_sibling;
+                        if (widget->next_sibling)
+                                widget = widget->next_sibling;
 
-			else
-				widget = widget->children_head;
-		}
+                        else
+                                widget = widget->children_head;
+                }
 
-		hw_surface_update_rects(root_surface, NULL);
+                hw_surface_update_rects(root_surface, NULL);
 
-		c = getchar();
-	} while (c != '.');
+                c = getchar();
+        } while (c != '.');
 }
 
 /**
@@ -110,7 +111,7 @@ void ei_app_quit_request(){;}
  */
 ei_widget_t* ei_app_root_widget()
 {
-	return root_widget;
+        return root_widget;
 }
 
 /**
@@ -121,7 +122,7 @@ ei_widget_t* ei_app_root_widget()
  */
 ei_surface_t ei_app_root_surface()
 {
-	return root_surface;
+        return root_surface;
 }
 
 
