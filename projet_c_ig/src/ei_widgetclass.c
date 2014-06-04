@@ -30,7 +30,15 @@ static ei_widgetclass_t *others_table = NULL;
  * @param	widgetclass	The structure describing the class.
  */
 void ei_widgetclass_register	(ei_widgetclass_t* widgetclass){
-	;
+        if (others_table){
+                ei_widgetclass_t *tmp = others_table->next;
+                others_table = widgetclass;
+                widgetclass->next = tmp;
+        }
+        else {
+                others_table = widgetclass;
+                others_table->next = NULL;
+        }
 }
 
 
