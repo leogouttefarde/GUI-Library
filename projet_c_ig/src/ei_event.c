@@ -8,15 +8,18 @@
  *
  */
 
+#include <stdlib.h>
+#include <string.h>
+
 #include "ei_event.h"
 
 
 
 typedef struct ei_binding_t {
-	ei_linked_tag_t ltag;
-	ei_widget_t *widget;
-	ei_event_t event;
-	ei_callback_t callback;
+        ei_linked_tag_t ltag;
+        ei_widget_t *widget;
+        ei_event_t event;
+        ei_callback_t callback;
 } ei_binding_t;
 
 
@@ -38,33 +41,33 @@ ei_binding_t *last = NULL;
  *				called.
  */
 void ei_bind(ei_eventtype_t eventtype,
-	     ei_widget_t *widget,
-	     ei_tag_t tag,
-	     ei_callback_t callback,
-	     void *user_param)
+                ei_widget_t *widget,
+                ei_tag_t tag,
+                ei_callback_t callback,
+                void *user_param)
 {
-	ei_binding_t *binding = malloc(sizeof(ei_binding_t));
-	memset(binding, 0, sizeof(ei_binding_t));
+        ei_binding_t *binding = malloc(sizeof(ei_binding_t));
+        memset(binding, 0, sizeof(ei_binding_t));
 
-	binding->event.type = eventtype;
-	binding->callback = callback;
+        binding->event.type = eventtype;
+        binding->callback = callback;
 
-	if (eventtype == ei_ev_app)
-		binding->event.param.application.user_param = user_param;
+        if (eventtype == ei_ev_app)
+                binding->event.param.application.user_param = user_param;
 
-	if (widget)
-		binding->widget = widget;
-	else
-		binding->ltag.tag = tag;
+        if (widget)
+                binding->widget = widget;
+        else
+                binding->ltag.tag = tag;
 
-	if (!first) {
-		first = binding;
-		last = first;
-	}
-	else {
-		last->ltag.next = binding;
-		last = binding;
-	}
+        if (!first) {
+                first = binding;
+                last = first;
+        }
+        else {
+                last->ltag.next = binding;
+                last = binding;
+        }
 }
 
 /**
@@ -75,57 +78,57 @@ void ei_bind(ei_eventtype_t eventtype,
  *				called to create the binding.
  */
 void ei_unbind(ei_eventtype_t eventtype,
-	       ei_widget_t *widget,
-	       ei_tag_t tag,
-	       ei_callback_t callback,
-	       void *user_param)
+                ei_widget_t *widget,
+                ei_tag_t tag,
+                ei_callback_t callback,
+                void *user_param)
 {
-	;
+        ;
 }
 
 void ei_event_process(ei_event_t *event)
 {
-	ei_binding_t *binding = first;
-	ei_bool_t ev_match;
-	while (binding) {
-		ev_match = EI_FALSE;
+        ei_binding_t *binding = first;
+        ei_bool_t ev_match;
+        while (binding) {
+                ev_match = EI_FALSE;
 
-		if (binding->callback && (event->type == binding->event.type)) {
-			if (!strcmp(binding->ltag.tag, "all"))
-				ev_match = EI_TRUE;
+                if (binding->callback && (event->type == binding->event.type)) {
+                        if (!strcmp(binding->ltag.tag, "all"))
+                                ev_match = EI_TRUE;
 
-			else {
-				switch (event->type) {
-					case ei_ev_app:
-						break;
+                        else {
+                                switch (event->type) {
+                                case ei_ev_app:
+                                        break;
 
-					case ei_ev_keydown:
-					case ei_ev_keyup:
-						break;
+                                case ei_ev_keydown:
+                                case ei_ev_keyup:
+                                        break;
 
-					case ei_ev_mouse_move:
-						// if (event->param.mouse.where.x)
-						// 	ei_app_picking_surface();
-						// if (pick == binding->widget->pick)
-						// 	ev_match = EI_TRUE;
+                                case ei_ev_mouse_move:
+                                        // if (event->param.mouse.where.x)
+                                        // 	ei_app_picking_surface();
+                                        // if (pick == binding->widget->pick)
+                                        // 	ev_match = EI_TRUE;
 
-					case ei_ev_mouse_buttondown:
-					case ei_ev_mouse_buttonup:
-						//if (event->param.mouse.button)
-						break;
+                                case ei_ev_mouse_buttondown:
+                                case ei_ev_mouse_buttonup:
+                                        //if (event->param.mouse.button)
+                                        break;
 
-				}
-			}
+                                }
+                        }
 
-			if (ev_match) {
-				ei_bool_t result;
-				result = binding->callback(NULL, event, NULL);
-			}
-		}
+                        if (ev_match) {
+                                ei_bool_t result;
+                                result = binding->callback(NULL, event, NULL);
+                        }
+                }
 
 
-		binding = binding->ltag.next;
-	}
+                binding = binding->ltag.next;
+        }
 }
 
 

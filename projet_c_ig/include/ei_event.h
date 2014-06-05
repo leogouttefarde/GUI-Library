@@ -150,6 +150,9 @@ void ei_unbind(ei_eventtype_t eventtype,
 	       ei_callback_t callback,
 	       void *user_param);
 
+/************************************ AJOUT PERSONNEL ********/
+void ei_event_process(ei_event_t *event);
 
+/*************************************************************/
 
 #endif

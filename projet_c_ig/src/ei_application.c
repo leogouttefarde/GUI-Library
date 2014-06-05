@@ -9,7 +9,9 @@
  *
  */
 
-
+#include <stdbool.h>
+#include <string.h>
+#include <stdlib.h>
 
 #include "ei_application.h"
 #include "ei_common.h"
@@ -43,26 +45,26 @@ static ei_surface_t picking = NULL;
  */
 void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 {
-	hw_init();
+        hw_init();
 
-	root_surface = hw_create_window(main_window_size, fullscreen);
+        root_surface = hw_create_window(main_window_size, fullscreen);
 
-	ei_frame_register_class();
-	ei_button_register_class();
-	ei_toplevel_register_class();
-	root_widget = ei_widget_create ("frame", NULL);
+        ei_frame_register_class();
+        ei_button_register_class();
+        ei_toplevel_register_class();
+        root_widget = ei_widget_create ("frame", NULL);
 
-	ei_register_placer_manager();
+        ei_register_placer_manager();
 
-	ei_place(root_widget, NULL,NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
+        ei_place(root_widget, NULL,NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
 
-	ei_rect_t rect;
-	rect.top_left.x = 0;
-	rect.top_left.y = 0;
-	rect.size = *main_window_size;
-	ei_app_invalidate_rect(&rect);
+        ei_rect_t rect;
+        rect.top_left.x = 0;
+        rect.top_left.y = 0;
+        rect.size = *main_window_size;
+        ei_app_invalidate_rect(&rect);
 
-	picking = hw_surface_create(root_surface, main_window_size, EI_TRUE);
+        picking = hw_surface_create(root_surface, main_window_size, EI_TRUE);
 }
 
 /**
@@ -71,21 +73,23 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
  */
 void ei_app_free()
 {
-	if (picking)
-		hw_surface_free(picking);
+        if (picking)
+                hw_surface_free(picking);
 }
 
 
 
-// Loop pour ei_app_run
-void ei_app_run_loop(ei_widget_t *widget, bool go_right)
-        //
+// Loop récursif pour ei_app_run qui respecte la hierarchie des widgets
+void ei_app_run_loop(ei_widget_t *widget, bool go_right){
+        // Si go_right est a true, on affiche le widget, puis a son frere etc.
+        // On appelle la fonction recursivement sur le premier fils du widget
+        // PUIS on demande a ses freres de d'appeler la fonction sur leurs fils
         if (widget){
-                if (go_right 
-                                && widget->geom_params 
-                                && widget->geom_params->manager 
+                if (go_right
+                                && widget->geom_params
+                                && widget->geom_params->manager
                                 && widget->geom_params->manager->runfunc){
-                widget->geom_params->manager->runfunc(widget);
+                        widget->geom_params->manager->runfunc(widget);
                 }
 
                 if (go_right) {
@@ -94,6 +98,7 @@ void ei_app_run_loop(ei_widget_t *widget, bool go_right)
                 ei_app_run_loop(widget->children_head, true);
                 ei_app_run_loop(widget->next_sibling, false);
         }
+}
 
 /**
  * \brief	Runs the application: enters the main event loop. Exits when
