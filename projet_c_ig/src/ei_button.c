@@ -142,7 +142,7 @@ ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_
 	*@param relief si raised =>relevé,none=>plat,sinon enfoncé
 	*/
 void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_button_t *button) {
-	;
+	ei_button_draw_loc(window,rectangle,*button->color,button->relief,button->corner_radius,button->border_width);
 }
 
 void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,ei_relief_t relief,int rayon, int marge) {
