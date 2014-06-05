@@ -15,6 +15,7 @@
 #include "ei_widgettypes.h"
 #include "ei_shape.h"
 #include "ei_utils.h"
+#include "ei_button.h"
 
 // variable globale pour stocker les tables de pointeur
 static ei_widgetclass_t *frame_table = NULL;
