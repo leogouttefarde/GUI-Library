@@ -14,9 +14,11 @@
 #include "ei_widget.h"
 #include "ei_widgettypes.h"
 #include "ei_utils.h"
-#include "ei_application.c"
+
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
 static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0x00};
+// Root_widget, nécessaire pour pick_widget
+static ei_widget_t *root_widget;
 
 void increase_color(ei_color_t *color){
         if(color->red < 0xFF) {
@@ -189,23 +191,7 @@ ei_widget_t* ei_widget_pick_loop(ei_widget_t *widget, ei_point_t where){
  *				at this location (except for the root widget).
  */
 ei_widget_t* ei_widget_pick (ei_point_t* where){
-        ei_surface_t picking_surface = ei_app_root_surface();
-        hw_surface_lock(picking_surface);
-        ei_size_t size = hw_surface_size(picking_surface);
-        // on recupere l'adresse du premier pixel de la surface
-        uint8_t* addr = hw_surface_get_buffer(picking_surface);
-        // on recupere l'adresse du pixel donné en parametre
-        addr = sizeof*(addr + where->x + (where->y)*size.width);
-        ei_color_t *color;
-        int ir;
-        int ig;
-        int ib;
-        int ia;
-        hw_surface_get_channel_indices(ei_surface_t surface, &ir, &ig, &ib, &ia);
-
-
-        //        return ei_widget_pick_loop(root_widget, *where);
-        hw_surface_unlock(picking_surface)
+        return ei_widget_pick_loop(root_widget, *where);
 }
 
 
