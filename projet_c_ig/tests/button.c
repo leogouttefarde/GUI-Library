@@ -74,9 +74,9 @@ int ei_main(int argc, char** argv)
 	/* Run the application's main loop. */
 	ei_app_run();
 
-	/* We just exited from the main loop. Terminate the application (cleanup). */
-	ei_unbind(ei_ev_keydown,	NULL, "all", process_key, NULL);
-	ei_app_free();
+        /* We just exited from the main loop. Terminate the application (cleanup). */
+        ei_unbind(ei_ev_keydown,	NULL, "all", process_key, NULL);
+        ei_app_free();
 
-	return (EXIT_SUCCESS);
+        return (EXIT_SUCCESS);
 }

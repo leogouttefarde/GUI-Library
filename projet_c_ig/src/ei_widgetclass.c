@@ -15,7 +15,7 @@
 #include "ei_widgettypes.h"
 #include "ei_shape.h"
 
-// variable globale pour sotcker les tables de pointeur
+// variable globale pour stocker les tables de pointeur
 static ei_widgetclass_t *frame_table = NULL;
 static ei_widgetclass_t *button_table = NULL;
 static ei_widgetclass_t *toplevel_table = NULL;
@@ -174,6 +174,7 @@ void frame_setdefaults(struct ei_widget_t* widget){
         ei_color_t bg = {0xFF,0x00,0x00,0xFF};
         frame->bg_color = bg;
 }
+
 void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
         ;
 }

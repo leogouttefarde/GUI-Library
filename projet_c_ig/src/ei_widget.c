@@ -84,7 +84,11 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
  * @param	widget		The widget that is to be destroyed.
  */
 void ei_widget_destroy (ei_widget_t* widget){
-	;
+	if (widget){
+                ei_widget_destroy(widget->next_sibling);
+                ei_widget_destroy(widget->children_head);
+                widget->wclass->releasefunc(widget);
+        }
 }
 
 
@@ -97,7 +101,7 @@ void ei_widget_destroy (ei_widget_t* widget){
  *				at this location (except for the root widget).
  */
 ei_widget_t* ei_widget_pick (ei_point_t* where){
-	return NULL;
+        return NULL;
 }
 
 
@@ -143,57 +147,57 @@ ei_widget_t* ei_widget_pick (ei_point_t* where){
  *				Defaults to \ref ei_anc_center.
  */
 void	ei_frame_configure (ei_widget_t* widget,
-		ei_size_t*		requested_size,
-		const ei_color_t*	color,
-		int*			border_width,
-		ei_relief_t*		relief,
-		char**			text,
-		ei_font_t*		text_font,
-		ei_color_t*		text_color,
-		ei_anchor_t*		text_anchor,
-		ei_surface_t*		img,
-		ei_rect_t**		img_rect,
-		ei_anchor_t*		img_anchor){
+                ei_size_t*		requested_size,
+                const ei_color_t*	color,
+                int*			border_width,
+                ei_relief_t*		relief,
+                char**			text,
+                ei_font_t*		text_font,
+                ei_color_t*		text_color,
+                ei_anchor_t*		text_anchor,
+                ei_surface_t*		img,
+                ei_rect_t**		img_rect,
+                ei_anchor_t*		img_anchor){
 
-	if (widget && widget->wclass && !strcmp(widget->wclass->name, "frame")){
-		// on recaste pour passer a un type frame
-		ei_frame_t *frame = (ei_frame_t*)widget;
-		if (requested_size) {
-			frame->widget.requested_size = *requested_size;
-		}
-		if (color) {
-			frame->bg_color = *color;
-		}
-		if (border_width) {
-			frame->border_width = *border_width;
-		}
-		if (relief) {
-			frame->relief = *relief;
-		}
-		if (text) {
-			frame->text = *text;
-		}
-		if (text_font){
-			frame->text_font = *text_font;
-		}
-		if (text_color){
-			frame->text_color = *text_color;
-		}
-		if (text_anchor){
-			frame->text_anchor = *text_anchor;
-		}
-		if (img){
-			frame->img = *img;
-		}
-		if (img_rect){
-			frame->img_rect = *img_rect;
-		}
-		if (img_anchor){
-			frame->img_anchor = *img_anchor;
-		}
+        if (widget && widget->wclass && !strcmp(widget->wclass->name, "frame")){
+                // on recaste pour passer a un type frame
+                ei_frame_t *frame = (ei_frame_t*)widget;
+                if (requested_size) {
+                        frame->widget.requested_size = *requested_size;
+                }
+                if (color) {
+                        frame->bg_color = *color;
+                }
+                if (border_width) {
+                        frame->border_width = *border_width;
+                }
+                if (relief) {
+                        frame->relief = *relief;
+                }
+                if (text) {
+                        frame->text = *text;
+                }
+                if (text_font){
+                        frame->text_font = *text_font;
+                }
+                if (text_color){
+                        frame->text_color = *text_color;
+                }
+                if (text_anchor){
+                        frame->text_anchor = *text_anchor;
+                }
+                if (img){
+                        frame->img = *img;
+                }
+                if (img_rect){
+                        frame->img_rect = *img_rect;
+                }
+                if (img_anchor){
+                        frame->img_anchor = *img_anchor;
+                }
 
 
-	}
+        }
 }
 
 
@@ -214,66 +218,66 @@ void	ei_frame_configure (ei_widget_t* widget,
  *				when called. Defaults to NULL.
  */
 void	ei_button_configure (ei_widget_t*		widget,
-		ei_size_t*		requested_size,
-		const ei_color_t*	color,
-		int*			border_width,
-		int*			corner_radius,
-		ei_relief_t*		relief,
-		char**			text,
-		ei_font_t*		text_font,
-		ei_color_t*		text_color,
-		ei_anchor_t*		text_anchor,
-		ei_surface_t*		img,
-		ei_rect_t**		img_rect,
-		ei_anchor_t*		img_anchor,
-		ei_callback_t*		callback,
-		void**			user_param){
+                ei_size_t*		requested_size,
+                const ei_color_t*	color,
+                int*			border_width,
+                int*			corner_radius,
+                ei_relief_t*		relief,
+                char**			text,
+                ei_font_t*		text_font,
+                ei_color_t*		text_color,
+                ei_anchor_t*		text_anchor,
+                ei_surface_t*		img,
+                ei_rect_t**		img_rect,
+                ei_anchor_t*		img_anchor,
+                ei_callback_t*		callback,
+                void**			user_param){
 
-	if (widget && widget->wclass && !strcmp(widget->wclass->name, "button")){
-		ei_button_t *button = (ei_button_t*)widget;
-		if(requested_size){
-			button->widget.requested_size = *requested_size;
-		}
-		if (color) {
-			button->color = color;
-		}
-		if (border_width) {
-			button->border_width = *border_width;
-		}
-		if (corner_radius) {
-			button->corner_radius = *corner_radius;
-		}
-		if(relief){
-			button->relief = *relief;
-		}
-		if (text) {
-			button->text = *text;
-		}
-		if(text_font){
-			button->text_font = *text_font;
-		}
-		if(text_color){
-			button->text_color = *text_color;
-		}
-		if(text_anchor){
-			button->text_anchor = *text_anchor;
-		}
-		if(img) {
-			button->img = *img;
-		}
-		if(img_rect){
-			button->img_rect = *img_rect;
-		}
-		if(img_anchor) {
-			button->img_anchor = *img_anchor;
-		}
-		if(callback) {
-			button->callback = *callback;
-		}
-		if (user_param){
-			button->user_param = *user_param;
-		}
-	}
+        if (widget && widget->wclass && !strcmp(widget->wclass->name, "button")){
+                ei_button_t *button = (ei_button_t*)widget;
+                if(requested_size){
+                        button->widget.requested_size = *requested_size;
+                }
+                if (color) {
+                        button->color = color;
+                }
+                if (border_width) {
+                        button->border_width = *border_width;
+                }
+                if (corner_radius) {
+                        button->corner_radius = *corner_radius;
+                }
+                if(relief){
+                        button->relief = *relief;
+                }
+                if (text) {
+                        button->text = *text;
+                }
+                if(text_font){
+                        button->text_font = *text_font;
+                }
+                if(text_color){
+                        button->text_color = *text_color;
+                }
+                if(text_anchor){
+                        button->text_anchor = *text_anchor;
+                }
+                if(img) {
+                        button->img = *img;
+                }
+                if(img_rect){
+                        button->img_rect = *img_rect;
+                }
+                if(img_anchor) {
+                        button->img_anchor = *img_anchor;
+                }
+                if(callback) {
+                        button->callback = *callback;
+                }
+                if (user_param){
+                        button->user_param = *user_param;
+                }
+        }
 }
 
 /**
@@ -296,39 +300,39 @@ void	ei_button_configure (ei_widget_t*		widget,
  *				(160, 120).
  */
 void	ei_toplevel_configure	(ei_widget_t*	widget,
-		ei_size_t*	requested_size,
-		ei_color_t*	color,
-		int*		border_width,
-		char**		title,
-		ei_bool_t*	closable,
-		ei_axis_set_t*	resizable,
-		ei_size_t**	min_size){
+                ei_size_t*	requested_size,
+                ei_color_t*	color,
+                int*		border_width,
+                char**		title,
+                ei_bool_t*	closable,
+                ei_axis_set_t*	resizable,
+                ei_size_t**	min_size){
 
-	if (widget && widget->wclass &&
-			!strcmp(widget->wclass->name, "toplevel")){
-		ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
-		if (requested_size){
-			toplevel->widget.requested_size = *requested_size;
-		}
-		if (color){
-			toplevel->color = *color;
-		}
-		if (border_width) {
-			toplevel->border_width = *border_width;
-		}
-		if(title){
-			toplevel->title = *title;
-		}
-		if (closable){
-			toplevel->closable = *closable;
-		}
-		if(resizable){
-			toplevel->resizable = *resizable;
-		}
-		if(min_size){
-			toplevel->min_size = *min_size;
-		}
-	}
+        if (widget && widget->wclass &&
+                        !strcmp(widget->wclass->name, "toplevel")){
+                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+                if (requested_size){
+                        toplevel->widget.requested_size = *requested_size;
+                }
+                if (color){
+                        toplevel->color = *color;
+                }
+                if (border_width) {
+                        toplevel->border_width = *border_width;
+                }
+                if(title){
+                        toplevel->title = *title;
+                }
+                if (closable){
+                        toplevel->closable = *closable;
+                }
+                if(resizable){
+                        toplevel->resizable = *resizable;
+                }
+                if(min_size){
+                        toplevel->min_size = *min_size;
+                }
+        }
 }
 
 
