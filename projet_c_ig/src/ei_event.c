@@ -71,7 +71,6 @@ void ei_bind(ei_eventtype_t eventtype,
                         link->tag = tag;
 
                 ei_ev_links_t *links = &ei_events[eventtype];
-
                 if (!links->head) {
                         links->head = link;
                         links->tail = link;
