@@ -13,6 +13,8 @@
 #include "ei_widget.h"
 #include "ei_widgettypes.h"
 
+
+
 /**
  * @brief	Creates a new instance of a widget of some particular class, as a descendant of
  *		an existing widget.
@@ -28,53 +30,53 @@
 
 // Quels paramètres faut-il initialiser ici ?
 ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name, 
-		ei_widget_t* parent){
-	ei_widget_t *widget = NULL;
-	ei_widgetclass_t *wclass;
-	// Configuration grace au paramètres
-	wclass = ei_widgetclass_from_name(class_name);
-	//printf("%x wclass allocfunc\n", wclass->allocfunc);
+                ei_widget_t* parent){
+        ei_widget_t *widget = NULL;
+        ei_widgetclass_t *wclass;
+        // Configuration grace au paramètres
+        wclass = ei_widgetclass_from_name(class_name);
+        //printf("%x wclass allocfunc\n", wclass->allocfunc);
 
-	if (wclass)
-		// après allocation, widget aura les champs communs + les champs uniques 
-		widget = wclass->allocfunc();
+        if (wclass)
+                // après allocation, widget aura les champs communs + les champs uniques 
+                widget = wclass->allocfunc();
 
-	if (widget) {
-		widget->wclass = wclass;
+        if (widget) {
+                widget->wclass = wclass;
 
-		// Initialisation des attributs
-		wclass->setdefaultsfunc(widget);
-
-
-		if (parent) {
-			// Initialisation des attributs communs
-			widget->parent = parent;
-
-			if (parent->children_tail) {
-				parent->children_tail->next_sibling = widget;
-				parent->children_tail = widget;
-			}
-
-			if (!parent->children_head)
-				parent->children_head = widget;
-		}
-
-		ei_color_t *pc = malloc(sizeof(ei_color_t));
-		memset(pc, 0, sizeof(ei_color_t));
-		widget->pick_color = pc;
-
-		ei_size_t rs = {10,10};
-		widget->requested_size = rs;
-
-		ei_rect_t sl = {{0,0}, {10,10}};
-		widget->screen_location = sl;
-		widget->content_rect = &widget->screen_location;
+                // Initialisation des attributs
+                wclass->setdefaultsfunc(widget);
 
 
-		return widget;
-	}
-	else {
-		return NULL;}
+                if (parent) {
+                        // Initialisation des attributs communs
+                        widget->parent = parent;
+
+                        if (parent->children_tail) {
+                                parent->children_tail->next_sibling = widget;
+                                parent->children_tail = widget;
+                        }
+
+                        if (!parent->children_head)
+                                parent->children_head = widget;
+                }
+
+                ei_color_t *pc = malloc(sizeof(ei_color_t));
+                memset(pc, 0, sizeof(ei_color_t));
+                widget->pick_color = pc;
+
+                ei_size_t rs = {10,10};
+                widget->requested_size = rs;
+
+                ei_rect_t sl = {{0,0}, {10,10}};
+                widget->screen_location = sl;
+                widget->content_rect = &widget->screen_location;
+
+
+                return widget;
+        }
+        else {
+                return NULL;}
 }
 
 /**
@@ -84,7 +86,7 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
  * @param	widget		The widget that is to be destroyed.
  */
 void ei_widget_destroy (ei_widget_t* widget){
-	if (widget){
+        if (widget){
                 ei_widget_destroy(widget->next_sibling);
                 ei_widget_destroy(widget->children_head);
                 widget->wclass->releasefunc(widget);
