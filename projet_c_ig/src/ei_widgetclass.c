@@ -245,7 +245,7 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
         if (surface){
         // lock de la surface
         hw_surface_lock(surface);
-		  ei_button_draw(surface,*clipper,button);
+		  //ei_button_draw(surface,*clipper,button);
         //unlock de la surface
         hw_surface_unlock(surface);
         }
@@ -335,7 +335,7 @@ ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
                         button->relief = ei_relief_raised;
                         // Appel du callback du bouton
                         if (button->callback){
-                                res = (*(button->callback))((ei_widget_t)button, NULL, button->user_param);
+                                res = button->callback((ei_widget_t*)button, NULL, button->user_param);
                         }
                 }
         }
