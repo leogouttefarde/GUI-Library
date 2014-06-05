@@ -141,8 +141,11 @@ ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_
 	*@param couleur la couleur du bouton central
 	*@param relief si raised =>relevé,none=>plat,sinon enfoncé
 	*/
+void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_bouton_t button) {
+	;
+}
 
-void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,ei_relief_t relief,int rayon, int marge) {
+void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,ei_relief_t relief,int rayon, int marge) {
 	ei_linked_point_t* Liste=NULL;
 
 	if (relief==ei_relief_none) {
