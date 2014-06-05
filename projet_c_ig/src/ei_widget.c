@@ -15,6 +15,7 @@
 #include "ei_widgettypes.h"
 #include "ei_utils.h"
 #include "ei_global.h"
+
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
 static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0x00};
 
@@ -43,17 +44,6 @@ void increase_color(ei_color_t *color){
 
 }
 
-uint32_t unique_color_id(ei_color_t color){
-        uint32_t result = 0;
-        result = color.red;
-        result = result*255;
-        result = result + color.green;
-        result =result*255;
-        result = result + color.blue;
-        result = result*255;
-        result = result + color.alpha;
-        return result;
-}
 
 /**
  * @brief	Creates a new instance of a widget of some particular class, as a descendant of
@@ -87,7 +77,6 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
                 // Initialisation des attributs communs
                 if (parent) {
                         widget->parent = parent;
-
                         if (parent->children_tail) {
                                 parent->children_tail->next_sibling = widget;
                                 parent->children_tail = widget;
@@ -95,6 +84,12 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
 
                         if (!parent->children_head)
                                 parent->children_head = widget;
+                }
+                // on initialise correctement le root_widget
+                else {
+                        widget->next_sibling = NULL;
+                        widget->children_head = NULL;
+                        widget->children_tail = NULL;
                 }
 
                 // La couleur courante est une variable globale
@@ -104,7 +99,10 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
                 increase_color(&current_pick_color);
                 widget->pick_color = pc;
 
-                widget->pick_id = unique_color_id(current_pick_color); 
+                if (parent)
+                        widget->pick_id = ei_map_rgba(ei_get_picking_surface(), &current_pick_color);
+                else
+                        widget->pick_id = 0x0;
 
                 widget->requested_size = ei_size(10,10);
 
@@ -138,45 +136,9 @@ void ei_widget_destroy (ei_widget_t* widget){
                 widget->wclass->releasefunc(widget);
         }
 }
-// VERIFIER LES INIEG STRICTES
-// Detection de la presence d'un point dans un rectangle
-bool ei_point_in_rectangle(ei_rect_t rect, ei_point_t pt){
-        ei_point_t tl = rect.top_left;
-        int w = rect.size.width;
-        int h = rect.size.height;
-        return  (pt.x >= tl.x && pt.x < tl.x + w && pt.y >= tl.y
-                        && pt.y < tl.y + h);
-}
 
-// Fonction auxiliaire recursive pour la fonction precedente
-// Inspirée de la boucle de ei_application.c
-ei_widget_t* ei_widget_pick_loop(ei_widget_t *widget, ei_point_t where){
-        ei_widget_t* result;
-        if (widget){
-                // Les freres du widget courant sont les plus prioritaires
-                result = ei_widget_pick_loop(widget->next_sibling, where);
-                if (result) {
-                        return result;
-                }
-                // Le fils est le deuxieme widget le plus
-                // prioritaire
-                result = ei_widget_pick_loop(widget->children_head, where);
-                if (result){
-                        return result;
-                }
-                // Le widget courant est le moin prioritaire, on renvoie son
-                // adresse si il contient le point where
-                if(ei_point_in_rectangle(widget->screen_location, where)){
-                        return widget;
-                }
 
-        }
-        // Si on est arrivé a une extremité (hauteur ou largeur) du parcours
-        // on a pas trouvé de widget
-        return NULL;
-
-}
-
+// Fonction auxiliaire recursive pour ei_widget_pick
 ei_widget_t* ei_widget_sel (ei_surface_t pick_surface, uint32_t pick_id, ei_widget_t *widget){
         if(widget){
                 if (widget->parent) {
@@ -199,36 +161,37 @@ ei_widget_t* ei_widget_sel (ei_surface_t pick_surface, uint32_t pick_id, ei_widg
  *				at this location (except for the root widget).
  */
 ei_widget_t* ei_widget_pick (ei_point_t* where){
-        ei_surface_t pick_surface = ei_get_root();
-        hw_surface_lock(pick_surface);
-        ei_size_t size = hw_surface_get_size(pick_surface);
+        ei_surface_t picking_surface = ei_get_picking_surface();
+        hw_surface_lock(picking_surface);
+        // Génération de l'adresse mémoire du point "where"
+        ei_size_t size = hw_surface_get_size(picking_surface);
         // on recupere l'adresse du premier pixel de la surface
-        uint8_t* addr = hw_surface_get_buffer(pick_surface);
+        uint8_t* addr = hw_surface_get_buffer(picking_surface);
         // on recupere l'adresse du pixel donné en parametre
         // addr +1 augmente d'un octet ou de 4 ? On suppose 1
-        addr = (addr + 4*(where->x + (where->y)*size.width));
-        // on recupere les indices correspondant à l'encodage de la surface
+        addr = (addr + 4*sizeof(uint8_t)*(where->x + (where->y)*size.width));
+        // on recupere les indices correspondants à l'encodage de la surface
         ei_color_t *color;
         color = malloc(sizeof(ei_color_t));
         int ir;
         int ig;
         int ib;
         int ia;
-        hw_surface_get_channel_indices(pick_surface, &ir, &ig, &ib, &ia);
+        hw_surface_get_channel_indices(picking_surface, &ir, &ig, &ib, &ia);
         color->red = *(addr+ir);
         color->green = *(addr+ig);
         color->blue = *(addr+ib);
         color->alpha = *(addr+ia);
-
-        uint32_t pick_id = ei_map_rgba(pick_surface, color);
-        // On parcours ensuite l'ensemble des widget pour trouver le widget
+        // on générele le code correspondant
+        uint32_t pick_id = ei_map_rgba(picking_surface, color);
+        // On parcours ensuite l'ensemble des widgets pour trouver le widget
         // correspondant
         ei_widget_t *root = ei_get_root();
-
         ei_widget_t *result;
-        result = ei_widget_sel(pick_surface, pick_id, root);
+
+        result = ei_widget_sel(picking_surface, pick_id, root);
         //        return ei_widget_pick_loop(root_widget, *where);
-        hw_surface_unlock(pick_surface);
+        hw_surface_unlock(picking_surface);
         return result;
 }
 

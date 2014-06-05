@@ -141,6 +141,8 @@ ei_shape : ${OBJDIR}/ei_shape.o
 
 ei_global : ${OBJDIR}/ei_global.o
 
+ei_event : ${OBJDIR}/ei_event.o
+
 # Compilation
 ${OBJDIR}/%.o: ${SRCDIR}/%.c 
 	$(CC) $(CCFLAGS) ${INCFLAGS} ${LIBEIBASE} $< -o $@

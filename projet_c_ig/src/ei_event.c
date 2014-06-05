@@ -15,16 +15,18 @@
 
 
 
-typedef struct ei_binding_t {
-        ei_linked_tag_t ltag;
+typedef struct ei_linked_binding_t {
+        ei_tag_t tag;
         ei_widget_t *widget;
         ei_event_t event;
         ei_callback_t callback;
-} ei_binding_t;
+        struct ei_linked_binding_t *next;
+} ei_linked_binding_t;
 
 
-ei_binding_t *first = NULL;
-ei_binding_t *last = NULL;
+ei_linked_binding_t *first = NULL;
+// Pourquoi garder un pointeur sur la fin ?
+//ei_binding_list_t *last = NULL;
 
 
 /**
@@ -46,8 +48,8 @@ void ei_bind(ei_eventtype_t eventtype,
                 ei_callback_t callback,
                 void *user_param)
 {
-        ei_binding_t *binding = malloc(sizeof(ei_binding_t));
-        memset(binding, 0, sizeof(ei_binding_t));
+        ei_linked_binding_t *binding = malloc(sizeof(ei_linked_binding_t));
+        memset(binding, 0, sizeof(ei_linked_binding_t));
 
         binding->event.type = eventtype;
         binding->callback = callback;
@@ -58,16 +60,17 @@ void ei_bind(ei_eventtype_t eventtype,
         if (widget)
                 binding->widget = widget;
         else
-                binding->ltag.tag = tag;
+                binding->tag = tag;
 
-        if (!first) {
-                first = binding;
-                last = first;
-        }
-        else {
-                last->ltag.next = binding;
-                last = binding;
-        }
+        /*if (!first) {
+          first = binding;
+          last = first;
+          }
+          else {*/  
+        ei_linked_binding_t *tmp = first;
+        first = binding;
+        first->next = tmp;
+        //}
 }
 
 /**
@@ -88,17 +91,25 @@ void ei_unbind(ei_eventtype_t eventtype,
 
 void ei_event_process(ei_event_t *event)
 {
-        ei_binding_t *binding = first;
+        ei_linked_binding_t *binding = first;
         ei_bool_t ev_match;
+        ei_eventtype_t evt = event->type;
+        ei_widget_t *selected;
+        // Si l'event est lié aux boutons de la souris on selectionne le widget
+        if (evt == ei_ev_mouse_buttondown || evt == ei_ev_mouse_buttonup){
+                selected = ei_widget_pick(&(event->param.mouse.where));
+        }
+
+
+        // Parcours de tous les bindings
         while (binding) {
                 ev_match = EI_FALSE;
 
                 if (binding->callback && (event->type == binding->event.type)) {
-                        if (!strcmp(binding->ltag.tag, "all"))
+                        if (!strcmp(binding->tag, "all"))
                                 ev_match = EI_TRUE;
-
                         else {
-                                switch (event->type) {
+                                switch (evt) {
                                 case ei_ev_app:
                                         break;
 
@@ -112,14 +123,21 @@ void ei_event_process(ei_event_t *event)
                                         // if (pick == binding->widget->pick)
                                         // 	ev_match = EI_TRUE;
 
+                                        // Pour les boutons de la souris, on
+                                        // appelle le callback sur selected
                                 case ei_ev_mouse_buttondown:
                                 case ei_ev_mouse_buttonup:
-                                        //if (event->param.mouse.button)
-                                        break;
+                                        if (!strcmp(selected->wclass->name, binding->tag))
+                                                binding->callback(selected, event,
+                                                                NULL);
 
+                                        break;
+                                default: break;
                                 }
                         }
 
+                        // Si le tag est "all", on appelle le callback
+                        // dans tous les cas
                         if (ev_match) {
                                 ei_bool_t result;
                                 result = binding->callback(NULL, event, NULL);
@@ -127,7 +145,7 @@ void ei_event_process(ei_event_t *event)
                 }
 
 
-                binding = binding->ltag.next;
+                binding = binding->next;
         }
 }
 
