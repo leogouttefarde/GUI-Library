@@ -96,10 +96,6 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
                         if (!parent->children_head)
                                 parent->children_head = widget;
                 }
-                // l'unique widget sans parent est le root_widget
-                else {
-                        root_widget = widget;
-                }
 
                 // La couleur courante est une variable globale
                 ei_color_t *pc = malloc(sizeof(ei_color_t));
@@ -203,7 +199,7 @@ ei_widget_t* ei_widget_sel (ei_surface_t pick_surface, uint32_t pick_id, ei_widg
  *				at this location (except for the root widget).
  */
 ei_widget_t* ei_widget_pick (ei_point_t* where){
-        ei_surface_t pick_surface = ei_app_picking_surface();
+        ei_surface_t pick_surface = ei_get_root();
         hw_surface_lock(pick_surface);
         ei_size_t size = hw_surface_get_size(pick_surface);
         // on recupere l'adresse du premier pixel de la surface
@@ -227,7 +223,7 @@ ei_widget_t* ei_widget_pick (ei_point_t* where){
         uint32_t pick_id = ei_map_rgba(pick_surface, color);
         // On parcours ensuite l'ensemble des widget pour trouver le widget
         // correspondant
-        ei_widget_t *root = ei_app_root_widget();
+        ei_widget_t *root = ei_get_root();
 
         ei_widget_t *result;
         result = ei_widget_sel(pick_surface, pick_id, root);
