@@ -14,7 +14,7 @@
 #include "ei_widget.h"
 #include "ei_widgettypes.h"
 #include "ei_utils.h"
-#include "ei_application.c"
+#include "ei_global.h"
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
 static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0x00};
 
@@ -180,6 +180,20 @@ ei_widget_t* ei_widget_pick_loop(ei_widget_t *widget, ei_point_t where){
         return NULL;
 
 }
+
+ei_widget_t* ei_widget_sel (ei_surface_t pick_surface, uint32_t pick_id, ei_widget_t *widget){
+        if(widget){
+                if (widget->parent) {
+                        if ( ei_map_rgba(pick_surface, widget->pick_color) == pick_id) {
+                                return widget;
+                        }
+                        ei_widget_sel(pick_surface, pick_id, widget->next_sibling);
+                }
+                ei_widget_sel(pick_surface, pick_id, widget->children_head);
+        }
+        return NULL;
+}
+
 /**
  * @brief	Returns the widget that is at a given location on screen.
  *
@@ -189,23 +203,37 @@ ei_widget_t* ei_widget_pick_loop(ei_widget_t *widget, ei_point_t where){
  *				at this location (except for the root widget).
  */
 ei_widget_t* ei_widget_pick (ei_point_t* where){
-        ei_surface_t picking_surface = ei_app_root_surface();
-        hw_surface_lock(picking_surface);
-        ei_size_t size = hw_surface_size(picking_surface);
+        ei_surface_t pick_surface = ei_app_picking_surface();
+        hw_surface_lock(pick_surface);
+        ei_size_t size = hw_surface_get_size(pick_surface);
         // on recupere l'adresse du premier pixel de la surface
-        uint8_t* addr = hw_surface_get_buffer(picking_surface);
+        uint8_t* addr = hw_surface_get_buffer(pick_surface);
         // on recupere l'adresse du pixel donné en parametre
-        addr = sizeof*(addr + where->x + (where->y)*size.width);
+        // addr +1 augmente d'un octet ou de 4 ? On suppose 1
+        addr = (addr + 4*(where->x + (where->y)*size.width));
+        // on recupere les indices correspondant à l'encodage de la surface
         ei_color_t *color;
+        color = malloc(sizeof(ei_color_t));
         int ir;
         int ig;
         int ib;
         int ia;
-        hw_surface_get_channel_indices(ei_surface_t surface, &ir, &ig, &ib, &ia);
+        hw_surface_get_channel_indices(pick_surface, &ir, &ig, &ib, &ia);
+        color->red = *(addr+ir);
+        color->green = *(addr+ig);
+        color->blue = *(addr+ib);
+        color->alpha = *(addr+ia);
 
+        uint32_t pick_id = ei_map_rgba(pick_surface, color);
+        // On parcours ensuite l'ensemble des widget pour trouver le widget
+        // correspondant
+        ei_widget_t *root = ei_app_root_widget();
 
+        ei_widget_t *result;
+        result = ei_widget_sel(pick_surface, pick_id, root);
         //        return ei_widget_pick_loop(root_widget, *where);
-        hw_surface_unlock(picking_surface)
+        hw_surface_unlock(pick_surface);
+        return result;
 }
 
 

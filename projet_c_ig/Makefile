@@ -16,7 +16,7 @@ MATHFLAGS 	:= -lm
 
 LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
 			${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o \
-			${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o ${OBJDIR}/ei_button.o
+			${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o ${OBJDIR}/ei_button.o ${OBJDIR}/ei_global.o
 
 
 
@@ -138,6 +138,8 @@ ei_widget : ${OBJDIR}/ei_widget.o
 ei_widgetclass : ${OBJDIR}/ei_widgetclass.o
 
 ei_shape : ${OBJDIR}/ei_shape.o
+
+ei_global : ${OBJDIR}/ei_global.o
 
 # Compilation
 ${OBJDIR}/%.o: ${SRCDIR}/%.c 
