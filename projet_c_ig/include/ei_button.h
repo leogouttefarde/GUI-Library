@@ -27,8 +27,10 @@ void ei_button_draw_loc(ei_surface_t window,
 		int rayon,
 		int marge);
 
-void ei_button_text(char* text, ei_font_t text_font, ei_anchor_t anchor);
+void ei_button_text(ei_surface_t window,ei_rect_t clipper,char* text, ei_font_t font,ei_color_t color, ei_anchor_t anchor);
 
 void free_lp(ei_linked_point_t* Liste);
 
+ei_point_t plus(ei_point_t A, int abc, int ord);
+	
 #endif
