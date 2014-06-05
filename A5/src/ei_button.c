@@ -53,8 +53,8 @@ ei_linked_point_t* trait(ei_point_t queue, ei_point_t tete, ei_linked_point_t* s
 
 ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_rect_t partie) {
 	ei_linked_point_t* Liste=NULL;
-	int hauteur=rectangle.size.height-2*rayon;
-	int longueur=rectangle.size.width-2*rayon;
+	int hauteur=rectangle.size.height;
+	int longueur=rectangle.size.width;
 	int xrec=rectangle.top_left.x;
 	int yrec=rectangle.top_left.y;
 
@@ -142,8 +142,7 @@ ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_
 	*@param relief si raised =>relevé,none=>plat,sinon enfoncé
 	*/
 
-void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,ei_relief_t relief) {
-	int rayon=MIN(rectangle.size.height,rectangle.size.width)/6;
+void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,ei_relief_t relief,int rayon, int marge) {
 	ei_linked_point_t* Liste=NULL;
 
 	if (relief==ei_relief_none) {
@@ -152,17 +151,16 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,
 		free_lp(Liste);
 	}
 	else {
-		int marge=rayon*4/10;
 		ei_color_t couleur_eclairee,couleur_assombrie,couleur_haute,couleur_basse;
-		float coeff_couleur=0.4;
-		couleur_eclairee.red=couleur.red*(1.0+coeff_couleur);
-		couleur_eclairee.green=couleur.green*(1.0+coeff_couleur);
-		couleur_eclairee.blue=couleur.blue*(1.0+coeff_couleur);
+		float coeff_couleur=0.2;
+		couleur_eclairee.red=MIN(couleur.red+coeff_couleur*255,255);
+		couleur_eclairee.green=MIN(couleur.green+coeff_couleur*255,255);
+		couleur_eclairee.blue=MIN(couleur.blue+coeff_couleur*255,255);
 		couleur_eclairee.alpha=255;
 
-		couleur_assombrie.red=couleur.red*(1.0-coeff_couleur);
-		couleur_assombrie.green=couleur.green*(1.0-coeff_couleur);
-		couleur_assombrie.blue=couleur.blue*(1.0-coeff_couleur);
+		couleur_assombrie.red=MAX(couleur.red-coeff_couleur*255,0);
+		couleur_assombrie.green=MAX(couleur.green-coeff_couleur*255,0);
+		couleur_assombrie.blue=MAX(couleur.blue-coeff_couleur*255,0);
 		couleur_assombrie.alpha=255;
 
 		if (relief==ei_relief_raised) {
@@ -182,8 +180,8 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,
 			ei_rect_t rectangle_interieur;
 			rectangle_interieur.top_left.x=rectangle.top_left.x+marge;
 			rectangle_interieur.top_left.y=rectangle.top_left.y+marge;
-			rectangle_interieur.size.width=rectangle.size.width-4*marge;
-			rectangle_interieur.size.height=rectangle.size.height-4*marge;
+			rectangle_interieur.size.width=rectangle.size.width-2*marge;
+			rectangle_interieur.size.height=rectangle.size.height-2*marge;
 
 			Liste=ei_button_rounded_frame(rectangle_interieur,rayon-marge,0);
 			ei_draw_polygon(window,Liste,couleur,&rectangle_interieur);
@@ -192,6 +190,10 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,
 			free_lp(partie_basse);
 			free_lp(Liste);
 	}
+}
+
+void ei_button_text(char* text, ei_font_t text_font,ei_anchor_t) {
+	;
 }
 
 void free_lp(ei_linked_point_t* Liste) {

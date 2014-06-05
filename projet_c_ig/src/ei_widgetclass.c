@@ -15,6 +15,7 @@
 #include "ei_widgettypes.h"
 #include "ei_shape.h"
 #include "ei_utils.h"
+#include "ei_button.h"
 
 // variable globale pour stocker les tables de pointeur
 static ei_widgetclass_t *frame_table = NULL;
@@ -244,7 +245,7 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
         if (surface){
         // lock de la surface
         hw_surface_lock(surface);
-        ei_fill(surface, button->color,clipper);
+		  ei_button_draw(surface,*clipper,button);
         //unlock de la surface
         hw_surface_unlock(surface);
         }
