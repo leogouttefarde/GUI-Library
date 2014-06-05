@@ -131,11 +131,11 @@ typedef struct ei_event_t {
  * @param	user_param	A user parameter that will be passed to the callback when it is
  *				called.
  */
-void		ei_bind			(ei_eventtype_t		eventtype,
-					 ei_widget_t*		widget,
-					 ei_tag_t		tag,
-					 ei_callback_t		callback,
-					 void*			user_param);
+void ei_bind(ei_eventtype_t eventtype,
+	     ei_widget_t *widget,
+	     ei_tag_t tag,
+	     ei_callback_t callback,
+	     void *user_param);
 
 /**
  * \brief	Unbinds a callback from an event type and widget or tag.
@@ -144,12 +144,15 @@ void		ei_bind			(ei_eventtype_t		eventtype,
  *				All parameters must have the same value as when \ref ei_bind was
  *				called to create the binding.
  */
-void		ei_unbind		(ei_eventtype_t		eventtype,
-					 ei_widget_t*		widget,
-					 ei_tag_t		tag,
-					 ei_callback_t		callback,
-					 void*			user_param);
+void ei_unbind(ei_eventtype_t eventtype,
+	       ei_widget_t *widget,
+	       ei_tag_t tag,
+	       ei_callback_t callback,
+	       void *user_param);
 
+/************************************ AJOUT PERSONNEL ********/
+void ei_event_process(ei_event_t *event);
 
+/*************************************************************/
 
 #endif

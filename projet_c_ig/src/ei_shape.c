@@ -7,7 +7,7 @@
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
-#include "string.h"
+#include <string.h>
 #include "ei_shape.h"
 // ne pas oublier les parenthèse, M_PI definie dans math.h
 #ifndef M_PI
@@ -95,8 +95,7 @@ ei_size_t ei_search_size(ei_linked_point_t l){
 
 // un vecteur est représenté par le type point
 void ei_translate_point(ei_point_t *pt, ei_point_t u){
-        pt->x = pt->x + u.x;
-        pt->y = pt->y + u.y;
+        *pt = ei_point_add(*pt, u);
 }
 
 // un vecteur est représenté par le type point
@@ -126,15 +125,15 @@ void ei_center(ei_linked_point_t *lp){
 // THETA EN DEGRES
 // A EVITER (PRECISION...)
 void ei_rotate(ei_linked_point_t *lp, ei_point_t center, float theta){
-        ei_linked_point_t *current;
-        current = lp;
-        while (current){
-                current->point.x = (int)((float)(current->point.x -
-                                        center.x))*cos(RAD_TO_DEG(theta)) + center.x;
-                current->point.y = (int)((float)(current->point.y -
-                                        center.y))*cos(RAD_TO_DEG(theta)) + center.y;
-                current = current->next;
-        }
+ei_linked_point_t *current;
+current = lp;
+while (current){
+current->point.x = (int)((float)(current->point.x -
+center.x))*cos(RAD_TO_DEG(theta)) + center.x;
+current->point.y = (int)((float)(current->point.y -
+center.y))*cos(RAD_TO_DEG(theta)) + center.y;
+current = current->next;
+}
 }
 */
 // la rotation est peu précise, on préfère faire une série de translation
@@ -227,12 +226,12 @@ ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int
         if (!strcmp(side,"bottom")){
                 result = ei_relief(top_left, "top", size, bw);
                 ei_sym_horiz(&result);
-                ei_translate(&result,(ei_point_t){0,size.height-bw});
+                ei_translate(&result, ei_point(0,size.height-bw));
         } 
         else if (!strcmp(side,"right")){
                 result = ei_relief(top_left, "left", size, bw);
                 ei_sym_vert(&result);
-                ei_translate(&result, (ei_point_t){size.width-bw,0});      
+                ei_translate(&result, ei_point(size.width-bw,0));      
         }
         else {  
                 ei_linked_point_t *current;
@@ -250,15 +249,15 @@ ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int
                         result.point = top_left;
                         // top_right
                         tmp = top_left;
-                        ei_translate_point(&tmp, (ei_point_t){w,0});
+                        ei_translate_point(&tmp, ei_point(w,0));
                         ei_direct_append(current, tmp);
                         current = current->next;
                         // bottom_right
-                        ei_translate_point(&tmp, (ei_point_t){-h, +h});
+                        ei_translate_point(&tmp, ei_point(-h, +h));
                         ei_direct_append(current, tmp);
                         current = current->next;
                         //bottom_left;
-                        ei_translate_point(&tmp, (ei_point_t){-w+2*h, 0});
+                        ei_translate_point(&tmp, ei_point(-w+2*h, 0));
                         ei_direct_append(current, tmp);
                 }
                 else if (!strcmp(side, "left"))
@@ -276,15 +275,15 @@ ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int
                         result.point = top_left;
                         // top_right
                         tmp = top_left;
-                        ei_translate_point(&tmp, (ei_point_t){w,w});
+                        ei_translate_point(&tmp, ei_point(w,w));
                         ei_direct_append(current, tmp);
                         current = current->next;
                         // bottom_right
-                        ei_translate_point(&tmp, (ei_point_t){0, h-2*w});
+                        ei_translate_point(&tmp, ei_point(0, h-2*w));
                         ei_direct_append(current, tmp);
                         current = current->next;
                         //bottom_left;
-                        ei_translate_point(&tmp, (ei_point_t){-w, w});
+                        ei_translate_point(&tmp, ei_point(-w, w));
                         ei_direct_append(current, tmp);
                 }
         }

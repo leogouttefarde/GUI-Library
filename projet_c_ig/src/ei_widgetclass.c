@@ -14,8 +14,9 @@
 #include "ei_widgetclass.h"
 #include "ei_widgettypes.h"
 #include "ei_shape.h"
+#include "ei_utils.h"
 
-// variable globale pour sotcker les tables de pointeur
+// variable globale pour stocker les tables de pointeur
 static ei_widgetclass_t *frame_table = NULL;
 static ei_widgetclass_t *button_table = NULL;
 static ei_widgetclass_t *toplevel_table = NULL;
@@ -81,7 +82,10 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
         ei_frame_t *frame;
         frame = (ei_frame_t*)widget;
 
+        /* Dessin visible */
+
         // lock de la surface
+        if (surface){
         hw_surface_lock(surface);
 
         /*
@@ -103,46 +107,60 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
            */
         ei_fill(surface, &frame->bg_color, clipper);
 
-        if (clipper) {
-                int bw = frame->border_width;
-                ei_size_t size = frame->widget.requested_size;
+        ei_point_t tl;
 
-                if (frame->relief) {
-                        ei_point_t tl = clipper->top_left;
-                        ei_linked_point_t top;
-                        ei_linked_point_t bottom;
-                        ei_linked_point_t right;
-                        ei_linked_point_t left;
-                        // definition des couleurs
-                        ei_color_t dark = {0x22, 0x22, 0x22, 0xFF};
-                        ei_color_t light = {0xCC, 0xCC, 0xCC, 0xFF};
-                        ei_color_t darker = {0x11, 0x11, 0x11, 0xFF};
-                        ei_color_t lighter = {0xDD, 0xDD, 0xDD, 0xFF};
+        if (clipper) { 
+                tl = clipper->top_left;
+        }
+        else {
+                tl = (ei_point_t){0,0};
+        }
 
-                        top = ei_relief(tl, "top", size, bw);
-                        right = ei_relief(tl, "right", size, bw);
-                        left = ei_relief(tl, "left", size, bw);
-                        bottom = ei_relief(tl, "bottom", size, bw);
+        int bw = frame->border_width;
+        ei_size_t size = frame->widget.requested_size;
 
-                        // la disjonction sunken/raised commence ici
-                        if (frame->relief == ei_relief_raised) {
+        if (frame->relief) {
+                ei_linked_point_t top;
+                ei_linked_point_t bottom;
+                ei_linked_point_t right;
+                ei_linked_point_t left;
+                // definition des couleurs
+                ei_color_t dark = {0x23, 0x23, 0x23, 0xFF};
+                ei_color_t light = {0xCB, 0xCB, 0xCB, 0xFF};
+                ei_color_t darker = {0x11, 0x11, 0x11, 0xFF};
+                ei_color_t lighter = {0xDD, 0xDD, 0xDD, 0xFF};
 
-                                ei_draw_polygon(surface, &top, lighter, clipper);
-                                ei_draw_polygon(surface, &left, lighter,clipper);
-                                ei_draw_polygon(surface, &bottom, dark,clipper);
-                                ei_draw_polygon(surface, &right, dark, clipper);
-                        }
-                        else{
-                                ei_draw_polygon(surface, &top, darker, clipper);
-                                ei_draw_polygon(surface, &left, darker,clipper);
-                                ei_draw_polygon(surface, &bottom, light,clipper);
-                                ei_draw_polygon(surface, &right, light, clipper);
-                        }
+                top = ei_relief(tl, "top", size, bw);
+                right = ei_relief(tl, "right", size, bw);
+                left = ei_relief(tl, "left", size, bw);
+                bottom = ei_relief(tl, "bottom", size, bw);
+
+                // la disjonction sunken/raised commence ici
+                if (frame->relief == ei_relief_raised) {
+
+                        ei_draw_polygon(surface, &top, light, clipper);
+                        ei_draw_polygon(surface, &left, lighter,clipper);
+                        ei_draw_polygon(surface, &bottom, dark,clipper);
+                        ei_draw_polygon(surface, &right, darker, clipper);
+                }
+                else{
+                        ei_draw_polygon(surface, &top, dark, clipper);
+                        ei_draw_polygon(surface, &left, darker,clipper);
+                        ei_draw_polygon(surface, &bottom, light,clipper);
+                        ei_draw_polygon(surface, &right, lighter, clipper);
                 }
         }
+
         //unlock de la surface
         hw_surface_unlock(surface);
-        // hw_surface_free avant ou apres le unlock ??
+        }
+        if (pick_surface){
+                /* Dessin de la surface de picking */
+                hw_surface_lock(pick_surface);
+                ei_fill(pick_surface, frame->widget.pick_color,clipper);
+                hw_surface_unlock(pick_surface);
+        }
+
 }
 
 void frame_release(struct ei_widget_t* widget){
@@ -156,12 +174,10 @@ void frame_setdefaults(struct ei_widget_t* widget){
         // ei_surface_t represente un pointeur générique
         frame->img = NULL;
         frame->img_anchor = ei_anc_center;
-        ei_point_t p = {0,0};
         frame->img_rect = malloc(sizeof(ei_rect_t));
         if (frame->img_rect) {
-                frame->img_rect->top_left = p;
-                ei_size_t s = {10,10};
-                frame->img_rect->size = s;
+                frame->img_rect->top_left = ei_point_zero();
+                frame->img_rect->size = ei_size(10,10);
         }
 
         frame->relief = ei_relief_none;
@@ -171,9 +187,18 @@ void frame_setdefaults(struct ei_widget_t* widget){
         ei_color_t tc = {0x00, 0x00, 0xFF, 0xFF};
         frame->text_color = tc;
         frame->text_font = ei_style_normal;
+        // On obtient la taille correspondant au text voulu
+        // Exemple ici avec frame masi surtout utile pour button
+        // DONNE SEG_FAULT
+        /*int w;
+          int h;
+          hw_text_compute_size("Frame", frame->text_font, &w, &h);
+          frame->widget.requested_size = (ei_size(w,h));*/
+        frame->widget.requested_size = ei_size(20, strlen(frame->text)*10);
         ei_color_t bg = {0xFF,0x00,0x00,0xFF};
         frame->bg_color = bg;
 }
+
 void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect){
         ;
 }
@@ -216,13 +241,20 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 ei_surface_t pick_surface, ei_rect_t* clipper){
         ei_button_t *button;
         button = (ei_button_t*)widget;
+        if (surface){
         // lock de la surface
         hw_surface_lock(surface);
         ei_fill(surface, button->color,clipper);
         //unlock de la surface
         hw_surface_unlock(surface);
+        }
 
-
+        if (pick_surface) {
+        /* Dessin de la surface de picking */
+        hw_surface_lock(pick_surface);
+        ei_fill(pick_surface, button->widget.pick_color,clipper);
+        hw_surface_unlock(pick_surface);
+        }
 }
 void button_setdefaults(struct ei_widget_t* widget){
         // on commence par effectuer un recast
@@ -234,12 +266,16 @@ void button_setdefaults(struct ei_widget_t* widget){
         button->corner_radius = 3;
         button->relief = ei_relief_raised;
         button->text = "Press me";
-        ei_size_t s = {strlen(button->text)*5, 15};
-        button->widget.requested_size = s;
         button->text_font = ei_style_normal;
         ei_color_t tc = {0xFF, 0xFF, 0xFF, 0xFF};
         button->text_color = tc;
         button->text_anchor = ei_anc_center;
+        /*int w;
+          int h;
+          hw_text_compute_size(button->text, button->text_font, &w, &h);
+          button->widget.requested_size = (ei_size(w,h));
+          */
+        button->widget.requested_size = ei_size(20, strlen(button->text)*10);
         button->img = NULL;
         button->img_rect = malloc(sizeof(ei_rect_t));
         ei_point_t p = {10,10};
@@ -287,13 +323,20 @@ void toplevel_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 ei_surface_t pick_surface, ei_rect_t* clipper){
         ei_toplevel_t *toplevel;
         toplevel = (ei_toplevel_t*)widget;
+        if (surface){
         // lock de la surface
         hw_surface_lock(surface);
         ei_fill(surface, &toplevel->color,clipper);
         //unlock de la surface
         hw_surface_unlock(surface);
-
-
+        }
+        
+        if (pick_surface) {
+        /* Dessin de la surface de picking */
+        hw_surface_lock(pick_surface);
+        ei_fill(pick_surface, toplevel->widget.pick_color,clipper);
+        hw_surface_unlock(pick_surface);
+        }
 }
 void toplevel_setdefaults(struct ei_widget_t* widget){
         // on commence par effectuer un recast
