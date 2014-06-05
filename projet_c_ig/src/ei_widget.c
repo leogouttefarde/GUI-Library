@@ -10,12 +10,15 @@
 // pour malloc et NULL
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 #include "ei_widget.h"
 #include "ei_widgettypes.h"
 #include "ei_utils.h"
 
-static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0xFF};
-
+// Couleur de picking courante, qu'on incrémente a chaque creation de widget
+static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0x00};
+// Root_widget, nécessaire pour pick_widget
+static ei_widget_t *root_widget;
 
 void increase_color(ei_color_t *color){
         if(color->red < 0xFF) {
@@ -83,9 +86,6 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
 
         if (widget) {
                 widget->wclass = wclass;
-
-
-
                 // Initialisation des attributs communs
                 if (parent) {
                         widget->parent = parent;
@@ -97,6 +97,10 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
 
                         if (!parent->children_head)
                                 parent->children_head = widget;
+                }
+                // l'unique widget sans parent est le root_widget
+                else {
+                        root_widget = widget;
                 }
 
                 // La couleur courante est une variable globale
@@ -138,6 +142,47 @@ void ei_widget_destroy (ei_widget_t* widget){
 }
 
 
+// VERIFIER LES INIEG STRICTES
+// Detection de la presence d'un point dans un rectangle
+bool ei_point_in_rectangle(ei_rect_t rect, ei_point_t pt){
+        ei_point_t tl = rect.top_left;
+        int w = rect.size.width;
+        int h = rect.size.height;
+        return  (pt.x >= tl.x && pt.x < tl.x + w && pt.y >= tl.y
+                        && pt.y < tl.y + h);
+}
+
+// Fonction auxiliaire recursive pour la fonction precedente
+// Inspirée de la boucle de ei_application.c
+ei_widget_t* ei_widget_pick_loop(ei_widget_t *widget, ei_point_t where, bool go_right){
+        ei_widget_t* result;
+        if (widget){
+                if (go_right){
+                        // Le widget courant est prioritaire, on renvoie son
+                        // adresse si il contient le point where
+                        if(ei_point_in_rectangle(widget->screen_location, where)){
+                                return widget;
+                        }
+                        // Le prochain frere est le deuxieme widget le plus
+                        // prioritaire
+                        result = ei_widget_pick_loop(widget->next_sibling, where, true);
+                        if (result){
+                                return result;
+                        }
+                }
+                // Les enfants du widget courant ont la troisième priorité
+                result = ei_widget_pick_loop(widget->children_head, where, true);
+                if (result) {
+                        return result;
+                }
+                // Enfin on passe aux enfants du prochain frere
+                result = ei_widget_pick_loop(widget->next_sibling, where, false);
+
+                return result;
+        }
+        return NULL;
+
+}
 /**
  * @brief	Returns the widget that is at a given location on screen.
  *
