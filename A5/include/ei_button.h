@@ -3,6 +3,7 @@
 
 
 #include "ei_types.h"
+#include "hw_interface.h"
 
 typedef enum {
 	complet = 0,
@@ -17,8 +18,11 @@ ei_linked_point_t* trait(ei_point_t queue, ei_point_t tete, ei_linked_point_t* s
 ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_rect_t partie);
 
 
-/*
-void ei_button_draw(ei_rect_t rectangle,int rayon,int marge); 
-*/
+void ei_button_draw(ei_surface_t window,
+	  	ei_rect_t rectangle,
+		ei_color_t couleur,
+		ei_relief_t relief);
+
+void free_lp(ei_linked_point_t* Liste);
 
 #endif

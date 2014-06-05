@@ -1,5 +1,4 @@
 #include "ei_button.h"
-#include "hw_interface.h"
 #include "ei_draw.h"
 #include <stdlib.h>
 #include <stdio.h>
@@ -149,7 +148,8 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,
 
 	if (relief==ei_relief_none) {
 		Liste=ei_button_rounded_frame(rectangle,rayon,0);
-		ei_draw_polygon(window,Liste,couleur,NULL);
+		ei_draw_polygon(window,Liste,couleur,&rectangle);
+		free_lp(Liste);
 	}
 	else {
 		int marge=rayon*4/10;
@@ -175,9 +175,9 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,
 		}
 
 			ei_linked_point_t* partie_haute=ei_button_rounded_frame(rectangle,rayon,1);
-			ei_draw_polygon(window,partie_haute,couleur_haute,NULL);
+			ei_draw_polygon(window,partie_haute,couleur_haute,&rectangle);
 			ei_linked_point_t* partie_basse=ei_button_rounded_frame(rectangle,rayon,-1);
-			ei_draw_polygon(window,partie_basse,couleur_basse,NULL);
+			ei_draw_polygon(window,partie_basse,couleur_basse,&rectangle);
 
 			ei_rect_t rectangle_interieur;
 			rectangle_interieur.top_left.x=rectangle.top_left.x+marge;
@@ -186,7 +186,20 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,
 			rectangle_interieur.size.height=rectangle.size.height-4*marge;
 
 			Liste=ei_button_rounded_frame(rectangle_interieur,rayon-marge,0);
-			ei_draw_polygon(window,Liste,couleur,NULL);
+			ei_draw_polygon(window,Liste,couleur,&rectangle_interieur);
+
+			free_lp(partie_haute);
+			free_lp(partie_basse);
+			free_lp(Liste);
+	}
+}
+
+void free_lp(ei_linked_point_t* Liste) {
+	ei_linked_point_t* Suivant;
+	while (Liste!=NULL) {
+		Suivant=Liste->next;
+		free(Liste);
+		Liste=Suivant;
 	}
 }
 
