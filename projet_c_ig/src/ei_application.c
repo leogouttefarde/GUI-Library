@@ -17,13 +17,11 @@
 #include "ei_common.h"
 #include "ei_event.h"
 #include "ei_widgettypes.h"
+#include "ei_global.h"
 
-static ei_surface_t root_surface = NULL;
-static ei_widget_t *root_widget = NULL;
 static ei_bool_t quit_request = EI_FALSE;
 static ei_linked_rect_t *rects_first = NULL;
 static ei_linked_rect_t *rects_last = NULL;
-static ei_surface_t picking = NULL;
 
 // Peut-être pas dans le bon fichier
 // Enfonce les boutons
@@ -78,15 +76,17 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 {
         hw_init();
 
-        root_surface = hw_create_window(main_window_size, fullscreen);
-
+        ei_set_root_surface(hw_create_window(main_window_size, fullscreen));
+        // Enregistrement des classes
         ei_frame_register_class();
         ei_button_register_class();
         ei_toplevel_register_class();
-        root_widget = ei_widget_create ("frame", NULL);
+        // Initialisation du root_widget
+        ei_set_root(ei_widget_create ("frame", NULL));
 
         ei_register_placer_manager();
 
+        ei_widget_t *root_widget = ei_get_root();
         ei_place(root_widget, NULL,NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
 
         ei_rect_t rect;
@@ -95,7 +95,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         rect.size = *main_window_size;
         ei_app_invalidate_rect(&rect);
 
-        picking = hw_surface_create(root_surface, main_window_size, EI_TRUE);
+        ei_set_picking_surface(hw_surface_create(ei_get_root_surface(), main_window_size, EI_TRUE));
 
         // Pour gérer le clic sur les boutons ils faut faire un bind sur le tag
         // "button" dans cette fonction avec les callback 1 et 2 définies dans
@@ -110,6 +110,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
  */
 void ei_app_free()
 {
+        ei_surface_t picking = ei_get_picking_surface();
         if (picking)
                 hw_surface_free(picking);
 }
@@ -140,7 +141,7 @@ void ei_app_run()
 {
         ei_event_t event;
         do {
-                ei_widget_t *widget = ei_app_root_widget();
+                ei_widget_t *widget = ei_get_root();
 
                 // Cette boucle me paraissait fausse
                 // Car elle ne parcourt pas tous les widgets (seulement les fils
@@ -159,6 +160,7 @@ void ei_app_run()
                    }
                    */
 
+                ei_surface_t root_surface = ei_get_root_surface();
                 hw_surface_update_rects(root_surface, rects_first);
 
                 /* Empty rects list */
@@ -209,15 +211,16 @@ void ei_app_quit_request()
         quit_request = EI_TRUE;
 }
 
+
 /**
  * \brief	Returns the "root widget" of the application: a "frame" widget that encapsulate the
  *		root window.
  *
  * @return 			The root widget.
  */
-ei_widget_t* ei_app_root_widget()
-{
-        return root_widget;
+ei_widget_t* ei_app_root_widget(){
+
+        return ei_get_root();
 }
 
 /**
@@ -226,14 +229,8 @@ ei_widget_t* ei_app_root_widget()
  *
  * @return 			The surface of the root window.
  */
-ei_surface_t ei_app_root_surface()
-{
-        return root_surface;
-}
+ei_surface_t ei_app_root_surface(){
 
-ei_surface_t ei_app_picking_surface()
-{
-        return picking;
+        return ei_get_root_surface();
 }
-
 
