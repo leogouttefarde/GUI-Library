@@ -78,15 +78,21 @@ void ei_app_free()
 
 
 // Loop pour ei_app_run
-void ei_app_run_loop(ei_widget_t *widget)
-        {
-                if (widget){
-			if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)
-                                widget->geom_params->manager->runfunc(widget);
-                
-                        ei_app_run_loop(widget->next_sibling);
-                        ei_app_run_loop(widget->children_head);
+void ei_app_run_loop(ei_widget_t *widget, bool go_right)
+        //
+        if (widget){
+                if (go_right 
+                                && widget->geom_params 
+                                && widget->geom_params->manager 
+                                && widget->geom_params->manager->runfunc){
+                widget->geom_params->manager->runfunc(widget);
                 }
+
+                if (go_right) {
+                        ei_app_run_loop(widget->next_sibling, true);
+                }
+                ei_app_run_loop(widget->children_head, true);
+                ei_app_run_loop(widget->next_sibling, false);
         }
 
 /**
@@ -102,7 +108,7 @@ void ei_app_run()
                 // Cette boucle me paraissait fausse
                 // Car elle ne parcourt pas tous les widgets (seulement les fils
                 // du dernier frere)
-                ei_app_run_loop(widget);
+                ei_app_run_loop(widget, true);
                 /*
                    while (widget) {
                    if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)
