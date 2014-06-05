@@ -4,6 +4,7 @@
 
 #include "ei_types.h"
 #include "hw_interface.h"
+#include "ei_widgettypes.h"
 
 typedef enum {
 	complet = 0,
@@ -26,7 +27,7 @@ void ei_button_draw_loc(ei_surface_t window,
 		int rayon,
 		int marge);
 
-void ei_button_text(char* text, ei_font_t text_font,ei_anchor_t);
+void ei_button_text(char* text, ei_font_t text_font, ei_anchor_t anchor);
 
 void free_lp(ei_linked_point_t* Liste);
 

@@ -14,7 +14,9 @@ MATHFLAGS 	:= -lm
 
 # The list of objects to include in the library
 
-LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o ${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o ${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o
+LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
+			${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o \
+			${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o ${OBJDIR}/ei_button.o
 
 
 
@@ -41,7 +43,7 @@ INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL
 LINK		= ${CC}
 LIBEI		= ${OBJDIR}/libei.a
 LIBEIBASE	= ${PLATDIR}/libeibase.a
-LIBS		= ${LIBEIBASE} -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image
+LIBS		= ${LIBEIBASE} -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image -lm
 
 	else
 
