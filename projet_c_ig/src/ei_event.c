@@ -13,18 +13,32 @@
 
 #include "ei_event.h"
 
+/* Event link */
+typedef struct ei_ev_link_t {
+	ei_tag_t tag;
+	ei_widget_t *widget;
+	ei_callback_t callback;
+	void *user_param;
+	struct ei_ev_link_t *next;
+} ei_ev_link_t;
 
+/* Event links */
+typedef struct ei_ev_links_t {
+	struct ei_ev_link_t *head;
+	struct ei_ev_link_t *tail;
+} ei_ev_links_t;
 
-typedef struct ei_binding_t {
-        ei_linked_tag_t ltag;
-        ei_widget_t *widget;
-        ei_event_t event;
-        ei_callback_t callback;
-} ei_binding_t;
+/* Event table */
+ei_ev_links_t ei_events[ei_ev_last] = {
+	{ NULL, NULL },
+	{ NULL, NULL },
+	{ NULL, NULL },
+	{ NULL, NULL },
+	{ NULL, NULL },
+	{ NULL, NULL },
+	{ NULL, NULL }
+};
 
-
-ei_binding_t *first = NULL;
-ei_binding_t *last = NULL;
 
 
 /**
@@ -41,33 +55,33 @@ ei_binding_t *last = NULL;
  *				called.
  */
 void ei_bind(ei_eventtype_t eventtype,
-                ei_widget_t *widget,
-                ei_tag_t tag,
-                ei_callback_t callback,
-                void *user_param)
+		ei_widget_t *widget,
+		ei_tag_t tag,
+		ei_callback_t callback,
+		void *user_param)
 {
-        ei_binding_t *binding = malloc(sizeof(ei_binding_t));
-        memset(binding, 0, sizeof(ei_binding_t));
+	if (eventtype < ei_ev_last) {
+		ei_ev_link_t *link = malloc(sizeof(ei_ev_link_t));
 
-        binding->event.type = eventtype;
-        binding->callback = callback;
+		link->widget = widget;
+		link->callback = callback;
+		link->user_param = user_param;
+		link->next = NULL;
 
-        if (eventtype == ei_ev_app)
-                binding->event.param.application.user_param = user_param;
+		if (widget == NULL)
+			link->tag = tag;
 
-        if (widget)
-                binding->widget = widget;
-        else
-                binding->ltag.tag = tag;
+		ei_ev_links_t *links = &ei_events[eventtype];
 
-        if (!first) {
-                first = binding;
-                last = first;
-        }
-        else {
-                last->ltag.next = binding;
-                last = binding;
-        }
+		if (!links->head) {
+			links->head = link;
+			links->tail = link;
+		}
+		else {
+			links->tail->next = link;
+			links->tail = link;
+		}
+	}
 }
 
 /**
@@ -78,57 +92,83 @@ void ei_bind(ei_eventtype_t eventtype,
  *				called to create the binding.
  */
 void ei_unbind(ei_eventtype_t eventtype,
-                ei_widget_t *widget,
-                ei_tag_t tag,
-                ei_callback_t callback,
-                void *user_param)
+		ei_widget_t *widget,
+		ei_tag_t tag,
+		ei_callback_t callback,
+		void *user_param)
 {
-        ;
+	;
 }
 
 void ei_event_process(ei_event_t *event)
 {
-        ei_binding_t *binding = first;
-        ei_bool_t ev_match;
-        while (binding) {
-                ev_match = EI_FALSE;
+	if (!event || event->type >= ei_ev_last)
+		return;
 
-                if (binding->callback && (event->type == binding->event.type)) {
-                        if (!strcmp(binding->ltag.tag, "all"))
-                                ev_match = EI_TRUE;
-
-                        else {
-                                switch (event->type) {
-                                case ei_ev_app:
-                                        break;
-
-                                case ei_ev_keydown:
-                                case ei_ev_keyup:
-                                        break;
-
-                                case ei_ev_mouse_move:
-                                        // if (event->param.mouse.where.x)
-                                        // 	ei_app_picking_surface();
-                                        // if (pick == binding->widget->pick)
-                                        // 	ev_match = EI_TRUE;
-
-                                case ei_ev_mouse_buttondown:
-                                case ei_ev_mouse_buttonup:
-                                        //if (event->param.mouse.button)
-                                        break;
-
-                                }
-                        }
-
-                        if (ev_match) {
-                                ei_bool_t result;
-                                result = binding->callback(NULL, event, NULL);
-                        }
-                }
+	ei_bool_t bind, done = EI_FALSE;
+	ei_ev_links_t links = ei_events[event->type];
+	ei_ev_link_t *link = links.head;
+	ei_widget_t *widget = NULL;
 
 
-                binding = binding->ltag.next;
-        }
+	if (!link)
+		done = EI_TRUE;
+
+	while (!done) {
+		bind = EI_FALSE;
+
+		if (link->callback) {
+			if (link->tag && !strcmp(link->tag, "all"))
+				bind = EI_TRUE;
+
+			else {
+				switch (event->type) {
+				case ei_ev_app:
+					bind = EI_TRUE;
+					break;
+
+				case ei_ev_keydown:
+				case ei_ev_keyup:
+					bind = EI_TRUE;
+					break;
+
+				case ei_ev_mouse_buttondown:
+				case ei_ev_mouse_buttonup:
+				case ei_ev_mouse_move:
+					/*
+					// Get current mouse picking
+					cur_pick = get_picking(event->param.mouse.where, ei_app_picking_surface());
+
+					if (link->widget && (link->widget->pick == cur_pick)) // If widget picking match
+						bind = EI_TRUE, widget = link->widget;
+
+					else if (link->tag) {
+						// for all widgets if (!done)
+						if (!strcmp(widget->wclass->name, link->tag)) {
+							if (widget->pick == cur_pick) {
+								bind = EI_TRUE;
+							}
+							if (bind)
+								done = link->callback(widget, event, link->user_param);
+						}
+					}
+					*/
+					break;
+
+				default:
+					;
+				}
+			}
+
+			if (bind)
+				done = link->callback(widget, event, link->user_param);
+		}
+
+
+		link = link->next;
+		if (!link)
+			done = EI_TRUE;
+	}
 }
 
 
