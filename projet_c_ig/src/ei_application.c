@@ -53,7 +53,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         ei_button_register_class();
         ei_toplevel_register_class();
         root_widget = ei_widget_create ("frame", NULL);
-
+        
         ei_register_placer_manager();
 
         ei_place(root_widget, NULL,NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
@@ -65,6 +65,10 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         ei_app_invalidate_rect(&rect);
 
         picking = hw_surface_create(root_surface, main_window_size, EI_TRUE);
+
+        // Pour gérer le clic sur les boutons ils faut faire un bind sur le tag
+        // "button" dans cette fonction avec les callback 1 et 2 définies dans
+        // ei_widget_class
 }
 
 /**
@@ -85,7 +89,7 @@ void ei_app_run_loop(ei_widget_t *widget){
                 // Le widget courant est a affiché en premier (il sera
                 // derriere)
                 if (widget->geom_params && widget->geom_params->manager
-                && widget->geom_params->manager->runfunc){
+                                && widget->geom_params->manager->runfunc){
                         widget->geom_params->manager->runfunc(widget);
                 }
                 // Ses enfants seront devant lui et derriere ses freres

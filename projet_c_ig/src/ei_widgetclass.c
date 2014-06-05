@@ -309,6 +309,18 @@ void	ei_button_register_class(){
         button_table->next = NULL;
 }
 
+
+// Peut-être pas dans le bon fichier
+ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, void
+                *user_param) {
+        return EI_TRUE;
+}
+
+ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
+                void *user_param){
+        return EI_TRUE;
+}
+
 /*************************** toplevel **************/
 // pointeur generique
 void *toplevel_alloc(){
@@ -324,18 +336,18 @@ void toplevel_draw(struct ei_widget_t* widget, ei_surface_t surface,
         ei_toplevel_t *toplevel;
         toplevel = (ei_toplevel_t*)widget;
         if (surface){
-        // lock de la surface
-        hw_surface_lock(surface);
-        ei_fill(surface, &toplevel->color,clipper);
-        //unlock de la surface
-        hw_surface_unlock(surface);
+                // lock de la surface
+                hw_surface_lock(surface);
+                ei_fill(surface, &toplevel->color,clipper);
+                //unlock de la surface
+                hw_surface_unlock(surface);
         }
-        
+
         if (pick_surface) {
-        /* Dessin de la surface de picking */
-        hw_surface_lock(pick_surface);
-        ei_fill(pick_surface, toplevel->widget.pick_color,clipper);
-        hw_surface_unlock(pick_surface);
+                /* Dessin de la surface de picking */
+                hw_surface_lock(pick_surface);
+                ei_fill(pick_surface, toplevel->widget.pick_color,clipper);
+                hw_surface_unlock(pick_surface);
         }
 }
 void toplevel_setdefaults(struct ei_widget_t* widget){
