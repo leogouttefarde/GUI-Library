@@ -12,8 +12,47 @@
 #include <string.h>
 #include "ei_widget.h"
 #include "ei_widgettypes.h"
+#include "ei_utils.h"
+
+static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0xFF};
 
 
+void increase_color(ei_color_t *color){
+        if(color->red < 0xFF) {
+                (color->red)++;
+        }
+        else{
+                if (color->green < 0xFF) {
+                        (color->green)++;
+                }
+                else{
+                        if(color->blue <0xFF) {
+                                (color->blue)++;
+                        }
+                        else{
+                                if (color->alpha < 0xFF) {
+                                        (color->alpha)++;
+                                }
+                                else {
+                                        exit(-1);
+                                }
+                        }
+                }
+        }
+
+}
+
+uint32_t unique_color_id(ei_color_t color){
+        uint32_t result = 0;
+        result = color.red;
+        result*255;
+        result = result + color.green;
+        result*255;
+        result = result + color.blue;
+        result*255;
+        result = result + color.alpha;
+        return result;
+}
 
 /**
  * @brief	Creates a new instance of a widget of some particular class, as a descendant of
@@ -33,6 +72,7 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
                 ei_widget_t* parent){
         ei_widget_t *widget = NULL;
         ei_widgetclass_t *wclass;
+
         // Configuration grace au paramètres
         wclass = ei_widgetclass_from_name(class_name);
         //printf("%x wclass allocfunc\n", wclass->allocfunc);
@@ -44,12 +84,10 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
         if (widget) {
                 widget->wclass = wclass;
 
-                // Initialisation des attributs
-                wclass->setdefaultsfunc(widget);
 
 
+                // Initialisation des attributs communs
                 if (parent) {
-                        // Initialisation des attributs communs
                         widget->parent = parent;
 
                         if (parent->children_tail) {
@@ -61,17 +99,23 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
                                 parent->children_head = widget;
                 }
 
+                // La couleur courante est une variable globale
                 ei_color_t *pc = malloc(sizeof(ei_color_t));
                 memset(pc, 0, sizeof(ei_color_t));
+                *pc = current_pick_color;
+                increase_color(&current_pick_color);
                 widget->pick_color = pc;
 
-                ei_size_t rs = {10,10};
-                widget->requested_size = rs;
+                widget->pick_id = unique_color_id(current_pick_color); 
 
-                ei_rect_t sl = {{0,0}, {10,10}};
-                widget->screen_location = sl;
-                widget->content_rect = &widget->screen_location;
+                widget->requested_size = ei_size(10,10);
 
+                widget->screen_location = ei_rect(ei_point_zero(), widget->requested_size);
+                widget->content_rect = &(widget->screen_location);
+
+                // Initialisation des attributs uniques + requested_size si
+                // texte
+                wclass->setdefaultsfunc(widget);
 
                 return widget;
         }

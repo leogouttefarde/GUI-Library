@@ -14,6 +14,7 @@
 #include "ei_widgetclass.h"
 #include "ei_widgettypes.h"
 #include "ei_shape.h"
+#include "ei_utils.h"
 
 // variable globale pour stocker les tables de pointeur
 static ei_widgetclass_t *frame_table = NULL;
@@ -171,12 +172,10 @@ void frame_setdefaults(struct ei_widget_t* widget){
         // ei_surface_t represente un pointeur générique
         frame->img = NULL;
         frame->img_anchor = ei_anc_center;
-        ei_point_t p = {0,0};
         frame->img_rect = malloc(sizeof(ei_rect_t));
         if (frame->img_rect) {
-                frame->img_rect->top_left = p;
-                ei_size_t s = {10,10};
-                frame->img_rect->size = s;
+                frame->img_rect->top_left = ei_point_zero();
+                frame->img_rect->size = ei_size(10,10);
         }
 
         frame->relief = ei_relief_none;
