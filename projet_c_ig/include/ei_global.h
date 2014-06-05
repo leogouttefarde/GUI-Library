@@ -12,6 +12,8 @@
 #ifndef EI_GLOBAL_H
 #define EI_GLOBAL_H
 
+#include <stdbool.h>
+#include <stdlib.h>
 #include "hw_interface.h"
 #include "ei_types.h"
 #include "ei_widget.h"
@@ -25,4 +27,7 @@ void ei_set_picking_surface(ei_surface_t picking_surface_set);
 ei_widget_t* ei_get_root();
 ei_surface_t ei_get_root_surface();
 ei_surface_t ei_get_picking_surface();
+
+ei_surface_t* ei_get_root_surface_pointer();
+ei_surface_t* ei_get_picking_surface_pointer();
 #endif
