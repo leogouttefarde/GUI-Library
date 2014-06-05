@@ -71,8 +71,7 @@ void ei_bind(ei_eventtype_t eventtype,
                 ei_widget_t *widget,
                 ei_tag_t tag,
                 ei_callback_t callback,
-                void *user_param)
-{
+                void *user_param){
         /*
            <<<<<<< HEAD
            ei_linked_binding_t *binding = malloc(sizeof(ei_linked_binding_t));
@@ -91,28 +90,28 @@ void ei_bind(ei_eventtype_t eventtype,
 
            ei_linked_binding_t *tmp = first;
            first = binding;
-           first->next = tmp;
-        //} */
-if (eventtype < ei_ev_last) {
-        ei_ev_link_t *link = malloc(sizeof(ei_ev_link_t));
+           first->next = tmp;*/
+        if (eventtype < ei_ev_last) {
+                ei_ev_link_t *link = malloc(sizeof(ei_ev_link_t));
 
-        link->widget = widget;
-        link->callback = callback;
-        link->user_param = user_param;
-        link->next = NULL;
+                link->widget = widget;
+                link->callback = callback;
+                link->user_param = user_param;
+                link->next = NULL;
 
-        if (widget == NULL)
-                link->tag = tag;
+                if (widget == NULL)
+                        link->tag = tag;
 
-        ei_ev_links_t *links = &ei_events[eventtype];
+                ei_ev_links_t *links = &ei_events[eventtype];
 
-        if (!links->head) {
-                links->head = link;
-                links->tail = link;
-        }
-        else {
-                links->tail->next = link;
-                links->tail = link;
+                if (!links->head) {
+                        links->head = link;
+                        links->tail = link;
+                }
+                else {
+                        links->tail->next = link;
+                        links->tail = link;
+                }
         }
 }
 
