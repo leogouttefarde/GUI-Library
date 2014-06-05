@@ -1,4 +1,3 @@
-
 #include "ei_button.h"
 #include "hw_interface.h"
 #include "ei_draw.h"
@@ -12,7 +11,7 @@
 ei_linked_point_t* ei_button_arc(ei_point_t centre,int rayon,int angle_tete,int angle_queue,ei_linked_point_t* suivant) {
 	ei_linked_point_t* Point_suivant=suivant;
 	ei_linked_point_t* Point;
-	for (int theta=angle_queue; theta>=angle_tete; theta --) {
+	for (int theta=angle_queue; theta>=angle_tete; theta =theta-5) {
 		Point=malloc(sizeof(ei_linked_point_t));
 		float theta_rad=theta*Pi/180.0;
 		Point->point.x=centre.x+rayon*cos(theta_rad);
@@ -133,9 +132,16 @@ ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_
 			Liste=ei_button_arc(centre_bg,rayon,-135,-90,Liste);
 		}
 	}
-
 	return Liste;
 }
+
+/**
+	*\brief Trace un bouton en relief (enfoncé ou relevé) ou plat
+	*@param window surface sur laquelle on dessine le bouton
+	*@param rectangle le rectangle que l'on transforme en bouton
+	*@param couleur la couleur du bouton central
+	*@param relief si raised =>relevé,none=>plat,sinon enfoncé
+	*/
 
 void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,ei_relief_t relief) {
 	int rayon=MIN(rectangle.size.height,rectangle.size.width)/6;
@@ -159,7 +165,6 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,
 		couleur_assombrie.blue=couleur.blue*(1.0-coeff_couleur);
 		couleur_assombrie.alpha=255;
 
-
 		if (relief==ei_relief_raised) {
 			couleur_haute=couleur_eclairee;
 			couleur_basse=couleur_assombrie;
@@ -182,7 +187,6 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,
 
 			Liste=ei_button_rounded_frame(rectangle_interieur,rayon-marge,0);
 			ei_draw_polygon(window,Liste,couleur,NULL);
-
 	}
 }
 

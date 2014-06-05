@@ -70,13 +70,12 @@ int ei_main(int argc, char** argv) {
 		break;
 
 	case '2':
-	//test arc et trait linké
-		centre.x=300;centre.y=300;
-		Liste=ei_button_arc(centre,50,0,90,NULL);
-		
-
-		ei_draw_polygon(main_window, Liste, transp_blue, NULL);
-
+	//test bouton rond
+		centre.x=10;centre.y=10;
+		rectangle.top_left=centre;
+		rectangle.size.width=100;
+		rectangle.size.height=200;
+		ei_button_draw(main_window,rectangle,gris,ei_relief_raised);
 		break;
 
 	case '3':
@@ -107,7 +106,7 @@ int ei_main(int argc, char** argv) {
 		rectangle.top_left=centre;
 		rectangle.size.width=300;
 		rectangle.size.height=200;
-		ei_button_draw(main_window,rectangle,gris,ei_relief_sunken);
+		ei_button_draw(main_window,rectangle,red,ei_relief_sunken);
 
 		break;
 
