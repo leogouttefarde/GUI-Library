@@ -74,8 +74,9 @@ int ei_main(int argc, char** argv) {
 		centre.x=10;centre.y=10;
 		rectangle.top_left=centre;
 		rectangle.size.width=100;
-		rectangle.size.height=200;
-		ei_button_draw(main_window,rectangle,gris,ei_relief_raised);
+		rectangle.size.height=100;
+		Liste=ei_button_rounded_frame(rectangle,50,0);
+		ei_draw_polygon(main_window,Liste,red,NULL);
 		break;
 
 	case '3':
