@@ -45,11 +45,11 @@ void increase_color(ei_color_t *color){
 uint32_t unique_color_id(ei_color_t color){
         uint32_t result = 0;
         result = color.red;
-        result*255;
+        result = result*255;
         result = result + color.green;
-        result*255;
+        result =result*255;
         result = result + color.blue;
-        result*255;
+        result = result*255;
         result = result + color.alpha;
         return result;
 }
