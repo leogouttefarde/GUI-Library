@@ -3,6 +3,7 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <math.h>
+#include <assert.h>
 #define Pi 3.14
 #define MIN(a,b) (((a)<(b))?(a):(b))
 #define MAX(a,b) (((a)>(b))?(a):(b))
@@ -12,6 +13,7 @@ ei_linked_point_t* ei_button_arc(ei_point_t centre,int rayon,int angle_tete,int 
 	ei_linked_point_t* Point;
 	for (int theta=angle_queue; theta>=angle_tete; theta =theta-5) {
 		Point=malloc(sizeof(ei_linked_point_t));
+		assert(Point!=NULL);
 		float theta_rad=theta*Pi/180.0;
 		Point->point.x=centre.x+rayon*cos(theta_rad);
 		Point->point.y=centre.y-rayon*sin(theta_rad);
@@ -43,6 +45,7 @@ ei_linked_point_t* trait(ei_point_t queue, ei_point_t tete, ei_linked_point_t* s
 	ei_linked_point_t* Point;
 	for (int i=0; i<=nb_iterations; i++) {
 		Point=malloc(sizeof(ei_linked_point_t));
+		assert(Point!=NULL);
 		Point->point.x=queue.x+i*coeffx;
 		Point->point.y=queue.y+i*coeffy;
 		Point->next=Point_suivant;
@@ -74,19 +77,12 @@ ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_
 
 	if (partie==complet) {
 		Liste=trait(top_gauche,top_droit,Liste);
-		
 		Liste=ei_button_arc(centre_td,rayon,0,90,Liste);
-
 		Liste=trait(droite_top,droite_bot,Liste);
-
 		Liste=ei_button_arc(centre_bd,rayon,-90,0,Liste);
-
 		Liste=trait(bot_droite,bot_gauche,Liste);
-
 		Liste=ei_button_arc(centre_bg,rayon,-180,-90,Liste);
-
 		Liste=trait(gauche_bot,gauche_top,Liste);
-
 		Liste=ei_button_arc(centre_tg,rayon,-270,-180,Liste);
 	}
 	else {
@@ -98,40 +94,38 @@ ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_
 
 		if (partie==haute) {
 			Liste=ei_button_arc(centre_bg,rayon,180,225,Liste);
-
 			Liste=trait(gauche_bot,gauche_top,Liste);
-
 			Liste=ei_button_arc(centre_tg,rayon,90,180,Liste);
-
 			Liste=trait(top_gauche,top_droit,Liste);
-
 			Liste=ei_button_arc(centre_td,rayon,45,90,Liste);
-		
 			Liste=trait(arrondi_td,pt_int_td,Liste);
-
 			Liste=trait(pt_int_td,pt_int_bg,Liste);
-
 			Liste=trait(pt_int_bg,arrondi_bg,Liste);
 		}
 		else {
 			Liste=trait(arrondi_bg,pt_int_bg,Liste);
-
 			Liste=trait(pt_int_bg,pt_int_td,Liste);
-
 			Liste=trait(pt_int_td,arrondi_td,Liste);
-
 			Liste=ei_button_arc(centre_td,rayon,0,45,Liste);
-
 			Liste=trait(droite_top,droite_bot,Liste);
-
 			Liste=ei_button_arc(centre_bd,rayon,-90,0,Liste);
-
 			Liste=trait(bot_droite,bot_gauche,Liste);
-	
 			Liste=ei_button_arc(centre_bg,rayon,-135,-90,Liste);
 		}
 	}
 	return Liste;
+}
+
+void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_button_t *button) {
+	ei_button_draw_loc(window,rectangle,*button->color,button->relief,button->corner_radius,button->border_width);
+
+	int marge=button->border_width+2; //2 pixels en plus pour la visibilité
+	ei_rect_t rectangle_reduit;
+	rectangle_reduit.top_left.x=rectangle.top_left.x+marge;
+	rectangle_reduit.top_left.y=rectangle.top_left.y+marge;
+	rectangle_reduit.size.width=rectangle.size.width-2*marge;
+	rectangle_reduit.size.height=rectangle.size.height-2*marge;
+	ei_button_text(window,rectangle_reduit, button->text, button->text_font, button->text_color, button->text_anchor);
 }
 
 /**
@@ -140,11 +134,9 @@ ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_
 	*@param rectangle le rectangle que l'on transforme en bouton
 	*@param couleur la couleur du bouton central
 	*@param relief si raised =>relevé,none=>plat,sinon enfoncé
+	*@param le rayon des angles
+	*@param la marge
 	*/
-void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_button_t *button) {
-	ei_button_draw_loc(window,rectangle,*button->color,button->relief,button->corner_radius,button->border_width);
-}
-
 void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,ei_color_t couleur,ei_relief_t relief,int rayon, int marge) {
 	ei_linked_point_t* Liste=NULL;
 
@@ -195,8 +187,54 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,ei_color_t coul
 	}
 }
 
-void ei_button_text(char* text, ei_font_t text_font, ei_anchor_t anchor) {
-	;
+void ei_button_text(ei_surface_t window,ei_rect_t clipper,char* text, ei_font_t font,ei_color_t color, ei_anchor_t anchor) {
+	int width;
+	int height;
+	hw_text_compute_size(text,ei_default_font,&width,&height);
+	int longueur=clipper.size.width;
+	int hauteur=clipper.size.height;
+	ei_point_t ancre;
+	ei_point_t top_gauche=clipper.top_left;
+	ei_point_t top_mid={top_gauche.x+longueur/2,top_gauche.y};
+	ei_point_t centre={top_gauche.x+longueur/2,top_gauche.y+hauteur/2};
+	ei_point_t top_droite={top_gauche.x+longueur,top_gauche.y+hauteur*0};
+	ei_point_t droite_mid={top_gauche.x+longueur,top_gauche.y+hauteur/2};
+	ei_point_t bot_droite={top_gauche.x+longueur,top_gauche.y+hauteur};
+	ei_point_t bot_mid={top_gauche.x+longueur/2,top_gauche.y+hauteur};
+	ei_point_t bot_gauche={top_gauche.x+longueur*0,top_gauche.y+hauteur};
+	ei_point_t gauche_mid={top_gauche.x+longueur*0,top_gauche.y+hauteur/2};
+
+	switch (anchor) {
+		case ei_anc_none: ;
+		case ei_anc_center :
+			ancre=plus(centre,-width/2,-height/2);
+			break;
+		case ei_anc_north : 
+			ancre=plus(top_mid,-width/2,0);
+			break;
+		case ei_anc_northeast: 
+			ancre=plus(top_droite,-width,0);
+			break;
+		case ei_anc_east:
+			ancre=plus(droite_mid,-width,0);
+			break;
+		case ei_anc_southeast:
+			ancre=plus(bot_droite,-width,-height);
+			break;
+		case ei_anc_south:
+			ancre=plus(bot_mid,-width/2,-height);
+			break;
+		case ei_anc_southwest:
+			ancre=plus(bot_gauche,0,-height);
+			break;
+		case ei_anc_west:
+			ancre=plus(gauche_mid,0,-width/2);
+			break;
+		case ei_anc_northwest:
+			ancre=top_gauche;
+			break;
+	}	
+	ei_draw_text(window,&ancre,text, font,&color,&clipper);
 }
 
 void free_lp(ei_linked_point_t* Liste) {
@@ -208,3 +246,7 @@ void free_lp(ei_linked_point_t* Liste) {
 	}
 }
 
+ei_point_t plus(ei_point_t A, int abc, int ord) {
+	ei_point_t point={A.x+abc,A.y+ord};
+	return point;
+}
