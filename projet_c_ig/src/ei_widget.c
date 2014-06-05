@@ -134,14 +134,16 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
  * @param	widget		The widget that is to be destroyed.
  */
 void ei_widget_destroy (ei_widget_t* widget){
+        ei_widget_t *current;
         if (widget){
-                ei_widget_destroy(widget->next_sibling);
-                ei_widget_destroy(widget->children_head);
+                current = widget->children_head;
+                while (current) {
+                        ei_widget_destroy(current);
+                        current = current->next_sibling;
+                }
                 widget->wclass->releasefunc(widget);
         }
 }
-
-
 // VERIFIER LES INIEG STRICTES
 // Detection de la presence d'un point dans un rectangle
 bool ei_point_in_rectangle(ei_rect_t rect, ei_point_t pt){
