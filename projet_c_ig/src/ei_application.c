@@ -75,43 +75,63 @@ void ei_app_free()
 		hw_surface_free(picking);
 }
 
+
+
+// Loop pour ei_app_run
+void ei_app_run_loop(ei_widget_t *widget)
+        {
+                if (widget){
+			if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)
+                                widget->geom_params->manager->runfunc(widget);
+                
+                        ei_app_run_loop(widget->next_sibling);
+                        ei_app_run_loop(widget->children_head);
+                }
+        }
+
 /**
  * \brief	Runs the application: enters the main event loop. Exits when
  *		\ref ei_app_quit_request is called.
  */
 void ei_app_run()
 {
-	ei_event_t event;
-	do {
-		ei_widget_t *widget = ei_app_root_widget();
+        ei_event_t event;
+        do {
+                ei_widget_t *widget = ei_app_root_widget();
 
-		while (widget) {
-			if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)
-				widget->geom_params->manager->runfunc(widget);
+                // Cette boucle me paraissait fausse
+                // Car elle ne parcourt pas tous les widgets (seulement les fils
+                // du dernier frere)
+                ei_app_run_loop(widget);
+                /*
+                   while (widget) {
+                   if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)
+                   widget->geom_params->manager->runfunc(widget);
 
-			if (widget->next_sibling)
-				widget = widget->next_sibling;
+                   if (widget->next_sibling)
+                   widget = widget->next_sibling;
 
-			else
-				widget = widget->children_head;
-		}
+                   else
+                   widget = widget->children_head;
+                   }
+                   */
 
-		hw_surface_update_rects(root_surface, rects_first);
+                hw_surface_update_rects(root_surface, rects_first);
 
-		/* Empty rects list */
-		while (rects_first && rects_first->next) {
-			ei_linked_rect_t *next = rects_first->next;
-			SAFE_FREE(rects_first);
-			rects_first = next;
-		}
-		memset(&rects_first->rect, 0, sizeof(ei_rect_t));
-		rects_last = rects_first;
+                /* Empty rects list */
+                while (rects_first && rects_first->next) {
+                        ei_linked_rect_t *next = rects_first->next;
+                        SAFE_FREE(rects_first);
+                        rects_first = next;
+                }
+                memset(&rects_first->rect, 0, sizeof(ei_rect_t));
+                rects_last = rects_first;
 
-		hw_event_wait_next(&event);
+                hw_event_wait_next(&event);
 
-		ei_event_process(&event);
+                ei_event_process(&event);
 
-	} while (!quit_request);
+        } while (!quit_request);
 }
 
 /**
@@ -123,18 +143,18 @@ void ei_app_run()
  */
 void ei_app_invalidate_rect(ei_rect_t* rect)
 {
-	ei_linked_rect_t *linked_rect = malloc(sizeof(ei_linked_rect_t));
-	linked_rect->rect = *rect;
-	linked_rect->next = NULL;
+        ei_linked_rect_t *linked_rect = malloc(sizeof(ei_linked_rect_t));
+        linked_rect->rect = *rect;
+        linked_rect->next = NULL;
 
-	if (rects_last) {
-		rects_last->next = linked_rect;
-		rects_last = linked_rect;
-	}
-	else {
-		rects_first = linked_rect;
-		rects_last = linked_rect;
-	}
+        if (rects_last) {
+                rects_last->next = linked_rect;
+                rects_last = linked_rect;
+        }
+        else {
+                rects_first = linked_rect;
+                rects_last = linked_rect;
+        }
 }
 
 /**
@@ -143,7 +163,7 @@ void ei_app_invalidate_rect(ei_rect_t* rect)
  */
 void ei_app_quit_request()
 {
-	quit_request = EI_TRUE;
+        quit_request = EI_TRUE;
 }
 
 /**
@@ -154,7 +174,7 @@ void ei_app_quit_request()
  */
 ei_widget_t* ei_app_root_widget()
 {
-	return root_widget;
+        return root_widget;
 }
 
 /**
@@ -165,12 +185,12 @@ ei_widget_t* ei_app_root_widget()
  */
 ei_surface_t ei_app_root_surface()
 {
-	return root_surface;
+        return root_surface;
 }
 
 ei_surface_t ei_app_picking_surface()
 {
-	return picking;
+        return picking;
 }
 
 
