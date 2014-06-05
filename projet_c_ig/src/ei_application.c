@@ -80,23 +80,18 @@ void ei_app_free()
 
 
 // Loop récursif pour ei_app_run qui respecte la hierarchie des widgets
-void ei_app_run_loop(ei_widget_t *widget, bool go_right){
-        // Si go_right est a true, on affiche le widget, puis a son frere etc.
-        // On appelle la fonction recursivement sur le premier fils du widget
-        // PUIS on demande a ses freres de d'appeler la fonction sur leurs fils
+void ei_app_run_loop(ei_widget_t *widget){
         if (widget){
-                if (go_right
-                                && widget->geom_params
-                                && widget->geom_params->manager
-                                && widget->geom_params->manager->runfunc){
+                // Le widget courant est a affiché en premier (il sera
+                // derriere)
+                if (widget->geom_params && widget->geom_params->manager
+                && widget->geom_params->manager->runfunc){
                         widget->geom_params->manager->runfunc(widget);
                 }
-
-                if (go_right) {
-                        ei_app_run_loop(widget->next_sibling, true);
-                }
-                ei_app_run_loop(widget->children_head, true);
-                ei_app_run_loop(widget->next_sibling, false);
+                // Ses enfants seront devant lui et derriere ses freres
+                ei_app_run_loop(widget->children_head);
+                // Les freres du widget courant sont enfin dessinés
+                ei_app_run_loop(widget->next_sibling);
         }
 }
 
@@ -113,7 +108,7 @@ void ei_app_run()
                 // Cette boucle me paraissait fausse
                 // Car elle ne parcourt pas tous les widgets (seulement les fils
                 // du dernier frere)
-                ei_app_run_loop(widget, true);
+                ei_app_run_loop(widget);
                 /*
                    while (widget) {
                    if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)

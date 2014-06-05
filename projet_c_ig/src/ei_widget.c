@@ -154,32 +154,29 @@ bool ei_point_in_rectangle(ei_rect_t rect, ei_point_t pt){
 
 // Fonction auxiliaire recursive pour la fonction precedente
 // Inspirée de la boucle de ei_application.c
-ei_widget_t* ei_widget_pick_loop(ei_widget_t *widget, ei_point_t where, bool go_right){
+ei_widget_t* ei_widget_pick_loop(ei_widget_t *widget, ei_point_t where){
         ei_widget_t* result;
         if (widget){
-                if (go_right){
-                        // Le widget courant est prioritaire, on renvoie son
-                        // adresse si il contient le point where
-                        if(ei_point_in_rectangle(widget->screen_location, where)){
-                                return widget;
-                        }
-                        // Le prochain frere est le deuxieme widget le plus
-                        // prioritaire
-                        result = ei_widget_pick_loop(widget->next_sibling, where, true);
-                        if (result){
-                                return result;
-                        }
-                }
-                // Les enfants du widget courant ont la troisième priorité
-                result = ei_widget_pick_loop(widget->children_head, where, true);
+                // Les freres du widget courant sont les plus prioritaires
+                result = ei_widget_pick_loop(widget->next_sibling, where);
                 if (result) {
                         return result;
                 }
-                // Enfin on passe aux enfants du prochain frere
-                result = ei_widget_pick_loop(widget->next_sibling, where, false);
+                // Le fils est le deuxieme widget le plus
+                // prioritaire
+                result = ei_widget_pick_loop(widget->children_head, where);
+                if (result){
+                        return result;
+                }
+                // Le widget courant est le moin prioritaire, on renvoie son
+                // adresse si il contient le point where
+                if(ei_point_in_rectangle(widget->screen_location, where)){
+                        return widget;
+                }
 
-                return result;
         }
+        // Si on est arrivé a une extremité (hauteur ou largeur) du parcours
+        // on a pas trouvé de widget
         return NULL;
 
 }
@@ -192,7 +189,7 @@ ei_widget_t* ei_widget_pick_loop(ei_widget_t *widget, ei_point_t where, bool go_
  *				at this location (except for the root widget).
  */
 ei_widget_t* ei_widget_pick (ei_point_t* where){
-        return NULL;
+        return ei_widget_pick_loop(root_widget, *where);
 }
 
 
