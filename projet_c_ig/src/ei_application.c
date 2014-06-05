@@ -16,6 +16,7 @@
 #include "ei_application.h"
 #include "ei_common.h"
 #include "ei_event.h"
+#include "ei_widgettypes.h"
 
 static ei_surface_t root_surface = NULL;
 static ei_widget_t *root_widget = NULL;
@@ -24,6 +25,36 @@ static ei_linked_rect_t *rects_first = NULL;
 static ei_linked_rect_t *rects_last = NULL;
 static ei_surface_t picking = NULL;
 
+// Peut-être pas dans le bon fichier
+// Enfonce les boutons
+ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, 
+                void *user_param) {
+        if (widget){
+                if (!strcmp(widget->wclass->name, "button")) {
+
+                        ei_button_t *button = (ei_button_t*)widget;
+                        button->relief = ei_relief_sunken;
+                }
+        }
+        return EI_FALSE;
+}
+
+// Quand on relache la souris sur le bouton
+ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
+                void *user_param){
+        ei_bool_t res;
+        if (widget){
+                if (!strcmp(widget->wclass->name, "button")) {
+                        ei_button_t *button = (ei_button_t*)widget;
+                        button->relief = ei_relief_raised;
+                        // Appel du callback du bouton
+                        if (button->callback){
+                                res = button->callback((ei_widget_t*)button, NULL, button->user_param);
+                        }
+                }
+        }
+        return EI_FALSE;
+}
 
 /**
  * \brief	Creates an application.
@@ -53,7 +84,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         ei_button_register_class();
         ei_toplevel_register_class();
         root_widget = ei_widget_create ("frame", NULL);
-        
+
         ei_register_placer_manager();
 
         ei_place(root_widget, NULL,NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
@@ -69,6 +100,8 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         // Pour gérer le clic sur les boutons ils faut faire un bind sur le tag
         // "button" dans cette fonction avec les callback 1 et 2 définies dans
         // ei_widget_class
+        ei_bind(ei_ev_mouse_buttondown, NULL,"button", button_callback_click, NULL);
+        ei_bind(ei_ev_mouse_buttonup, NULL,"button", button_callback_release, NULL);
 }
 
 /**

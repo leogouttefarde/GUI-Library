@@ -311,36 +311,6 @@ void	ei_button_register_class(){
 }
 
 
-// Peut-être pas dans le bon fichier
-// Enfonce les boutons
-ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, 
-                void *user_param) {
-        if (widget){
-                if (!strcmp(widget->wclass->name, "button")) {
-
-                        ei_button_t *button = (ei_button_t*)widget;
-                        button->relief = ei_relief_sunken;
-                }
-        }
-        return EI_FALSE;
-}
-
-// Quand on relache la souris sur le bouton
-ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
-                void *user_param){
-        ei_bool_t res;
-        if (widget){
-                if (!strcmp(widget->wclass->name, "button")) {
-                        ei_button_t *button = (ei_button_t*)widget;
-                        button->relief = ei_relief_raised;
-                        // Appel du callback du bouton
-                        if (button->callback){
-                                res = button->callback((ei_widget_t*)button, NULL, button->user_param);
-                        }
-                }
-        }
-        return EI_FALSE;
-}
 
 /*************************** toplevel **************/
 // pointeur generique
