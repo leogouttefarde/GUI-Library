@@ -17,7 +17,7 @@
 #include "ei_global.h"
 
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
-static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0x00};
+static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0xFF};
 
 void increase_color(ei_color_t *color){
         if(color->red < 0xFF) {
@@ -32,12 +32,8 @@ void increase_color(ei_color_t *color){
                                 (color->blue)++;
                         }
                         else{
-                                if (color->alpha < 0xFF) {
-                                        (color->alpha)++;
-                                }
-                                else {
-                                        exit(-1);
-                                }
+                                // Trop de widgets créés
+                                exit(-1);
                         }
                 }
         }
