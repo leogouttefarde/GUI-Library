@@ -266,7 +266,7 @@ void button_setdefaults(struct ei_widget_t* widget){
         button->border_width = 2;
         button->corner_radius = 3;
         button->relief = ei_relief_raised;
-        button->text = "Press me";
+        button->text = NULL;
         button->text_font = ei_default_font;
         ei_color_t tc = {0xFF, 0xFF, 0xFF, 0xFF};
         button->text_color = tc;
