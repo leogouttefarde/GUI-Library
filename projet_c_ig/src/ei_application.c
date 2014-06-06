@@ -87,7 +87,8 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         ei_register_placer_manager();
 
         ei_widget_t *root_widget = ei_get_root();
-        ei_place(root_widget, NULL,NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL );
+        ei_place(root_widget, NULL, NULL, NULL, &main_window_size->width, &main_window_size->height
+                        , NULL, NULL, NULL, NULL );
 
         ei_rect_t rect;
         rect.top_left.x = 0;
