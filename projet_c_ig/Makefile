@@ -137,6 +137,13 @@ test_placer : ${OBJDIR}/test_placer.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/test_placer.o : ${TESTS}/test_placer.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_placer.c -o ${OBJDIR}/test_placer.o ${MATHFLAGS} 
 
+test_button2 : ${OBJDIR}/test_button2.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o test_button2 ${OBJDIR}/test_button2.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/test_button2.o : ${TESTS}/test_button2.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_button2.c -o ${OBJDIR}/test_button2.o ${MATHFLAGS} 
+
+
 ########## Compilation séparée des sources
 
 ei_widget : ${OBJDIR}/ei_widget.o
