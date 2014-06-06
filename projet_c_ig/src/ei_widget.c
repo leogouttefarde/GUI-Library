@@ -138,7 +138,7 @@ void ei_widget_destroy (ei_widget_t* widget){
 ei_widget_t* ei_widget_sel (ei_surface_t pick_surface, uint32_t pick_id, ei_widget_t *widget){
         if(widget){
                 if (widget->parent) {
-                        if ( ei_map_rgba(pick_surface, widget->pick_color) == pick_id) {
+                        if ( widget->pick_id == pick_id) {
                                 return widget;
                         }
                         ei_widget_sel(pick_surface, pick_id, widget->next_sibling);
@@ -166,26 +166,27 @@ ei_widget_t* ei_widget_pick (ei_point_t* where){
         // on recupere l'adresse du pixel donné en parametre
         // addr +1 augmente d'un octet ou de 4 ? On suppose 1
         addr = (addr + 4*sizeof(uint8_t)*(where->x + (where->y)*size.width));
-        // on recupere les indices correspondants à l'encodage de la surface
-        ei_color_t *color;
-        color = malloc(sizeof(ei_color_t));
-        int ir;
-        int ig;
-        int ib;
-        int ia;
-        hw_surface_get_channel_indices(picking_surface, &ir, &ig, &ib, &ia);
-        color->red = *(addr+ir*sizeof(uint8_t));
-        color->green = *(addr+ig*sizeof(uint8_t));
-        color->blue = *(addr+ib*sizeof(uint8_t));
-        color->alpha = *(addr+ia*sizeof(uint8_t));
+        /*  // on recupere les indices correspondants à l'encodage de la surface
+            ei_color_t *color;
+            color = malloc(sizeof(ei_color_t));
+            int ir;
+            int ig;
+            int ib;
+            int ia;
+            hw_surface_get_channel_indices(picking_surface, &ir, &ig, &ib, &ia);
+            color->red = *(addr+ir*sizeof(uint8_t));
+            color->green = *(addr+ig*sizeof(uint8_t));
+            color->blue = *(addr+ib*sizeof(uint8_t));
+            color->alpha = *(addr+ia*sizeof(uint8_t));
         // on générele le code correspondant
         uint32_t pick_id = ei_map_rgba(picking_surface, color);
         // On parcours ensuite l'ensemble des widgets pour trouver le widget
-        // correspondant
+        // correspondant*/
         ei_widget_t *root = ei_get_root();
         ei_widget_t *result;
 
-        result = ei_widget_sel(picking_surface, pick_id, root);
+        /*result = ei_widget_sel(picking_surface, pick_id, root);*/
+        result = ei_widget_sel(picking_surface, *(uint32_t*)addr, root);
         //        return ei_widget_pick_loop(root_widget, *where);
         hw_surface_unlock(picking_surface);
         return result;
