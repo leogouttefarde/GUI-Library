@@ -213,7 +213,7 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,ei_color_t coul
 }
 
 void ei_button_text(ei_surface_t window,ei_rect_t clipper,char* text, ei_font_t font,ei_color_t color, ei_anchor_t anchor) {
-	printf("j'affiche le texte");
+	printf("j'affiche le texte \n");
 	int width;
 	int height;
 	hw_text_compute_size(text,font,&width,&height);
@@ -280,8 +280,11 @@ ei_point_t plus(ei_point_t A, int abc, int ord) {
 void aff_img(ei_surface_t window, ei_rect_t rectangle,ei_surface_t img, ei_rect_t* img_rect, ei_anchor_t img_anchor) {
 	int i;
 	printf("jaffiche l'image");
+	hw_surface_lock(img);
+	rectangle.size=img_rect->size;
 	i=ei_copy_surface(window,&rectangle,img,img_rect,1);
-	assert(i==1);
+	hw_surface_unlock(img);
+	assert(i==0);
 }
 
 ei_rect_t reduction(ei_rect_t rectangle, int marge) {

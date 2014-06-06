@@ -69,7 +69,7 @@ int ei_main(int argc, char** argv)
 	ei_app_create(&screen_size, EI_FALSE);
 	ei_frame_configure(ei_app_root_widget(), NULL, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
-	ei_surface_t img=hw_image_load(image_name,ei_app_root_widget());
+	ei_surface_t img=hw_image_load(image_name,ei_app_root_surface());
 	printf("ok ici numero 0\n");
 
 /* Create, configure and place the button on screen. */
