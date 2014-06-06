@@ -11,7 +11,7 @@
 #include <string.h>
 #include "ei_geometrymanager.h"
 #include "ei_common.h"
-
+#include "ei_global.h"
 
 static ei_geometrymanager_t *first = NULL;
 
@@ -99,7 +99,7 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 
 void ei_place_runfunc(struct ei_widget_t*	widget)
 {
-        widget->wclass->drawfunc(widget, ei_app_root_surface(), NULL, widget->parent ? &widget->screen_location : NULL);
+        widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), widget->parent ? &widget->screen_location : NULL);
 }
 
 void ei_place_releasefunc(struct ei_widget_t*	widget)

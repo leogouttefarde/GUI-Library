@@ -1,9 +1,8 @@
 #include "ei_global.h"
 
-static bool is_init = false;
 static ei_widget_t *ei_root = NULL;
-static ei_surface_t ei_root_surface = NULL;// = malloc(sizeof(ei_surface_t));
-static ei_surface_t ei_picking_surface = NULL;// = malloc(sizeof(ei_surface_t));
+static ei_surface_t ei_root_surface = NULL;
+static ei_surface_t ei_picking_surface = NULL;
 
 // Setters
 // Au premier appel les 3 pointeurs sont alloués

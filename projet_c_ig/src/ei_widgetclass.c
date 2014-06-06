@@ -243,18 +243,18 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
         ei_button_t *button;
         button = (ei_button_t*)widget;
         if (surface){
-        // lock de la surface
-        hw_surface_lock(surface);
-		  ei_button_draw(surface,*clipper,button);
-        //unlock de la surface
-        hw_surface_unlock(surface);
+                // lock de la surface
+                hw_surface_lock(surface);
+                ei_button_draw(surface,*clipper,button);
+                //unlock de la surface
+                hw_surface_unlock(surface);
         }
 
         if (pick_surface) {
-        /* Dessin de la surface de picking */
-        hw_surface_lock(pick_surface);
-        ei_fill(pick_surface, button->widget.pick_color,clipper);
-        hw_surface_unlock(pick_surface);
+                /* Dessin de la surface de picking */
+                hw_surface_lock(pick_surface);
+                ei_fill(pick_surface, button->widget.pick_color,clipper);
+                hw_surface_unlock(pick_surface);
         }
 }
 void button_setdefaults(struct ei_widget_t* widget){
