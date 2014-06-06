@@ -190,7 +190,7 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,ei_color_t coul
 void ei_button_text(ei_surface_t window,ei_rect_t clipper,char* text, ei_font_t font,ei_color_t color, ei_anchor_t anchor) {
 	int width;
 	int height;
-	hw_text_compute_size(text,ei_default_font,&width,&height);
+	hw_text_compute_size(text,font,&width,&height);
 	int longueur=clipper.size.width;
 	int hauteur=clipper.size.height;
 	ei_point_t ancre;
