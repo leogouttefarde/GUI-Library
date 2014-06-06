@@ -175,13 +175,23 @@ void ei_place(ei_widget_t *widget,
 
 
         if (placer) {
-
+                ei_bool_t gp_alloc = EI_FALSE;
                 // On verifie que le widget est bien géré par le placeur,
                 // sinon on le modifie pour qu'il le soit
-                if (widget && (!widget->geom_params || (widget->geom_params->manager != placer))) {
-                        if (widget->geom_params && widget->geom_params->manager)
-                                widget->geom_params->manager->releasefunc(widget);
+                if (widget) {
+                        gp_alloc = EI_TRUE;
+                        if (widget->geom_params) {
+                                if (widget->geom_params->manager) {
+                                        if (widget->geom_params->manager != placer) {
+                                                widget->geom_params->manager->releasefunc(widget);
+                                        }
+                                }
+                                else
+                                        gp_alloc = EI_FALSE;
+                        }
+                }
 
+                if (gp_alloc) {
                         widget->geom_params = malloc(sizeof(ei_placer_param_t));
                         widget->geom_params->manager = placer;
                 }

@@ -135,7 +135,7 @@ void ei_app_run_loop(ei_widget_t *widget){
 void ei_app_run()
 {
         ei_event_t event;
-        do {
+        while (!quit_request) {
                 ei_widget_t *widget = ei_get_root();
 
                 // Cette boucle me paraissait fausse
@@ -179,7 +179,7 @@ void ei_app_run()
 
                 ei_event_process(&event);
 
-        } while (!quit_request);
+        };
 }
 
 /**
