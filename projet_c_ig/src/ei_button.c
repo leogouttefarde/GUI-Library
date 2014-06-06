@@ -120,12 +120,21 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_button_t *butto
 	ei_button_draw_loc(window,rectangle,*button->color,button->relief,button->corner_radius,button->border_width);
 
 	int marge=button->border_width+2; //2 pixels en plus pour la visibilité
+	//peut-être mettre en fonction du rayon aussi pour que cela soit plus joli dans certain cas
 	ei_rect_t rectangle_reduit;
 	rectangle_reduit.top_left.x=rectangle.top_left.x+marge;
 	rectangle_reduit.top_left.y=rectangle.top_left.y+marge;
 	rectangle_reduit.size.width=rectangle.size.width-2*marge;
 	rectangle_reduit.size.height=rectangle.size.height-2*marge;
-	ei_button_text(window,rectangle_reduit, button->text, button->text_font, button->text_color, button->text_anchor);
+	if (button->text) {
+		ei_button_text(window,rectangle_reduit, button->text, button->text_font, button->text_color, button->text_anchor);
+	}
+	else {
+		if (button->img) {
+			if (button->img_rect) aff_img(window,rectangle_reduit,button->img,button->img_rect,button->img_anchor);
+		}
+
+	}
 }
 
 /**
@@ -249,4 +258,10 @@ void free_lp(ei_linked_point_t* Liste) {
 ei_point_t plus(ei_point_t A, int abc, int ord) {
 	ei_point_t point={A.x+abc,A.y+ord};
 	return point;
+}
+
+void aff_img(ei_surface_t window, ei_rect_t rectangle,ei_surface_t img, ei_rect_t* img_rect, ei_anchor_t img_anchor) {
+	int i;
+	i=ei_copy_surface(window,&rectangle,img,img_rect,1);
+	assert(i==1);
 }

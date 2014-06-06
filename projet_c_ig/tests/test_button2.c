@@ -36,9 +36,12 @@ ei_bool_t process_key(ei_widget_t* widget, ei_event_t* event, void* user_param)
 
 int ei_main(int argc, char** argv)
 {
-	ei_size_t	screen_size		= {200, 400};
+	printf("la c'est bon qd meme\n");
+	printf("la c'est bon qd meme\n");
+	ei_size_t	screen_size		= {600, 600};
 	ei_color_t	root_bgcol		= {0x52, 0x7f, 0xb4, 0xff};
 
+	ei_widget_t*	button;
 	ei_widget_t*	button_A;
 	ei_widget_t*	button_B;
 	ei_widget_t*	button_start;
@@ -53,26 +56,43 @@ int ei_main(int argc, char** argv)
 	ei_color_t	button_color		= {0x88, 0x88, 0x88, 0xff};
 	char*		button_A_title		= "A";
 	char*		button_B_title		= "B";
+	char* image_name ="../misc/klimt.jpg";
 
 	ei_color_t	button_text_color	= {0x00, 0x00, 0x00, 0xff};
 	int		button_corner_radius	= 10;
 	ei_relief_t	button_relief		= ei_relief_raised;
 	int		button_border_width	= 3;
 	ei_callback_t	button_callback 	= button_press;
-
+	printf("ici ok\n");
 	/* Create the application and change the color of the background. */
 	ei_app_create(&screen_size, EI_FALSE);
 	ei_frame_configure(ei_app_root_widget(), NULL, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+	ei_surface_t img=hw_image_load(image_name,ei_app_root_widget());
+	printf("ok ici numero 0\n");
+
+/* Create, configure and place the button on screen. */
+	ei_size_t	button_size		= {300,200};
+	int		button_x		= 150;
+	int		button_y		= 200;
+	ei_rect_t* rec=malloc(sizeof(ei_rect_t));
+	rec->top_left.x=100;rec->top_left.y=100;
+	rec->size.width=50;rec->size.height=50;
+	printf("ok ici");
+	button = ei_widget_create("button", ei_app_root_widget());
+	ei_button_configure	(button, &button_size, &button_color,
+				 &button_border_width, &button_corner_radius, &button_relief,NULL, NULL, &button_text_color, NULL,
+				 img, &rec, NULL, &button_callback, NULL);
+	ei_place(button, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
 
 	/* Create, configure and place the button on screen. */
 	//button_A = ei_widget_create("button", ei_app_root_widget());
-	button_B = ei_widget_create("button", ei_app_root_widget());
+	//button_B = ei_widget_create("button", ei_app_root_widget());
 
-	//ei_button_configure	(button_A, &button_rond_size, &button_color,&button_border_width, &button_corner_radius, &button_relief, &button_A_title, NULL, &button_text_color, NULL,NULL, NULL, NULL, &button_callback, NULL);
-	ei_button_configure	(button_B, &button_rond_size, &button_color,&button_border_width, &button_corner_radius,&button_relief, &button_B_title, NULL, &button_text_color, NULL,NULL, NULL, NULL, &button_callback, NULL);
+	//ei_button_configure(button_A, &button_rond_size, &button_color,&button_border_width, &button_corner_radius, &button_relief, &button_A_title, NULL, &button_text_color, NULL,NULL, NULL, NULL, &button_callback, NULL);
+	//ei_button_configure	(button_B, &button_rond_size, &button_color,&button_border_width, &button_corner_radius,&button_relief, &button_B_title, NULL, &button_text_color, NULL,NULL, NULL, NULL, &button_callback, NULL);
 
 	//ei_place(button_A, NULL, &button_A_x, &button_A_y, NULL, NULL, NULL, NULL, NULL, NULL );
-	ei_place(button_B, NULL, &button_B_x, &button_B_y, NULL, NULL, NULL, NULL, NULL, NULL );
+	//ei_place(button_B, NULL, &button_B_x, &button_B_y, NULL, NULL, NULL, NULL, NULL, NULL );
 
 		/* Hook the keypress callback to the event. */
 	ei_bind(ei_ev_keydown,		NULL, "all", process_key, NULL);
