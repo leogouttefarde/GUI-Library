@@ -61,11 +61,11 @@ void ei_bind(ei_eventtype_t eventtype,
 {
         if (eventtype < ei_ev_last) {
                 ei_ev_link_t *link = malloc(sizeof(ei_ev_link_t));
+                memset(link, 0, sizeof(ei_ev_link_t));
 
                 link->widget = widget;
                 link->callback = callback;
                 link->user_param = user_param;
-                link->next = NULL;
 
                 if (widget == NULL)
                         link->tag = tag;
