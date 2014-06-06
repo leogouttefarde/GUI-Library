@@ -164,10 +164,10 @@ void ei_app_run()
                 ei_surface_t root_surface = ei_get_root_surface();
                 hw_surface_update_rects(root_surface, rects_first);
 
-                /**************** DEBUG ************************/
-                debug_display_root_surface();
-                debug_display_picking_surface();
-                /***********************************************************/
+                /**************** DEBUG ************************
+                  debug_display_root_surface();
+                  debug_display_picking_surface();
+                 ***********************************************************/
 
 
 
