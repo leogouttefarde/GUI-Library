@@ -45,14 +45,19 @@ ei_surface_t ei_get_picking_surface(){
 
 
 
+// Affiche une surface pixel par pixel
+// On affiche seulement les pixels dont la couleur
+// change par rapport au précédent
 void debug_display_picking_surface(){
         hw_surface_lock(ei_picking_surface);
         uint8_t *addr = hw_surface_get_buffer(ei_picking_surface);
         ei_size_t size = hw_surface_get_size(ei_picking_surface);
         int x = 0;
-        int y = 0;  
+        int y = 0; 
+        bool first = true; 
+        uint32_t prec_id;
         printf("********** Affichage de la surface de picking **********\n");
-        for (; addr < addr + size.width*size.height; addr = addr + 4*sizeof(uint8_t)){
+        while (x< size.width && y < size.height){
                 // on recupere les indices correspondants à l'encodage de la surface
                 ei_color_t *color;
                 color = malloc(sizeof(ei_color_t));
@@ -69,16 +74,23 @@ void debug_display_picking_surface(){
                 uint32_t pick_id = ei_map_rgba(ei_picking_surface, color);
 
                 // Affichage
-                printf("Pixel : {%i, %i} Pick_if : %u \n", x,y,pick_id);
+                if (first) {
+                        first = false;
+                        prec_id = pick_id;
+                        printf("Pixel : {%i, %i} Pick_id : %x \n", x,y,pick_id);
+                }
+                if (prec_id != pick_id){
+                        printf("Pixel : {%i, %i} Pick_id : %x \n", x,y,pick_id);
+                        prec_id = pick_id;
+                }
+
                 // Increment des coordonnées
                 x++;
                 if (x == size.width){
                         x=0;
                         y++;
                 }
-
-
-
+                addr = addr + 4*sizeof(uint8_t);
         }
 
 

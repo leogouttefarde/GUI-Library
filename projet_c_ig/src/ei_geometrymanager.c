@@ -100,6 +100,8 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 void ei_place_runfunc(struct ei_widget_t*	widget)
 {
         widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), widget->parent ? &widget->screen_location : NULL);
+        /**************** DEBUG ************************/
+        debug_display_picking_surface();
 }
 
 void ei_place_releasefunc(struct ei_widget_t*	widget)

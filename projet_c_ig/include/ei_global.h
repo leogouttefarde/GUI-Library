@@ -30,4 +30,8 @@ ei_surface_t ei_get_picking_surface();
 
 ei_surface_t* ei_get_root_surface_pointer();
 ei_surface_t* ei_get_picking_surface_pointer();
+
+
+void debug_display_picking_surface();
+
 #endif
