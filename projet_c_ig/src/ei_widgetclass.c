@@ -276,7 +276,9 @@ void button_setdefaults(struct ei_widget_t* widget){
           hw_text_compute_size(button->text, button->text_font, &w, &h);
           button->widget.requested_size = (ei_size(w,h));
           */
-        button->widget.requested_size = ei_size(20, strlen(button->text)*10);
+        if (button->text)
+                button->widget.requested_size = ei_size(20, strlen(button->text)*10);
+
         button->img = NULL;
         button->img_rect = malloc(sizeof(ei_rect_t));
         ei_point_t p = {10,10};
