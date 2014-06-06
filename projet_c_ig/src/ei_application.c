@@ -90,19 +90,13 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         ei_place(root_widget, NULL, NULL, NULL, &main_window_size->width, &main_window_size->height
                         , NULL, NULL, NULL, NULL );
 
-        ei_rect_t rect;
-        rect.top_left.x = 0;
-        rect.top_left.y = 0;
-        rect.size = *main_window_size;
-        ei_app_invalidate_rect(&rect);
-
         ei_set_picking_surface(hw_surface_create(ei_get_root_surface(), main_window_size, EI_TRUE));
 
         // Pour gérer le clic sur les boutons ils faut faire un bind sur le tag
         // "button" dans cette fonction avec les callback 1 et 2 définies dans
         // ei_widget_class
-        ei_bind(ei_ev_mouse_buttondown, NULL,"button", button_callback_click, NULL);
-        ei_bind(ei_ev_mouse_buttonup, NULL,"button", button_callback_release, NULL);
+        ei_bind(ei_ev_mouse_buttondown, NULL, "button", button_callback_click, NULL);
+        ei_bind(ei_ev_mouse_buttonup, NULL, "button", button_callback_release, NULL);
 }
 
 /**
