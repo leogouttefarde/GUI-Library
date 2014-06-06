@@ -57,7 +57,7 @@ int ei_main(int argc, char** argv)
 	ei_color_t	button_color		= {0x88, 0x88, 0x88, 0xff};
 	char*		button_A_title		= "A";
 	char*		button_B_title		= "B";
-	char* image_name ="../misc/klimt.jpg";
+	char* image_name ="misc/klimt.jpg";
 
 	ei_color_t	button_text_color	= {0x00, 0x00, 0x00, 0xff};
 	int		button_corner_radius	= 10;
@@ -68,6 +68,7 @@ int ei_main(int argc, char** argv)
 	/* Create the application and change the color of the background. */
 	ei_app_create(&screen_size, EI_FALSE);
 	ei_frame_configure(ei_app_root_widget(), NULL, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
 	ei_surface_t img=hw_image_load(image_name,ei_app_root_widget());
 	printf("ok ici numero 0\n");
 
@@ -82,7 +83,7 @@ int ei_main(int argc, char** argv)
 	button = ei_widget_create("button", ei_app_root_widget());
 	ei_button_configure	(button, &button_size, &button_color,
 				 &button_border_width, &button_corner_radius, &button_relief,NULL, NULL, &button_text_color, NULL,
-				 img, &rec, NULL, &button_callback, NULL);
+				 &img, &rec, NULL, &button_callback, NULL);
 	assert(button!=NULL);
 	ei_place(button, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
 

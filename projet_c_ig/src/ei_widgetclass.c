@@ -109,17 +109,27 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
         ei_fill(surface, &frame->bg_color, clipper);
 
         ei_point_t tl;
-
+			/*
         if (clipper) { 
                 tl = clipper->top_left;
         }
         else {
                 tl = (ei_point_t){0,0};
         }
+        */
+		  ei_rect_t rec;
+        if (clipper) { 
+                rec = *clipper;
+        }
+        else {
+                rec.top_left.x=0;rec.top_left.y=0;
+					 rec.size=hw_surface_get_size(surface);
+        }
 
         int bw = frame->border_width;
         ei_size_t size = frame->widget.requested_size;
-
+		  ei_frame_draw(surface,rec,frame);
+        /*
         if (frame->relief) {
                 ei_linked_point_t top;
                 ei_linked_point_t bottom;
@@ -151,7 +161,7 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                         ei_draw_polygon(surface, &right, lighter, clipper);
                 }
         }
-
+        */
         //unlock de la surface
         hw_surface_unlock(surface);
         }
@@ -187,7 +197,7 @@ void frame_setdefaults(struct ei_widget_t* widget){
         // red green blue A
         ei_color_t tc = {0x00, 0x00, 0xFF, 0xFF};
         frame->text_color = tc;
-        frame->text_font = ei_style_normal;
+        frame->text_font = ei_default_font;
         // On obtient la taille correspondant au text voulu
         // Exemple ici avec frame masi surtout utile pour button
         // DONNE SEG_FAULT

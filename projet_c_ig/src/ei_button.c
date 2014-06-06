@@ -116,6 +116,18 @@ ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_
 	return Liste;
 }
 
+void ei_frame_draw(ei_surface_t window,ei_rect_t rectangle,ei_frame_t* frame){
+	printf("debut dessin frame \n");
+	ei_button_draw_loc(window,rectangle, frame->bg_color,frame->relief,0,frame->border_width);
+	printf("fin dessin, debut texte\n");
+	if (frame->text&&frame->text_font&&frame->text_anchor) {
+		printf("frame->text non null\n");
+		ei_rect_t rectangle_red=reduction(rectangle,frame->border_width);
+		ei_button_text(window,rectangle_red,frame->text,frame->text_font,frame->text_color,frame->text_anchor);
+	}
+}
+
+
 void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_button_t *button) {
 	printf("debut dessin \n");
 	ei_button_draw_loc(window,rectangle,*button->color,button->relief,button->corner_radius,button->border_width);
@@ -242,7 +254,7 @@ void ei_button_text(ei_surface_t window,ei_rect_t clipper,char* text, ei_font_t 
 			ancre=plus(bot_gauche,0,-height);
 			break;
 		case ei_anc_west:
-			ancre=plus(gauche_mid,0,-width/2);
+			ancre=plus(gauche_mid,0,-height/2);
 			break;
 		case ei_anc_northwest:
 			ancre=top_gauche;
@@ -271,3 +283,13 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle,ei_surface_t img, ei_rect_
 	i=ei_copy_surface(window,&rectangle,img,img_rect,1);
 	assert(i==1);
 }
+
+ei_rect_t reduction(ei_rect_t rectangle, int marge) {
+	ei_rect_t rectangle_reduit;
+	rectangle_reduit.top_left.x=rectangle.top_left.x+marge;
+	rectangle_reduit.top_left.y=rectangle.top_left.y+marge;
+	rectangle_reduit.size.width=rectangle.size.width-2*marge;
+	rectangle_reduit.size.height=rectangle.size.height-2*marge;
+	return rectangle_reduit;
+}
+
