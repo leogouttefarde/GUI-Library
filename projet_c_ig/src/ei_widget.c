@@ -136,16 +136,26 @@ void ei_widget_destroy (ei_widget_t* widget){
 
 // Fonction auxiliaire recursive pour ei_widget_pick
 ei_widget_t* ei_widget_sel (ei_surface_t pick_surface, uint32_t pick_id, ei_widget_t *widget){
+        ei_widget_t* result;
         if(widget){
                 if (widget->parent) {
                         if ( widget->pick_id == pick_id) {
                                 return widget;
                         }
-                        ei_widget_sel(pick_surface, pick_id, widget->next_sibling);
+                        result = ei_widget_sel(pick_surface, pick_id, widget->next_sibling);
+                        if (result){
+                                return result;
+                        }
                 }
-                ei_widget_sel(pick_surface, pick_id, widget->children_head);
+                result = ei_widget_sel(pick_surface, pick_id, widget->children_head);
+                if (result)
+                        return result;
+                else
+                        return NULL;
         }
-        return NULL;
+        else{
+                return NULL;
+        }
 }
 
 /**
