@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <assert.h>
 
 #include "ei_application.h"
 #include "ei_event.h"
@@ -82,6 +83,7 @@ int ei_main(int argc, char** argv)
 	ei_button_configure	(button, &button_size, &button_color,
 				 &button_border_width, &button_corner_radius, &button_relief,NULL, NULL, &button_text_color, NULL,
 				 img, &rec, NULL, &button_callback, NULL);
+	assert(button!=NULL);
 	ei_place(button, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
 
 	/* Create, configure and place the button on screen. */
@@ -98,6 +100,7 @@ int ei_main(int argc, char** argv)
 	ei_bind(ei_ev_keydown,		NULL, "all", process_key, NULL);
 
 	/* Run the application's main loop. */
+	printf("avant le app_run ok\n");
 	ei_app_run();
 
         /* We just exited from the main loop. Terminate the application (cleanup). */

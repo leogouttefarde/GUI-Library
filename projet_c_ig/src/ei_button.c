@@ -130,14 +130,14 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_button_t *butto
 	if (button->text) {
 		ei_button_text(window,rectangle_reduit, button->text, button->text_font, button->text_color, button->text_anchor);
 	}
-	/*
+	
 	else {
 		if (button->img) {
 			if (button->img_rect) aff_img(window,rectangle_reduit,button->img,button->img_rect,button->img_anchor);
+			else printf("button->img_rect=NULL\n");
 		}
-
+		else printf("button->img=NULL\n");
 	}
-	*/
 	printf("fin dessin bouton\n");
 }
 
@@ -201,6 +201,7 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,ei_color_t coul
 }
 
 void ei_button_text(ei_surface_t window,ei_rect_t clipper,char* text, ei_font_t font,ei_color_t color, ei_anchor_t anchor) {
+	printf("j'affiche le texte");
 	int width;
 	int height;
 	hw_text_compute_size(text,font,&width,&height);
@@ -266,6 +267,7 @@ ei_point_t plus(ei_point_t A, int abc, int ord) {
 
 void aff_img(ei_surface_t window, ei_rect_t rectangle,ei_surface_t img, ei_rect_t* img_rect, ei_anchor_t img_anchor) {
 	int i;
+	printf("jaffiche l'image");
 	i=ei_copy_surface(window,&rectangle,img,img_rect,1);
 	assert(i==1);
 }
