@@ -168,7 +168,11 @@ void ei_place(ei_widget_t *widget,
 {
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
 
+
         if (placer) {
+
+                // On verifie que le widget est bien géré par le placeur,
+                // sinon on le modifie pour qu'il le soit
                 if (widget && (!widget->geom_params || (widget->geom_params->manager != placer))) {
                         if (widget->geom_params && widget->geom_params->manager)
                                 widget->geom_params->manager->releasefunc(widget);
@@ -177,25 +181,59 @@ void ei_place(ei_widget_t *widget,
                         widget->geom_params->manager = placer;
                 }
 
-                if (x)
-                        widget->screen_location.top_left.x = *x;
-                else
-                        widget->screen_location.top_left.x = 0;
+                int xmin;
+                int xmax;
+                int ymin;
+                int ymax;
 
-                if (y)
-                        widget->screen_location.top_left.y = *y;
-                else
-                        widget->screen_location.top_left.y = 0;
+                // On recupere le rectangle correspondant au parent
+                // C'est le champ content_rect
+                if (widget->parent) {
+                        if (widget->parent->content_rect) {
+                                ei_rect_t parent_rect = *(widget->parent->content_rect);
+                                xmin = parent_rect.top_left.x;
+                                ymin = parent_rect.top_left.y;
+                                xmax = xmin + parent_rect.size.width - 1;
+                                ymax = ymin + parent_rect.size.width - 1;
 
+                                if (x){
+                                        if(*x >= xmin && *x <= xmax)
+                                                xmin = *x + xmin;
+                                        widget->screen_location.top_left.x =
+                                                xmin;
+                                }
+                                if (y) {
+                                        if (*y >= ymin && *y <= ymax)
+                                                ymin = *y + ymin;
+                                        widget->screen_location.top_left.y = ymin ;
+                                }
 
-                widget->screen_location.size = widget->requested_size;
+                                // Taille par defaut
+                                // Priorité : taille fournie en argument > requested >
+                                // defaut
+                                widget->screen_location.size = widget->requested_size;
 
-                if (width)
-                        widget->screen_location.size.width = *width;
+                                // xmin et ymin ont ete modifié pour
+                                // correspondre au xmin et ymin du widget
+                                if (width){
+                                        // On verifie que la taille n'est pas trop
+                                        // grande
+                                        if (xmin + *width -1 <= xmax)
+                                                widget->screen_location.size.width = *width;
+                                        else
+                                                widget->screen_location.size.width =
+                                                        (xmax - xmin +1);
+                                }
+                                if (height) {
+                                        if (ymin + *height -1 <= ymax)
+                                                widget->screen_location.size.height = *height;
+                                        else
+                                                widget->screen_location.size.height =
+                                                        (ymax - ymin +1);
+                                }
 
-                if (height)
-                        widget->screen_location.size.height = *height;
+                        }
+                }
         }
 }
-
 

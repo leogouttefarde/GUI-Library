@@ -131,6 +131,12 @@ test_shape : ${OBJDIR}/test_shape.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/test_shape.o : ${TESTS}/test_shape.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_shape.c -o ${OBJDIR}/test_shape.o ${MATHFLAGS} 
 
+test_placer : ${OBJDIR}/test_placer.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o test_placer ${OBJDIR}/test_placer.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/test_placer.o : ${TESTS}/test_placer.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_placer.c -o ${OBJDIR}/test_placer.o ${MATHFLAGS} 
+
 ########## Compilation séparée des sources
 
 ei_widget : ${OBJDIR}/ei_widget.o
@@ -142,6 +148,8 @@ ei_shape : ${OBJDIR}/ei_shape.o
 ei_global : ${OBJDIR}/ei_global.o
 
 ei_event : ${OBJDIR}/ei_event.o
+
+ei_geometrymanager : ${OBJDIR}/ei_geometrymanager.o
 
 # Compilation
 ${OBJDIR}/%.o: ${SRCDIR}/%.c 
