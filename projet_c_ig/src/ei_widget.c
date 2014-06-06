@@ -101,7 +101,7 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
                 else{
                         widget->pick_id = 0x0;
                 }
-                widget->requested_size = ei_size(10,10);
+                widget->requested_size = ei_size(100,100);
 
                 widget->screen_location = ei_rect(ei_point_zero(), widget->requested_size);
                 widget->content_rect = &(widget->screen_location);

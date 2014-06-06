@@ -186,54 +186,83 @@ void ei_place(ei_widget_t *widget,
                 int ymin;
                 int ymax;
 
+                ei_rect_t parent_rect;
                 // On recupere le rectangle correspondant au parent
                 // C'est le champ content_rect
-                if (widget->parent) {
-                        if (widget->parent->content_rect) {
-                                ei_rect_t parent_rect = *(widget->parent->content_rect);
-                                xmin = parent_rect.top_left.x;
-                                ymin = parent_rect.top_left.y;
-                                xmax = xmin + parent_rect.size.width - 1;
-                                ymax = ymin + parent_rect.size.width - 1;
+                if (widget->parent){
+                        if (widget->parent->content_rect) 
+                                parent_rect = *(widget->parent->content_rect);
+                        else
+                                parent_rect = hw_surface_get_rect(ei_get_root_surface());
 
-                                if (x){
-                                        if(*x >= xmin && *x <= xmax)
-                                                xmin = *x + xmin;
-                                        widget->screen_location.top_left.x =
-                                                xmin;
-                                }
-                                if (y) {
-                                        if (*y >= ymin && *y <= ymax)
-                                                ymin = *y + ymin;
-                                        widget->screen_location.top_left.y = ymin ;
-                                }
 
-                                // Taille par defaut
-                                // Priorité : taille fournie en argument > requested >
-                                // defaut
-                                widget->screen_location.size = widget->requested_size;
+                        xmin = parent_rect.top_left.x;
+                        ymin = parent_rect.top_left.y;
+                        xmax = xmin + parent_rect.size.width - 1;
+                        ymax = ymin + parent_rect.size.width - 1;
 
-                                // xmin et ymin ont ete modifié pour
-                                // correspondre au xmin et ymin du widget
-                                if (width){
-                                        // On verifie que la taille n'est pas trop
-                                        // grande
-                                        if (xmin + *width -1 <= xmax)
-                                                widget->screen_location.size.width = *width;
-                                        else
-                                                widget->screen_location.size.width =
-                                                        (xmax - xmin +1);
-                                }
-                                if (height) {
-                                        if (ymin + *height -1 <= ymax)
-                                                widget->screen_location.size.height = *height;
-                                        else
-                                                widget->screen_location.size.height =
-                                                        (ymax - ymin +1);
-                                }
-
+                        if (x){
+                                if(*x >= xmin && *x <= xmax)
+                                        xmin = *x + xmin;
+                                widget->screen_location.top_left.x =
+                                        xmin;
                         }
+                        if (y) {
+                                if (*y >= ymin && *y <= ymax)
+                                        ymin = *y + ymin;
+                                widget->screen_location.top_left.y = ymin ;
+                        }
+
+                        // Taille par defaut
+                        // Priorité : taille fournie en argument > requested >
+                        // defaut
+                        widget->screen_location.size = widget->requested_size;
+                        int w;
+                        int h;
+                        if (width)
+                                w = *width;
+                        else
+                                w = widget->requested_size.width;
+
+                        if(height)
+                                h = *height;
+                        else
+                                h = widget->requested_size.height;
+
+                        // xmin et ymin ont ete modifié pour
+                        // correspondre au xmin et ymin du widget
+                        // On verifie que la taille n'est pas trop
+                        // grande
+                        if (xmin + w -1 <= xmax)
+                                widget->screen_location.size.width = w;
+                        else
+                                widget->screen_location.size.width =
+                                        (xmax - xmin +1);
+
+                        if (ymin + h -1 <= ymax)
+                                widget->screen_location.size.height = h;
+                        else
+                                widget->screen_location.size.height =
+                                        (ymax - ymin +1);
+                }
+                // Cas du root dont on fixe la taille dans ei_app_create
+                else{
+                        if(x)
+                                widget->screen_location.top_left.x = *x;
+
+                        if(y)
+                                widget->screen_location.top_left.y = *y;
+
+                        if (width)
+                                widget->requested_size.width = *width;
+
+                        if (height)
+                                widget->requested_size.height = *height;
+
+                        widget->screen_location.size = widget->requested_size;
+                        widget->content_rect = &widget->screen_location;
                 }
         }
 }
+
 
