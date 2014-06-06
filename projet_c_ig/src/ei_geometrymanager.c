@@ -199,7 +199,7 @@ void ei_place(ei_widget_t *widget,
                         xmin = parent_rect.top_left.x;
                         ymin = parent_rect.top_left.y;
                         xmax = xmin + parent_rect.size.width - 1;
-                        ymax = ymin + parent_rect.size.width - 1;
+                        ymax = ymin + parent_rect.size.height - 1;
 
                         if (x){
                                 if(*x >= xmin && *x <= xmax)
