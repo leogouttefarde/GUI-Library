@@ -12,6 +12,7 @@
 #include "ei_geometrymanager.h"
 #include "ei_common.h"
 #include "ei_global.h"
+#include "ei_utils.h"
 
 static ei_geometrymanager_t *first = NULL;
 
@@ -181,6 +182,7 @@ void ei_place(ei_widget_t *widget,
                         widget->geom_params->manager = placer;
                 }
 
+                bool keep = true;
                 int xmin;
                 int xmax;
                 int ymin;
@@ -201,16 +203,21 @@ void ei_place(ei_widget_t *widget,
                         xmax = xmin + parent_rect.size.width - 1;
                         ymax = ymin + parent_rect.size.height - 1;
 
-                        if (x){
-                                if(*x >= xmin && *x <= xmax)
-                                        xmin = *x + xmin;
-                                widget->screen_location.top_left.x =
-                                        xmin;
+                        if (x && keep){
+                                // les coordonnées sont absolus (= relatif au
+                                // root)
+                                // le placement est relatif au parent
+                                if(*x + xmin <= xmax)
+                                        widget->screen_location.top_left.x =
+                                                xmin + *x;
+                                else
+                                        keep = false;
                         }
-                        if (y) {
-                                if (*y >= ymin && *y <= ymax)
-                                        ymin = *y + ymin;
-                                widget->screen_location.top_left.y = ymin ;
+                        if (y && keep) {
+                                if (ymin + *y <= ymax)
+                                        widget->screen_location.top_left.y = ymin +*y ;
+                                else
+                                        keep = false;
                         }
 
                         // Taille par defaut
@@ -219,31 +226,36 @@ void ei_place(ei_widget_t *widget,
                         widget->screen_location.size = widget->requested_size;
                         int w;
                         int h;
-                        if (width)
+                        if (width && keep)
                                 w = *width;
                         else
                                 w = widget->requested_size.width;
 
-                        if(height)
+                        if(height && keep)
                                 h = *height;
                         else
                                 h = widget->requested_size.height;
 
-                        // xmin et ymin ont ete modifié pour
-                        // correspondre au xmin et ymin du widget
                         // On verifie que la taille n'est pas trop
                         // grande
-                        if (xmin + w -1 <= xmax)
+                        if (xmin + *x + w -1 <= xmax)
                                 widget->screen_location.size.width = w;
                         else
                                 widget->screen_location.size.width =
-                                        (xmax - xmin +1);
+                                        (xmax - xmin - *x +1);
 
-                        if (ymin + h -1 <= ymax)
+                        if (ymin + *y + h -1 <= ymax)
                                 widget->screen_location.size.height = h;
                         else
                                 widget->screen_location.size.height =
-                                        (ymax - ymin +1);
+                                        (ymax - ymin - *y +1);
+
+                        if(!keep){
+                                // Le point top_left n'est pas visible,
+                                // on affiche pas le widget
+                                widget->screen_location.size = ei_size(0,0);
+                                widget->content_rect = &widget->screen_location;
+                        }
                 }
                 // Cas du root dont on fixe la taille dans ei_app_create
                 else{
