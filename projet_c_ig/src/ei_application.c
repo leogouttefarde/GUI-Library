@@ -162,7 +162,6 @@ void ei_app_run()
 
                 // Update des surfaces
                 ei_surface_t root_surface = ei_get_root_surface();
-                ei_surface_t picking_surface = ei_get_picking_surface();
                 hw_surface_update_rects(root_surface, rects_first);
 
                 /**************** DEBUG ************************/
