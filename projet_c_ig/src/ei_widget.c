@@ -178,10 +178,10 @@ ei_widget_t* ei_widget_pick (ei_point_t* where){
         int ib;
         int ia;
         hw_surface_get_channel_indices(picking_surface, &ir, &ig, &ib, &ia);
-        color->red = *(addr+ir);
-        color->green = *(addr+ig);
-        color->blue = *(addr+ib);
-        color->alpha = *(addr+ia);
+        color->red = *(addr+ir*sizeof(uint8_t));
+        color->green = *(addr+ig*sizeof(uint8_t));
+        color->blue = *(addr+ib*sizeof(uint8_t));
+        color->alpha = *(addr+ia*sizeof(uint8_t));
         // on générele le code correspondant
         uint32_t pick_id = ei_map_rgba(picking_surface, color);
         // On parcours ensuite l'ensemble des widgets pour trouver le widget
