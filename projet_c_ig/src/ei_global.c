@@ -48,15 +48,16 @@ ei_surface_t ei_get_picking_surface(){
 // Affiche une surface pixel par pixel
 // On affiche seulement les pixels dont la couleur
 // change par rapport au précédent
-void debug_display_picking_surface(){
-        hw_surface_lock(ei_picking_surface);
-        uint8_t *addr = hw_surface_get_buffer(ei_picking_surface);
-        ei_size_t size = hw_surface_get_size(ei_picking_surface);
+void debug_display_surface(ei_surface_t surface){
+        hw_surface_lock(surface);
+        uint8_t *addr = hw_surface_get_buffer(surface);
+        ei_size_t size = hw_surface_get_size(surface);
         int x = 0;
         int y = 0; 
         bool first = true; 
         uint32_t prec_id;
-        printf("********** Affichage de la surface de picking **********\n");
+        uint32_t pick_id;
+        printf("********** Affichage de la surface **********\n");
         while (x< size.width && y < size.height){
                 // on recupere les indices correspondants à l'encodage de la surface
                 ei_color_t *color;
@@ -65,13 +66,13 @@ void debug_display_picking_surface(){
                 int ig;
                 int ib;
                 int ia;
-                hw_surface_get_channel_indices(ei_picking_surface, &ir, &ig, &ib, &ia);
+                hw_surface_get_channel_indices(surface, &ir, &ig, &ib, &ia);
                 color->red = *(addr+ir*sizeof(uint8_t));
                 color->green = *(addr+ig*sizeof(uint8_t));
                 color->blue = *(addr+ib*sizeof(uint8_t));
                 color->alpha = *(addr+ia*sizeof(uint8_t));
-                // on générele le code correspondant
-                uint32_t pick_id = ei_map_rgba(ei_picking_surface, color);
+                // on génére le le code correspondant
+                pick_id = ei_map_rgba(ei_picking_surface, color);
 
                 // Affichage
                 if (first) {
@@ -95,8 +96,16 @@ void debug_display_picking_surface(){
 
 
         printf("********** Fin **********\n");
-        hw_surface_unlock(ei_picking_surface);
+        hw_surface_unlock(surface);
 
 }
 
+void debug_display_picking_surface(){
+        debug_display_surface(ei_picking_surface);
+}
+
+
+void debug_display_root_surface(){
+        debug_display_surface(ei_root_surface);
+}
 
