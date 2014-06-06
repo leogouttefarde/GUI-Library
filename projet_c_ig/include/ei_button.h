@@ -32,5 +32,7 @@ void ei_button_text(ei_surface_t window,ei_rect_t clipper,char* text, ei_font_t 
 void free_lp(ei_linked_point_t* Liste);
 
 ei_point_t plus(ei_point_t A, int abc, int ord);
-	
+
+void aff_img(ei_surface_t window, ei_rect_t rectangle,ei_surface_t img, ei_rect_t* img_rect, ei_anchor_t img_anchor);
+
 #endif
