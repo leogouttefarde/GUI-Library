@@ -117,6 +117,7 @@ ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_
 }
 
 void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_button_t *button) {
+	printf("debut dessin \n");
 	ei_button_draw_loc(window,rectangle,*button->color,button->relief,button->corner_radius,button->border_width);
 
 	int marge=button->border_width+2; //2 pixels en plus pour la visibilité
@@ -129,12 +130,15 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_button_t *butto
 	if (button->text) {
 		ei_button_text(window,rectangle_reduit, button->text, button->text_font, button->text_color, button->text_anchor);
 	}
+	/*
 	else {
 		if (button->img) {
 			if (button->img_rect) aff_img(window,rectangle_reduit,button->img,button->img_rect,button->img_anchor);
 		}
 
 	}
+	*/
+	printf("fin dessin bouton\n");
 }
 
 /**
