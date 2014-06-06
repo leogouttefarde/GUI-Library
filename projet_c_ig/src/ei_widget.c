@@ -92,14 +92,15 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
                 ei_color_t *pc = malloc(sizeof(ei_color_t));
                 memset(pc, 0, sizeof(ei_color_t));
                 *pc = current_pick_color;
-                increase_color(&current_pick_color);
                 widget->pick_color = pc;
+                increase_color(&current_pick_color);
 
-                if (parent)
-                        widget->pick_id = ei_map_rgba(ei_get_picking_surface(), &current_pick_color);
-                else
+                if (parent){
+                        widget->pick_id = ei_map_rgba(ei_get_picking_surface(), widget->pick_color);
+                }
+                else{
                         widget->pick_id = 0x0;
-
+                }
                 widget->requested_size = ei_size(10,10);
 
                 widget->screen_location = ei_rect(ei_point_zero(), widget->requested_size);
@@ -147,11 +148,7 @@ ei_widget_t* ei_widget_sel (ei_surface_t pick_surface, uint32_t pick_id, ei_widg
                                 return result;
                         }
                 }
-                result = ei_widget_sel(pick_surface, pick_id, widget->children_head);
-                if (result)
-                        return result;
-                else
-                        return NULL;
+                return ei_widget_sel(pick_surface, pick_id, widget->children_head);
         }
         else{
                 return NULL;
