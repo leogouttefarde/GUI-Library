@@ -10,6 +10,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <stdbool.h>
 
 #define SAFE_FREE(p) if (p != NULL) { free(p); p = NULL; }
 #define SAFE_RESET(p, size) if (p != NULL) { memset(p, 0, size); }
