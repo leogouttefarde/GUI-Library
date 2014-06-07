@@ -14,7 +14,7 @@
 #include "ei_widget.h"
 #include "ei_widgettypes.h"
 #include "ei_utils.h"
-#include "ei_global.h"
+#include "ei_core.h"
 
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
 static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0xFF};

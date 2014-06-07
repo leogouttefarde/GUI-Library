@@ -12,33 +12,27 @@
 #include <string.h>
 
 #include "ei_event.h"
+#include "ei_core.h"
+#include "ei_linkedlist.h"
 
-/* Event link */
-typedef struct ei_ev_link_t {
-        ei_tag_t tag;
-        ei_widget_t *widget;
-        ei_callback_t callback;
-        void *user_param;
-        struct ei_ev_link_t *next;
-} ei_ev_link_t;
 
-/* Event links */
-typedef struct ei_ev_links_t {
-        struct ei_ev_link_t *head;
-        struct ei_ev_link_t *tail;
-} ei_ev_links_t;
+/* Event binding */
+typedef struct ei_binding_t {
+	ei_tag_t tag;
+	ei_widget_t *widget;
+	ei_callback_t callback;
+	void *user_param;
+} ei_binding_t;
 
-/* Event table */
-ei_ev_links_t ei_events[ei_ev_last] = {
-        { NULL, NULL },
-        { NULL, NULL },
-        { NULL, NULL },
-        { NULL, NULL },
-        { NULL, NULL },
-        { NULL, NULL },
-        { NULL, NULL }
-};
+/* Event binding table */
+ei_linkedlist_t ei_events[ei_ev_last];
 
+
+void ei_event_init()
+{
+	for (uint32_t i = 0; i < ei_ev_last; ++i)
+		ei_linkedlist_init(&ei_events[i]);
+}
 
 /**
  * \brief	Binds a callback to an event type and a widget or a tag.
@@ -54,32 +48,26 @@ ei_ev_links_t ei_events[ei_ev_last] = {
  *				called.
  */
 void ei_bind(ei_eventtype_t eventtype,
-                ei_widget_t *widget,
-                ei_tag_t tag,
-                ei_callback_t callback,
-                void *user_param)
+		ei_widget_t *widget,
+		ei_tag_t tag,
+		ei_callback_t callback,
+		void *user_param)
 {
-        if (eventtype < ei_ev_last) {
-                ei_ev_link_t *link = malloc(sizeof(ei_ev_link_t));
-                memset(link, 0, sizeof(ei_ev_link_t));
+	if (eventtype < ei_ev_last) {
+		ei_binding_t *bind = malloc(sizeof(ei_binding_t));
+		memset(bind, 0, sizeof(ei_binding_t));
 
-                link->widget = widget;
-                link->callback = callback;
-                link->user_param = user_param;
+		bind->widget = widget;
+		bind->callback = callback;
+		bind->user_param = user_param;
 
-                if (widget == NULL)
-                        link->tag = tag;
+		if (widget == NULL)
+			bind->tag = tag;
 
-                ei_ev_links_t *links = &ei_events[eventtype];
-                if (!links->head) {
-                        links->head = link;
-                        links->tail = link;
-                }
-                else {
-                        links->tail->next = link;
-                        links->tail = link;
-                }
-        }
+		ei_linkedlist_t *list = &ei_events[eventtype];
+
+		ei_linkedlist_add(list, bind);
+	}
 }
 
 
@@ -91,86 +79,90 @@ void ei_bind(ei_eventtype_t eventtype,
  *				called to create the binding.
  */
 void ei_unbind(ei_eventtype_t eventtype,
-                ei_widget_t *widget,
-                ei_tag_t tag,
-                ei_callback_t callback,
-                void *user_param)
+		ei_widget_t *widget,
+		ei_tag_t tag,
+		ei_callback_t callback,
+		void *user_param)
 {
-        ;
+	;
 }
 
 void ei_event_process(ei_event_t *event)
 {
-        if (!event || event->type >= ei_ev_last)
-                return;
+	if (!event || event->type >= ei_ev_last)
+		return;
 
-        ei_bool_t bind, done = EI_FALSE;
-        ei_ev_links_t links = ei_events[event->type];
-        ei_ev_link_t *link = links.head;
-        ei_widget_t *widget = NULL, *selected = NULL;
-
-
-        if (!link)
-                done = EI_TRUE;
-
-        // Si l'event est lié aux boutons de la souris on selectionne le widget
-        if (event->type == ei_ev_mouse_buttondown
-        	|| event->type == ei_ev_mouse_buttonup
-        	|| event->type == ei_ev_mouse_move) {
-        	selected = ei_widget_pick(&event->param.mouse.where);
-        }
-
-        // Parcours de tous les links
-        while (!done) {
-                bind = EI_FALSE;
-
-                if (link->callback) {
-		        // Si le tag est "all", on appelle le callback
-		        // dans tous les cas
-                        if (link->tag && !strcmp(link->tag, "all"))
-                                bind = EI_TRUE;
-
-                        else {
-                                switch (event->type) {
-                                case ei_ev_app:
-                                        bind = EI_TRUE;
-                                        break;
-
-                                case ei_ev_keydown:
-                                case ei_ev_keyup:
-                                        bind = EI_TRUE;
-                                        break;
-
-			        // Pour les boutons de la souris, on
-			        // appelle le callback sur selected
-                                case ei_ev_mouse_buttondown:
-                                case ei_ev_mouse_buttonup:
-                                case ei_ev_mouse_move:
-                                	/* If linked widget is selected */
-                                        if (link->widget == selected)
-                                        	bind = EI_TRUE, widget = selected;
-
-                                	/* If selected widget is tagged */
-                                        else if (link->tag) {
-	                                        if (!strcmp(selected->wclass->name, link->tag))
-	                                        	bind = EI_TRUE, widget = selected;
-                                        }
-                                        break;
-
-                                default:
-                                        ;
-                                }
-                        }
-
-                        if (bind)
-                                done = link->callback(widget, event, link->user_param);
-                }
+	ei_bool_t call, done = EI_FALSE;
+	ei_linkedlist_t list = ei_events[event->type];
+	ei_linked_elem_t *link = list.head;
+	ei_binding_t *binding = NULL;
+	ei_widget_t *widget = NULL, *selected = NULL;
 
 
-                link = link->next;
-                if (!link)
-                        done = EI_TRUE;
-        }
+	if (!link)
+		done = EI_TRUE;
+
+	// Si l'event est lié aux boutons de la souris on selectionne le widget
+	if (event->type == ei_ev_mouse_buttondown
+		|| event->type == ei_ev_mouse_buttonup
+		|| event->type == ei_ev_mouse_move) {
+		selected = ei_widget_pick(&event->param.mouse.where);
+	}
+
+	// Parcours de tous les links
+	while (!done) {
+		binding = link->elem;
+		call = EI_FALSE;
+
+		if (binding && binding->callback) {
+			// Si le tag est "all", on appelle le callback
+			// dans tous les cas
+			if (binding->tag && !strcmp(binding->tag, "all"))
+				call = EI_TRUE;
+
+			else {
+				switch (event->type) {
+				case ei_ev_app:
+					call = EI_TRUE;
+					break;
+
+				case ei_ev_keydown:
+				case ei_ev_keyup:
+					call = EI_TRUE;
+					break;
+
+				// Pour les boutons de la souris, on
+				// appelle le callback sur selected
+				case ei_ev_mouse_buttondown:
+				case ei_ev_mouse_buttonup:
+				case ei_ev_mouse_move:
+					/* If linked widget is selected */
+					if (binding->widget == selected)
+						call = EI_TRUE, widget = selected;
+
+					/* If selected widget is tagged */
+					else if (binding->tag) {
+						if (!strcmp(selected->wclass->name, binding->tag))
+							call = EI_TRUE, widget = selected;
+					}
+					break;
+
+				default:
+					;
+				}
+			}
+
+			if (call) {
+				done = binding->callback(widget, event, binding->user_param);
+				ei_invalidate_widget(widget);
+			}
+		}
+
+
+		link = link->next;
+		if (!link)
+			done = EI_TRUE;
+	}
 }
 
 

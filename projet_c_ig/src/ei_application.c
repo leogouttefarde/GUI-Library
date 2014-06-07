@@ -17,41 +17,39 @@
 #include "ei_common.h"
 #include "ei_event.h"
 #include "ei_widgettypes.h"
-#include "ei_global.h"
+#include "ei_core.h"
 
 static ei_bool_t quit_request = EI_FALSE;
-static ei_linked_rect_t *rects_first = NULL;
-static ei_linked_rect_t *rects_last = NULL;
 
 // Peut-être pas dans le bon fichier
 // Enfonce les boutons
 ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, 
-                void *user_param) {
-        if (widget){
-                if (!strcmp(widget->wclass->name, "button")) {
+		void *user_param) {
+	if (widget){
+		if (!strcmp(widget->wclass->name, "button")) {
 
-                        ei_button_t *button = (ei_button_t*)widget;
-                        button->relief = ei_relief_sunken;
-                }
-        }
-        return EI_FALSE;
+			ei_button_t *button = (ei_button_t*)widget;
+			button->relief = ei_relief_sunken;
+		}
+	}
+	return EI_FALSE;
 }
 
 // Quand on relache la souris sur le bouton
 ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
-                void *user_param){
-        ei_bool_t res;
-        if (widget){
-                if (!strcmp(widget->wclass->name, "button")) {
-                        ei_button_t *button = (ei_button_t*)widget;
-                        button->relief = ei_relief_raised;
-                        // Appel du callback du bouton
-                        if (button->callback){
-                                res = button->callback((ei_widget_t*)button, NULL, button->user_param);
-                        }
-                }
-        }
-        return EI_FALSE;
+		void *user_param){
+	ei_bool_t res;
+	if (widget){
+		if (!strcmp(widget->wclass->name, "button")) {
+			ei_button_t *button = (ei_button_t*)widget;
+			button->relief = ei_relief_raised;
+			// Appel du callback du bouton
+			if (button->callback){
+				res = button->callback((ei_widget_t*)button, NULL, button->user_param);
+			}
+		}
+	}
+	return EI_FALSE;
 }
 
 /**
@@ -74,29 +72,30 @@ ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
  */
 void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 {
-        hw_init();
+	ei_init();
+	hw_init();
 
-        ei_set_root_surface(hw_create_window(main_window_size, fullscreen));
-        // Enregistrement des classes
-        ei_frame_register_class();
-        ei_button_register_class();
-        ei_toplevel_register_class();
-        // Initialisation du root_widget
-        ei_set_root(ei_widget_create ("frame", NULL));
+	ei_set_root_surface(hw_create_window(main_window_size, fullscreen));
+	// Enregistrement des classes
+	ei_frame_register_class();
+	ei_button_register_class();
+	ei_toplevel_register_class();
+	// Initialisation du root_widget
+	ei_set_root(ei_widget_create ("frame", NULL));
 
-        ei_register_placer_manager();
+	ei_register_placer_manager();
 
-        ei_widget_t *root_widget = ei_get_root();
-        ei_place(root_widget, NULL, NULL, NULL, &main_window_size->width, &main_window_size->height
-                        , NULL, NULL, NULL, NULL );
+	ei_widget_t *root_widget = ei_get_root();
+	ei_place(root_widget, NULL, NULL, NULL, &main_window_size->width, &main_window_size->height
+			, NULL, NULL, NULL, NULL );
 
-        ei_set_picking_surface(hw_surface_create(ei_get_root_surface(), main_window_size, EI_TRUE));
+	ei_set_picking_surface(hw_surface_create(ei_get_root_surface(), main_window_size, EI_TRUE));
 
-        // Pour gérer le clic sur les boutons ils faut faire un bind sur le tag
-        // "button" dans cette fonction avec les callback 1 et 2 définies dans
-        // ei_widget_class
-        ei_bind(ei_ev_mouse_buttondown, NULL, "button", button_callback_click, NULL);
-        ei_bind(ei_ev_mouse_buttonup, NULL, "button", button_callback_release, NULL);
+	// Pour gérer le clic sur les boutons ils faut faire un bind sur le tag
+	// "button" dans cette fonction avec les callback 1 et 2 définies dans
+	// ei_widget_class
+	ei_bind(ei_ev_mouse_buttondown, NULL, "button", button_callback_click, NULL);
+	ei_bind(ei_ev_mouse_buttonup, NULL, "button", button_callback_release, NULL);
 }
 
 /**
@@ -105,27 +104,9 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
  */
 void ei_app_free()
 {
-        ei_surface_t picking = ei_get_picking_surface();
-        if (picking)
-                hw_surface_free(picking);
-}
-
-
-
-// Loop récursif pour ei_app_run qui respecte la hierarchie des widgets
-void ei_app_run_loop(ei_widget_t *widget){
-        if (widget){
-                // Le widget courant est a affiché en premier (il sera
-                // derriere)
-                if (widget->geom_params && widget->geom_params->manager
-                                && widget->geom_params->manager->runfunc){
-                        widget->geom_params->manager->runfunc(widget);
-                }
-                // Ses enfants seront devant lui et derriere ses freres
-                ei_app_run_loop(widget->children_head);
-                // Les freres du widget courant sont enfin dessinés
-                ei_app_run_loop(widget->next_sibling);
-        }
+	ei_surface_t picking = ei_get_picking_surface();
+	if (picking)
+		hw_surface_free(picking);
 }
 
 /**
@@ -134,52 +115,25 @@ void ei_app_run_loop(ei_widget_t *widget){
  */
 void ei_app_run()
 {
-        ei_event_t event;
-        while (!quit_request) {
-                ei_widget_t *widget = ei_get_root();
+	ei_event_t event;
+	ei_surface_t root_surface = ei_get_root_surface();
 
-                // Cette boucle me paraissait fausse
-                // Car elle ne parcourt pas tous les widgets (seulement les fils
-                // du dernier frere)
-                ei_app_run_loop(widget);
-                /*
-                   while (widget) {
-                   if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)
-                   widget->geom_params->manager->runfunc(widget);
+	while (!quit_request) {
 
-                   if (widget->next_sibling)
-                   widget = widget->next_sibling;
+		ei_draw_widgets();
 
-                   else
-                   widget = widget->children_head;
-                   }
-                   */
+		ei_invalidate_rects();
 
-                // Update des surfaces
-                ei_surface_t root_surface = ei_get_root_surface();
-                hw_surface_update_rects(root_surface, rects_first);
+		// Update des surfaces
+		hw_surface_update_rects(root_surface, ei_get_update_rects());
 
-                /**************** DEBUG ************************
-                  debug_display_root_surface();
-                  debug_display_picking_surface();
-                 ***********************************************************/
+		ei_invalidate_reset();
 
 
+		hw_event_wait_next(&event);
 
-                /* Empty rects list */
-                while (rects_first && rects_first->next) {
-                        ei_linked_rect_t *next = rects_first->next;
-                        SAFE_FREE(rects_first);
-                        rects_first = next;
-                }
-                memset(&rects_first->rect, 0, sizeof(ei_rect_t));
-                rects_last = rects_first;
-
-                hw_event_wait_next(&event);
-
-                ei_event_process(&event);
-
-        };
+		ei_event_process(&event);
+	};
 }
 
 /**
@@ -191,18 +145,7 @@ void ei_app_run()
  */
 void ei_app_invalidate_rect(ei_rect_t* rect)
 {
-        ei_linked_rect_t *linked_rect = malloc(sizeof(ei_linked_rect_t));
-        linked_rect->rect = *rect;
-        linked_rect->next = NULL;
-
-        if (rects_last) {
-                rects_last->next = linked_rect;
-                rects_last = linked_rect;
-        }
-        else {
-                rects_first = linked_rect;
-                rects_last = linked_rect;
-        }
+	ei_invalidate_rect(rect);
 }
 
 /**
@@ -211,7 +154,7 @@ void ei_app_invalidate_rect(ei_rect_t* rect)
  */
 void ei_app_quit_request()
 {
-        quit_request = EI_TRUE;
+	quit_request = EI_TRUE;
 }
 
 
@@ -223,7 +166,7 @@ void ei_app_quit_request()
  */
 ei_widget_t* ei_app_root_widget(){
 
-        return ei_get_root();
+	return ei_get_root();
 }
 
 /**
@@ -234,6 +177,6 @@ ei_widget_t* ei_app_root_widget(){
  */
 ei_surface_t ei_app_root_surface(){
 
-        return ei_get_root_surface();
+	return ei_get_root_surface();
 }
 

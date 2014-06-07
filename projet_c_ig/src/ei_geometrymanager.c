@@ -11,7 +11,7 @@
 #include <string.h>
 #include "ei_geometrymanager.h"
 #include "ei_common.h"
-#include "ei_global.h"
+#include "ei_core.h"
 #include "ei_utils.h"
 #include "ei_widgettypes.h"
 #include "ei_application.h"
@@ -104,8 +104,6 @@ void ei_place_runfunc(struct ei_widget_t*	widget)
 {
         ei_rect_t *clipper = &widget->screen_location;
 
-        ei_app_invalidate_rect(clipper);
-
         widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
 }
 
@@ -177,6 +175,9 @@ void ei_place(ei_widget_t *widget,
 
 
         if (placer) {
+                /* Display widget */
+                ei_invalidate_widget(widget);
+
                 ei_bool_t gp_alloc = EI_FALSE;
                 // On verifie que le widget est bien géré par le placeur,
                 // sinon on le modifie pour qu'il le soit
