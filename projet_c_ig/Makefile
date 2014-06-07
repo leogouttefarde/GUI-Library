@@ -160,7 +160,7 @@ ei_geometrymanager : ${OBJDIR}/ei_geometrymanager.o
 
 # Compilation
 ${OBJDIR}/%.o: ${SRCDIR}/%.c 
-	$(CC) $(CCFLAGS) ${INCFLAGS} ${LIBEIBASE} $< -o $@
+	$(CC) $(CCFLAGS) ${INCFLAGS} $< -o $@
 
 # Building of the library libei
 

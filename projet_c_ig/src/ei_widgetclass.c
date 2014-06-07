@@ -100,10 +100,10 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                    tl = (ei_point_t){0,0};
                    }
                    */
-                ei_rect_t rec;
+                /*ei_rect_t rec;
 
 
-                /*if (clipper) { 
+                if (clipper) { 
                         rec = *clipper;
                         // ********************************************************** ESSAI
                         // Avec cette version le placeur TRONQUE
