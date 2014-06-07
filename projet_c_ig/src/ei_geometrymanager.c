@@ -13,6 +13,8 @@
 #include "ei_common.h"
 #include "ei_global.h"
 #include "ei_utils.h"
+#include "ei_widgettypes.h"
+#include "ei_application.h"
 
 static ei_geometrymanager_t *first = NULL;
 
@@ -270,6 +272,29 @@ void ei_place(ei_widget_t *widget,
                                 widget->screen_location.size = ei_size(0,0);
                                 widget->content_rect = &widget->screen_location;
                         }
+                        else {
+                                // Gestion de la bordure du widget frame :
+                                // le contenu doit etre a l'interieur
+                                if(!strcmp(widget->wclass->name, "frame")){
+                                        ei_frame_t* frame = (ei_frame_t*)widget;
+                                        int bw = frame->border_width;
+                                        ei_rect_t *content_rect;
+                                        content_rect = malloc(sizeof(ei_rect_t));
+                                        *content_rect = widget->screen_location;
+                                        content_rect->top_left.x =  content_rect->top_left.x +
+                                                bw;
+
+                                        content_rect->top_left.y =  content_rect->top_left.y +
+                                                bw;
+
+                                        content_rect->size.width =  content_rect->size.width +
+                                                - 2*bw;
+                                        content_rect->size.height =  content_rect->size.height +
+                                                -2*bw;
+                                        widget->content_rect = content_rect;
+                                }
+                        }
+
                 }
                 // Cas du root dont on fixe la taille dans ei_app_create
                 else{

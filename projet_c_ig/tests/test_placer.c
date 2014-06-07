@@ -60,7 +60,7 @@ int ei_main(int argc, char** argv)
         ei_widget_t*	button_2;
         ei_size_t	button_size_2		= {100,50};
         int		button_x_2		= 10;
-        int		button_y_2		= 180;
+        int		button_y_2		= 100;
         ei_color_t	button_color_2		= {0x88, 0x88, 0x88, 0xff};
         char*		button_title_2		= "clic 2 !";
         ei_color_t	button_text_color_2	= {0x00, 0x00, 0x00, 0xff};
@@ -78,9 +78,9 @@ int ei_main(int argc, char** argv)
         int		frame_border_width	= 6;
 
         ei_widget_t*	frame_2;
-        ei_size_t	frame_size_2		= {300,300};
+        ei_size_t	frame_size_2		= {300,150};
         int		frame_x_2		= 100;
-        int		frame_y_2		= 100;
+        int		frame_y_2		= 0;
         ei_color_t	frame_color_2		= {0x88, 0x88, 0x88, 0xff};
         ei_relief_t	frame_relief_2		= ei_relief_sunken;
         int		frame_border_width_2	= 3;

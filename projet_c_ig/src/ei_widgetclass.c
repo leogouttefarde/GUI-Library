@@ -87,91 +87,100 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
 
         // lock de la surface
         if (surface){
-        hw_surface_lock(surface);
+                hw_surface_lock(surface);
 
-        /*
-           printf("surface %X\n", surface);
-           printf("frame->bg_color.red %X\n", frame->bg_color.red);
-           printf("frame->bg_color.green %X\n", frame->bg_color.green);
-           printf("frame->bg_color.blue %X\n", frame->bg_color.blue);
-           printf("frame->bg_color.alpha %X\n", frame->bg_color.alpha);
+                // Remplissage dans le clipper
+                ei_fill(surface, &frame->bg_color, clipper);
+                ei_point_t tl;
+                /*
+                   if (clipper) { 
+                   tl = clipper->top_left;
+                   }
+                   else {
+                   tl = (ei_point_t){0,0};
+                   }
+                   */
+                ei_rect_t rec;
 
-           if (clipper) {
-           printf("clipper->top_left->x %X\n", clipper->top_left.x);
-           printf("clipper->top_left->y %X\n", clipper->top_left.y);
 
-           printf("clipper->size->width %X\n", clipper->size.width);
-           printf("clipper->size->height %X\n", clipper->size.height);
-           }
-           else
-           printf("No clipper\n");
-           */
-        ei_fill(surface, &frame->bg_color, clipper);
-
-        ei_point_t tl;
-			/*
-        if (clipper) { 
-                tl = clipper->top_left;
-        }
-        else {
-                tl = (ei_point_t){0,0};
-        }
-        */
-		  ei_rect_t rec;
-        if (clipper) { 
-                rec = *clipper;
-        }
-        else {
-                rec.top_left.x=0;rec.top_left.y=0;
-					 rec.size=hw_surface_get_size(surface);
-        }
-
-        int bw = frame->border_width;
-        ei_size_t size = frame->widget.requested_size;
-		  ei_frame_draw(surface,rec,frame);
-        /*
-        if (frame->relief) {
-                ei_linked_point_t top;
-                ei_linked_point_t bottom;
-                ei_linked_point_t right;
-                ei_linked_point_t left;
-                // definition des couleurs
-                ei_color_t dark = {0x23, 0x23, 0x23, 0xFF};
-                ei_color_t light = {0xCB, 0xCB, 0xCB, 0xFF};
-                ei_color_t darker = {0x11, 0x11, 0x11, 0xFF};
-                ei_color_t lighter = {0xDD, 0xDD, 0xDD, 0xFF};
-
-                top = ei_relief(tl, "top", size, bw);
-                right = ei_relief(tl, "right", size, bw);
-                left = ei_relief(tl, "left", size, bw);
-                bottom = ei_relief(tl, "bottom", size, bw);
-
-                // la disjonction sunken/raised commence ici
-                if (frame->relief == ei_relief_raised) {
-
-                        ei_draw_polygon(surface, &top, light, clipper);
-                        ei_draw_polygon(surface, &left, lighter,clipper);
-                        ei_draw_polygon(surface, &bottom, dark,clipper);
-                        ei_draw_polygon(surface, &right, darker, clipper);
+                /*if (clipper) { 
+                        rec = *clipper;
+                        // ********************************************************** ESSAI
+                        // Avec cette version le placeur TRONQUE
+                        // Sans cette ligne, il REDUIT
+                        rec.size = frame->widget.requested_size;
                 }
-                else{
-                        ei_draw_polygon(surface, &top, dark, clipper);
-                        ei_draw_polygon(surface, &left, darker,clipper);
-                        ei_draw_polygon(surface, &bottom, light,clipper);
-                        ei_draw_polygon(surface, &right, lighter, clipper);
+                else {
+                        rec.top_left.x=0;rec.top_left.y=0;
+                        rec.size=hw_surface_get_size(surface);
                 }
-        }
-        */
-        //unlock de la surface
-        hw_surface_unlock(surface);
-        }
-        if (pick_surface){
-                /* Dessin de la surface de picking */
-                hw_surface_lock(pick_surface);
-                ei_fill(pick_surface, frame->widget.pick_color,clipper);
-                hw_surface_unlock(pick_surface);
-        }
 
+                int bw = frame->border_width;
+                ei_size_t size = frame->widget.requested_size;
+                //               ei_frame_draw(surface,rec,frame);
+                */
+
+                ei_size_t size;
+                if (clipper) { 
+                        tl = clipper->top_left;
+                        size = clipper->size;
+                }
+                else {
+                        tl = (ei_point_t){0,0};
+                        size= hw_surface_get_size(surface);
+                }
+
+                int bw = frame->border_width;
+
+                /*********************************************************/ 
+                /* La ligne suivante fait que les widgets sotn TRONQUES */
+                /* la retirer fait qu'il sont REDUITS  */
+                size = frame->widget.requested_size;
+                /*********************************************************/
+                if (frame->relief) {
+                        ei_linked_point_t top;
+                        ei_linked_point_t bottom;
+                        ei_linked_point_t right;
+                        ei_linked_point_t left;
+                        // definition des couleurs
+                        ei_color_t dark = {0x23, 0x23, 0x23, 0xFF};
+                        ei_color_t light = {0xCB, 0xCB, 0xCB, 0xFF};
+                        ei_color_t darker = {0x11, 0x11, 0x11, 0xFF};
+                        ei_color_t lighter = {0xDD, 0xDD, 0xDD, 0xFF};
+
+                        top = ei_relief(tl, "top", size, bw);
+                        right = ei_relief(tl, "right", size, bw);
+                        left = ei_relief(tl, "left", size, bw);
+                        bottom = ei_relief(tl, "bottom", size, bw);
+
+                        // la disjonction sunken/raised commence ici
+                        if (frame->relief == ei_relief_raised) {
+
+                                ei_draw_polygon(surface, &top, light, clipper);
+                                ei_draw_polygon(surface, &left, lighter,clipper);
+                                ei_draw_polygon(surface, &bottom, dark,clipper);
+                                ei_draw_polygon(surface, &right, darker, clipper);
+                        }
+                        else{
+                                ei_draw_polygon(surface, &top, dark, clipper);
+                                ei_draw_polygon(surface, &left, darker,clipper);
+                                ei_draw_polygon(surface, &bottom, light,clipper);
+                                ei_draw_polygon(surface, &right, lighter, clipper);
+                        }
+
+
+
+                        //unlock de la surface
+                        hw_surface_unlock(surface);
+                }
+                if (pick_surface){
+                        /* Dessin de la surface de picking */
+                        hw_surface_lock(pick_surface);
+                        ei_fill(pick_surface, frame->widget.pick_color,clipper);
+                        hw_surface_unlock(pick_surface);
+                }
+
+        }
 }
 
 void frame_release(struct ei_widget_t* widget){
