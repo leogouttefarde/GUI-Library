@@ -135,7 +135,7 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 /*********************************************************/ 
                 /* La ligne suivante fait que les widgets sotn TRONQUES */
                 /* la retirer fait qu'il sont REDUITS  */
-                size = frame->widget.requested_size;
+                //               size = frame->widget.requested_size;
                 /*********************************************************/
                 if (frame->relief) {
                         ei_linked_point_t top;
