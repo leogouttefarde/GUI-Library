@@ -125,7 +125,7 @@ ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 
 ########## Tests personnels
 
-tests :  test_shape test_placer test_relative test_button2
+tests :  test_shape test_placer test_relative test_button2 test_geom
 
 # ATTENTION a LINKER LES BIBLIOTHEQUES MATHEMATIQUES
 test_shape : ${OBJDIR}/test_shape.o ${LIBEIBASE} ${LIBEI}
@@ -145,6 +145,12 @@ test_relative : ${OBJDIR}/test_relative.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/test_relative.o : ${TESTS}/test_relative.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_relative.c -o ${OBJDIR}/test_relative.o ${MATHFLAGS}
+
+test_geom : ${OBJDIR}/test_geom.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o test_geom ${OBJDIR}/test_geom.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/test_geom.o : ${TESTS}/test_geom.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_geom.c -o ${OBJDIR}/test_geom.o ${MATHFLAGS}
 
 test_button2 : ${OBJDIR}/test_button2.o ${LIBEIBASE} ${LIBEI}
 	${LINK} -o test_button2 ${OBJDIR}/test_button2.o ${LIBEI} ${LIBS} ${MATHFLAGS}
