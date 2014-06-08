@@ -79,6 +79,18 @@ ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
 }
 
 
+/* Dessin de pick_surface */
+void pick_surface_draw(ei_surface_t pick_surface, ei_widget_t *widget, ei_rect_t *clipper){
+        hw_surface_lock(pick_surface);
+        ei_linked_point_t lp;
+        ei_rect_t rect = widget->screen_location;
+        lp = ei_rect_to_points(rect);
+
+        ei_draw_polygon(pick_surface, &lp, *widget->pick_color, clipper);
+        hw_surface_unlock(pick_surface);        
+}
+
+
 /* Frame */
 
 /* Allocation */
@@ -117,12 +129,7 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
         }
         if (pick_surface){
                 /* Dessin de la surface de picking */
-                hw_surface_lock(pick_surface);
-
-                assert(frame->widget.pick_color);
-
-                ei_fill(pick_surface, frame->widget.pick_color,clipper);
-                hw_surface_unlock(pick_surface);
+                pick_surface_draw(pick_surface, widget, clipper);
         }
 }
 
@@ -231,12 +238,9 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 hw_surface_unlock(surface);
         }
 
-        if (pick_surface) {
+        if (pick_surface){
                 /* Dessin de la surface de picking */
-                hw_surface_lock(pick_surface);
-                assert(button->widget.pick_color);
-                ei_fill(pick_surface, button->widget.pick_color,clipper);
-                hw_surface_unlock(pick_surface);
+                pick_surface_draw(pick_surface, widget, clipper);
         }
 }
 
@@ -353,15 +357,9 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
                 hw_surface_unlock(surface);
         }
 
-        if (pick_surface) {
-
+        if (pick_surface){
                 /* Dessin de la surface de picking */
-                hw_surface_lock(pick_surface);
-
-                assert(toplevel->widget.pick_color);
-
-                ei_fill(pick_surface, toplevel->widget.pick_color,clipper);
-                hw_surface_unlock(pick_surface);
+                pick_surface_draw(pick_surface, widget, clipper);
         }
 }
 
