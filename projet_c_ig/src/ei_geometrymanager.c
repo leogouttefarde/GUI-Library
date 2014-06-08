@@ -198,8 +198,15 @@ void ei_place(ei_widget_t *widget,
                         widget->geom_params = malloc(sizeof(ei_placer_param_t));
                         widget->geom_params->manager = placer;
                 }
-
+                
+                // Booleen pour quitter l'affichage si le widget n'est pas dans
+                // son parent
                 bool keep = true;
+                // Booleen permettant de donner priorité aux coordonnées
+                // absolues
+                bool size_abs = false;
+                bool pos_abs = false;
+
                 int xmin;
                 int xmax;
                 int ymin;
@@ -229,12 +236,41 @@ void ei_place(ei_widget_t *widget,
                                                 xmin + *x;
                                 else
                                         keep = false;
+
+                                pos_abs = true;
                         }
                         if (y && keep) {
                                 if (ymin + *y <= ymax)
                                         widget->screen_location.top_left.y = ymin +*y ;
                                 else
                                         keep = false;
+
+                                pos_abs = true;
+                        }
+
+                        if (rel_x && keep & !pos_abs){
+                                if (*rel_x < 0. || *rel_x > 1.){
+                                        keep = false;
+                                }
+                                else{
+                                        int rx = xmin;
+                                        rx = rx +
+                                                (int)(*rel_x * ((float)xmax - (float)xmin));
+                                        widget->screen_location.top_left.x = rx;
+                                }
+
+                        }
+
+                        if(rel_y && keep & !pos_abs){
+                                if (*rel_y < 0. || *rel_y > 1.){
+                                        keep = false;
+                                }
+                                else{
+                                        int ry = ymin;
+                                        ry = ry +
+                                                (int)(*rel_y * ((float)ymax - (float)ymin));
+                                        widget->screen_location.top_left.y = ry;
+                                }
                         }
 
                         // Taille par defaut
@@ -243,29 +279,58 @@ void ei_place(ei_widget_t *widget,
                         widget->screen_location.size = widget->requested_size;
                         int w;
                         int h;
-                        if (width && keep)
-                                w = *width;
-                        else
-                                w = widget->requested_size.width;
+                        w= widget->requested_size.width;
+                        h = widget->requested_size.height;
 
-                        if(height && keep)
+                        if (width && keep) {
+                                w = *width;
+                                size_abs = true;
+                        }
+
+                        if(height && keep){
                                 h = *height;
-                        else
-                                h = widget->requested_size.height;
+                                size_abs = true;
+                        }
+
+                        if(rel_width && keep && !size_abs) {
+                                if (*rel_width < 0. || *rel_width > 1.){
+                                        keep = false;
+                                }
+                                else{
+                                        int rw = parent_rect.size.width;
+                                        rw = (int)((float)rw * *rel_width);
+                                        w = rw;
+                                }
+
+                        }
+
+                        if(rel_height && keep && !size_abs) {
+                                if (*rel_height < 0. || *rel_height > 1.){
+                                        keep = false;
+                                }
+                                else{
+                                        int rh = parent_rect.size.height;
+                                        rh = (int)((float)rh * *rel_height);
+                                        h = rh;
+                                }
+                        }
+
 
                         // On verifie que la taille n'est pas trop
                         // grande
-                        if (xmin + *x + w -1 <= xmax)
+                        int x = widget->screen_location.top_left.x;
+                        int y = widget->screen_location.top_left.y;
+                        if (xmin + x + w -1 <= xmax)
                                 widget->screen_location.size.width = w;
                         else
                                 widget->screen_location.size.width =
-                                        (xmax - xmin - *x +1);
+                                        (xmax - xmin - x +1);
 
-                        if (ymin + *y + h -1 <= ymax)
+                        if (ymin + y + h -1 <= ymax)
                                 widget->screen_location.size.height = h;
                         else
                                 widget->screen_location.size.height =
-                                        (ymax - ymin - *y +1);
+                                        (ymax - ymin - y +1);
 
                         if(!keep){
                                 // Le point top_left n'est pas visible,
