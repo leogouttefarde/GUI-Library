@@ -1,6 +1,6 @@
 /**
- *  @file	ei_geometrymanager.h
- *  @brief	Manages the positionning and sizing of widgets on the screen.
+ *  @file       ei_geometrymanager.h
+ *  @brief      Manages the positionning and sizing of widgets on the screen.
  *
  *  \author
  *  Created by François Bérard on 18.12.11.
@@ -20,10 +20,10 @@
 static ei_geometrymanager_t *first = NULL;
 
 /**
- * \brief	Registers a geometry manager to the program so that it can be called to manager
- *		widgets. This must be done only once in the application.
+ * \brief       Registers a geometry manager to the program so that it can be called to manager
+ *              widgets. This must be done only once in the application.
  *
- * @param	geometrymanager		The structure describing the geometry manager.
+ * @param       geometrymanager         The structure describing the geometry manager.
  */
 void ei_geometrymanager_register(ei_geometrymanager_t* geometrymanager)
 {
@@ -52,13 +52,13 @@ void ei_geometrymanager_register(ei_geometrymanager_t* geometrymanager)
 
 
 /**
- * \brief	Returns a geometry manager structure from its name.
+ * \brief       Returns a geometry manager structure from its name.
  *
- * @param	name		The name of the geometry manager.
+ * @param       name            The name of the geometry manager.
  *
- * @return			The structure describing the geometry manager.
+ * @return                      The structure describing the geometry manager.
  */
-ei_geometrymanager_t*	ei_geometrymanager_from_name	(ei_geometrymanager_name_t name)
+ei_geometrymanager_t*   ei_geometrymanager_from_name    (ei_geometrymanager_name_t name)
 {
         ei_geometrymanager_t *current, *next;
         ei_geometrymanager_t *geometrymanager = NULL;
@@ -80,20 +80,20 @@ ei_geometrymanager_t*	ei_geometrymanager_from_name	(ei_geometrymanager_name_t na
 
 
 /**
- * \brief	Tell the geometry manager in charge of a widget to forget it. This removes the
- *		widget from the screen. If the widget is not currently managed, this function
- *		returns silently.
- *		Side effects:
- *		<ul>
- *			<li> the \ref ei_geometrymanager_releasefunc_t of the geometry manager in
- *				charge of this widget is called, </li>
- *			<li> the geom_param field of the widget is freed, </li>
- *			<li> the current screen_location of the widget is invalided (which will
- *				trigger a redraw), </li>
- *			<li> the screen_location of the widget is reset to 0. </li>
- *		</ul>
+ * \brief       Tell the geometry manager in charge of a widget to forget it. This removes the
+ *              widget from the screen. If the widget is not currently managed, this function
+ *              returns silently.
+ *              Side effects:
+ *              <ul>
+ *                      <li> the \ref ei_geometrymanager_releasefunc_t of the geometry manager in
+ *                              charge of this widget is called, </li>
+ *                      <li> the geom_param field of the widget is freed, </li>
+ *                      <li> the current screen_location of the widget is invalided (which will
+ *                              trigger a redraw), </li>
+ *                      <li> the screen_location of the widget is reset to 0. </li>
+ *              </ul>
  *
- * @param	widget		The widget to unmap from the screen.
+ * @param       widget          The widget to unmap from the screen.
  */
 void ei_geometrymanager_unmap(ei_widget_t* widget)
 {
@@ -102,7 +102,7 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 
 
 /*  Gere le clipping */
-void ei_place_runfunc(struct ei_widget_t*	widget)
+void ei_place_runfunc(struct ei_widget_t*       widget)
 {
         ei_rect_t *clipper;
         if (widget->parent){
@@ -114,14 +114,14 @@ void ei_place_runfunc(struct ei_widget_t*	widget)
         widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
 }
 
-void ei_place_releasefunc(struct ei_widget_t*	widget)
+void ei_place_releasefunc(struct ei_widget_t*   widget)
 {
         SAFE_FREE(widget->geom_params);
 }
 
 /**
- * \brief	Registers the "placer" geometry manager in the program. This must be called only
- *		once before the \ref ei_place function can be called.
+ * \brief       Registers the "placer" geometry manager in the program. This must be called only
+ *              once before the \ref ei_place function can be called.
  */
 void  ei_register_placer_manager()
 {
@@ -140,36 +140,36 @@ void  ei_register_placer_manager()
 
 
 /**
- * \brief	Configures the geometry of a widget using the "placer" geometry manager.
- * 		If the widget was already managed by another geometry manager, then it is first
- *		removed from the previous geometry manager.
- * 		If the widget was already managed by the "placer", then this calls simply updates
- *		the placer parameters: arguments that are not NULL replace previous values.
- * 		When the arguments are passed as NULL, the placer uses default values (detailed in
- *		the argument descriptions below). If no size is provided (either absolute or
- *		relative), then the requested size of the widget is used, i.e. the minimal size
- *		required to display its content.
+ * \brief       Configures the geometry of a widget using the "placer" geometry manager.
+ *              If the widget was already managed by another geometry manager, then it is first
+ *              removed from the previous geometry manager.
+ *              If the widget was already managed by the "placer", then this calls simply updates
+ *              the placer parameters: arguments that are not NULL replace previous values.
+ *              When the arguments are passed as NULL, the placer uses default values (detailed in
+ *              the argument descriptions below). If no size is provided (either absolute or
+ *              relative), then the requested size of the widget is used, i.e. the minimal size
+ *              required to display its content.
  *
- * @param	widget		The widget to place.
- * @param	anchor		How to anchor the widget to the position defined by the placer
- *				(defaults to ei_anc_northwest).
- * @param	x		The absolute x position of the widget (defaults to 0).
- * @param	y		The absolute y position of the widget (defaults to 0).
- * @param	width		The absolute width for the widget (defaults to the requested width
- *				of the widget).
- * @param	height		The absolute height for the widget (defaults to the requested height
- *				of the widget).
- * @param	rel_x		The relative x position of the widget: 0.0 corresponds to the left
- *				side of the master, 1.0 to the right side (defaults to 0.0).
- * @param	rel_y		The relative y position of the widget: 0.0 corresponds to the top
- *				side of the master, 1.0 to the bottom side (defaults to 0.0).
- * @param	rel_width	The relative width of the widget: 0.0 corresponds to a width of 0,
- *				1.0 to the width of the master (defaults to 0.0).
- * @param	rel_height	The relative height of the widget: 0.0 corresponds to a height of 0,
- *				1.0 to the height of the master (defaults to 0.0).
+ * @param       widget          The widget to place.
+ * @param       anchor          How to anchor the widget to the position defined by the placer
+ *                              (defaults to ei_anc_northwest).
+ * @param       x               The absolute x position of the widget (defaults to 0).
+ * @param       y               The absolute y position of the widget (defaults to 0).
+ * @param       width           The absolute width for the widget (defaults to the requested width
+ *                              of the widget).
+ * @param       height          The absolute height for the widget (defaults to the requested height
+ *                              of the widget).
+ * @param       rel_x           The relative x position of the widget: 0.0 corresponds to the left
+ *                              side of the master, 1.0 to the right side (defaults to 0.0).
+ * @param       rel_y           The relative y position of the widget: 0.0 corresponds to the top
+ *                              side of the master, 1.0 to the bottom side (defaults to 0.0).
+ * @param       rel_width       The relative width of the widget: 0.0 corresponds to a width of 0,
+ *                              1.0 to the width of the master (defaults to 0.0).
+ * @param       rel_height      The relative height of the widget: 0.0 corresponds to a height of 0,
+ *                              1.0 to the height of the master (defaults to 0.0).
  */
 void ei_place(ei_widget_t *widget,
-                ei_anchor_t	*anchor,
+                ei_anchor_t     *anchor,
                 int *x,
                 int *y,
                 int *width,
@@ -327,7 +327,7 @@ void ei_place(ei_widget_t *widget,
                                 int y1;
                                 int y2;
                                 switch (anc) {
-                                        //	ei_anc_none		= 0,	///< No anchor defined.
+                                        //      ei_anc_none             = 0,    ///< No anchor defined.
                                 case ei_anc_center : 
                                         // Le + 1 est important (/2 tronque)
                                         // exemple
@@ -349,7 +349,7 @@ void ei_place(ei_widget_t *widget,
                                                 x2 = xmax;
                                         }
 
-                                        break;			///< Anchor in the center.
+                                        break;                  ///< Anchor in the center.
                                 case ei_anc_north : 
 
                                         x1 = x_anc - (w / 2) - 1;
@@ -365,8 +365,8 @@ void ei_place(ei_widget_t *widget,
                                         if (!(y1 >= ymin && y2 <= ymax)){
                                                 y2 = ymax;
                                         }
-                                        break;	///< Anchor on the top side, centered horizontally.
-                                case ei_anc_northeast :	
+                                        break;  ///< Anchor on the top side, centered horizontally.
+                                case ei_anc_northeast : 
 
                                         x1 = x_anc - w + 1;
                                         x2 = x_anc;
@@ -380,8 +380,8 @@ void ei_place(ei_widget_t *widget,
                                         if (!(y1 >= ymin && y2 <= ymax)){
                                                 y2 = ymax;
                                         }
-                                        break;	///< Anchor on the top-right corner.
-                                case ei_anc_east :	
+                                        break;  ///< Anchor on the top-right corner.
+                                case ei_anc_east :      
 
                                         x1 = x_anc;
                                         x2 = x_anc + w -1;
@@ -396,8 +396,8 @@ void ei_place(ei_widget_t *widget,
                                                 y1 = ymin;
                                                 y2 = ymax;
                                         }
-                                        break;		///< Anchor on the right side, centered vertically.
-                                case ei_anc_southeast:	
+                                        break;          ///< Anchor on the right side, centered vertically.
+                                case ei_anc_southeast:  
 
                                         x1 = x_anc - w + 1;
                                         x2 = x_anc;
@@ -411,7 +411,7 @@ void ei_place(ei_widget_t *widget,
                                         if (!(y1 >= ymin && y2 <= ymax)){
                                                 y1 = ymin;
                                         }
-                                        break;	///< Anchor on the bottom-right corner.
+                                        break;  ///< Anchor on the bottom-right corner.
                                 case ei_anc_south:
 
                                         x1 = x_anc - ( w / 2)  + 1;
@@ -427,8 +427,8 @@ void ei_place(ei_widget_t *widget,
                                         if (!(y1 >= ymin && y2 <= ymax)){
                                                 y1 = ymin;
                                         }
-                                        break;		///< Anchor on the bottom side, centered horizontally.
-                                case ei_anc_southwest:	
+                                        break;          ///< Anchor on the bottom side, centered horizontally.
+                                case ei_anc_southwest:  
                                         x1 = x_anc - w + 1;
                                         x2 = x_anc;
                                         y1 = y_anc - h + 1;
@@ -441,7 +441,7 @@ void ei_place(ei_widget_t *widget,
                                         if (!(y1 >= ymin && y2 <= ymax)){
                                                 y1 = ymin;
                                         }
-                                        break;	///< Anchor on the bottom-left corner.
+                                        break;  ///< Anchor on the bottom-left corner.
                                 case ei_anc_west:
                                         x1 = x_anc;
                                         x2 = x_anc + w -1;
@@ -456,7 +456,7 @@ void ei_place(ei_widget_t *widget,
                                                 y1 = ymin;
                                                 y2 = ymin;
                                         }
-                                        break;		///< Anchor on the left side, centered vertically.
+                                        break;          ///< Anchor on the left side, centered vertically.
                                 case ei_anc_northwest: 
                                         x1 = x_anc;
                                         x2 = x_anc + w -1;

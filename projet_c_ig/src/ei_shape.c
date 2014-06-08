@@ -1,7 +1,7 @@
 /**
- * @file	ei_shape.h
+ * @file        ei_shape.h
  *
- * @brief 	Basical geometric transformation and shape generating
+ * @brief       Basical geometric transformation and shape generating
  *
  *  Created by Eric BUREL on 04.06.14
  *  Copyright 2014 Ensimag. All rights reserved.
@@ -19,12 +19,12 @@
 //**************** Basic functions ****************/
 
 /**
- * @brief	Search fictive max point where max.x(resp. y) = maximal abciss (resp. ordinate) of points
+ * @brief       Search fictive max point where max.x(resp. y) = maximal abciss (resp. ordinate) of points
  *              in the list
  *
- * @param	l		The list to search in
+ * @param       l               The list to search in
  *
- * @return	The max point		
+ * @return      The max point           
  */
 ei_point_t ei_search_max(ei_linked_point_t l){
         // initialisation du max
@@ -48,12 +48,12 @@ ei_point_t ei_search_max(ei_linked_point_t l){
 
 
 /**
- * @brief	Same as ei_search_max with the min
+ * @brief       Same as ei_search_max with the min
  *
  *
- * @param	l		The list to search in
+ * @param       l               The list to search in
  *
- * @return	The min point		
+ * @return      The min point           
  */
 
 ei_point_t ei_search_min(ei_linked_point_t l){
@@ -76,13 +76,13 @@ ei_point_t ei_search_min(ei_linked_point_t l){
         return min;
 }
 /**
- * @brief	Search the size of the smallest rectangle around the points and
+ * @brief       Search the size of the smallest rectangle around the points and
  *              returns its size.
  *
  *
- * @param	l		The list to search in
+ * @param       l               The list to search in
  *
- * @return	The size		
+ * @return      The size                
  */
 ei_size_t ei_search_size(ei_linked_point_t l){
         ei_point_t max;

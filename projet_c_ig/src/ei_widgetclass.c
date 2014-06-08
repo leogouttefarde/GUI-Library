@@ -1,6 +1,6 @@
 /**
- *  @file	widgetclass.h
- *  @brief	Definition and registration of widget classes.
+ *  @file       widgetclass.h
+ *  @brief      Definition and registration of widget classes.
  *
  *  \author 
  *  Created by François Bérard on 02.12.11.
@@ -27,12 +27,12 @@ static ei_widgetclass_t *others_table = NULL;
 
 
 /**
- * @brief	Registers a class to the program so that widgets of this class can be created.
- *		This must be done only once in the application.
+ * @brief       Registers a class to the program so that widgets of this class can be created.
+ *              This must be done only once in the application.
  *
- * @param	widgetclass	The structure describing the class.
+ * @param       widgetclass     The structure describing the class.
  */
-void ei_widgetclass_register	(ei_widgetclass_t* widgetclass)
+void ei_widgetclass_register    (ei_widgetclass_t* widgetclass)
 {
         // TODO : Corriger en gérant les widgetclass via des linkedlist
         // et les parcourir dans ei_widgetclass_from_name
@@ -52,11 +52,11 @@ void ei_widgetclass_register	(ei_widgetclass_t* widgetclass)
 
 
 /**
- * @brief	Returns the structure describing a class, from its name.
+ * @brief       Returns the structure describing a class, from its name.
  *
- * @param	name		The name of the class of widget.
+ * @param       name            The name of the class of widget.
  *
- * @return			The structure describing the class.
+ * @return                      The structure describing the class.
  */
 ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
 {
@@ -175,13 +175,13 @@ void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 }
 
 /**
- * \brief	Registers the "frame" widget class in the program. This must be called only
- *		once before widgets of the class "frame" can be created and configured with
- *		\ref ei_frame_configure.
+ * \brief       Registers the "frame" widget class in the program. This must be called only
+ *              once before widgets of the class "frame" can be created and configured with
+ *              \ref ei_frame_configure.
  */
 // On utilise des pointeurs sur fonction
 // Cette procedure leur donne une valeur
-void	ei_frame_register_class ()
+void    ei_frame_register_class ()
 {
         // Declaration des fonctions liées à la classe frame
 
@@ -297,11 +297,11 @@ void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
         ;
 }
 /**
- * \brief	Registers the "button" widget class in the program. This must be called only
- *		once before widgets of the class "button" can be created and configured with
- *		\ref ei_button_configure.
+ * \brief       Registers the "button" widget class in the program. This must be called only
+ *              once before widgets of the class "button" can be created and configured with
+ *              \ref ei_button_configure.
  */
-void	ei_button_register_class()
+void    ei_button_register_class()
 {
         // Allocation
         button_table = CALLOC_TYPE(ei_widgetclass_t);
@@ -397,11 +397,11 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 }
 
 /**
- * \brief	Registers the "toplevel" widget class in the program. This must be called only
- *		once before widgets of the class "toplevel" can be created and configured with
- *		\ref ei_toplevel_configure.
+ * \brief       Registers the "toplevel" widget class in the program. This must be called only
+ *              once before widgets of the class "toplevel" can be created and configured with
+ *              \ref ei_toplevel_configure.
  */
-void	ei_toplevel_register_class()
+void    ei_toplevel_register_class()
 {
         // Allocation
         toplevel_table = CALLOC_TYPE(ei_widgetclass_t);

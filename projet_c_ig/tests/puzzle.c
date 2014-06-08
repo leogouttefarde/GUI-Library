@@ -71,7 +71,10 @@ static inline tile_t* tile_at(puzzle_t* puzzle, ei_point_t position)
 
 ei_bool_t handle_tile_press(ei_widget_t* widget, ei_event_t* event, void* user_param)
 {
+        printf("handle_tile_press!\n");
+
 	tile_t*		tile		= (tile_t*)user_param;
+        printf("tile %x\n", tile);
 	puzzle_t*	puzzle		= tile->puzzle;
 	ei_point_t	offsets[]	= {{0, -1}, {-1, 0}, {1, 0}, {0, 1}};
 	ei_point_t	current		= tile->current_position;
@@ -82,6 +85,7 @@ ei_bool_t handle_tile_press(ei_widget_t* widget, ei_event_t* event, void* user_p
 	for (i = 0; i < 4; i++) {
 		swap_pos	= ei_point_add(current, offsets[i]);
 		if (valid(puzzle, swap_pos) && tile_at(puzzle, swap_pos) == NULL) {
+        printf("in\n");
 			puzzle->current[index_at(puzzle, current)]	= NULL;
 			puzzle->current[index_at(puzzle, swap_pos)]	= tile;
 			tile->current_position				= swap_pos;
@@ -149,6 +153,7 @@ void create_puzzle_window(char* image_filename)
 				continue;
 			}
 			button			= ei_widget_create("button", toplevel);
+                        printf("button %x\n", button);
 			img_rect		= ei_rect(ei_point(x*k_tile_size+border_width, y*k_tile_size+border_width),
 								image_rect_size);
 			tile			= tile_memory_at(puzzle, ei_point(x, y));
