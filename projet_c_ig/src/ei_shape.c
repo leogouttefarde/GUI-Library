@@ -9,6 +9,8 @@
  */
 #include <string.h>
 #include "ei_shape.h"
+#include "ei_common.h"
+
 // ne pas oublier les parenthèse, M_PI definie dans math.h
 #ifndef M_PI
 #define M_PI (3.141592653589793)
@@ -169,7 +171,8 @@ void ei_sym_vert(ei_linked_point_t *lp){
 }
 
 
-void ei_append_point(ei_linked_point_t *lp, ei_point_t point) {
+void ei_append_point(ei_linked_point_t *lp, ei_point_t point)
+{
         ei_linked_point_t *prec;
         ei_linked_point_t *current;
         current = lp;
@@ -178,13 +181,17 @@ void ei_append_point(ei_linked_point_t *lp, ei_point_t point) {
                 current = current->next;
         }
         if (prec){
-                prec->next = malloc(sizeof(ei_linked_point_t));
+                prec->next = CALLOC_TYPE(ei_linked_point_t);
+                assert(prec->next);
                 prec->next->point = point;
         }
 }
 
-void ei_direct_append(ei_linked_point_t *lp, ei_point_t point){
-        lp->next = malloc(sizeof(ei_linked_point_t));
+void ei_direct_append(ei_linked_point_t *lp, ei_point_t point)
+{
+        lp->next = CALLOC_TYPE(ei_linked_point_t);
+        assert(lp->next);
+
         lp->next->point = point;
         lp->next->next = NULL;
 }
@@ -192,7 +199,8 @@ void ei_direct_append(ei_linked_point_t *lp, ei_point_t point){
 
 // Transforme un rectangle en une liste de point
 // premier point = top left, puis sens horaire
-ei_linked_point_t ei_rect_to_points(ei_rect_t rect){
+ei_linked_point_t ei_rect_to_points(ei_rect_t rect)
+{
         // cf minimal.c pour un exemple d'utilisation des tableaux
         int w = rect.size.width;
         int h = rect.size.height;
@@ -217,9 +225,9 @@ ei_linked_point_t ei_rect_to_points(ei_rect_t rect){
 /*************** Frame related functions *******/
 
 // Genere un morceau de cadre avec l'orientation voulue
-// size est la taille totale (bordure incluse !)
-ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int
-                bw){
+// size est la taille totale (bordure incluse)
+ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int bw)
+{
 
         ei_linked_point_t result;
 

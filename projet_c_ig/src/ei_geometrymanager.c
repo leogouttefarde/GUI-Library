@@ -16,6 +16,7 @@
 #include "ei_widgettypes.h"
 #include "ei_application.h"
 
+// TODO : Gérer les listes avec la classe linkedlist
 static ei_geometrymanager_t *first = NULL;
 
 /**
@@ -100,7 +101,7 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 }
 
 
-// A MODIFIER
+// A MODIFIER (OU PAS !)
 // Le clipper doit etre un des rectangle appelé par ei_app_invalidate_rect
 void ei_place_runfunc(struct ei_widget_t*	widget)
 {
@@ -120,8 +121,9 @@ void ei_place_releasefunc(struct ei_widget_t*	widget)
  */
 void  ei_register_placer_manager()
 {
-        ei_geometrymanager_t *placer = malloc(sizeof(ei_geometrymanager_t));
-        memset(placer, 0, sizeof(ei_geometrymanager_t));
+        ei_geometrymanager_t *placer = CALLOC_TYPE(ei_geometrymanager_t);
+        assert(placer);
+
         strcpy(placer->name, "placer");
 
         placer->runfunc = ei_place_runfunc;
@@ -174,6 +176,7 @@ void ei_place(ei_widget_t *widget,
                 float *rel_height)
 {
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
+        assert(placer);
 
 
         if (placer) {
@@ -197,7 +200,7 @@ void ei_place(ei_widget_t *widget,
                 }
 
                 if (gp_alloc) {
-                        widget->geom_params = malloc(sizeof(ei_placer_param_t));
+                        widget->geom_params = CALLOC_TYPE(ei_placer_param_t);
                         widget->geom_params->manager = placer;
                 }
 
@@ -480,12 +483,35 @@ void ei_place(ei_widget_t *widget,
                                 widget->screen_location.size.height
                                         = h;
 
+                                // Gestion des bordures
+                                if(!strcmp(widget->wclass->name, "frame")){
+                                        ei_frame_t* frame = (ei_frame_t*)widget;
+                                        int bw = frame->border_width;
+                                        ei_rect_t *content_rect;
+                                        content_rect = malloc(sizeof(ei_rect_t));
+                                        *content_rect = widget->screen_location;
+                                        content_rect->top_left.x =  content_rect->top_left.x +
+                                                bw;
+
+                                        content_rect->top_left.y =  content_rect->top_left.y +
+                                                bw;
+
+                                        content_rect->size.width =  content_rect->size.width +
+                                                - 2*bw;
+                                        content_rect->size.height =  content_rect->size.height +
+                                                -2*bw;
+                                        widget->content_rect = content_rect;
+                                }
+                                else {
+                                        widget->content_rect = &widget->screen_location;
+                                }
                         }
                         else{
                                 // on affiche pas le widget
                                 widget->screen_location = ei_rect_zero();
                                 widget->content_rect = &widget->screen_location;
                         }
+
                 }
                 // Gestion du root widget
                 else{
@@ -502,32 +528,9 @@ void ei_place(ei_widget_t *widget,
                                 widget->requested_size.height = *height;
 
                         widget->screen_location.size = widget->requested_size;
+                        widget->content_rect = &widget->screen_location;
 
 
-
-                        // Gestion de la bordure du widget frame :
-                        // le contenu doit etre a l'interieur
-                        if(!strcmp(widget->wclass->name, "frame")){
-                                ei_frame_t* frame = (ei_frame_t*)widget;
-                                int bw = frame->border_width;
-                                ei_rect_t *content_rect;
-                                content_rect = malloc(sizeof(ei_rect_t));
-                                *content_rect = widget->screen_location;
-                                content_rect->top_left.x =  content_rect->top_left.x +
-                                        bw;
-
-                                content_rect->top_left.y =  content_rect->top_left.y +
-                                        bw;
-
-                                content_rect->size.width =  content_rect->size.width +
-                                        - 2*bw;
-                                content_rect->size.height =  content_rect->size.height +
-                                        -2*bw;
-                                widget->content_rect = content_rect;
-                        }
-                        else {
-                                widget->content_rect = &widget->screen_location;
-                        }
                 }
         }
 }

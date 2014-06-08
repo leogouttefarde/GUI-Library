@@ -54,19 +54,19 @@ void ei_bind(ei_eventtype_t eventtype,
 		void *user_param)
 {
 	if (eventtype < ei_ev_last) {
-		ei_binding_t *bind = malloc(sizeof(ei_binding_t));
-		memset(bind, 0, sizeof(ei_binding_t));
+		ei_binding_t *binding = CALLOC_TYPE(ei_binding_t);
+		assert(binding);
 
-		bind->widget = widget;
-		bind->callback = callback;
-		bind->user_param = user_param;
+		binding->widget = widget;
+		binding->callback = callback;
+		binding->user_param = user_param;
 
 		if (widget == NULL)
-			bind->tag = tag;
+			binding->tag = tag;
 
 		ei_linkedlist_t *list = &ei_events[eventtype];
 
-		ei_linkedlist_add(list, bind);
+		ei_linkedlist_add(list, binding);
 	}
 }
 
