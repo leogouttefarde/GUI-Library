@@ -80,8 +80,7 @@ ei_linked_point_t *ei_button_rounded_frame(ei_rect_t rectangle, int rayon,
         ei_point_t centre_tg = { xrec + rayon, yrec + rayon };
         ei_point_t centre_bg = { xrec + rayon, yrec + hauteur - rayon };
         ei_point_t centre_td = { xrec + longueur - rayon, yrec + rayon };
-        ei_point_t centre_bd =
-            { xrec + longueur - rayon, yrec + hauteur - rayon };
+        ei_point_t centre_bd = { xrec + longueur - rayon, yrec + hauteur - rayon };
 
         if (partie == complet) {
                 Liste = trait(top_gauche, top_droit, Liste);

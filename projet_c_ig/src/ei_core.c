@@ -1,16 +1,14 @@
+
 #include "ei_geometrymanager.h"
 #include "ei_core.h"
 #include "ei_linkedlist.h"
-#include <stdio.h>
+
 
 static ei_widget_t *ei_root = NULL;
 static ei_surface_t ei_root_surface = NULL;
 static ei_surface_t ei_picking_surface = NULL;
 static ei_linkedlist_t ei_invalid_widgets;
 static ei_linkedlist_t ei_update_rects;
-
-#define ei_invalid_widgets_p &ei_invalid_widgets
-#define ei_update_rects_p &ei_update_rects
 
 
 // Setters
@@ -120,15 +118,15 @@ void debug_display_root_surface(){
 void ei_init()
 {
 	ei_event_init();
-	ei_linkedlist_init(ei_invalid_widgets_p);
-	ei_linkedlist_init(ei_update_rects_p);
+	ei_linkedlist_init(&ei_invalid_widgets);
+	ei_linkedlist_init(&ei_update_rects);
 }
 
 void ei_invalidate_widget(ei_widget_t *widget)
 {
 	// TODO : if this widget is hidden by another invalid one, do not add
 
-	ei_linkedlist_add(ei_invalid_widgets_p, widget);
+	ei_linkedlist_add(&ei_invalid_widgets, widget);
 }
 
 // Draw récursif selon la hiérarchie des widgets
@@ -187,8 +185,8 @@ void ei_invalidate_rects()
 
 void ei_invalidate_reset()
 {
-	ei_linkedlist_empty(ei_invalid_widgets_p, false);
-	ei_linkedlist_empty(ei_update_rects_p, true);
+	ei_linkedlist_empty(&ei_invalid_widgets, false);
+	ei_linkedlist_empty(&ei_update_rects, true);
 }
 
 ei_linked_rect_t* ei_get_update_rects()
@@ -218,7 +216,7 @@ void ei_invalidate_rect(ei_rect_t* rect)
 				elem->next = link;
 		}
 
-		ei_linkedlist_add(ei_update_rects_p, link);
+		ei_linkedlist_add(&ei_update_rects, link);
 	}
 }
 
