@@ -334,20 +334,11 @@ void ei_place(ei_widget_t *widget,
                                         // XXXX avec w = 4, C le centre
                                         // 0C00
                                         // 0000
-                                        x1 = x_anc - (w / 2) - 1;
+                                        x1 = x_anc - (w / 2) + 1;
                                         x2 = x_anc + (w / 2);
                                         y1 = y_anc - (h / 2) + 1;
                                         y2 = y_anc + (h / 2);
 
-                                        // Si le widget deborde :
-                                        if (!(x1 >= xmin && x2 <= xmax)){
-                                                x1 = xmin;
-                                                x2 = xmax;
-                                        }
-                                        if (!(y1 >= ymin && y2 <= ymax)){
-                                                x1 = xmin;
-                                                x2 = xmax;
-                                        }
 
                                         break;                  ///< Anchor in the center.
                                 case ei_anc_north : 
@@ -366,8 +357,7 @@ void ei_place(ei_widget_t *widget,
                                                 y2 = ymax;
                                         }
                                         break;  ///< Anchor on the top side, centered horizontally.
-                                case ei_anc_northeast : 
-
+                                case ei_anc_northeast :
                                         x1 = x_anc - w + 1;
                                         x2 = x_anc;
                                         y1 = y_anc;
@@ -381,7 +371,7 @@ void ei_place(ei_widget_t *widget,
                                                 y2 = ymax;
                                         }
                                         break;  ///< Anchor on the top-right corner.
-                                case ei_anc_east :      
+                                case ei_anc_east :
 
                                         x1 = x_anc;
                                         x2 = x_anc + w -1;
@@ -397,8 +387,7 @@ void ei_place(ei_widget_t *widget,
                                                 y2 = ymax;
                                         }
                                         break;          ///< Anchor on the right side, centered vertically.
-                                case ei_anc_southeast:  
-
+                                case ei_anc_southeast:
                                         x1 = x_anc - w + 1;
                                         x2 = x_anc;
                                         y1 = y_anc - h + 1;
@@ -463,18 +452,17 @@ void ei_place(ei_widget_t *widget,
                                         y1 = y_anc;
                                         y2 = y_anc + h - 1;
 
-                                        // Si le widget deborde :
-                                        if (!(x1 >= xmin && x2 <= xmax)){
-                                                x2 = xmax;
-                                        }
-                                        if (!(y1 >= ymin && y2 <= ymax)){
-                                                y2 = ymax;
-                                        }
                                         break;
                                 default : exit(-1);
                                           break;
 
                                 }
+                                // On recadre les valeurs qui debordent
+                                x1 = (x1 >= xmin)?x1:xmin;
+                                x2 = (x2 <= xmax)?x2:xmax;
+                                y1 = (y1 >= ymin)?y1:ymin;
+                                y2 = (y2 <= ymax )?y2:ymax;
+
                                 w = x2 - x1 + 1;
                                 h = y2 - y1 + 1;
                                 // on assigne enfin les valeurs calculées
