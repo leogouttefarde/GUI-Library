@@ -64,7 +64,7 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
         wclass = ei_widgetclass_from_name(class_name);
         //printf("%x wclass allocfunc\n", wclass->allocfunc);
 
-        if (wclass)
+        if (wclass && wclass->allocfunc)
                 // après allocation, widget aura les champs communs + les champs uniques 
                 widget = wclass->allocfunc();
 
@@ -108,7 +108,8 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
 
                 // Initialisation des attributs uniques + requested_size si
                 // texte
-                wclass->setdefaultsfunc(widget);
+                if (wclass->setdefaultsfunc)
+                        wclass->setdefaultsfunc(widget);
 
                 return widget;
         }
@@ -163,40 +164,32 @@ ei_widget_t* ei_widget_sel (ei_surface_t pick_surface, uint32_t pick_id, ei_widg
  * @return			The top-most widget at this location, or NULL if there is no widget
  *				at this location (except for the root widget).
  */
-ei_widget_t* ei_widget_pick (ei_point_t* where){
+ei_widget_t* ei_widget_pick (ei_point_t* where)
+{
         ei_surface_t picking_surface = ei_get_picking_surface();
+
         hw_surface_lock(picking_surface);
+
         // Génération de l'adresse mémoire du point "where"
         ei_size_t size = hw_surface_get_size(picking_surface);
+
         // on recupere l'adresse du premier pixel de la surface
         uint8_t* addr = hw_surface_get_buffer(picking_surface);
+
         // on recupere l'adresse du pixel donné en parametre
         // addr +1 augmente d'un octet ou de 4 ? On suppose 1
         addr = (addr + 4*sizeof(uint8_t)*(where->x + (where->y)*size.width));
-        /*  // on recupere les indices correspondants à l'encodage de la surface
-            ei_color_t *color;
-            color = malloc(sizeof(ei_color_t));
-            int ir;
-            int ig;
-            int ib;
-            int ia;
-            hw_surface_get_channel_indices(picking_surface, &ir, &ig, &ib, &ia);
-            color->red = *(addr+ir*sizeof(uint8_t));
-            color->green = *(addr+ig*sizeof(uint8_t));
-            color->blue = *(addr+ib*sizeof(uint8_t));
-            color->alpha = *(addr+ia*sizeof(uint8_t));
-        // on générele le code correspondant
-        uint32_t pick_id = ei_map_rgba(picking_surface, color);
-        // On parcours ensuite l'ensemble des widgets pour trouver le widget
-        // correspondant*/
-        ei_widget_t *root = ei_get_root();
-        ei_widget_t *result;
 
-        /*result = ei_widget_sel(picking_surface, pick_id, root);*/
-        result = ei_widget_sel(picking_surface, *(uint32_t*)addr, root);
-        //        return ei_widget_pick_loop(root_widget, *where);
+        // On parcourt ensuite l'ensemble des widgets pour trouver le widget
+        // correspondant
+        ei_widget_t *root = ei_get_root();
+        ei_widget_t *selection;
+
+        selection = ei_widget_sel(picking_surface, *(uint32_t*)addr, root);
+
         hw_surface_unlock(picking_surface);
-        return result;
+
+        return selection;
 }
 
 
@@ -252,11 +245,14 @@ void	ei_frame_configure (ei_widget_t* widget,
                 ei_anchor_t*		text_anchor,
                 ei_surface_t*		img,
                 ei_rect_t**		img_rect,
-                ei_anchor_t*		img_anchor){
+                ei_anchor_t*		img_anchor)
+{
+        if (widget && widget->wclass
+                && !strcmp(widget->wclass->name, "frame")) {
 
-        if (widget && widget->wclass && !strcmp(widget->wclass->name, "frame")){
                 // on recaste pour passer a un type frame
                 ei_frame_t *frame = (ei_frame_t*)widget;
+
                 if (requested_size) {
                         frame->widget.requested_size = *requested_size;
                 }
@@ -326,11 +322,14 @@ void	ei_button_configure (ei_widget_t*		widget,
                 ei_rect_t**		img_rect,
                 ei_anchor_t*		img_anchor,
                 ei_callback_t*		callback,
-                void**			user_param){
+                void**			user_param)
+{
+        if (widget && widget->wclass
+                && !strcmp(widget->wclass->name, "button")) {
 
-        if (widget && widget->wclass && !strcmp(widget->wclass->name, "button")){
                 ei_button_t *button = (ei_button_t*)widget;
-                if(requested_size){
+
+                if (requested_size) {
                         button->widget.requested_size = *requested_size;
                 }
                 if (color) {
@@ -342,7 +341,7 @@ void	ei_button_configure (ei_widget_t*		widget,
                 if (corner_radius) {
                         button->corner_radius = *corner_radius;
                 }
-                if(relief){
+                if (relief) {
                         button->relief = *relief;
                 }
                 if (text) {
@@ -403,8 +402,9 @@ void	ei_toplevel_configure	(ei_widget_t*	widget,
                 ei_axis_set_t*	resizable,
                 ei_size_t**	min_size){
 
-        if (widget && widget->wclass &&
-                        !strcmp(widget->wclass->name, "toplevel")){
+        if (widget && widget->wclass
+                && !strcmp(widget->wclass->name, "toplevel")) {
+
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
                 if (requested_size){
                         toplevel->widget.requested_size = *requested_size;

@@ -69,7 +69,7 @@ void debug_display_surface(ei_surface_t surface){
 	while (x< size.width && y < size.height){
 		// on recupere les indices correspondants à l'encodage de la surface
 		ei_color_t *color;
-		color = malloc(sizeof(ei_color_t));
+		color = CALLOC_TYPE(ei_color_t);
 		int ir;
 		int ig;
 		int ib;
@@ -205,7 +205,7 @@ ei_linked_rect_t* ei_get_update_rects()
 void ei_invalidate_rect(ei_rect_t* rect)
 {
 	if (rect) {
-		ei_linked_rect_t *link = ALLOC_TYPE(ei_linked_rect_t);
+		ei_linked_rect_t *link = CALLOC_TYPE(ei_linked_rect_t);
 		link->rect = *rect;
 		link->next = NULL;
 

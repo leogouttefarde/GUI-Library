@@ -16,6 +16,7 @@
 #include "ei_widgettypes.h"
 #include "ei_application.h"
 
+// TODO : Gérer les listes avec la classe linkedlist
 static ei_geometrymanager_t *first = NULL;
 
 /**
@@ -118,8 +119,9 @@ void ei_place_releasefunc(struct ei_widget_t*	widget)
  */
 void  ei_register_placer_manager()
 {
-        ei_geometrymanager_t *placer = malloc(sizeof(ei_geometrymanager_t));
-        memset(placer, 0, sizeof(ei_geometrymanager_t));
+        ei_geometrymanager_t *placer = CALLOC_TYPE(ei_geometrymanager_t);
+        assert(placer);
+
         strcpy(placer->name, "placer");
 
         placer->runfunc = ei_place_runfunc;
@@ -172,6 +174,7 @@ void ei_place(ei_widget_t *widget,
                 float *rel_height)
 {
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
+        assert(placer);
 
 
         if (placer) {
@@ -195,7 +198,7 @@ void ei_place(ei_widget_t *widget,
                 }
 
                 if (gp_alloc) {
-                        widget->geom_params = malloc(sizeof(ei_placer_param_t));
+                        widget->geom_params = CALLOC_TYPE(ei_placer_param_t);
                         widget->geom_params->manager = placer;
                 }
                 
@@ -344,8 +347,11 @@ void ei_place(ei_widget_t *widget,
                                 if(!strcmp(widget->wclass->name, "frame")){
                                         ei_frame_t* frame = (ei_frame_t*)widget;
                                         int bw = frame->border_width;
+
                                         ei_rect_t *content_rect;
-                                        content_rect = malloc(sizeof(ei_rect_t));
+                                        content_rect = CALLOC_TYPE(ei_rect_t);
+                                        assert(content_rect);
+
                                         *content_rect = widget->screen_location;
                                         content_rect->top_left.x =  content_rect->top_left.x +
                                                 bw;

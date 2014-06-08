@@ -14,6 +14,10 @@
 #include "ei_button.h"
 #include "ei_common.h"
 
+
+// TODO : Gérer les widgetclass via des linkedlist
+// et les parcourir pour avoir une unique variable statique
+
 // variable globale pour stocker les tables de pointeur
 static ei_widgetclass_t *frame_table = NULL;
 static ei_widgetclass_t *button_table = NULL;
@@ -30,7 +34,12 @@ static ei_widgetclass_t *others_table = NULL;
  */
 void ei_widgetclass_register	(ei_widgetclass_t* widgetclass)
 {
-        if (others_table){
+        // TODO : Corriger en gérant les widgetclass via des linkedlist
+        // et les parcourir dans ei_widgetclass_from_name
+        // pour avoir une unique variable statique
+
+        // Faux
+        /*if (others_table){
                 ei_widgetclass_t *tmp = others_table->next;
                 others_table = widgetclass;
                 widgetclass->next = tmp;
@@ -38,7 +47,7 @@ void ei_widgetclass_register	(ei_widgetclass_t* widgetclass)
         else {
                 others_table = widgetclass;
                 others_table->next = NULL;
-        }
+        }*/
 }
 
 
@@ -51,6 +60,9 @@ void ei_widgetclass_register	(ei_widgetclass_t* widgetclass)
  */
 ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
 {
+        // TODO : Gérer les widgetclass via des linkedlist
+        // et les parcourir pour avoir une unique variable statique
+
         if (!strcmp(name,"frame")) {
                 // Les fonctions liées à la classe frame sont déja declarées
                 return frame_table;
@@ -66,20 +78,27 @@ ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
         }
 }
 
-/***************************************** frame ****************/
-// pointeur generique
+
+/* Frame */
+
+/* Allocation */
 void *frame_alloc()
 {
         ei_frame_t *frame = malloc(sizeof(ei_frame_t));
         SAFE_RESET(frame, sizeof(ei_frame_t));
+        assert(frame);
 
         return frame;
 }
 
 void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
-                ei_surface_t pick_surface, ei_rect_t* clipper){
-        ei_frame_t *frame;
-        frame = (ei_frame_t*)widget;
+                ei_surface_t pick_surface, ei_rect_t* clipper)
+{
+        ei_frame_t *frame = (ei_frame_t*)widget;
+        assert(frame);
+        assert(clipper);
+        assert(surface);
+        assert(pick_surface);
 
         /* Dessin visible */
 
@@ -108,6 +127,9 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
         if (pick_surface){
                 /* Dessin de la surface de picking */
                 hw_surface_lock(pick_surface);
+
+                assert(frame->widget.pick_color);
+
                 ei_fill(pick_surface, frame->widget.pick_color,clipper);
                 hw_surface_unlock(pick_surface);
         }
@@ -119,6 +141,8 @@ void frame_release(struct ei_widget_t* widget)
 }
 void frame_setdefaults(struct ei_widget_t* widget)
 {
+        assert(widget);
+
         // on commence par effectuer un recast
         ei_frame_t *frame;
         frame = (ei_frame_t*)widget;
@@ -127,6 +151,7 @@ void frame_setdefaults(struct ei_widget_t* widget)
         frame->img = NULL;
         frame->img_anchor = ei_anc_center;
         frame->img_rect = malloc(sizeof(ei_rect_t));
+
         if (frame->img_rect) {
                 frame->img_rect->top_left = ei_point_zero();
                 frame->img_rect->size = ei_size(10,10);
@@ -139,13 +164,15 @@ void frame_setdefaults(struct ei_widget_t* widget)
         ei_color_t tc = {0x00, 0x00, 0xFF, 0xFF};
         frame->text_color = tc;
         frame->text_font = ei_default_font;
+
         // On obtient la taille correspondant au text voulu
-        // Exemple ici avec frame masi surtout utile pour button
+        // Exemple ici avec frame mais surtout utile pour button
         // DONNE SEG_FAULT
         /*int w;
           int h;
           hw_text_compute_size("Frame", frame->text_font, &w, &h);
           frame->widget.requested_size = (ei_size(w,h));*/
+
         frame->widget.requested_size = ei_size(20, strlen(frame->text)*10);
         ei_color_t bg = {0xFF,0x00,0x00,0xFF};
         frame->bg_color = bg;
@@ -168,13 +195,16 @@ void	ei_frame_register_class ()
         // Declaration des fonctions liées à la classe frame
 
         // Allocation
-        frame_table = malloc(sizeof(ei_widgetclass_t));
+        frame_table = calloc(1, sizeof(ei_widgetclass_t));
+        assert(frame_table);
+
         frame_table->allocfunc= frame_alloc;
         frame_table->drawfunc = frame_draw;
         frame_table->releasefunc = frame_release;
         frame_table->setdefaultsfunc = frame_setdefaults;
         frame_table->geomnotifyfunc = frame_geomnotify;
         strcpy(frame_table->name, "frame");
+
         frame_table->next = NULL;
 }
 
@@ -182,10 +212,7 @@ void	ei_frame_register_class ()
 // pointeur generique
 void *button_alloc()
 {
-        ei_button_t *button = malloc(sizeof(ei_button_t));
-        SAFE_RESET(button, sizeof(ei_button_t));
-
-        return button;
+        return CALLOC_TYPE(ei_button_t);
 } 
 
 void button_release(struct ei_widget_t* widget)
@@ -196,8 +223,12 @@ void button_release(struct ei_widget_t* widget)
 void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 ei_surface_t pick_surface, ei_rect_t* clipper)
 {
-        ei_button_t *button;
-        button = (ei_button_t*)widget;
+        ei_button_t *button = (ei_button_t*)widget;
+        assert(button);
+        assert(clipper);
+        assert(pick_surface);
+        assert(surface);
+
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
@@ -209,6 +240,7 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
         if (pick_surface) {
                 /* Dessin de la surface de picking */
                 hw_surface_lock(pick_surface);
+                assert(button->widget.pick_color);
                 ei_fill(pick_surface, button->widget.pick_color,clipper);
                 hw_surface_unlock(pick_surface);
         }
@@ -216,11 +248,23 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
 
 void button_setdefaults(struct ei_widget_t* widget)
 {
+        assert(widget);
+
         // on commence par effectuer un recast
         ei_button_t *button;
         button = (ei_button_t*)widget;
-        ei_color_t c = {0xFF, 0xFF, 0x00, 0xFF};
-        button->color = &c;
+
+        ei_color_t *color = CALLOC_TYPE(ei_color_t);
+        assert(color);
+
+        color->red = 0xFF;
+        color->green = 0xFF;
+        color->blue = 0x00;
+        color->alpha = 0xFF;
+
+        button->color = color;
+
+
         button->border_width = 2;
         button->corner_radius = 3;
         button->relief = ei_relief_raised;
@@ -238,13 +282,17 @@ void button_setdefaults(struct ei_widget_t* widget)
                 button->widget.requested_size = ei_size(20, strlen(button->text)*10);
 
         button->img = NULL;
-        button->img_rect = malloc(sizeof(ei_rect_t));
-        ei_point_t p = {10,10};
+        button->img_rect = CALLOC_TYPE(ei_rect_t);
+        assert(button->img_rect);
+
         if (button->img_rect) {
+                ei_point_t p = {10,10};
                 button->img_rect->top_left = p;
+
                 ei_size_t s = {10,10};
                 button->img_rect->size = s;
         }
+
         button->img_anchor = ei_anc_center;
         button->callback = NULL;
         button->user_param = NULL;
@@ -262,12 +310,14 @@ void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 void	ei_button_register_class()
 {
         // Allocation
-        button_table = malloc(sizeof(ei_widgetclass_t));
-        button_table->allocfunc= &button_alloc;
-        button_table->drawfunc = &button_draw;
-        button_table->releasefunc = &button_release;
-        button_table->setdefaultsfunc = &button_setdefaults;
-        button_table->geomnotifyfunc = &button_geomnotify;
+        button_table = CALLOC_TYPE(ei_widgetclass_t);
+        assert(button_table);
+
+        button_table->allocfunc= button_alloc;
+        button_table->drawfunc = button_draw;
+        button_table->releasefunc = button_release;
+        button_table->setdefaultsfunc = button_setdefaults;
+        button_table->geomnotifyfunc = button_geomnotify;
         strcpy(button_table->name, "button");
         button_table->next = NULL;
 }
@@ -278,33 +328,44 @@ void	ei_button_register_class()
 // pointeur generique
 void *toplevel_alloc()
 {
-        ei_toplevel_t *toplevel = malloc(sizeof(ei_toplevel_t));
-        SAFE_RESET(toplevel, sizeof(ei_toplevel_t));
+        ei_toplevel_t *toplevel = CALLOC_TYPE(ei_toplevel_t);
+        assert(toplevel);
 
         return toplevel;
 }
 
-void toplevel_release(struct ei_widget_t* widget)
+void toplevel_release(ei_widget_t *widget)
 {
         SAFE_FREE(widget);
 }
 
-void toplevel_draw(struct ei_widget_t* widget, ei_surface_t surface,
-                ei_surface_t pick_surface, ei_rect_t* clipper)
+void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
+                ei_surface_t pick_surface, ei_rect_t *clipper)
 {
         ei_toplevel_t *toplevel;
         toplevel = (ei_toplevel_t*)widget;
+        assert(toplevel);
+        assert(clipper);
+        assert(pick_surface);
+        assert(surface);
+
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
+
                 ei_fill(surface, &toplevel->color,clipper);
+
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
 
         if (pick_surface) {
+
                 /* Dessin de la surface de picking */
                 hw_surface_lock(pick_surface);
+
+                assert(toplevel->widget.pick_color);
+
                 ei_fill(pick_surface, toplevel->widget.pick_color,clipper);
                 hw_surface_unlock(pick_surface);
         }
@@ -315,15 +376,24 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
         // on commence par effectuer un recast
         ei_toplevel_t *toplevel;
         toplevel = (ei_toplevel_t*)widget;
+        assert(toplevel);
+
         ei_size_t s = {100, 100};
         toplevel->widget.requested_size = s;
+
         ei_color_t c = {0x00, 0xFF, 0xFF, 0xFF};
         toplevel->color = c;
+
         toplevel->border_width = 4;
         toplevel->title = "Toplevel";
         toplevel->closable = true;
         toplevel->resizable = true;
-        ei_size_t ms = {50,50};
+
+        ei_size_t *ms = CALLOC_TYPE(ei_size_t);
+        assert(ms);
+        ms->width = 50;
+        ms->height = 50;
+
         toplevel->min_size = &ms;
 }
 
@@ -340,12 +410,15 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 void	ei_toplevel_register_class()
 {
         // Allocation
-        toplevel_table = malloc(sizeof(ei_widgetclass_t));
-        toplevel_table->allocfunc= &toplevel_alloc;
-        toplevel_table->drawfunc = &toplevel_draw;
-        toplevel_table->releasefunc = &toplevel_release;
-        toplevel_table->setdefaultsfunc = &toplevel_setdefaults;
-        toplevel_table->geomnotifyfunc = &toplevel_geomnotify;
+        toplevel_table = CALLOC_TYPE(ei_widgetclass_t);
+        assert(toplevel_table);
+
+        toplevel_table->allocfunc= toplevel_alloc;
+        toplevel_table->drawfunc = toplevel_draw;
+        toplevel_table->releasefunc = toplevel_release;
+        toplevel_table->setdefaultsfunc = toplevel_setdefaults;
+        toplevel_table->geomnotifyfunc = toplevel_geomnotify;
         strcpy(toplevel_table->name, "toplevel");
+
         toplevel_table->next = NULL;
 }

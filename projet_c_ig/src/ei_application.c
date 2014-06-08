@@ -23,8 +23,8 @@ static ei_bool_t quit_request = EI_FALSE;
 
 // Peut-être pas dans le bon fichier
 // Enfonce les boutons
-ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, 
-		void *user_param) {
+ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
+{
 	if (widget){
 		if (!strcmp(widget->wclass->name, "button")) {
 
@@ -36,13 +36,16 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event,
 }
 
 // Quand on relache la souris sur le bouton
-ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
-		void *user_param){
+ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
+{
 	ei_bool_t res;
+
 	if (widget){
 		if (!strcmp(widget->wclass->name, "button")) {
+
 			ei_button_t *button = (ei_button_t*)widget;
 			button->relief = ei_relief_raised;
+
 			// Appel du callback du bouton
 			if (button->callback){
 				res = button->callback((ei_widget_t*)button, NULL, button->user_param);
@@ -76,10 +79,12 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 	hw_init();
 
 	ei_set_root_surface(hw_create_window(main_window_size, fullscreen));
+
 	// Enregistrement des classes
 	ei_frame_register_class();
 	ei_button_register_class();
 	ei_toplevel_register_class();
+
 	// Initialisation du root_widget
 	ei_set_root(ei_widget_create ("frame", NULL));
 
@@ -105,6 +110,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 void ei_app_free()
 {
 	ei_surface_t picking = ei_get_picking_surface();
+
 	if (picking)
 		hw_surface_free(picking);
 }
