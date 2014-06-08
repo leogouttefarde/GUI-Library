@@ -129,27 +129,30 @@ ei_linked_point_t *ei_button_rounded_frame(ei_rect_t rectangle, int rayon,
         return Liste;
 }
 
-void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame)
+
+/* Frame draw */
+void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
+                ei_rect_t *clipper)
 {
         //printf("debut dessin frame \n");
-        ei_button_draw_loc(window, rectangle, frame->bg_color, frame->relief, 0, frame->border_width);
+        ei_button_draw_loc(window, rectangle, frame->bg_color, frame->relief, 0, frame->border_width, clipper);
 
         //printf("fin dessin, debut texte\n");
         if (frame->text && frame->text_font && frame->text_anchor) {
                 //printf("frame->text non null\n");
                 ei_rect_t rectangle_red = reduction(rectangle, frame->border_width);
                 ei_button_text(window, rectangle_red, frame->text,
-                               frame->text_font, frame->text_color,
-                               frame->text_anchor);
+                                frame->text_font, frame->text_color,
+                                frame->text_anchor);
         }
 }
 
 void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
-                    ei_button_t * button)
+                ei_button_t * button, ei_rect_t *clipper)
 {
         //printf("debut dessin \n");
         ei_button_draw_loc(window, rectangle, *button->color, button->relief,
-                           button->corner_radius, button->border_width);
+                        button->corner_radius, button->border_width, clipper);
 
         int marge = button->border_width + 2;   //2 pixels en plus pour la visibilité
         //peut-être mettre en fonction du rayon aussi pour que cela soit plus joli dans certain cas
@@ -161,15 +164,15 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
 
         if (button->text) {
                 ei_button_text(window, rectangle_reduit, button->text,
-                               button->text_font, button->text_color,
-                               button->text_anchor);
+                                button->text_font, button->text_color,
+                                button->text_anchor);
         }
 
         else {
                 if (button->img) {
                         if (button->img_rect)
                                 aff_img(window, rectangle_reduit, button->img,
-                                        button->img_rect, button->img_anchor);
+                                                button->img_rect, button->img_anchor);
                         //else printf("button->img_rect=NULL\n");
                 }
                 //else printf("button->img=NULL\n");
@@ -178,27 +181,27 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
 }
 
 /**
-        *\brief Trace un bouton en relief (enfoncé ou relevé) ou plat
-        *@param window surface sur laquelle on dessine le bouton
-        *@param rectangle le rectangle que l'on transforme en bouton
-        *@param couleur la couleur du bouton central
-        *@param relief si raised =>relevé,none=>plat,sinon enfoncé
-        *@param le rayon des angles
-        *@param la marge
-        */
+ *\brief Trace un bouton en relief (enfoncé ou relevé) ou plat
+ *@param window surface sur laquelle on dessine le bouton
+ *@param rectangle le rectangle que l'on transforme en bouton
+ *@param couleur la couleur du bouton central
+ *@param relief si raised =>relevé,none=>plat,sinon enfoncé
+ *@param le rayon des angles
+ *@param la marge
+ */
 void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
-                        ei_color_t couleur, ei_relief_t relief, int rayon,
-                        int marge)
+                ei_color_t couleur, ei_relief_t relief, int rayon,
+                int marge, ei_rect_t *clipper)
 {
         ei_linked_point_t *Liste = NULL;
 
         if (relief == ei_relief_none) {
                 Liste = ei_button_rounded_frame(rectangle, rayon, 0);
-                ei_draw_polygon(window, Liste, couleur, &rectangle);
+                ei_draw_polygon(window, Liste, couleur, clipper);
                 free_lp(Liste);
         } else {
                 ei_color_t couleur_eclairee, couleur_assombrie, couleur_haute,
-                    couleur_basse;
+                           couleur_basse;
                 float coeff_couleur = 0.2;
                 couleur_eclairee.red = MIN(couleur.red + coeff_couleur * 255, 255);
                 couleur_eclairee.green = MIN(couleur.green + coeff_couleur * 255, 255);
@@ -219,10 +222,10 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
                 }
 
                 ei_linked_point_t *partie_haute =
-                ei_button_rounded_frame(rectangle, rayon, 1);
-                ei_draw_polygon(window, partie_haute, couleur_haute, &rectangle);
+                        ei_button_rounded_frame(rectangle, rayon, 1);
+                ei_draw_polygon(window, partie_haute, couleur_haute, clipper);
                 ei_linked_point_t *partie_basse = ei_button_rounded_frame(rectangle, rayon, -1);
-                ei_draw_polygon(window, partie_basse, couleur_basse, &rectangle);
+                ei_draw_polygon(window, partie_basse, couleur_basse, clipper);
 
                 ei_rect_t rectangle_interieur;
                 rectangle_interieur.top_left.x = rectangle.top_left.x + marge;
@@ -231,7 +234,7 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
                 rectangle_interieur.size.height = rectangle.size.height - 2 * marge;
 
                 Liste = ei_button_rounded_frame(rectangle_interieur, rayon - marge, 0);
-                ei_draw_polygon(window, Liste, couleur, &rectangle_interieur);
+                ei_draw_polygon(window, Liste, couleur, clipper);
 
                 free_lp(partie_haute);
                 free_lp(partie_basse);
@@ -240,7 +243,7 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
 }
 
 void ei_button_text(ei_surface_t window, ei_rect_t clipper, char *text,
-                    ei_font_t font, ei_color_t color, ei_anchor_t anchor)
+                ei_font_t font, ei_color_t color, ei_anchor_t anchor)
 {
         //printf("j'affiche le texte \n");
         int width;
@@ -322,7 +325,7 @@ ei_point_t plus(ei_point_t A, int abc, int ord)
 }
 
 void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
-             ei_rect_t * img_rect, ei_anchor_t img_anchor)
+                ei_rect_t * img_rect, ei_anchor_t img_anchor)
 {
         int result;
 

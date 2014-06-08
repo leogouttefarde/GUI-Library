@@ -110,7 +110,7 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
 
                 ei_rect_t rec;
                 if (clipper) {
-                        rec = *clipper;
+                        rec = frame->widget.screen_location;
                         //rec.size = frame->widget.requested_size;
                 }
                 else {
@@ -118,7 +118,7 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                         rec.size=hw_surface_get_size(surface);
                 }
 
-                ei_frame_draw(surface,rec,frame);
+                ei_frame_draw(surface,rec,frame,clipper);
 
                 //unlock de la surface
                 hw_surface_unlock(surface);
@@ -234,7 +234,7 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
-                ei_button_draw(surface,*clipper,button);
+                ei_button_draw(surface,button->widget.screen_location,button, clipper);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
