@@ -324,18 +324,34 @@ ei_point_t plus(ei_point_t A, int abc, int ord)
 void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
              ei_rect_t * img_rect, ei_anchor_t img_anchor)
 {
-        int i;
+        int result;
+
         //printf("jaffiche l'image");
+        assert(img_rect);
 
         hw_surface_lock(img);
 
+        //printf("rectangle.top_left.x %d\n", rectangle.top_left.x);
+        //printf("rectangle.top_left.y %d\n", rectangle.top_left.y);
+
+        //printf("rectangle.width.x %d\n", rectangle.size.width);
+        //printf("rectangle.height.y %d\n", rectangle.size.height);
+
+        //printf("img_rect->top_left.x %d\n", img_rect->top_left.x);
+        //printf("img_rect->top_left.y %d\n", img_rect->top_left.y);
+
+        //printf("img_rect->size.width %d\n", img_rect->size.width);
+        //printf("img_rect->size.height %d\n", img_rect->size.height);
+
+        // Cheat
         rectangle.size = img_rect->size;
 
-        i = ei_copy_surface(window, &rectangle, img, img_rect, 1);
+        result = ei_copy_surface(window, &rectangle, img, img_rect, 1);
 
         hw_surface_unlock(img);
 
-        //assert(i == 0);
+        assert(!result);
+        //printf("result %x\n", result);
 }
 
 ei_rect_t reduction(ei_rect_t rectangle, int marge)

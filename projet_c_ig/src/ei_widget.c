@@ -357,8 +357,9 @@ void	ei_button_configure (ei_widget_t*		widget,
                 if(img) {
                         button->img = *img;
                 }
-                if(img_rect){
-                        button->img_rect = *img_rect;
+                if(img_rect && *img_rect){
+                        button->img_rect = CALLOC_TYPE(ei_rect_t);
+                        *button->img_rect = **img_rect;
                 }
                 if(img_anchor) {
                         button->img_anchor = *img_anchor;
