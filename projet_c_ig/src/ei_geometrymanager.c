@@ -101,12 +101,16 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 }
 
 
-// A MODIFIER (OU PAS !)
-// Le clipper doit etre un des rectangle appelé par ei_app_invalidate_rect
+/*  Gere le clipping */
 void ei_place_runfunc(struct ei_widget_t*	widget)
 {
-        ei_rect_t *clipper = &widget->screen_location;
-
+        ei_rect_t *clipper;
+        if (widget->parent){
+                clipper = widget->parent->content_rect;  
+        }
+        else{
+                clipper = &widget->screen_location;
+        }
         widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
 }
 

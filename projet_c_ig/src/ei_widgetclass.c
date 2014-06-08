@@ -105,18 +105,10 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
         if (surface){
                 hw_surface_lock(surface);
 
-                // Remplissage dans le clipper
-                ei_fill(surface, &frame->bg_color, clipper);
 
                 ei_rect_t rec;
-                if (clipper) {
-                        rec = frame->widget.screen_location;
-                        //rec.size = frame->widget.requested_size;
-                }
-                else {
-                        rec.top_left.x=0;rec.top_left.y=0;
-                        rec.size=hw_surface_get_size(surface);
-                }
+                rec = frame->widget.screen_location;
+                //rec.size = frame->widget.requested_size;
 
                 ei_frame_draw(surface,rec,frame,clipper);
 
