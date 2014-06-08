@@ -8,13 +8,11 @@
  */
 
 // pour malloc et NULL
-#include <stdlib.h>
-#include <string.h>
-#include <stdbool.h>
 #include "ei_widget.h"
 #include "ei_widgettypes.h"
 #include "ei_utils.h"
 #include "ei_core.h"
+#include "ei_common.h"
 
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
 static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0xFF};
@@ -89,8 +87,8 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
                 }
 
                 // La couleur courante est une variable globale
-                ei_color_t *pc = malloc(sizeof(ei_color_t));
-                memset(pc, 0, sizeof(ei_color_t));
+                ei_color_t *pc = CALLOC_TYPE(ei_color_t);
+
                 *pc = current_pick_color;
                 widget->pick_color = pc;
                 increase_color(&current_pick_color);

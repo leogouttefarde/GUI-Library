@@ -84,8 +84,7 @@ ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
 /* Allocation */
 void *frame_alloc()
 {
-        ei_frame_t *frame = malloc(sizeof(ei_frame_t));
-        SAFE_RESET(frame, sizeof(ei_frame_t));
+        ei_frame_t *frame = CALLOC_TYPE(ei_frame_t);
         assert(frame);
 
         return frame;
@@ -150,7 +149,7 @@ void frame_setdefaults(struct ei_widget_t* widget)
         // ei_surface_t represente un pointeur générique
         frame->img = NULL;
         frame->img_anchor = ei_anc_center;
-        frame->img_rect = malloc(sizeof(ei_rect_t));
+        frame->img_rect = CALLOC_TYPE(ei_rect_t);
 
         if (frame->img_rect) {
                 frame->img_rect->top_left = ei_point_zero();
@@ -212,8 +211,11 @@ void	ei_frame_register_class ()
 // pointeur generique
 void *button_alloc()
 {
-        return CALLOC_TYPE(ei_button_t);
-} 
+        ei_button_t *button = CALLOC_TYPE(ei_button_t);
+        assert(button);
+
+        return button;
+}
 
 void button_release(struct ei_widget_t* widget)
 {
@@ -394,7 +396,7 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
         ms->width = 50;
         ms->height = 50;
 
-        toplevel->min_size = &ms;
+        toplevel->min_size = ms;
 }
 
 void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)

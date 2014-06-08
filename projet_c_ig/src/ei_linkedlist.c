@@ -21,7 +21,7 @@ void ei_linkedlist_init(ei_linkedlist_t *list)
 void ei_linkedlist_add(ei_linkedlist_t *list, ei_elem_t elem)
 {
 	if (elem && list) {
-		ei_linked_elem_t *link = malloc(sizeof(ei_linked_elem_t));
+		ei_linked_elem_t *link = CALLOC_TYPE(ei_linked_elem_t);
 		link->elem = elem;
 		link->next = NULL;
 
