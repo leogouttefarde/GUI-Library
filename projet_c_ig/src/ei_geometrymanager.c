@@ -360,8 +360,8 @@ void ei_place(ei_widget_t *widget,
                                         break;	///< Anchor on the top-right corner.
                                 case ei_anc_east :	
 
-                                        x1 = x_anc;
-                                        x2 = x_anc + w -1;
+                                        x1 = x_anc - w +1;
+                                        x2 = x_anc;
                                         y1 = y_anc - (h / 2) +1;
                                         y2 = y_anc + (h / 2);
 
@@ -392,8 +392,8 @@ void ei_place(ei_widget_t *widget,
                                 case ei_anc_west:
                                         x1 = x_anc;
                                         x2 = x_anc + w -1;
-                                        y1 = y_anc - (w / 2) + 1;
-                                        y2 = y_anc + (w / 2);
+                                        y1 = y_anc - (h / 2) + 1;
+                                        y2 = y_anc + (h / 2);
 
                                         break;		///< Anchor on the left side, centered vertically.
                                 case ei_anc_northwest: 
