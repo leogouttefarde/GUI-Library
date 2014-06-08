@@ -103,6 +103,7 @@ void ei_event_process(ei_event_t *event)
                 done = EI_TRUE;
 
         // Si l'event est lié aux boutons de la souris on selectionne le widget
+        // TODO : Optimisation : ne faire que si un binding est lié à cet événement
         if (event->type == ei_ev_mouse_buttondown
                 || event->type == ei_ev_mouse_buttonup
                 || event->type == ei_ev_mouse_move) {

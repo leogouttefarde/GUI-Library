@@ -7,15 +7,9 @@
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
-#include <string.h>
 #include "ei_shape.h"
 #include "ei_common.h"
 
-// ne pas oublier les parenthèse, M_PI definie dans math.h
-#ifndef M_PI
-#define M_PI (3.141592653589793)
-#endif
-#define RAD_TO_DEG(x) ((x*180.0)/(M_PI)) 
 //**************** Basic functions ****************/
 
 /**

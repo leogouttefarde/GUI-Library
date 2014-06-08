@@ -1,7 +1,10 @@
+
 #ifndef EI_WIDGETTYPES_H
 #define EI_WIDGETTYPES_H
-// pour avoir le type ei_widget
+
 #include "ei_widget.h"
+
+
 //Definition du type frame
 typedef struct ei_frame_t {
         ei_widget_t widget;
@@ -54,4 +57,6 @@ typedef struct ei_toplevel_t {
         ei_axis_set_t	resizable;
         ei_size_t*	min_size;
 } ei_toplevel_t;
+
 #endif
+

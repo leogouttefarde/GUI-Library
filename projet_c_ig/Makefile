@@ -6,7 +6,7 @@ OBJDIR		= ./objs
 TESTS		= ./tests
 INCLUDES	= ./include
 INCFLAGS	:= -I${INCLUDES}
-#OPTFLAGS	:= -Os -DNDEBUG
+#OPTFLAGS	:= -Os -DNDEBUG -Werror
 OPTFLAGS	:= -g
 CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 SRCDIR		:= ./src

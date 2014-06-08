@@ -19,6 +19,16 @@
 #define ALLOC_TYPE(type) malloc(sizeof(type))
 #define CALLOC_TYPE(type) calloc(1, sizeof(type))
 
+#ifndef M_PI
+#define M_PI (3.141592653589793)
+#endif
+#define RAD_TO_DEG(x) ((x*180.0)/(M_PI))
+
+#define MIN(a,b) (((a)<(b))?(a):(b))
+#define MAX(a,b) (((a)>(b))?(a):(b))
+
+
 void ei_event_init();
+
 
 #endif

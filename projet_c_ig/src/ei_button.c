@@ -3,10 +3,6 @@
 #include "ei_draw.h"
 #include "ei_common.h"
 
-#define Pi 3.14
-#define MIN(a,b) (((a)<(b))?(a):(b))
-#define MAX(a,b) (((a)>(b))?(a):(b))
-
 
 ei_linked_point_t *ei_button_arc(ei_point_t centre, int rayon, int angle_tete,
                                  int angle_queue, ei_linked_point_t * suivant)
@@ -17,7 +13,7 @@ ei_linked_point_t *ei_button_arc(ei_point_t centre, int rayon, int angle_tete,
                 Point = CALLOC_TYPE(ei_linked_point_t);
                 assert(Point != NULL);
 
-                float theta_rad = theta * Pi / 180.0;
+                float theta_rad = theta * M_PI / 180.0;
                 Point->point.x = centre.x + rayon * cos(theta_rad);
                 Point->point.y = centre.y - rayon * sin(theta_rad);
                 Point->next = Point_suivant;
@@ -96,12 +92,12 @@ ei_linked_point_t *ei_button_rounded_frame(ei_rect_t rectangle, int rayon,
         } else {
                 int h = MIN(longueur / 2, hauteur / 2);
 
-                ei_point_t arrondi_bg = { xrec + rayon - rayon * cos(-3 * Pi / 4),
-                                          yrec + hauteur - rayon + rayon * sin(-3 * Pi / 4) };
+                ei_point_t arrondi_bg = { xrec + rayon - rayon * cos(-3 * M_PI / 4),
+                                          yrec + hauteur - rayon + rayon * sin(-3 * M_PI / 4) };
 
 
-                ei_point_t arrondi_td = { xrec + longueur - rayon + rayon * cos(Pi / 4),
-                                          yrec + rayon - rayon * sin(Pi / 4) };
+                ei_point_t arrondi_td = { xrec + longueur - rayon + rayon * cos(M_PI / 4),
+                                          yrec + rayon - rayon * sin(M_PI / 4) };
 
                 ei_point_t pt_int_bg = { xrec + h, yrec + hauteur - h };
                 ei_point_t pt_int_td = { xrec + longueur - h, yrec + h };
@@ -346,10 +342,11 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
         //printf("img_rect->size.width %d\n", img_rect->size.width);
         //printf("img_rect->size.height %d\n", img_rect->size.height);
 
-        // Cheat
-        rectangle.size = img_rect->size;
+        // TODO : centrer l'image quand plus grande / petite
+        // que le rectangle au lieu de tronquer
+        ei_rect_t img_part = { img_rect->top_left, rectangle.size };
 
-        result = ei_copy_surface(window, &rectangle, img, img_rect, 1);
+        result = ei_copy_surface(window, &rectangle, img, &img_part, 1);
 
         hw_surface_unlock(img);
 
