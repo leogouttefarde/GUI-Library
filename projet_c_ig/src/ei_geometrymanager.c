@@ -138,49 +138,66 @@ void  ei_register_placer_manager()
 }
 
 
+
 /* Fonction de redimensionnement
  * Conserve les proportions des fils */
-void resize(ei_widget_t *widget, ei_size_t new_size){
+void resize(ei_widget_t *widget, ei_size_t add_size){
 
-        ei_point_t tmpp;
-        ei_size_t tmps;
+        // Tous les ancrages sont nw
+        // Car le redimensionnement vient du se
+        ei_anchor_t anc = ei_anc_northwest;
 
-        // On suppose que le toplevel vient d'être redimensionné
-        // On redessine ses fils en proportion
+        int w_w;
+        int w_h;
+
+
+        // Taille du widget
+        w_w = widget->screen_location.size.width;
+        w_h = widget->screen_location.size.height;
+        w_w = w_w + add_size.width;
+        w_h = w_h + add_size.height;
+
+        ei_place(widget, &anc, NULL, NULL, &w_w, &w_h, NULL, NULL, NULL,
+                        NULL);
+
+        // Parcours des enfants et redessin
+        ei_widget_t *current;
+        current = widget->children_head;
+        while(current){
+                resize(current, add_size);
+                current = current->next_sibling;
+        }
+}
+
+/* Fonction de mouvement
+ * Deplacement brut */
+void move(ei_widget_t *widget, ei_size_t dist){
+
+
+        ei_anchor_t anc = ei_anc_northwest;
+
+        int x;
+        int y;
+
+        // Position top_left et taille du pere
+        int p_x = widget->screen_location.top_left.x;
+        int p_y = widget->screen_location.top_left.y;
+
+        // Nouveau x absolu
+        x = p_x + dist.width;
+        y = p_y + dist.height;
+
+        // On deplace le pere
+        ei_place(widget, &anc, &x, &y, NULL, NULL, NULL,
+                        NULL, NULL, NULL);
+
+        // On deplace ses fils
         ei_widget_t *current;
         current = widget->children_head;
 
-        // Position top_left et taille du pere
-        tmpp = widget->content_rect->top_left;
-        tmps = widget->content_rect->size;
-        float p_x = (float)tmpp.x;
-        float p_y = (float)tmpp.y;
-        float p_w = (float)tmps.width;
-        float p_h = (float)tmps.height;
-        ei_anchor_t anc = ei_anc_northwest;
-
-        // On redimensionne le pere
-        ei_place(widget, &anc, NULL, NULL, &new_size.width, &new_size.height, NULL,
-                        NULL, NULL, NULL);
-        // Parcours des enfants et redessin
+        // Parcours des fils et des freres
         while(current){
-                // Position  top_left et taille du widget
-                ei_point_t tmpp = current->screen_location.top_left;
-                ei_size_t tmps = current->screen_location.size;
-                float w_x = (float)tmpp.x;
-                float w_y = (float)tmpp.y;
-                float w_w = (float)tmps.width;
-                float w_h = (float)tmps.height;
-
-
-                // Calculs des proportions
-                float rel_x = (p_x + w_x) / (p_x + p_w - 1);
-                float rel_y = (p_y + w_y) / (p_y + p_h -1);
-                float rel_w = w_w / p_w;
-                float rel_h = w_h / p_h;
-
-                // Enfin on replace le fils
-                ei_place(current, &anc, NULL, NULL, NULL, NULL, &rel_x, &rel_y, &rel_w, &rel_h);
+                move(current, dist);
                 current = current->next_sibling;
         }
 }
