@@ -131,8 +131,6 @@ void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
 {
 	//printf("debut dessin frame \n");
 	ei_button_draw_loc(window, rectangle, frame->bg_color, frame->relief, 0, frame->border_width, clipper);
-
-
 	ei_rect_t rectangle_red = reduction(rectangle, frame->border_width);
 	//printf("fin dessin, debut texte\n");
 	if (frame->text && frame->text_font && frame->text_anchor) {
@@ -196,7 +194,7 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
 
 	if (relief == ei_relief_none) {
 		Liste = ei_button_rounded_frame(rectangle, rayon, 0);
-		ei_draw_polygon(window, Liste, couleur, clipper);
+		ei_draw_polygon(window, Liste, couleur, NULL);
 		free_lp(Liste);
 	} else {
 		ei_color_t couleur_eclairee, couleur_assombrie, couleur_haute,
@@ -261,7 +259,6 @@ void ei_button_text(ei_surface_t window, ei_rect_t clipper, char *text,
 	ei_point_t bot_mid = { top_gauche.x + longueur / 2, top_gauche.y + hauteur };
 	ei_point_t bot_gauche = { top_gauche.x + longueur * 0, top_gauche.y + hauteur };
 	ei_point_t gauche_mid = { top_gauche.x + longueur * 0, top_gauche.y + hauteur / 2 };
-
 
 	switch (anchor) {
 
