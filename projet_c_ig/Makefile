@@ -172,6 +172,12 @@ test_resize : ${OBJDIR}/test_resize.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/test_resize.o : ${TESTS}/test_resize.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_resize.c -o ${OBJDIR}/test_resize.o ${MATHFLAGS} 
 
+test_frame_2 : ${OBJDIR}/test_frame_2.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o test_frame_2 ${OBJDIR}/test_frame_2.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/test_frame_2.o : ${TESTS}/test_frame_2.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_frame_2.c -o ${OBJDIR}/test_frame_2.o ${MATHFLAGS} 
+
 ########## Compilation séparée des sources
 
 ei_widget : ${OBJDIR}/ei_widget.o
