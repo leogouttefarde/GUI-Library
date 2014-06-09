@@ -176,7 +176,7 @@ void frame_setdefaults(struct ei_widget_t* widget)
                                 &frame->widget.requested_size.width,
                                 &frame->widget.requested_size.height);
         else
-                frame->widget.requested_size = ei_size(100,20);
+                frame->widget.requested_size = ei_size(100,100);
         ei_color_t bg = {0xFF,0x00,0x00,0xFF};
         frame->bg_color = bg;
 }
@@ -306,9 +306,12 @@ void button_setdefaults(struct ei_widget_t* widget)
           hw_text_compute_size(button->text, button->text_font, &w, &h);
           button->widget.requested_size = (ei_size(w,h));
           */
-        if (button->text)
-                button->widget.requested_size = ei_size(20, strlen(button->text)*10);
-
+        if (button->text && button->text_font)
+                hw_text_compute_size(button->text, button->text_font,
+                                &button->widget.requested_size.width,
+                                &button->widget.requested_size.height);
+        else
+                button->widget.requested_size = ei_size(100,20);
         button->img = NULL;
         button->img_rect = CALLOC_TYPE(ei_rect_t);
         assert(button->img_rect);
