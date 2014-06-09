@@ -170,7 +170,6 @@ int ei_main(int argc, char** argv)
         ei_place(button_s, &s, NULL, NULL, NULL, NULL, &button_rel_x_2, &button_rel_y_2, &button_rel_width, &button_rel_height);
         ei_place(button_sw, &sw, NULL, NULL, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_width, &button_rel_height);
         ei_place(button_w, &w, NULL, NULL, NULL, NULL, &button_rel_x_2, &button_rel_y_2, &button_rel_width, &button_rel_height);
-
         ei_place(button_c, &c, NULL, NULL, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_width, &button_rel_height);
         /* Hook the keypress callback to the event. */
         ei_bind(ei_ev_keydown,		NULL, "all", process_key, NULL);
