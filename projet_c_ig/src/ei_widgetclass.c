@@ -156,7 +156,7 @@ void frame_setdefaults(struct ei_widget_t* widget)
         }
 
         frame->relief = ei_relief_none;
-        frame->text = "Frame";
+        frame->text = NULL;
         frame->text_anchor = ei_anc_center;
         // red green blue A
         ei_color_t tc = {0x00, 0x00, 0xFF, 0xFF};
@@ -170,8 +170,13 @@ void frame_setdefaults(struct ei_widget_t* widget)
           int h;
           hw_text_compute_size("Frame", frame->text_font, &w, &h);
           frame->widget.requested_size = (ei_size(w,h));*/
-
-        frame->widget.requested_size = ei_size(20, strlen(frame->text)*10);
+        if (frame->text && frame->text_font)
+                // frame->widget.requested_size = ei_size(20, strlen(frame->text)*10);
+                hw_text_compute_size(frame->text, frame->text_font,
+                                &frame->widget.requested_size.width,
+                                &frame->widget.requested_size.height);
+        else
+                frame->widget.requested_size = ei_size(100,20);
         ei_color_t bg = {0xFF,0x00,0x00,0xFF};
         frame->bg_color = bg;
 }
