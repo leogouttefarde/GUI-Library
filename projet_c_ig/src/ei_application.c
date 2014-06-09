@@ -25,7 +25,7 @@ static ei_bool_t quit_request = EI_FALSE;
  * Conserve les proportions des fils */
 void resize(ei_widget_t *widget, ei_size_t add_size){
 
-        ei_anchor_t anc = ei_anc_northwest;
+        //ei_anchor_t anc = ei_anc_northwest;
 
         int w_w;
         int w_h;
@@ -36,11 +36,14 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
         w_w = w_w + add_size.width;
         w_h = w_h + add_size.height;
 
-        ei_placer_param_t param;
-        param = ei_get_placer_param(widget);
+        ei_placer_param_t *param = NULL;
+
+        // TODO : Vérifier que la classe de widget est bien gérée par placer
+        // avant de cast
+        param = (ei_placer_param_t*)widget->geom_params;
 
         // Placement du widget pere
-        ei_place(widget, param.anc, param.x, param.y, &w_w, &w_h, param.rel_x, param.rel_y, NULL,
+        ei_place(widget, param->anc, param->x, param->y, &w_w, &w_h, param->rel_x, param->rel_y, NULL,
                         NULL);
 
         // Parcours et redimensionnement des enfants
