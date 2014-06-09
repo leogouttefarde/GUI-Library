@@ -6,7 +6,7 @@
 #include "hw_interface.h"
 #include "ei_widget.h"
 #include "ei_geometrymanager.h"
-
+#include "ei_utils.h"
 
 /*
  * button_press --
@@ -35,6 +35,68 @@ ei_bool_t process_key(ei_widget_t* widget, ei_event_t* event, void* user_param)
         return EI_FALSE;
 }
 
+/* Fonction de redimensionnement
+ * Conserve les proportions des fils */
+void resize(ei_widget_t *widget, ei_size_t add_size){
+
+        // Tous les ancrages sont nw
+        // Car le redimensionnement vient du se
+        ei_anchor_t anc = ei_anc_northwest;
+
+        int w_w;
+        int w_h;
+
+
+        // Taille du widget
+        w_w = widget->screen_location.size.width;
+        w_h = widget->screen_location.size.height;
+        w_w = w_w + add_size.width;
+        w_h = w_h + add_size.height;
+
+        ei_place(widget, &anc, &widget->screen_location.top_left.x, &widget->screen_location.top_left.y, &w_w, &w_h, NULL, NULL, NULL,
+                        NULL);
+
+        // Parcours des enfants et redessin
+        ei_widget_t *current;
+        current = widget->children_head;
+        while(current){
+                resize(current, add_size);
+                current = current->next_sibling;
+        }
+}
+
+/* Fonction de mouvement
+ * Deplacement brut */
+void move(ei_widget_t *widget, ei_size_t dist){
+
+
+        ei_anchor_t anc = ei_anc_northwest;
+
+        int x;
+        int y;
+
+        // Position top_left et taille du pere
+        int p_x = widget->screen_location.top_left.x;
+        int p_y = widget->screen_location.top_left.y;
+
+        // Nouveau x absolu
+        x = p_x + dist.width;
+        y = p_y + dist.height;
+
+        // On deplace le pere
+        ei_place(widget, &anc, &x, &y, NULL, NULL, NULL,
+                        NULL, NULL, NULL);
+
+        // On deplace ses fils
+        ei_widget_t *current;
+        current = widget->children_head;
+
+        // Parcours des fils et des freres
+        while(current){
+                move(current, dist);
+                current = current->next_sibling;
+        }
+}
 /*
  * ei_main --
  *
@@ -42,80 +104,54 @@ ei_bool_t process_key(ei_widget_t* widget, ei_event_t* event, void* user_param)
  */
 int ei_main(int argc, char** argv)
 {
-        ei_size_t	screen_size		= {600, 600};
+        ei_size_t	screen_size		= {500, 500};
         ei_color_t	root_bgcol		= {0x52, 0x7f, 0xb4, 0xff};
 
         ei_widget_t*	button;
-        ei_size_t	button_size		= {100,50};
-        int		button_x		= 10;
-        int		button_y		= 10;
+        ei_size_t	button_size		= {50,50};
+        int		button_x		= 0;
+        int		button_y		= 0;
         ei_color_t	button_color		= {0x88, 0x88, 0x88, 0xff};
         char*		button_title		= "clic !";
         ei_color_t	button_text_color	= {0x00, 0x00, 0x00, 0xff};
-        int		button_corner_radius	= 5;
+        int		button_corner_radius	= 0;
         ei_relief_t	button_relief		= ei_relief_raised;
-        int		button_border_width	= 2;
+        int		button_border_width	= 1;
         ei_callback_t	button_callback 	= button_press;
 
-        ei_widget_t*	button_2;
-        ei_size_t	button_size_2		= {100,50};
-        int		button_x_2		= 10;
-        int		button_y_2		= 100;
-        ei_color_t	button_color_2		= {0x88, 0x88, 0x88, 0xff};
-        char*		button_title_2		= "clic 2 !";
-        ei_color_t	button_text_color_2	= {0x00, 0x00, 0x00, 0xff};
-        int		button_corner_radius_2	= 5;
-        ei_relief_t	button_relief_2		= ei_relief_raised;
-        int		button_border_width_2	= 2;
-        ei_callback_t	button_callback_2 	= button_press;
 
         ei_widget_t*	frame;
-        ei_size_t	frame_size		= {300,300};
-        int		frame_x			= 100;
-        int		frame_y			= 100;
+        ei_size_t	frame_size		= {100,100};
+        int		frame_x			= 0;
+        int		frame_y			= 0;
         ei_color_t	frame_color		= {0x88, 0x88, 0x88, 0xff};
         ei_relief_t	frame_relief		= ei_relief_raised;
-        int		frame_border_width	= 6;
+        int		frame_border_width	= 1;
 
-        ei_widget_t*	frame_2;
-        ei_size_t	frame_size_2		= {300,150};
-        int		frame_x_2		= 100;
-        int		frame_y_2		= 0;
-        ei_color_t	frame_color_2		= {0x88, 0x88, 0x88, 0xff};
-        ei_relief_t	frame_relief_2		= ei_relief_sunken;
-        int		frame_border_width_2	= 3;
         /* Create the application and change the color of the background. */
         ei_app_create(&screen_size, EI_FALSE);
         ei_frame_configure(ei_app_root_widget(), NULL, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
         /* Create, configure and place the button on screen. */
         frame = ei_widget_create("frame", ei_app_root_widget());
-        frame_2 = ei_widget_create("frame", frame);
         button = ei_widget_create("button", frame);
-        button_2 = ei_widget_create("button", frame_2);
 
         ei_frame_configure(frame, &frame_size, &frame_color,
                         &frame_border_width, &frame_relief, NULL, NULL, NULL, NULL,
                         NULL, NULL, NULL);
 
-        ei_frame_configure(frame_2, &frame_size_2, &frame_color_2,
-                        &frame_border_width_2, &frame_relief_2, NULL, NULL, NULL, NULL,
-                        NULL, NULL, NULL);
 
         ei_button_configure(button, &button_size, &button_color,
                         &button_border_width, &button_corner_radius, &button_relief, 
                         &button_title, NULL, &button_text_color, NULL,
                         NULL, NULL, NULL, &button_callback, NULL);
 
-        ei_button_configure(button_2, &button_size_2, &button_color_2,
-                        &button_border_width_2, &button_corner_radius_2, &button_relief_2, 
-                        &button_title_2, NULL, &button_text_color_2, NULL,
-                        NULL, NULL, NULL, &button_callback_2, NULL);
 
         ei_place(frame, NULL, &frame_x, &frame_y, NULL, NULL, NULL, NULL, NULL, NULL );
-        ei_place(frame_2, NULL, &frame_x_2, &frame_y_2, NULL, NULL, NULL, NULL, NULL, NULL );
         ei_place(button, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
-        ei_place(button_2, NULL, &button_x_2, &button_y_2, NULL, NULL, NULL, NULL, NULL, NULL );
+
+        move(frame, ei_size(10,10));
+        resize(frame, ei_size(10,50));
 
         /* Hook the keypress callback to the event. */
         ei_bind(ei_ev_keydown,		NULL, "all", process_key, NULL);

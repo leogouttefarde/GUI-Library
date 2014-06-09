@@ -13,6 +13,8 @@
 #include "ei_utils.h"
 #include "ei_core.h"
 #include "ei_common.h"
+#include "ei_event.h"
+#include "ei_geometrymanager.h"
 
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
 static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0xFF};
@@ -376,6 +378,95 @@ void    ei_button_configure (ei_widget_t*               widget,
         }
 }
 
+
+ei_bool_t resize_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_param);
+
+ei_bool_t resize_handle_button_release(ei_widget_t *widget, ei_event_t *event, void *user_param)
+{
+        assert(widget);
+        if (widget) {
+                ei_unbind(ei_ev_mouse_move, widget, NULL, resize_handle_motion, NULL);
+                ei_unbind(ei_ev_mouse_buttonup, widget, NULL, resize_handle_button_release, NULL);
+        }
+
+        return EI_FALSE;
+}
+
+ei_bool_t resize_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_param)
+{
+        assert(widget);
+        assert(event);
+        if (widget && event) {
+                int x = event->param.mouse.where.x;
+                int y = event->param.mouse.where.y;
+
+                //ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
+                printf("resize!  x %d \t y %d\n", x, y);
+        }
+
+        return EI_FALSE;
+}
+
+ei_bool_t resize_handle_button_press(ei_widget_t *widget, ei_event_t *event, void *user_param)
+{
+        assert(widget);
+        if (widget) {
+                ei_widget_t *square_widget = widget->parent;
+                assert(square_widget);
+
+                if (square_widget) {
+                        ei_bind(ei_ev_mouse_move, square_widget, NULL, resize_handle_motion, NULL);
+                        ei_bind(ei_ev_mouse_buttonup, square_widget, NULL, resize_handle_button_release, NULL);
+                }
+        }
+
+        return EI_FALSE;
+}
+
+
+ei_bool_t mv_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_param);
+
+ei_bool_t mv_handle_button_release(ei_widget_t *widget, ei_event_t *event, void *user_param)
+{
+        assert(widget);
+        if (widget) {
+                ei_unbind(ei_ev_mouse_move, widget, NULL, mv_handle_motion, NULL);
+                ei_unbind(ei_ev_mouse_buttonup, widget, NULL, mv_handle_button_release, NULL);
+        }
+
+        return EI_FALSE;
+}
+
+ei_bool_t mv_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_param)
+{
+        assert(widget);
+        assert(event);
+        if (widget && event) {
+                int x = event->param.mouse.where.x;
+                int y = event->param.mouse.where.y;
+
+                ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
+        }
+
+        return EI_FALSE;
+}
+
+ei_bool_t mv_handle_button_press(ei_widget_t *widget, ei_event_t *event, void *user_param)
+{
+        assert(widget);
+        if (widget) {
+                ei_widget_t *toplevel = widget->parent;
+                assert(toplevel);
+
+                if (toplevel) {
+                        ei_bind(ei_ev_mouse_move, toplevel, NULL, mv_handle_motion, NULL);
+                        ei_bind(ei_ev_mouse_buttonup, toplevel, NULL, mv_handle_button_release, NULL);
+                }
+        }
+
+        return EI_FALSE;
+}
+
 /**
  * @brief       Configures the attributes of widgets of the class "toplevel".
  *
@@ -402,8 +493,8 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                 char**          title,
                 ei_bool_t*      closable,
                 ei_axis_set_t*  resizable,
-                ei_size_t**     min_size){
-
+                ei_size_t**     min_size)
+{
         if (widget && widget->wclass
                 && !strcmp(widget->wclass->name, "toplevel")) {
 
@@ -429,6 +520,10 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                 if(min_size){
                         toplevel->min_size = *min_size;
                 }
+
+
+                // ei_bind(ei_ev_mouse_buttondown, toplevel_title, NULL, mv_handle_button_press, NULL);
+                // ei_bind(ei_ev_mouse_buttondown, square_widget, NULL, resize_handle_button_press, NULL);
         }
 }
 
