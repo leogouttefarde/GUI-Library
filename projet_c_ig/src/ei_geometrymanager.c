@@ -385,6 +385,8 @@ void ei_place(ei_widget_t *widget,
                                 // Calcul de la position du point d'ancrage
                                 // Vérification de la longueur
                                 // Assignation des champs du widget
+                                // x1, y1 = top_left du widget
+                                // x2, y2 = bottom_right
                                 int x1;
                                 int x2;
                                 int y1;
@@ -443,9 +445,9 @@ void ei_place(ei_widget_t *widget,
 
                                         break;          ///< Anchor on the bottom side, centered horizontally.
                                 case ei_anc_southwest:  
-                                        x1 = x_anc - w + 1;
-                                        x2 = x_anc;
-                                        y1 = y_anc - h + 1;
+                                        x1 = x_anc;
+                                        x2 = x_anc + w -1;
+                                        y1 = y_anc -h +1;
                                         y2 = y_anc;
 
                                         break;  ///< Anchor on the bottom-left corner.
