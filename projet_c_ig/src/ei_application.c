@@ -47,7 +47,7 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
         *rel_h = (float)*a_h / (float)p_h;
         // On recupere les parametres
         ei_placer_param_t param;
-        param = (ei_placer_param_t)widget->geom_params;
+        param = *(ei_placer_param_t)widget->geom_params;
         // On distingue le cas ou le widget est absolu et le cas
         // relatif
         if (param.w)
@@ -61,7 +61,7 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
                 a_h = NULL;
         // Placement du widget pere
         // La taille devient automatiquement absolue
-        ei_place(widget, param.anc, param.x, param.y, a_w, a_h, rel_x, rel_y, rel_w,
+        ei_place(widget, param.anc, param.x, param.y, a_w, a_h, param.rel_x, param.rel_y, rel_w,
                         rel_h);
 
 }
