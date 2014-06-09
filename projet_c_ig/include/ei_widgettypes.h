@@ -53,6 +53,25 @@ typedef struct ei_top_btn_t {
 	ei_widget_t widget;
 } ei_top_btn_t;
 
+//Type pour le titre
+typedef struct ei_topevel_title_t{
+        ei_widget_t widget;
+        // Pointeur sur le toplevel "pere"
+        ei_widget_t* toplevel;
+        ei_color_t color;
+} ei_toplevel_title_t;
+//Type pour le resize
+
+typedef struct ei_toplevel_resize_t{
+        ei_widget_t widget;
+        ei_widget_t* toplevel;
+} ei_toplevel_resize_t;
+//Type pour le close
+typedef struct ei_toplevel_close_t{
+        ei_widget_t widget;
+        ei_widget_t* toplevel;
+}ei_toplevel_close_t;
+
 typedef struct ei_toplevel_t {
         ei_widget_t widget;
         ei_color_t	color;
@@ -61,10 +80,17 @@ typedef struct ei_toplevel_t {
         ei_bool_t	closable;
         ei_axis_set_t	resizable;
         ei_size_t*	min_size;
-		  ei_top_btn_t btn_close;
-		  ei_top_btn_t btn_resize;
         ei_point_t move_pos;
+        /*  ei_top_btn_t btn_close;
+            ei_top_btn_t btn_resize;*/
+        // Ajout de champ pour les différents
+        // boutons
+        ei_toplevel_title_t* title_bar;
+        ei_toplevel_resize_t* resize;
+        ei_toplevel_close_t* close;
 } ei_toplevel_t;
+
+
 
 /**
  * \brief       Placer geometry manager
