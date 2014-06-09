@@ -63,6 +63,7 @@ typedef struct ei_toplevel_t {
         ei_size_t*	min_size;
 		  ei_top_btn_t btn_close;
 		  ei_top_btn_t btn_resize;
+        ei_point_t move_pos;
 } ei_toplevel_t;
 
 /**
