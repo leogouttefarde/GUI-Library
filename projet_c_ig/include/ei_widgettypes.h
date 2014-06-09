@@ -48,6 +48,10 @@ typedef struct ei_button_t {
 } ei_button_t;
 
 //Definition du type toplevel
+typedef struct ei_top_btn_t {
+	ei_widget_t widget;
+} ei_top_btn_t;
+
 typedef struct ei_toplevel_t {
         ei_widget_t widget;
         ei_color_t	color;
@@ -56,7 +60,11 @@ typedef struct ei_toplevel_t {
         ei_bool_t	closable;
         ei_axis_set_t	resizable;
         ei_size_t*	min_size;
+		  ei_top_btn_t btn_close;
+		  ei_top_btn_t btn_resize;
 } ei_toplevel_t;
+
+
 
 #endif
 

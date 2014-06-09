@@ -9,7 +9,7 @@ ei_linked_point_t *ei_button_arc(ei_point_t centre, int rayon, int angle_tete,
 {
 	ei_linked_point_t *Point_suivant = suivant;
 	ei_linked_point_t *Point;
-	for (int theta = angle_queue; theta >= angle_tete; theta = theta -5) {
+	for (float theta = angle_queue; theta >= angle_tete; theta = theta -0.5) {
 		Point = CALLOC_TYPE(ei_linked_point_t);
 		assert(Point != NULL);
 
@@ -37,7 +37,7 @@ ei_linked_point_t *trait(ei_point_t queue, ei_point_t tete,
 	int coeffy = 0;
 	int diffx = tete.x - queue.x;
 	int diffy = tete.y - queue.y;
-	int nb_iterations = MAX(diffx, diffy);
+	int nb_iterations = MAX(abs(diffx),abs(diffy));
 	if (diffx != 0) {
 		coeffx = (diffx) / abs(diffx);
 	}
@@ -229,10 +229,8 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
 
 		ei_rect_t rectangle_interieur=reduction(rectangle,marge);
 		if (rayon!=0) Liste=ei_button_rounded_frame(rectangle_interieur, rayon -marge, 0);
-		else Liste=Liste=ei_button_rounded_frame(rectangle_interieur, 0, 0);
+		else Liste=ei_button_rounded_frame(rectangle_interieur, 0, 0);
 		ei_draw_polygon(window, Liste, couleur, clipper);
-
-
 		free_lp(Liste);
 	}
 }
