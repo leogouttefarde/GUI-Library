@@ -6,7 +6,7 @@ OBJDIR		= ./objs
 TESTS		= ./tests
 INCLUDES	= ./include
 INCFLAGS	:= -I${INCLUDES}
-#OPTFLAGS	:= -Os -DNDEBUG
+#OPTFLAGS	:= -Os -DNDEBUG -Werror
 OPTFLAGS	:= -g
 CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
 SRCDIR		:= ./src
@@ -16,7 +16,9 @@ MATHFLAGS 	:= -lm
 
 LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
 			${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o \
-			${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o ${OBJDIR}/ei_button.o ${OBJDIR}/ei_global.o
+			${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o \
+			${OBJDIR}/ei_button.o ${OBJDIR}/ei_core.o \
+			${OBJDIR}/ei_linkedlist.o
 
 
 
@@ -123,7 +125,8 @@ ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 
 ########## Tests personnels
 
-# test_shape
+tests :  test_shape test_placer test_relative test_button2 test_geom
+
 # ATTENTION a LINKER LES BIBLIOTHEQUES MATHEMATIQUES
 test_shape : ${OBJDIR}/test_shape.o ${LIBEIBASE} ${LIBEI}
 	${LINK} -o test_shape ${OBJDIR}/test_shape.o ${LIBEI} ${LIBS} ${MATHFLAGS}
@@ -136,6 +139,18 @@ test_placer : ${OBJDIR}/test_placer.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/test_placer.o : ${TESTS}/test_placer.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_placer.c -o ${OBJDIR}/test_placer.o ${MATHFLAGS} 
+
+test_relative : ${OBJDIR}/test_relative.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o test_relative ${OBJDIR}/test_relative.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/test_relative.o : ${TESTS}/test_relative.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_relative.c -o ${OBJDIR}/test_relative.o ${MATHFLAGS}
+
+test_geom : ${OBJDIR}/test_geom.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o test_geom ${OBJDIR}/test_geom.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/test_geom.o : ${TESTS}/test_geom.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_geom.c -o ${OBJDIR}/test_geom.o ${MATHFLAGS}
 
 test_button2 : ${OBJDIR}/test_button2.o ${LIBEIBASE} ${LIBEI}
 	${LINK} -o test_button2 ${OBJDIR}/test_button2.o ${LIBEI} ${LIBS} ${MATHFLAGS}
@@ -160,7 +175,7 @@ ei_geometrymanager : ${OBJDIR}/ei_geometrymanager.o
 
 # Compilation
 ${OBJDIR}/%.o: ${SRCDIR}/%.c 
-	$(CC) $(CCFLAGS) ${INCFLAGS} ${LIBEIBASE} $< -o $@
+	$(CC) $(CCFLAGS) ${INCFLAGS} $< -o $@
 
 # Building of the library libei
 

@@ -7,6 +7,7 @@
 #include "ei_widget.h"
 #include "ei_geometrymanager.h"
 
+// Test du palcer avec coordonees relatives
 
 /*
  * button_press --
@@ -15,8 +16,8 @@
  */
 ei_bool_t button_press(ei_widget_t* widget, ei_event_t* event, void* user_param)
 {
-	printf("Click !\n");
-	return EI_TRUE;
+        printf("Click !\n");
+        return EI_TRUE;
 }
 
 /*
@@ -27,12 +28,12 @@ ei_bool_t button_press(ei_widget_t* widget, ei_event_t* event, void* user_param)
  */
 ei_bool_t process_key(ei_widget_t* widget, ei_event_t* event, void* user_param)
 {
-	if (event->param.key.key_sym == SDLK_ESCAPE) {
-		ei_app_quit_request();
-		return EI_TRUE;
-	}
-	
-	return EI_FALSE;
+        if (event->param.key.key_sym == SDLK_ESCAPE) {
+                ei_app_quit_request();
+                return EI_TRUE;
+        }
+
+        return EI_FALSE;
 }
 
 /*
@@ -47,8 +48,10 @@ int ei_main(int argc, char** argv)
 
         ei_widget_t*	button;
         ei_size_t	button_size		= {100,50};
-        int		button_x		= 10;
-        int		button_y		= 10;
+        float	        button_rel_width	= 0.20;
+        float           button_rel_height       = 0.10;
+        float		button_rel_x		= 0.0;
+        float           button_rel_y		= 0.20;
         ei_color_t	button_color		= {0x88, 0x88, 0x88, 0xff};
         char*		button_title		= "clic !";
         ei_color_t	button_text_color	= {0x00, 0x00, 0x00, 0xff};
@@ -57,65 +60,40 @@ int ei_main(int argc, char** argv)
         int		button_border_width	= 2;
         ei_callback_t	button_callback 	= button_press;
 
-        ei_widget_t*	button_2;
-        ei_size_t	button_size_2		= {100,50};
-        int		button_x_2		= 10;
-        int		button_y_2		= 100;
-        ei_color_t	button_color_2		= {0x88, 0x88, 0x88, 0xff};
-        char*		button_title_2		= "clic 2 !";
-        ei_color_t	button_text_color_2	= {0x00, 0x00, 0x00, 0xff};
-        int		button_corner_radius_2	= 5;
-        ei_relief_t	button_relief_2		= ei_relief_raised;
-        int		button_border_width_2	= 2;
-        ei_callback_t	button_callback_2 	= button_press;
 
         ei_widget_t*	frame;
         ei_size_t	frame_size		= {300,300};
+        float           frame_rel_width         = 0.50;
+        float           frame_rel_height        = 0.50;
+        float		frame_rel_x		= 0.0;
+        float		frame_rel_y		= 0.10;
         int		frame_x			= 100;
         int		frame_y			= 100;
         ei_color_t	frame_color		= {0x88, 0x88, 0x88, 0xff};
         ei_relief_t	frame_relief		= ei_relief_raised;
         int		frame_border_width	= 6;
 
-        ei_widget_t*	frame_2;
-        ei_size_t	frame_size_2		= {300,150};
-        int		frame_x_2		= 100;
-        int		frame_y_2		= 0;
-        ei_color_t	frame_color_2		= {0x88, 0x88, 0x88, 0xff};
-        ei_relief_t	frame_relief_2		= ei_relief_sunken;
-        int		frame_border_width_2	= 3;
         /* Create the application and change the color of the background. */
         ei_app_create(&screen_size, EI_FALSE);
         ei_frame_configure(ei_app_root_widget(), NULL, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
         /* Create, configure and place the button on screen. */
         frame = ei_widget_create("frame", ei_app_root_widget());
-        frame_2 = ei_widget_create("frame", frame);
         button = ei_widget_create("button", frame);
-        button_2 = ei_widget_create("button", frame_2);
 
         ei_frame_configure(frame, &frame_size, &frame_color,
                         &frame_border_width, &frame_relief, NULL, NULL, NULL, NULL,
                         NULL, NULL, NULL);
 
-        ei_frame_configure(frame_2, &frame_size_2, &frame_color_2,
-                        &frame_border_width_2, &frame_relief_2, NULL, NULL, NULL, NULL,
-                        NULL, NULL, NULL);
 
         ei_button_configure(button, &button_size, &button_color,
                         &button_border_width, &button_corner_radius, &button_relief, 
                         &button_title, NULL, &button_text_color, NULL,
                         NULL, NULL, NULL, &button_callback, NULL);
 
-        ei_button_configure(button_2, &button_size_2, &button_color_2,
-                        &button_border_width_2, &button_corner_radius_2, &button_relief_2, 
-                        &button_title_2, NULL, &button_text_color_2, NULL,
-                        NULL, NULL, NULL, &button_callback_2, NULL);
 
-        ei_place(frame, NULL, &frame_x, &frame_y, NULL, NULL, NULL, NULL, NULL, NULL );
-        ei_place(frame_2, NULL, &frame_x_2, &frame_y_2, NULL, NULL, NULL, NULL, NULL, NULL );
-        ei_place(button, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
-        ei_place(button_2, NULL, &button_x_2, &button_y_2, NULL, NULL, NULL, NULL, NULL, NULL );
+        ei_place(frame, NULL, &frame_x, &frame_y, NULL, NULL, &frame_rel_x, &frame_rel_y, &frame_rel_width, &frame_rel_height);
+        ei_place(button, NULL, NULL, NULL, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_width, &button_rel_height);
 
         /* Hook the keypress callback to the event. */
         ei_bind(ei_ev_keydown,		NULL, "all", process_key, NULL);

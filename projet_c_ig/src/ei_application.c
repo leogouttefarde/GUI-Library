@@ -1,7 +1,7 @@
 /**
- *  @file	ei_application.h
- *  @brief	Manages the main steps of a graphical application: initialization, main window,
- *		main loop, quitting, resource freeing.
+ *  @file       ei_application.h
+ *  @brief      Manages the main steps of a graphical application: initialization, main window,
+ *              main loop, quitting, resource freeing.
  *
  *  \author 
  *  Created by François Bérard on 30.12.11.
@@ -17,16 +17,14 @@
 #include "ei_common.h"
 #include "ei_event.h"
 #include "ei_widgettypes.h"
-#include "ei_global.h"
+#include "ei_core.h"
 
 static ei_bool_t quit_request = EI_FALSE;
-static ei_linked_rect_t *rects_first = NULL;
-static ei_linked_rect_t *rects_last = NULL;
 
 // Peut-être pas dans le bon fichier
 // Enfonce les boutons
-ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, 
-                void *user_param) {
+ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
+{
         if (widget){
                 if (!strcmp(widget->wclass->name, "button")) {
 
@@ -38,13 +36,16 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event,
 }
 
 // Quand on relache la souris sur le bouton
-ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
-                void *user_param){
+ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
+{
         ei_bool_t res;
+
         if (widget){
                 if (!strcmp(widget->wclass->name, "button")) {
+
                         ei_button_t *button = (ei_button_t*)widget;
                         button->relief = ei_relief_raised;
+
                         // Appel du callback du bouton
                         if (button->callback){
                                 res = button->callback((ei_widget_t*)button, NULL, button->user_param);
@@ -55,32 +56,35 @@ ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
 }
 
 /**
- * \brief	Creates an application.
- *		<ul>
- *			<li> initializes the hardware (calls \ref hw_init), </li>
- *			<li> registers all classes of widget and all geometry managers, </li>
- *			<li> creates the root window (either in a system window, or the entire
- *				screen), </li>
- *			<li> creates the root widget to accress the root window. </li>
- *		</ul>
+ * \brief       Creates an application.
+ *              <ul>
+ *                      <li> initializes the hardware (calls \ref hw_init), </li>
+ *                      <li> registers all classes of widget and all geometry managers, </li>
+ *                      <li> creates the root window (either in a system window, or the entire
+ *                              screen), </li>
+ *                      <li> creates the root widget to accress the root window. </li>
+ *              </ul>
  *
- * @param	main_window_size	If "fullscreen is false, the size of the root window of the
- *					application.
- *					If "fullscreen" is true, the current monitor resolution is
- *					used as the size of the root window, this size is returned
- *					in this parameter.
- * @param	fullScreen		If true, the root window is the entire screen. Otherwise, it
- *					is a system window.
+ * @param       main_window_size        If "fullscreen is false, the size of the root window of the
+ *                                      application.
+ *                                      If "fullscreen" is true, the current monitor resolution is
+ *                                      used as the size of the root window, this size is returned
+ *                                      in this parameter.
+ * @param       fullScreen              If true, the root window is the entire screen. Otherwise, it
+ *                                      is a system window.
  */
 void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 {
+        ei_init();
         hw_init();
 
         ei_set_root_surface(hw_create_window(main_window_size, fullscreen));
+
         // Enregistrement des classes
         ei_frame_register_class();
         ei_button_register_class();
         ei_toplevel_register_class();
+
         // Initialisation du root_widget
         ei_set_root(ei_widget_create ("frame", NULL));
 
@@ -100,114 +104,61 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 }
 
 /**
- * \brief	Releases all the resources of the application, and releases the hardware
- *		(ie. calls \ref hw_quit).
+ * \brief       Releases all the resources of the application, and releases the hardware
+ *              (ie. calls \ref hw_quit).
  */
 void ei_app_free()
 {
         ei_surface_t picking = ei_get_picking_surface();
+
         if (picking)
                 hw_surface_free(picking);
 }
 
-
-
-// Loop récursif pour ei_app_run qui respecte la hierarchie des widgets
-void ei_app_run_loop(ei_widget_t *widget){
-        if (widget){
-                // Le widget courant est a affiché en premier (il sera
-                // derriere)
-                if (widget->geom_params && widget->geom_params->manager
-                                && widget->geom_params->manager->runfunc){
-                        widget->geom_params->manager->runfunc(widget);
-                }
-                // Ses enfants seront devant lui et derriere ses freres
-                ei_app_run_loop(widget->children_head);
-                // Les freres du widget courant sont enfin dessinés
-                ei_app_run_loop(widget->next_sibling);
-        }
-}
-
 /**
- * \brief	Runs the application: enters the main event loop. Exits when
- *		\ref ei_app_quit_request is called.
+ * \brief       Runs the application: enters the main event loop. Exits when
+ *              \ref ei_app_quit_request is called.
  */
 void ei_app_run()
 {
         ei_event_t event;
-        do {
-                ei_widget_t *widget = ei_get_root();
+        ei_surface_t root_surface = ei_get_root_surface();
 
-                // Cette boucle me paraissait fausse
-                // Car elle ne parcourt pas tous les widgets (seulement les fils
-                // du dernier frere)
-                ei_app_run_loop(widget);
-                /*
-                   while (widget) {
-                   if (widget->geom_params && widget->geom_params->manager && widget->geom_params->manager->runfunc)
-                   widget->geom_params->manager->runfunc(widget);
+        while (!quit_request) {
 
-                   if (widget->next_sibling)
-                   widget = widget->next_sibling;
+                ei_draw_widget(ei_get_root()); // DEBUG : DRAW ALL
+                //ei_draw_widgets();
 
-                   else
-                   widget = widget->children_head;
-                   }
-                   */
+                ei_invalidate_rects();
 
                 // Update des surfaces
-                ei_surface_t root_surface = ei_get_root_surface();
-                hw_surface_update_rects(root_surface, rects_first);
+                hw_surface_update_rects(root_surface, NULL); // DEBUG : UPDATE ALL
+                //hw_surface_update_rects(root_surface, ei_get_update_rects());
 
-                /**************** DEBUG ************************
-                  debug_display_root_surface();
-                  debug_display_picking_surface();
-                 ***********************************************************/
+                ei_invalidate_reset();
 
-
-
-                /* Empty rects list */
-                while (rects_first && rects_first->next) {
-                        ei_linked_rect_t *next = rects_first->next;
-                        SAFE_FREE(rects_first);
-                        rects_first = next;
-                }
-                memset(&rects_first->rect, 0, sizeof(ei_rect_t));
-                rects_last = rects_first;
 
                 hw_event_wait_next(&event);
 
                 ei_event_process(&event);
-
-        } while (!quit_request);
+        };
 }
 
 /**
- * \brief	Adds a rectangle to the list of rectangles that must be updated on screen. The real
- *		update on the screen will be done at the right moment in the main loop.
+ * \brief       Adds a rectangle to the list of rectangles that must be updated on screen. The real
+ *              update on the screen will be done at the right moment in the main loop.
  *
- * @param	rect		The rectangle to add, expressed in the root window coordinates.
- *				A copy is made, so it is safe to release the rectangle on return.
+ * @param       rect            The rectangle to add, expressed in the root window coordinates.
+ *                              A copy is made, so it is safe to release the rectangle on return.
  */
 void ei_app_invalidate_rect(ei_rect_t* rect)
 {
-        ei_linked_rect_t *linked_rect = malloc(sizeof(ei_linked_rect_t));
-        linked_rect->rect = *rect;
-        linked_rect->next = NULL;
-
-        if (rects_last) {
-                rects_last->next = linked_rect;
-                rects_last = linked_rect;
-        }
-        else {
-                rects_first = linked_rect;
-                rects_last = linked_rect;
-        }
+        ei_invalidate_rect(rect);
 }
 
 /**
- * \brief	Tells the application to quite. Is usually called by an event handler (for example
- *		when pressing the "Escape" key).
+ * \brief       Tells the application to quite. Is usually called by an event handler (for example
+ *              when pressing the "Escape" key).
  */
 void ei_app_quit_request()
 {
@@ -216,10 +167,10 @@ void ei_app_quit_request()
 
 
 /**
- * \brief	Returns the "root widget" of the application: a "frame" widget that encapsulate the
- *		root window.
+ * \brief       Returns the "root widget" of the application: a "frame" widget that encapsulate the
+ *              root window.
  *
- * @return 			The root widget.
+ * @return                      The root widget.
  */
 ei_widget_t* ei_app_root_widget(){
 
@@ -227,10 +178,10 @@ ei_widget_t* ei_app_root_widget(){
 }
 
 /**
- * \brief	Returns the surface of the root window. Used to create surfaces with similar r, g, b
- *		channels.
+ * \brief       Returns the surface of the root window. Used to create surfaces with similar r, g, b
+ *              channels.
  *
- * @return 			The surface of the root window.
+ * @return                      The surface of the root window.
  */
 ei_surface_t ei_app_root_surface(){
 

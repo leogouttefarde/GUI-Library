@@ -1,28 +1,24 @@
 /**
- * @file	ei_shape.h
+ * @file        ei_shape.h
  *
- * @brief 	Basical geometric transformation and shape generating
+ * @brief       Basical geometric transformation and shape generating
  *
  *  Created by Eric BUREL on 04.06.14
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
-#include <string.h>
 #include "ei_shape.h"
-// ne pas oublier les parenthèse, M_PI definie dans math.h
-#ifndef M_PI
-#define M_PI (3.141592653589793)
-#endif
-#define RAD_TO_DEG(x) ((x*180.0)/(M_PI)) 
+#include "ei_common.h"
+
 //**************** Basic functions ****************/
 
 /**
- * @brief	Search fictive max point where max.x(resp. y) = maximal abciss (resp. ordinate) of points
+ * @brief       Search fictive max point where max.x(resp. y) = maximal abciss (resp. ordinate) of points
  *              in the list
  *
- * @param	l		The list to search in
+ * @param       l               The list to search in
  *
- * @return	The max point		
+ * @return      The max point           
  */
 ei_point_t ei_search_max(ei_linked_point_t l){
         // initialisation du max
@@ -46,12 +42,12 @@ ei_point_t ei_search_max(ei_linked_point_t l){
 
 
 /**
- * @brief	Same as ei_search_max with the min
+ * @brief       Same as ei_search_max with the min
  *
  *
- * @param	l		The list to search in
+ * @param       l               The list to search in
  *
- * @return	The min point		
+ * @return      The min point           
  */
 
 ei_point_t ei_search_min(ei_linked_point_t l){
@@ -74,13 +70,13 @@ ei_point_t ei_search_min(ei_linked_point_t l){
         return min;
 }
 /**
- * @brief	Search the size of the smallest rectangle around the points and
+ * @brief       Search the size of the smallest rectangle around the points and
  *              returns its size.
  *
  *
- * @param	l		The list to search in
+ * @param       l               The list to search in
  *
- * @return	The size		
+ * @return      The size                
  */
 ei_size_t ei_search_size(ei_linked_point_t l){
         ei_point_t max;
@@ -169,7 +165,8 @@ void ei_sym_vert(ei_linked_point_t *lp){
 }
 
 
-void ei_append_point(ei_linked_point_t *lp, ei_point_t point) {
+void ei_append_point(ei_linked_point_t *lp, ei_point_t point)
+{
         ei_linked_point_t *prec;
         ei_linked_point_t *current;
         current = lp;
@@ -178,13 +175,17 @@ void ei_append_point(ei_linked_point_t *lp, ei_point_t point) {
                 current = current->next;
         }
         if (prec){
-                prec->next = malloc(sizeof(ei_linked_point_t));
+                prec->next = CALLOC_TYPE(ei_linked_point_t);
+                assert(prec->next);
                 prec->next->point = point;
         }
 }
 
-void ei_direct_append(ei_linked_point_t *lp, ei_point_t point){
-        lp->next = malloc(sizeof(ei_linked_point_t));
+void ei_direct_append(ei_linked_point_t *lp, ei_point_t point)
+{
+        lp->next = CALLOC_TYPE(ei_linked_point_t);
+        assert(lp->next);
+
         lp->next->point = point;
         lp->next->next = NULL;
 }
@@ -192,7 +193,8 @@ void ei_direct_append(ei_linked_point_t *lp, ei_point_t point){
 
 // Transforme un rectangle en une liste de point
 // premier point = top left, puis sens horaire
-ei_linked_point_t ei_rect_to_points(ei_rect_t rect){
+ei_linked_point_t ei_rect_to_points(ei_rect_t rect)
+{
         // cf minimal.c pour un exemple d'utilisation des tableaux
         int w = rect.size.width;
         int h = rect.size.height;
@@ -217,9 +219,9 @@ ei_linked_point_t ei_rect_to_points(ei_rect_t rect){
 /*************** Frame related functions *******/
 
 // Genere un morceau de cadre avec l'orientation voulue
-// size est la taille totale (bordure incluse !)
-ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int
-                bw){
+// size est la taille totale (bordure incluse)
+ei_linked_point_t ei_relief(ei_point_t top_left, char* side, ei_size_t size, int bw)
+{
 
         ei_linked_point_t result;
 

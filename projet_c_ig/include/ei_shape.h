@@ -12,7 +12,6 @@
  */
 #include "ei_types.h"
 #include "ei_utils.h"
-#include "math.h"
 //**************** Basic functions ****************/
 
 /**

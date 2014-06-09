@@ -71,6 +71,7 @@ static inline tile_t* tile_at(puzzle_t* puzzle, ei_point_t position)
 
 ei_bool_t handle_tile_press(ei_widget_t* widget, ei_event_t* event, void* user_param)
 {
+
 	tile_t*		tile		= (tile_t*)user_param;
 	puzzle_t*	puzzle		= tile->puzzle;
 	ei_point_t	offsets[]	= {{0, -1}, {-1, 0}, {1, 0}, {0, 1}};
