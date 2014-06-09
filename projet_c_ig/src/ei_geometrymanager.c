@@ -137,8 +137,54 @@ void  ei_register_placer_manager()
         ei_geometrymanager_register(placer);
 }
 
+// A placer dans widgettypes
+typedef struct {
+        ei_anchor_t* anc;
+        int* x;
+        int* y;
+        float* rel_x;
+        float* rel_y;
+        int* w;
+        int* h;
+        float* rel_w;
+        float* rel_h;
+} ei_param_placer_t;
 
+// Enregistre les paramètres du placer dans un champ du widget
+void ei_set_placer_param(ei_widget *widget, ei_placer_param_t param){
+        // Il faut recaster le widget car le champ placer_param
+        // n'existe pas dans la classe de base
+        if (!strcmp(widget->wclass.name, "frame")){
+                ei_frame_t *frame = (ei_frame_t*)widget;
+                frame->placer_param = param;
+        }
+        else if(!strcmp(widget->wclass.name, "toplevel")){
+                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+                toplevel->placer_param = param;
+        }
+        else if(!strcmp(widget->wclass.name, "button")){
+                ei_button_t *button = (ei_button_t*)widget;
+                button->placer_param = param;
+        }
+}
 
+// Retourne les paramètres du placer dans un champ du widget
+ei_placer_param_t ei_get_placer_param(ei_widget *widget){
+        // Il faut recaster le widget car le champ placer_param
+        // n'existe pas dans la classe de base
+        if (!strcmp(widget->wclass.name, "frame")){
+                ei_frame_t *frame = (ei_frame_t*)widget;
+                return frame->placer_param;
+        }
+        else if(!strcmp(widget->wclass.name, "toplevel")){
+                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+                toplevel->placer_param;
+        }
+        else if(!strcmp(widget->wclass.name, "button")){
+                ei_button_t *button = (ei_button_t*)widget;
+                return button->placer_param;
+        }
+}
 
 /**
  * \brief       Configures the geometry of a widget using the "placer" geometry manager.
@@ -209,7 +255,21 @@ void ei_place(ei_widget_t *widget,
                         widget->geom_params->manager = placer;
                 }
 
+                // Sauvegarde des paramètres
+                ei_placer_param_t param;
+                param.anc = anchor;
+                param.x = x;
+                param.y = y;
+                param.rel_x = rel_x;
+                param.rel_y = rel_y;
+                param.w = width;
+                param.h = height;
+                param.rel_w = rel_width;
+                param.rel_h = rel_height;
+                ei_set_placer_param(widget, param);
 
+
+                // Placement
                 ei_anchor_t anc;
                 bool keep = true;
                 int xmin;

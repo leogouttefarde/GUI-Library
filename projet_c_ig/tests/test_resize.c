@@ -37,7 +37,7 @@ ei_bool_t process_key(ei_widget_t* widget, ei_event_t* event, void* user_param)
 
 /* Fonction de redimensionnement
  * Conserve les proportions des fils */
-void resize(ei_widget_t *widget, ei_size_t add_size){
+void test_resize(ei_widget_t *widget, ei_size_t add_size){
 
         // Tous les ancrages sont nw
         // Car le redimensionnement vient du se
@@ -67,7 +67,7 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
 
 /* Fonction de mouvement
  * Deplacement brut */
-void move(ei_widget_t *widget, ei_size_t dist){
+void test_move(ei_widget_t *widget, ei_size_t dist){
 
 
         ei_anchor_t anc = ei_anc_northwest;
@@ -150,8 +150,8 @@ int ei_main(int argc, char** argv)
         ei_place(frame, NULL, &frame_x, &frame_y, NULL, NULL, NULL, NULL, NULL, NULL );
         ei_place(button, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
 
-        move(frame, ei_size(10,10));
-        resize(frame, ei_size(10,50));
+        test_move(frame, ei_size(10,10));
+        test_resize(frame, ei_size(10,50));
 
         /* Hook the keypress callback to the event. */
         ei_bind(ei_ev_keydown,		NULL, "all", process_key, NULL);
