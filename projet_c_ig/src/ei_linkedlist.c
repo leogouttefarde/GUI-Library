@@ -26,6 +26,7 @@ void ei_linkedlist_add(ei_linkedlist_t *list, ei_elem_t elem)
                 link->next = NULL;
 
                 if (list->tail) {
+                        link->prev = list->tail;
                         list->tail->next = link;
                         list->tail = link;
                 }
@@ -33,6 +34,50 @@ void ei_linkedlist_add(ei_linkedlist_t *list, ei_elem_t elem)
                         list->head = link;
                         list->tail = link;
                 }
+        }
+}
+
+void ei_linkedlist_pop_link(ei_linkedlist_t *list, ei_linked_elem_t *link, ei_bool_t free_elem)
+{
+        if (list && link) {
+                ei_linked_elem_t *prev = link->prev;
+                ei_linked_elem_t *next = link->next;
+
+
+                // Random insider elem
+                if (prev && next) {
+                        prev->next = next;
+                        next->prev = prev;
+                }
+
+                // Head
+                else if (!prev && next) {
+
+                        // Check
+                        if (list->head == link) {
+                                list->head = next;
+                        }
+                }
+
+                // Tail
+                else if (prev && !next) {
+
+                        // Check
+                        if (list->tail == link) {
+                                list->tail = prev;
+                        }
+                }
+
+                // Both head and tail : unique elem
+                else {
+                        list->head = NULL;
+                        list->tail = NULL;
+                }
+
+                if (free_elem)
+                        SAFE_FREE(link->elem);
+
+                SAFE_FREE(link);
         }
 }
 

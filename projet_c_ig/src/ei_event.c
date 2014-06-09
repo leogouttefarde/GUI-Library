@@ -84,7 +84,33 @@ void ei_unbind(ei_eventtype_t eventtype,
                 ei_callback_t callback,
                 void *user_param)
 {
-        ;
+        if (eventtype < ei_ev_last) {
+                ei_linkedlist_t *list = &ei_events[eventtype];
+
+                if (list) {
+                        ei_linked_elem_t *link = list->head, *prev = NULL;
+                        ei_binding_t *binding = NULL;
+                        bool found = false;
+
+                        while (link && !found) {
+                                binding = (ei_binding_t*)link->elem;
+
+                                if (binding) {
+                                        if (    widget == binding->widget
+                                                && (binding->tag && !strcmp(tag, binding->tag))
+                                                && callback == binding->callback
+                                                && user_param == binding->user_param
+                                                ) {
+                                                found = true;
+
+                                                ei_linkedlist_pop_link(list, link, true);
+                                        }
+                                }
+
+                                link = link->next;
+                        }
+                }
+        }
 }
 
 void ei_event_process(ei_event_t *event)
