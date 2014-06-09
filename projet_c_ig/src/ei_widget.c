@@ -402,6 +402,8 @@ ei_bool_t resize_handle_motion(ei_widget_t *widget, ei_event_t *event, void *use
 
                 //ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
                 printf("resize!  x %d \t y %d\n", x, y);
+
+                //resize(ei_widget_t *widget, ei_size_t add_size);
         }
 
         return EI_FALSE;
@@ -446,6 +448,8 @@ ei_bool_t mv_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_pa
                 int y = event->param.mouse.where.y;
 
                 ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
+
+                //move(ei_widget_t *widget, ei_size_t dist);
         }
 
         return EI_FALSE;
@@ -465,6 +469,17 @@ ei_bool_t mv_handle_button_press(ei_widget_t *widget, ei_event_t *event, void *u
         }
 
         return EI_FALSE;
+}
+
+void add_child(ei_widget_t *widget, ei_widget_t *child)
+{
+        // if (widget->children_tail) {
+
+        // }
+        // else {
+        //         toplevel->children_head = toplevel_title;
+        //         toplevel->children_tail = toplevel_title;
+        // }
 }
 
 /**
@@ -521,6 +536,8 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                         toplevel->min_size = *min_size;
                 }
 
+                // add_child(toplevel, toplevel_title);
+                // add_child(toplevel, square_widget);
 
                 // ei_bind(ei_ev_mouse_buttondown, toplevel_title, NULL, mv_handle_button_press, NULL);
                 // ei_bind(ei_ev_mouse_buttondown, square_widget, NULL, resize_handle_button_press, NULL);
