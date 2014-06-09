@@ -156,7 +156,7 @@ void frame_setdefaults(struct ei_widget_t* widget)
         }
 
         frame->relief = ei_relief_none;
-        frame->text = "Frame";
+        frame->text = NULL;
         frame->text_anchor = ei_anc_center;
         // red green blue A
         ei_color_t tc = {0x00, 0x00, 0xFF, 0xFF};
@@ -170,15 +170,45 @@ void frame_setdefaults(struct ei_widget_t* widget)
           int h;
           hw_text_compute_size("Frame", frame->text_font, &w, &h);
           frame->widget.requested_size = (ei_size(w,h));*/
-
-        frame->widget.requested_size = ei_size(20, strlen(frame->text)*10);
+        if (frame->text && frame->text_font)
+                // frame->widget.requested_size = ei_size(20, strlen(frame->text)*10);
+                hw_text_compute_size(frame->text, frame->text_font,
+                                &frame->widget.requested_size.width,
+                                &frame->widget.requested_size.height);
+        else
+                frame->widget.requested_size = ei_size(100,100);
         ei_color_t bg = {0xFF,0x00,0x00,0xFF};
         frame->bg_color = bg;
 }
 
+// PRINCIPE : déduit le content_rect de la screen_location
 void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-        ;
+        ei_rect_t* content_rect;
+        if (rect.size.width !=0 && rect.size.height != 0){
+                // La screen_location est copiée tel quel
+                widget->screen_location = rect;
+                ei_frame_t *frame = (ei_frame_t*)widget;
+                // Gestion des bordures pour le content_rect
+                int bw = frame->border_width;
+                ei_rect_t *content_rect;
+                content_rect = malloc(sizeof(ei_rect_t));
+                *content_rect = rect;
+                content_rect->top_left.x =  content_rect->top_left.x +
+                        bw;
+
+                content_rect->top_left.y =  content_rect->top_left.y +
+                        bw;
+
+                content_rect->size.width =  content_rect->size.width +
+                        - 2*bw;
+                content_rect->size.height =  content_rect->size.height +
+                        -2*bw;
+        }
+        else{
+                content_rect = NULL;
+        }
+        widget->content_rect = content_rect;
 }
 
 /**
@@ -276,9 +306,12 @@ void button_setdefaults(struct ei_widget_t* widget)
           hw_text_compute_size(button->text, button->text_font, &w, &h);
           button->widget.requested_size = (ei_size(w,h));
           */
-        if (button->text)
-                button->widget.requested_size = ei_size(20, strlen(button->text)*10);
-
+        if (button->text && button->text_font)
+                hw_text_compute_size(button->text, button->text_font,
+                                &button->widget.requested_size.width,
+                                &button->widget.requested_size.height);
+        else
+                button->widget.requested_size = ei_size(100,20);
         button->img = NULL;
         button->img_rect = CALLOC_TYPE(ei_rect_t);
         assert(button->img_rect);
@@ -298,7 +331,30 @@ void button_setdefaults(struct ei_widget_t* widget)
 
 void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-        ;
+        ei_rect_t* content_rect;
+        if (rect.size.width !=0 && rect.size.height != 0){
+                // La screen_location est copiée tel quel
+                widget->screen_location = rect;
+                ei_button_t *button = (ei_button_t*)widget;
+                // Gestion des bordures pour le content_rect
+                int bw = button->border_width;
+                content_rect = malloc(sizeof(ei_rect_t));
+                *content_rect = rect;
+                content_rect->top_left.x =  content_rect->top_left.x +
+                        bw;
+
+                content_rect->top_left.y =  content_rect->top_left.y +
+                        bw;
+
+                content_rect->size.width =  content_rect->size.width +
+                        - 2*bw;
+                content_rect->size.height =  content_rect->size.height +
+                        -2*bw;
+        }
+        else{
+                content_rect = NULL;
+        }
+        widget->content_rect = content_rect;
 }
 /**
  * \brief       Registers the "button" widget class in the program. This must be called only
@@ -399,7 +455,31 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 
 void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-        ;
+
+        ei_rect_t *content_rect;
+        if (rect.size.width != 0 && rect.size.height !=0){
+                // La screen_location est copiée tel quel
+                widget->screen_location = rect;
+                ei_button_t *toplevel = (ei_button_t*)widget;
+                // Gestion des bordures pour le content_rect
+                int bw = toplevel->border_width;
+                content_rect = malloc(sizeof(ei_rect_t));
+                *content_rect = rect;
+                content_rect->top_left.x =  content_rect->top_left.x +
+                        bw;
+
+                content_rect->top_left.y =  content_rect->top_left.y +
+                        bw;
+
+                content_rect->size.width =  content_rect->size.width +
+                        - 2*bw;
+                content_rect->size.height =  content_rect->size.height +
+                        -2*bw;
+        }
+        else{
+                content_rect = NULL;
+        }
+        widget->content_rect = content_rect;
 }
 
 /**

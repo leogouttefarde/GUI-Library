@@ -230,8 +230,8 @@ void ei_place(ei_widget_t *widget,
 
                 int x_anc;
                 int y_anc;
-
                 ei_rect_t parent_rect;
+                ei_rect_t screen_location;
 
                 // Definition du rectangle contenant le widget
                 if (widget->parent){
@@ -426,45 +426,24 @@ void ei_place(ei_widget_t *widget,
 
                                 w = x2 - x1 + 1;
                                 h = y2 - y1 + 1;
+
                                 // on assigne enfin les valeurs calculées
-                                widget->screen_location.top_left.x
+                                screen_location.top_left.x
                                         = x1;
-                                widget->screen_location.top_left.y
+                                screen_location.top_left.y
                                         = y1;
-                                widget->screen_location.size.width 
+                                screen_location.size.width 
                                         = w;
-                                widget->screen_location.size.height
+                                screen_location.size.height
                                         = h;
 
-                                // Gestion des bordures
-                                if(!strcmp(widget->wclass->name, "frame")){
-                                        ei_frame_t* frame = (ei_frame_t*)widget;
-                                        int bw = frame->border_width;
-                                        ei_rect_t *content_rect;
-                                        content_rect = malloc(sizeof(ei_rect_t));
-                                        *content_rect = widget->screen_location;
-                                        content_rect->top_left.x =  content_rect->top_left.x +
-                                                bw;
-
-                                        content_rect->top_left.y =  content_rect->top_left.y +
-                                                bw;
-
-                                        content_rect->size.width =  content_rect->size.width +
-                                                - 2*bw;
-                                        content_rect->size.height =  content_rect->size.height +
-                                                -2*bw;
-                                        widget->content_rect = content_rect;
-                                }
-                                else {
-                                        widget->content_rect = &widget->screen_location;
-                                }
                         }
                         else{
                                 // on affiche pas le widget
-                                widget->screen_location = ei_rect_zero();
-                                widget->content_rect = &widget->screen_location;
+                                screen_location = ei_rect_zero();
                         }
-
+                        // Appel a geomnotify
+                        widget->wclass->geomnotifyfunc(widget, screen_location);
                 }
                 // Gestion du root widget
                 else{
@@ -482,8 +461,6 @@ void ei_place(ei_widget_t *widget,
 
                         widget->screen_location.size = widget->requested_size;
                         widget->content_rect = &widget->screen_location;
-
-
                 }
         }
 }
