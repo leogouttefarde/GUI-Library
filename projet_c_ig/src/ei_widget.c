@@ -386,7 +386,8 @@ ei_bool_t resize_handle_button_release(ei_widget_t *widget, ei_event_t *event, v
         assert(widget);
         if (widget) {
                 ei_unbind(ei_ev_mouse_move, widget, NULL, resize_handle_motion, NULL);
-                ei_unbind(ei_ev_mouse_buttonup, widget, NULL, resize_handle_button_release, NULL);
+                //ei_unbind(ei_ev_mouse_buttonup, widget, NULL, resize_handle_button_release, NULL);
+                printf("resize_handle_button_release !\n");
         }
 
         return EI_FALSE;
@@ -413,13 +414,8 @@ ei_bool_t resize_handle_button_press(ei_widget_t *widget, ei_event_t *event, voi
 {
         assert(widget);
         if (widget) {
-                ei_widget_t *square_widget = widget->parent;
-                assert(square_widget);
-
-                if (square_widget) {
-                        ei_bind(ei_ev_mouse_move, square_widget, NULL, resize_handle_motion, NULL);
-                        ei_bind(ei_ev_mouse_buttonup, square_widget, NULL, resize_handle_button_release, NULL);
-                }
+                ei_bind(ei_ev_mouse_move, widget, NULL, resize_handle_motion, NULL);
+                printf("resize_handle_button_press !\n");
         }
 
         return EI_FALSE;
@@ -432,8 +428,9 @@ ei_bool_t mv_handle_button_release(ei_widget_t *widget, ei_event_t *event, void 
 {
         assert(widget);
         if (widget) {
+                printf("mv_handle_button_release !\n");
                 ei_unbind(ei_ev_mouse_move, widget, NULL, mv_handle_motion, NULL);
-                ei_unbind(ei_ev_mouse_buttonup, widget, NULL, mv_handle_button_release, NULL);
+                //ei_unbind(ei_ev_mouse_buttonup, widget, NULL, mv_handle_button_release, NULL);
         }
 
         return EI_FALSE;
@@ -447,9 +444,10 @@ ei_bool_t mv_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_pa
                 int x = event->param.mouse.where.x;
                 int y = event->param.mouse.where.y;
 
-                ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
+                //ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
 
                 //move(ei_widget_t *widget, ei_size_t dist);
+                printf("move!  x %d \t y %d\n", x, y);
         }
 
         return EI_FALSE;
@@ -459,13 +457,8 @@ ei_bool_t mv_handle_button_press(ei_widget_t *widget, ei_event_t *event, void *u
 {
         assert(widget);
         if (widget) {
-                ei_widget_t *toplevel = widget->parent;
-                assert(toplevel);
-
-                if (toplevel) {
-                        ei_bind(ei_ev_mouse_move, toplevel, NULL, mv_handle_motion, NULL);
-                        ei_bind(ei_ev_mouse_buttonup, toplevel, NULL, mv_handle_button_release, NULL);
-                }
+                ei_bind(ei_ev_mouse_move, widget, NULL, mv_handle_motion, NULL);
+                printf("mv_handle_button_press !\n");
         }
 
         return EI_FALSE;
@@ -473,13 +466,16 @@ ei_bool_t mv_handle_button_press(ei_widget_t *widget, ei_event_t *event, void *u
 
 void add_child(ei_widget_t *widget, ei_widget_t *child)
 {
-        // if (widget->children_tail) {
-
-        // }
-        // else {
-        //         toplevel->children_head = toplevel_title;
-        //         toplevel->children_tail = toplevel_title;
-        // }
+        if (widget) {
+                ei_widget_t *tail = widget->children_tail;
+                if (tail) {
+                        tail->next_sibling = child;
+                }
+                else {
+                        widget->children_head = child;
+                        widget->children_tail = child;
+                }
+        }
 }
 
 /**
@@ -536,11 +532,40 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                         toplevel->min_size = *min_size;
                 }
 
+                ei_widget_t *toplevel_title = ei_widget_create("frame", widget);
+                ei_widget_t *square_widget = ei_widget_create("frame", widget);
+
                 // add_child(toplevel, toplevel_title);
                 // add_child(toplevel, square_widget);
 
-                // ei_bind(ei_ev_mouse_buttondown, toplevel_title, NULL, mv_handle_button_press, NULL);
-                // ei_bind(ei_ev_mouse_buttondown, square_widget, NULL, resize_handle_button_press, NULL);
+                ei_size_t       frame_size              = {300,30};
+                int             frame_x                 = 10;
+                int             frame_y                 = 10;
+                ei_color_t      frame_color             = {0xFF, 0, 0, 0xff};
+                ei_relief_t     frame_relief            = ei_relief_raised;
+                int             frame_border_width      = 6;
+
+                ei_frame_configure(toplevel_title, &frame_size, &frame_color,
+                                &frame_border_width, &frame_relief, NULL, NULL, NULL, NULL,
+                                NULL, NULL, NULL);
+
+                ei_place(toplevel_title, NULL, &frame_x, &frame_y, NULL, NULL, NULL, NULL, NULL, NULL);
+
+                frame_y = 50;
+                frame_color.red = 0;
+                frame_color.green = 255;
+                ei_frame_configure(square_widget, &frame_size, &frame_color,
+                                &frame_border_width, &frame_relief, NULL, NULL, NULL, NULL,
+                                NULL, NULL, NULL);
+
+                ei_place(square_widget, NULL, &frame_x, &frame_y, NULL, NULL, NULL, NULL, NULL, NULL);
+
+
+                ei_bind(ei_ev_mouse_buttondown, toplevel_title, NULL, mv_handle_button_press, NULL);
+                ei_bind(ei_ev_mouse_buttonup, toplevel_title, NULL, mv_handle_button_release, NULL);
+
+                ei_bind(ei_ev_mouse_buttondown, square_widget, NULL, resize_handle_button_press, NULL);
+                ei_bind(ei_ev_mouse_buttonup, square_widget, NULL, resize_handle_button_release, NULL);
         }
 }
 

@@ -90,19 +90,19 @@ void ei_unbind(ei_eventtype_t eventtype,
                 if (list) {
                         ei_linked_elem_t *link = list->head;
                         ei_binding_t *binding = NULL;
-                        bool found = false;
 
-                        while (link && !found) {
+                        /* Unbind all links */
+                        while (link) {
                                 binding = (ei_binding_t*)link->elem;
 
                                 if (binding) {
-                                        if (    widget == binding->widget
-                                                && (binding->tag && !strcmp(tag, binding->tag))
-                                                && callback == binding->callback
-                                                && user_param == binding->user_param
+                                        if (    (widget == binding->widget)
+                                                && ((tag == binding->tag) || (binding->tag && !strcmp(tag, binding->tag)))
+                                                && (callback == binding->callback)
+                                                && (user_param == binding->user_param)
                                                 ) {
-                                                found = true;
 
+                                                printf("Unbind link %x !\n", link);
                                                 ei_linkedlist_pop_link(list, link, true);
                                         }
                                 }
@@ -111,6 +111,8 @@ void ei_unbind(ei_eventtype_t eventtype,
                         }
                 }
         }
+
+        printf("ei_unbind END\n");
 }
 
 void ei_event_process(ei_event_t *event)

@@ -71,6 +71,7 @@ static inline tile_t* tile_at(puzzle_t* puzzle, ei_point_t position)
 
 ei_bool_t handle_tile_press(ei_widget_t* widget, ei_event_t* event, void* user_param)
 {
+
 	tile_t*		tile		= (tile_t*)user_param;
 	puzzle_t*	puzzle		= tile->puzzle;
 	ei_point_t	offsets[]	= {{0, -1}, {-1, 0}, {1, 0}, {0, 1}};
@@ -140,7 +141,7 @@ void create_puzzle_window(char* image_filename)
 
 	border_width	= 2;
 	image_rect_size	= ei_size_sub(tile_size, ei_size(2*border_width, 2*border_width));
-
+/*
 	for (y = 0; y < n.height; y++) {
 		for (x = 0; x < n.width; x++) {
 			current_position	= ei_point(x, y);
@@ -164,7 +165,7 @@ void create_puzzle_window(char* image_filename)
 
 			puzzle->current[index_at(puzzle, current_position)] = tile;
 		}
-	}
+	}*/
 }
 
 
@@ -192,7 +193,7 @@ ei_bool_t handle_keydown(ei_widget_t* widget, ei_event_t* event, void* user_para
 
 int ei_main(int argc, char* argv[])
 {
-	ei_size_t	root_window_size		= { 1024, 768 };
+	ei_size_t	root_window_size		= { 1024, 600 };
 	ei_color_t	root_bgcol			= { 0x52, 0x7f, 0xb4, 0xff };
 	ei_bool_t	fullscreen			= EI_FALSE;
 
