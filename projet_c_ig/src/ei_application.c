@@ -27,29 +27,43 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
 
         ei_anchor_t anc = ei_anc_northwest;
 
-        int w_w;
-        int w_h;
+        // Taille parent , ancienne taille widget
+        int p_w = widget->parent->content_rect->size.width;
+        int p_h = widget->parent->content_rect->size.height;
+        int w = widget->screen_location.size.width;
+        int h = widget->screen_location.size.height;
+
+        // Nouvelles tailles
+        int* a_w;
+        int* a_h;
+        float* rel_w;
+        float* rel_h;
 
         // Taille du widget
-        w_w = widget->screen_location.size.width;
-        w_h = widget->screen_location.size.height;
-        w_w = w_w + add_size.width;
-        w_h = w_h + add_size.height;
-
+        h = widget->screen_location.size.height;
+        // Calcul de la taille absolue du widget
+        *a_w = w + add_size.width;
+        *a_h = h + add_size.height;
+        *rel_w = (float)*a_w / (float)p_w;
+        *rel_h = (float)*a_h / (float)p_h;
+        // On recupere les parametres
         ei_placer_param_t param;
-        param = ei_get_placer_param(widget);
+        param = (ei_placer_param_t)widget->geom_params;
+        // On distingue le cas ou le widget est absolu et le cas
+        // relatif
+        if (param.w)
+                rel_w = NULL;
+        else
+                a_w = NULL;
 
+        if (param.h)
+                rel_h = NULL;
+        else
+                a_h = NULL;
         // Placement du widget pere
-        ei_place(widget, param.anc, param.x, param.y, &w_w, &w_h, param.rel_x, param.rel_y, NULL,
-                        NULL);
-
-        // Parcours et redimensionnement des enfants
-        ei_widget_t *current;
-        current = widget->children_head;
-        while(current){
-                resize(current, add_size);
-                current = current->next_sibling;
-        }
+        // La taille devient automatiquement absolue
+        ei_place(widget, param.anc, param.x, param.y, a_w, a_h, rel_x, rel_y, rel_w,
+                        rel_h);
 }
 
 /* Fonction de mouvement
