@@ -22,6 +22,10 @@
 static ei_widgetclass_t *frame_table = NULL;
 static ei_widgetclass_t *button_table = NULL;
 static ei_widgetclass_t *toplevel_table = NULL;
+
+static ei_widgetclass_t *toplevel_title_table = NULL;
+static ei_widgetclass_t *toplevel_close_table = NULL;
+static ei_widgetclass_t *toplevel_resize_table = NULL;
 // Pour gérer les classes supplémentaires, on utilise l'attribut next
 static ei_widgetclass_t *others_table = NULL;
 
@@ -73,6 +77,15 @@ ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
         else if (!strcmp(name,"toplevel")){
                 return toplevel_table;
         }
+        else if (!strcmp(name, "tl_title")){
+                return toplevel_title_table;
+        }
+        else if (!strcmp(name, "tl_close")){
+                return toplevel_close_table;
+        }
+        else if (!strcmp(name, "tl_resize")){
+                return toplevel_resize_table;
+        }
         else{
                 return NULL;
         }
@@ -90,7 +103,7 @@ void pick_surface_draw(ei_surface_t pick_surface, ei_widget_t *widget, ei_rect_t
         hw_surface_unlock(pick_surface);        
 }
 
-
+/******************************************************************************/
 /* Frame */
 
 /* Allocation */
@@ -236,7 +249,9 @@ void    ei_frame_register_class ()
         frame_table->next = NULL;
 }
 
-/*************************************** button ***************/
+/******************************************************************************/
+/* Boutons */
+
 // pointeur generique
 void *button_alloc()
 {
@@ -377,7 +392,7 @@ void    ei_button_register_class()
 }
 
 
-
+/********************************************************************************/
 /*************************** toplevel **************/
 // pointeur generique
 void *toplevel_alloc()
@@ -503,3 +518,88 @@ void    ei_toplevel_register_class()
 
         toplevel_table->next = NULL;
 }
+
+
+/******************************************************************************/
+/*************************************** Fonctions du toplevel ***************/
+
+
+
+void *toplevel_title_alloc()
+{
+        ei_toplevel_title_t *title = CALLOC_TYPE(ei_toplevel_title_t);
+        assert(title);
+
+        return title;
+}
+
+void toplevel_title_release(ei_widget_t *widget)
+{
+        SAFE_FREE(widget);
+}
+
+
+// On se contente de remplir le fond
+void toplevel_title_draw(ei_widget_t *widget, ei_surface_t surface,
+                ei_surface_t pick_surface, ei_rect_t *clipper)
+{
+        ei_toplevel_title_t *title;
+        title = (ei_toplevel_title_t*)widget;
+
+        if (surface){
+                // lock de la surface
+                hw_surface_lock(surface);
+                ei_linked_point_t lp =
+                        ei_rect_to_points(title->widget.screen_location);
+                ei_draw_polygon(surface, &lp, title->color, clipper);
+                //unlock de la surface
+                hw_surface_unlock(surface);
+        }
+        if (pick_surface){
+                /* Dessin de la surface de picking */
+                pick_surface_draw(pick_surface, widget, clipper);
+        }
+}
+
+void toplevel_title_setdefaults(struct ei_widget_t* widget)
+{
+        // on commence par effectuer un recast
+        ei_toplevel_title_t *title;
+        title = (ei_toplevel_title_t*)widget;
+        assert(title);
+        ei_color_t c = {0x33, 0x66, 0xFF, 0xFF};
+        title->color = c;
+        title->toplevel = NULL;
+}
+
+void toplevel_title_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
+{
+
+        widget->screen_location = rect;
+        ei_rect_t *content_rect;
+        content_rect = malloc(sizeof(ei_rect_t));
+        *content_rect = rect;
+        widget->content_rect = content_rect;
+}
+
+/**
+ * \brief       Registers the "toplevel" widget class in the program. This must be called only
+ *              once before widgets of the class "toplevel" can be created and configured with
+ *              \ref ei_toplevel_configure.
+ */
+void    ei_toplevel_title_register_class()
+{
+        // Allocation
+        toplevel_title_table = CALLOC_TYPE(ei_widgetclass_t);
+        assert(toplevel_title_table);
+
+        toplevel_title_table->allocfunc= toplevel_title_alloc;
+        toplevel_title_table->drawfunc = toplevel_title_draw;
+        toplevel_title_table->releasefunc = toplevel_title_release;
+        toplevel_title_table->setdefaultsfunc = toplevel_title_setdefaults;
+        toplevel_title_table->geomnotifyfunc = toplevel_title_geomnotify;
+        strcpy(toplevel_title_table->name, "toplevel");
+        toplevel_title_table->next = NULL;
+}
+
+
