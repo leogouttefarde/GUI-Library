@@ -229,7 +229,7 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
 
 		ei_rect_t rectangle_interieur=reduction(rectangle,marge);
 		if (rayon!=0) Liste=ei_button_rounded_frame(rectangle_interieur, rayon -marge, 0);
-		else Liste=Liste=ei_button_rounded_frame(rectangle_interieur, 0, 0);
+		else Liste=ei_button_rounded_frame(rectangle_interieur, 0, 0);
 		ei_draw_polygon(window, Liste, couleur, clipper);
 
 

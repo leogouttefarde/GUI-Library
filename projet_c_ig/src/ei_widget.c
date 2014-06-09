@@ -14,6 +14,7 @@
 #include "ei_core.h"
 #include "ei_common.h"
 #include "ei_event.h"
+#include "ei_geometrymanager.h"
 
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
 static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0xFF};
@@ -375,6 +376,51 @@ void    ei_button_configure (ei_widget_t*               widget,
                         button->user_param = *user_param;
                 }
         }
+}
+
+
+ei_bool_t resize_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_param);
+
+ei_bool_t resize_handle_button_release(ei_widget_t *widget, ei_event_t *event, void *user_param)
+{
+        assert(widget);
+        if (widget) {
+                ei_unbind(ei_ev_mouse_move, widget, NULL, resize_handle_motion, NULL);
+                ei_unbind(ei_ev_mouse_buttonup, widget, NULL, resize_handle_button_release, NULL);
+        }
+
+        return EI_FALSE;
+}
+
+ei_bool_t resize_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_param)
+{
+        assert(widget);
+        assert(event);
+        if (widget && event) {
+                int x = event->param.mouse.where.x;
+                int y = event->param.mouse.where.y;
+
+                //ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
+                printf("resize!  x %d \t y %d\n", x, y);
+        }
+
+        return EI_FALSE;
+}
+
+ei_bool_t resize_handle_button_press(ei_widget_t *widget, ei_event_t *event, void *user_param)
+{
+        assert(widget);
+        if (widget) {
+                ei_widget_t *square_widget = widget->parent;
+                assert(square_widget);
+
+                if (square_widget) {
+                        ei_bind(ei_ev_mouse_move, square_widget, NULL, resize_handle_motion, NULL);
+                        ei_bind(ei_ev_mouse_buttonup, square_widget, NULL, resize_handle_button_release, NULL);
+                }
+        }
+
+        return EI_FALSE;
 }
 
 
