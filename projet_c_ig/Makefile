@@ -68,7 +68,7 @@ else
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-				minimal frame button hello_world_absolute hello_world_relative puzzle
+				minimal frame button hello_world_absolute hello_world_relative puzzle move
 all : ${TARGETS}
 
 
@@ -122,6 +122,14 @@ puzzle : ${OBJDIR}/puzzle.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/puzzle.c -o ${OBJDIR}/puzzle.o
+
+# move_resize
+
+move : ${OBJDIR}/move_resize.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o move ${OBJDIR}/move_resize.o ${LIBEI} ${LIBS}
+
+${OBJDIR}/move_resize.o : ${TESTS}/move_resize.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/move_resize.c -o ${OBJDIR}/move_resize.o
 
 ########## Tests personnels
 
