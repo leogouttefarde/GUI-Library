@@ -137,7 +137,7 @@ void  ei_register_placer_manager()
         ei_geometrymanager_register(placer);
 }
 
-// A placer dans widgettypes
+V// A placer dans widgettypes
 typedef struct {
         ei_anchor_t* anc;
         int* x;

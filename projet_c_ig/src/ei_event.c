@@ -88,7 +88,7 @@ void ei_unbind(ei_eventtype_t eventtype,
                 ei_linkedlist_t *list = &ei_events[eventtype];
 
                 if (list) {
-                        ei_linked_elem_t *link = list->head, *prev = NULL;
+                        ei_linked_elem_t *link = list->head;
                         ei_binding_t *binding = NULL;
                         bool found = false;
 

@@ -25,7 +25,7 @@ static ei_bool_t quit_request = EI_FALSE;
  * Conserve les proportions des fils */
 void resize(ei_widget_t *widget, ei_size_t add_size){
 
-        ei_anchor_t anc = ei_anc_northwest;
+        //ei_anchor_t anc = ei_anc_northwest;
 
         // Taille parent , ancienne taille widget
         int p_w = widget->parent->content_rect->size.width;
@@ -40,7 +40,6 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
         float* rel_h;
 
         // Taille du widget
-        h = widget->screen_location.size.height;
         // Calcul de la taille absolue du widget
         *a_w = w + add_size.width;
         *a_h = h + add_size.height;
@@ -64,6 +63,7 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
         // La taille devient automatiquement absolue
         ei_place(widget, param.anc, param.x, param.y, a_w, a_h, rel_x, rel_y, rel_w,
                         rel_h);
+
 }
 
 /* Fonction de mouvement

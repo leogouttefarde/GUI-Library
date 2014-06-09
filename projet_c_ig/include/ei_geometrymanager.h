@@ -57,13 +57,6 @@ typedef struct ei_geometry_param_t {
 	ei_geometrymanager_t*			manager;	/**< Points to the geometry manager's structure 	*/
 } ei_geometry_param_t;
 
-/**
- * \brief 	Placer geometry manager
- */
-typedef struct ei_placer_param_t {
-	ei_geometry_param_t geom;	/* ei_geometry_param_t child */
-} ei_placer_param_t;
-
 
 
 
