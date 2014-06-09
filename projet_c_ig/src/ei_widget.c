@@ -401,10 +401,21 @@ ei_bool_t resize_handle_motion(ei_widget_t *widget, ei_event_t *event, void *use
                 int x = event->param.mouse.where.x;
                 int y = event->param.mouse.where.y;
 
-                //ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
-                printf("resize!  x %d \t y %d\n", x, y);
+                ei_widget_t *toplevel = widget->parent;
+                assert(toplevel);
 
-                //resize(ei_widget_t *widget, ei_size_t add_size);
+                ei_placer_param_t *params = widget->geom_params;
+                assert(params);
+
+                if (toplevel && params && params->x && params->y) {
+                        //ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
+                        printf("resize!  x %d \t y %d\n", x, y);
+
+
+                        ei_size_t add_size = { x - *params->x , y - *params->y };
+
+                        //resize(toplevel, add_size);
+                }
         }
 
         return EI_FALSE;
@@ -446,8 +457,20 @@ ei_bool_t mv_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_pa
 
                 //ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
 
-                //move(ei_widget_t *widget, ei_size_t dist);
-                printf("move!  x %d \t y %d\n", x, y);
+                ei_widget_t *toplevel = widget->parent;
+                assert(toplevel);
+
+                ei_placer_param_t *params = widget->geom_params;
+                assert(params);
+
+                if (toplevel && params && params->x && params->y) {
+                        ei_size_t dist = { x - *params->x , y - *params->y };
+
+                        //move(toplevel, dist);
+
+
+                        printf("move!  x %d \t y %d\n", x, y);
+                }
         }
 
         return EI_FALSE;
