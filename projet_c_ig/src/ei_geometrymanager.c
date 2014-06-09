@@ -140,12 +140,28 @@ void  ei_register_placer_manager()
 
 /* Fonction de redimensionnement
  * Conserve les proportions des fils */
-void resize(ei_widget_t *widget){
+void resize(ei_widget_t *widget, ei_size_t new_size){
+
+        ei_point_t tmpp;
+        ei_size_t tmps;
+
         // On suppose que le toplevel vient d'être redimensionné
         // On redessine ses fils en proportion
         ei_widget_t *current;
         current = widget->children_head;
 
+        // Position top_left et taille du pere
+        tmpp = widget->content_rect->top_left;
+        tmps = widget->content_rect->size;
+        float p_x = (float)tmpp.x;
+        float p_y = (float)tmpp.y;
+        float p_w = (float)tmps.width;
+        float p_h = (float)tmps.height;
+        ei_anchor_t anc = ei_anc_northwest;
+
+        // On redimensionne le pere
+        ei_place(widget, &anc, NULL, NULL, &new_size.width, &new_size.height, NULL,
+                        NULL, NULL, NULL);
         // Parcours des enfants et redessin
         while(current){
                 // Position  top_left et taille du widget
@@ -156,20 +172,12 @@ void resize(ei_widget_t *widget){
                 float w_w = (float)tmps.width;
                 float w_h = (float)tmps.height;
 
-                // Position top_left et taille du pere
-                tmpp = widget->content_rect->top_left;
-                tmps = widget->content_rect->size;
-                float p_x = (float)tmpp.x;
-                float p_y = (float)tmpp.y;
-                float p_w = (float)tmps.width;
-                float p_h = (float)tmps.height;
 
                 // Calculs des proportions
                 float rel_x = (p_x + w_x) / (p_x + p_w - 1);
                 float rel_y = (p_y + w_y) / (p_y + p_h -1);
                 float rel_w = w_w / p_w;
                 float rel_h = w_h / p_h;
-                ei_anchor_t anc = ei_anc_northwest;
 
                 // Enfin on replace le fils
                 ei_place(current, &anc, NULL, NULL, NULL, NULL, &rel_x, &rel_y, &rel_w, &rel_h);
