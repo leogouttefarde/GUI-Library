@@ -104,6 +104,12 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 /*  Gere le clipping */
 void ei_place_runfunc(struct ei_widget_t*       widget)
 {
+        // Placement du widget
+        ei_placer_param_t *param;
+        param = (ei_placer_param_t*)widget->geom_params;
+        ei_place(widget, param->anc, param->x, param->y, param->w, param->h,
+                        param->rel_x, param->rel_y, param->rel_w, param->rel_h);
+        //
         ei_rect_t *clipper;
         if (widget->parent){
                 clipper = widget->parent->content_rect;  
