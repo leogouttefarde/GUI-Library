@@ -64,6 +64,7 @@ void ei_linkedlist_pop_link(ei_linkedlist_t *list, ei_linked_elem_t *link, ei_bo
 
                         // Check
                         if (list->tail == link) {
+                                prev->next = NULL;
                                 list->tail = prev;
                         }
                 }
@@ -72,6 +73,12 @@ void ei_linkedlist_pop_link(ei_linkedlist_t *list, ei_linked_elem_t *link, ei_bo
                 else {
                         list->head = NULL;
                         list->tail = NULL;
+                }
+
+                // If unique element, remove all links
+                if (list->head && (list->head == list->tail)) {
+                        list->head->next = NULL;
+                        list->head->prev = NULL;
                 }
 
                 if (free_elem)
