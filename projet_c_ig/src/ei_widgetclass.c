@@ -40,14 +40,14 @@ void ei_widgetclass_register    (ei_widgetclass_t* widgetclass)
 
         // Faux
         /*if (others_table){
-                ei_widgetclass_t *tmp = others_table->next;
-                others_table = widgetclass;
-                widgetclass->next = tmp;
-        }
-        else {
-                others_table = widgetclass;
-                others_table->next = NULL;
-        }*/
+          ei_widgetclass_t *tmp = others_table->next;
+          others_table = widgetclass;
+          widgetclass->next = tmp;
+          }
+          else {
+          others_table = widgetclass;
+          others_table->next = NULL;
+          }*/
 }
 
 
@@ -337,6 +337,14 @@ void toplevel_release(ei_widget_t *widget)
         SAFE_FREE(widget);
 }
 
+
+
+
+
+
+
+
+
 void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
                 ei_surface_t pick_surface, ei_rect_t *clipper)
 {
@@ -350,9 +358,9 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
-
-                ei_fill(surface, &toplevel->color,clipper);
-
+                ei_linked_point_t lp =
+                        ei_rect_to_points(toplevel->widget.screen_location);
+                ei_draw_polygon(surface, &lp, toplevel->color, clipper);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }

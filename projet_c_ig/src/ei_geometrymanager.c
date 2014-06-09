@@ -138,6 +138,52 @@ void  ei_register_placer_manager()
 }
 
 
+/* Fonction de redimensionnement
+ * Conserve les proportions des fils */
+void resize(ei_widget_t *widget, ei_size_t new_size){
+
+        ei_point_t tmpp;
+        ei_size_t tmps;
+
+        // On suppose que le toplevel vient d'être redimensionné
+        // On redessine ses fils en proportion
+        ei_widget_t *current;
+        current = widget->children_head;
+
+        // Position top_left et taille du pere
+        tmpp = widget->content_rect->top_left;
+        tmps = widget->content_rect->size;
+        float p_x = (float)tmpp.x;
+        float p_y = (float)tmpp.y;
+        float p_w = (float)tmps.width;
+        float p_h = (float)tmps.height;
+        ei_anchor_t anc = ei_anc_northwest;
+
+        // On redimensionne le pere
+        ei_place(widget, &anc, NULL, NULL, &new_size.width, &new_size.height, NULL,
+                        NULL, NULL, NULL);
+        // Parcours des enfants et redessin
+        while(current){
+                // Position  top_left et taille du widget
+                ei_point_t tmpp = current->screen_location.top_left;
+                ei_size_t tmps = current->screen_location.size;
+                float w_x = (float)tmpp.x;
+                float w_y = (float)tmpp.y;
+                float w_w = (float)tmps.width;
+                float w_h = (float)tmps.height;
+
+
+                // Calculs des proportions
+                float rel_x = (p_x + w_x) / (p_x + p_w - 1);
+                float rel_y = (p_y + w_y) / (p_y + p_h -1);
+                float rel_w = w_w / p_w;
+                float rel_h = w_h / p_h;
+
+                // Enfin on replace le fils
+                ei_place(current, &anc, NULL, NULL, NULL, NULL, &rel_x, &rel_y, &rel_w, &rel_h);
+                current = current->next_sibling;
+        }
+}
 
 /**
  * \brief       Configures the geometry of a widget using the "placer" geometry manager.
@@ -348,14 +394,6 @@ void ei_place(ei_widget_t *widget,
                                         y1 = y_anc;
                                         y2 = y_anc + h -1 ;
 
-                                        // Si le widget deborde :
-                                        if (!(x1 >= xmin && x2 <= xmax)){
-                                                x1 = xmin;
-                                                x2 = xmax;
-                                        }
-                                        if (!(y1 >= ymin && y2 <= ymax)){
-                                                y2 = ymax;
-                                        }
                                         break;  ///< Anchor on the top side, centered horizontally.
                                 case ei_anc_northeast :
                                         x1 = x_anc - w + 1;
@@ -363,13 +401,6 @@ void ei_place(ei_widget_t *widget,
                                         y1 = y_anc;
                                         y2 = y_anc + h - 1;
 
-                                        // Si le widget deborde :
-                                        if (!(x1 >= xmin && x2 <= xmax)){
-                                                x1 = xmin;
-                                        }
-                                        if (!(y1 >= ymin && y2 <= ymax)){
-                                                y2 = ymax;
-                                        }
                                         break;  ///< Anchor on the top-right corner.
                                 case ei_anc_east :
 
@@ -378,14 +409,6 @@ void ei_place(ei_widget_t *widget,
                                         y1 = y_anc - (h / 2) +1;
                                         y2 = y_anc + (h / 2);
 
-                                        // Si le widget deborde :
-                                        if (!(x1 >= xmin && x2 <= xmax)){
-                                                x2 = xmax;
-                                        }
-                                        if (!(y1 >= ymin && y2 <= ymax)){
-                                                y1 = ymin;
-                                                y2 = ymax;
-                                        }
                                         break;          ///< Anchor on the right side, centered vertically.
                                 case ei_anc_southeast:
                                         x1 = x_anc - w + 1;
@@ -393,13 +416,6 @@ void ei_place(ei_widget_t *widget,
                                         y1 = y_anc - h + 1;
                                         y2 = y_anc;
 
-                                        // Si le widget deborde :
-                                        if (!(x1 >= xmin && x2 <= xmax)){
-                                                x1 = xmin;
-                                        }
-                                        if (!(y1 >= ymin && y2 <= ymax)){
-                                                y1 = ymin;
-                                        }
                                         break;  ///< Anchor on the bottom-right corner.
                                 case ei_anc_south:
 
@@ -408,14 +424,6 @@ void ei_place(ei_widget_t *widget,
                                         y1 = y_anc - h + 1;
                                         y2 = y_anc;
 
-                                        // Si le widget deborde :
-                                        if (!(x1 >= xmin && x2 <= xmax)){
-                                                x1 = xmin;
-                                                x2 = xmax;
-                                        }
-                                        if (!(y1 >= ymin && y2 <= ymax)){
-                                                y1 = ymin;
-                                        }
                                         break;          ///< Anchor on the bottom side, centered horizontally.
                                 case ei_anc_southwest:  
                                         x1 = x_anc - w + 1;
@@ -423,13 +431,6 @@ void ei_place(ei_widget_t *widget,
                                         y1 = y_anc - h + 1;
                                         y2 = y_anc;
 
-                                        // Si le widget deborde :
-                                        if (!(x1 >= xmin && x2 <= xmax)){
-                                                x1 = xmin;
-                                        }
-                                        if (!(y1 >= ymin && y2 <= ymax)){
-                                                y1 = ymin;
-                                        }
                                         break;  ///< Anchor on the bottom-left corner.
                                 case ei_anc_west:
                                         x1 = x_anc;
@@ -437,14 +438,6 @@ void ei_place(ei_widget_t *widget,
                                         y1 = y_anc - (h / 2) + 1;
                                         y2 = y_anc + (h / 2);
 
-                                        // Si le widget deborde :
-                                        if (!(x1 >= xmin && x2 <= xmax)){
-                                                x2 = xmax;
-                                        }
-                                        if (!(y1 >= ymin && y2 <= ymax)){
-                                                y1 = ymin;
-                                                y2 = ymin;
-                                        }
                                         break;          ///< Anchor on the left side, centered vertically.
                                 case ei_anc_northwest: 
                                         x1 = x_anc;
@@ -526,188 +519,3 @@ void ei_place(ei_widget_t *widget,
                 }
         }
 }
-
-/*
-// Booleen pour quitter l'affichage si le widget n'est pas dans
-// son parent
-bool keep = true;
-// Booleen permettant de donner priorité aux coordonnées
-// absolues
-bool size_abs = false;
-bool pos_abs = false;
-
-int xmin;
-int xmax;
-int ymin;
-int ymax;
-
-ei_rect_t parent_rect;
-// On recupere le rectangle correspondant au parent
-// C'est le champ content_rect
-if (widget->parent){
-if (widget->parent->content_rect) 
-parent_rect = *(widget->parent->content_rect);
-else
-parent_rect = hw_surface_get_rect(ei_get_root_surface());
-
-
-xmin = parent_rect.top_left.x;
-ymin = parent_rect.top_left.y;
-xmax = xmin + parent_rect.size.width - 1;
-ymax = ymin + parent_rect.size.height - 1;
-
-if (x && keep){
-// les coordonnées sont absolus (= relatif au
-// root)
-// le placement est relatif au parent
-if(*x + xmin <= xmax)
-widget->screen_location.top_left.x =
-xmin + *x;
-else
-keep = false;
-
-pos_abs = true;
-}
-if (y && keep) {
-if (ymin + *y <= ymax)
-widget->screen_location.top_left.y = ymin +*y ;
-else
-keep = false;
-
-pos_abs = true;
-}
-
-if (rel_x && keep & !pos_abs){
-if (*rel_x < 0. || *rel_x > 1.){
-keep = false;
-}
-else{
-int rx = xmin;
-rx = rx +
-(int)(*rel_x * ((float)xmax - (float)xmin));
-widget->screen_location.top_left.x = rx;
-}
-
-}
-
-if(rel_y && keep & !pos_abs){
-if (*rel_y < 0. || *rel_y > 1.){
-keep = false;
-}
-else{
-int ry = ymin;
-ry = ry +
-(int)(*rel_y * ((float)ymax - (float)ymin));
-widget->screen_location.top_left.y = ry;
-}
-}
-
-// Taille par defaut
-// Priorité : taille fournie en argument > requested >
-// defaut
-widget->screen_location.size = widget->requested_size;
-int w;
-int h;
-w= widget->requested_size.width;
-h = widget->requested_size.height;
-
-if (width && keep) {
-        w = *width;
-        size_abs = true;
-}
-
-if(height && keep){
-        h = *height;
-        size_abs = true;
-}
-
-if(rel_width && keep && !size_abs) {
-        if (*rel_width < 0. || *rel_width > 1.){
-                keep = false;
-        }
-        else{
-                int rw = parent_rect.size.width;
-                rw = (int)((float)rw * *rel_width);
-                w = rw;
-        }
-
-}
-
-if(rel_height && keep && !size_abs) {
-        if (*rel_height < 0. || *rel_height > 1.){
-                keep = false;
-        }
-        else{
-                int rh = parent_rect.size.height;
-                rh = (int)((float)rh * *rel_height);
-                h = rh;
-        }
-}
-
-
-// On verifie que la taille n'est pas trop
-// grande
-int x = widget->screen_location.top_left.x;
-int y = widget->screen_location.top_left.y;
-if (xmin + x + w -1 <= xmax)
-        widget->screen_location.size.width = w;
-        else
-        widget->screen_location.size.width =
-        (xmax - xmin - x +1);
-
-if (ymin + y + h -1 <= ymax)
-        widget->screen_location.size.height = h;
-        else
-        widget->screen_location.size.height =
-        (ymax - ymin - y +1);
-
-        if(!keep){
-                // Le point top_left n'est pas visible,
-                // on affiche pas le widget
-                widget->screen_location.size = ei_size(0,0);
-                widget->content_rect = &widget->screen_location;
-        }
-else {
-        // Gestion de la bordure du widget frame :
-        // le contenu doit etre a l'interieur
-        if(!strcmp(widget->wclass->name, "frame")){
-                ei_frame_t* frame = (ei_frame_t*)widget;
-                int bw = frame->border_width;
-                ei_rect_t *content_rect;
-                content_rect = malloc(sizeof(ei_rect_t));
-                *content_rect = widget->screen_location;
-                content_rect->top_left.x =  content_rect->top_left.x +
-                        bw;
-
-                content_rect->top_left.y =  content_rect->top_left.y +
-                        bw;
-
-                content_rect->size.width =  content_rect->size.width +
-                        - 2*bw;
-                content_rect->size.height =  content_rect->size.height +
-                        -2*bw;
-                widget->content_rect = content_rect;
-        }
-}
-
-}
-// Cas du root dont on fixe la taille dans ei_app_create
-else{
-        if(x)
-                widget->screen_location.top_left.x = *x;
-
-        if(y)
-                widget->screen_location.top_left.y = *y;
-
-        if (width)
-                widget->requested_size.width = *width;
-
-        if (height)
-                widget->requested_size.height = *height;
-
-        widget->screen_location.size = widget->requested_size;
-        widget->content_rect = &widget->screen_location;
-}
-}*/
-
-
