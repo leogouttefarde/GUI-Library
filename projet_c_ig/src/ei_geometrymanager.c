@@ -291,7 +291,7 @@ void ei_place(ei_widget_t *widget,
                                 // Taille par defaut
                                 // Priorité : taille fournie en argument > requested >
                                 // defaut
-                                widget->screen_location.size = widget->requested_size;
+                                screen_location.size = widget->requested_size;
                                 int w;
                                 int h;
                                 bool size_abs = false;
