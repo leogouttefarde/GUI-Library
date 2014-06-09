@@ -19,6 +19,7 @@
 #include "ei_widgettypes.h"
 #include "ei_core.h"
 
+#include "ei_utils.h"
 static ei_bool_t quit_request = EI_FALSE;
 
 /* Fonction de redimensionnement
@@ -95,15 +96,31 @@ void move(ei_widget_t *widget, ei_size_t dist){
         ei_place(widget, &anc, &x, &y, NULL, NULL, NULL,
                         NULL, NULL, NULL);
 
-        // On deplace ses fils
-        ei_widget_t *current;
-        current = widget->children_head;
 
-        // Parcours des fils et des freres
-        /*while(current){
-                move(current, dist);
-                current = current->next_sibling;
-        }*/
+ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t
+                *event, void *user_param){
+        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+        toplevel->prec = event->param.mouse.where;
+        // On cherche si on a cliquer sur le titre, le resize, le close
+        // TODO
+        // SI TITRE   
+        // On bind ce widget, mouse_move et move
+        // TODO TODO TODO TOU
+        //  SI RESIZE
+        //  On bind mouse_move, resize, le widget
+        //  SI CLOSE
+        //  ???? plus tard
+
+        return EI_FALSE;
+}
+
+ei_bool_t toplevel_callback_move_move(ei_widget_t *widget, struct ei_event_t
+                *event, void *user_param){
+        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+        int w = event->param.mouse.where.x - toplevel->prec.x + 1;
+        int h = event->param.mouse.where.y - toplevel->prec.y + 1;
+        move(widget, ei_size(w,h));
+        return EI_FALSE;
 }
 
 // Peut-être pas dans le bon fichier
