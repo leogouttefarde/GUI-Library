@@ -61,8 +61,14 @@ void ei_bind(ei_eventtype_t eventtype,
                 binding->callback = callback;
                 binding->user_param = user_param;
 
-                if (widget == NULL)
-                        binding->tag = tag;
+                if ((widget == NULL) && tag) {
+                        const uint32_t size = strlen(tag) + 1;
+                        char *tag_copy = NULL;
+                        tag_copy = malloc(size);
+                        strncpy(tag_copy, tag, size);
+
+                        binding->tag = tag_copy;
+                }
 
                 ei_linkedlist_t *list = &ei_events[eventtype];
 
@@ -97,12 +103,18 @@ void ei_unbind(ei_eventtype_t eventtype,
 
                                 if (binding) {
                                         if (    (widget == binding->widget)
-                                                && ((tag == binding->tag) || (binding->tag && !strcmp(tag, binding->tag)))
+                                                && ((tag == NULL) || !strcmp(tag, binding->tag))
                                                 && (callback == binding->callback)
                                                 && (user_param == binding->user_param)
                                                 ) {
 
                                                 printf("Unbind link %x !\n", link);
+
+
+
+                                                if (binding->tag)
+                                                        SAFE_FREE(binding->tag);
+
                                                 ei_linkedlist_pop_link(list, link, true);
                                         }
                                 }
@@ -170,7 +182,7 @@ void ei_event_process(ei_event_t *event)
                                                 call = EI_TRUE, widget = selected;
 
                                         /* If selected widget is tagged */
-                                        else if (binding->tag) {
+                                        else if (binding->tag && selected->wclass) {
                                                 if (!strcmp(selected->wclass->name, binding->tag)) {
                                                         call = EI_TRUE, widget = selected;
                                                 }
