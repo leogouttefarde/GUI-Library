@@ -215,15 +215,51 @@ void ei_place(ei_widget_t *widget,
 
                 // Sauvegarde des paramètres
                 ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
-                param->anc = anchor;
-                param->x = x;
-                param->y = y;
-                param->rel_x = rel_x;
-                param->rel_y = rel_y;
-                param->w = width;
-                param->h = height;
-                param->rel_w = rel_width;
-                param->rel_h = rel_height;
+                param->x = malloc(sizeof(int));
+                param->y = malloc(sizeof(int));
+                param->rel_x = malloc(sizeof(float));
+                param->rel_y = malloc(sizeof(float));
+                param->w = malloc(sizeof(int));
+                param->h = malloc(sizeof(int));
+                param->rel_w = malloc(sizeof(float));
+                param->rel_h = malloc(sizeof(float));
+
+                if (anchor)
+                        *param->anc = *anchor;
+                else
+                        param->anc = NULL;
+                if (x)
+                        *param->x = *x;
+                else
+                        param->x = NULL;
+                if (y)
+                        *param->y = *y;
+                else
+                        param->y = NULL;
+                if (rel_x)
+                        *param->rel_x = *rel_x;
+                else
+                        param->rel_x = NULL;
+                if (rel_y)
+                        *param->rel_y = *rel_y;
+                else
+                        param->rel_y = NULL;
+                if(width)
+                        *param->w = *width;
+                else
+                        param->w = NULL;
+                if(height)
+                        *param->h = *height;
+                else
+                        param->h = NULL;
+                if (rel_width)
+                        *param->rel_w = *rel_width;
+                else
+                        param->rel_w = NULL;
+                if (rel_height)
+                        *param->rel_h = *rel_height;
+                else
+                        param->rel_h = NULL;
 
 
                 // Placement
