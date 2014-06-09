@@ -184,10 +184,10 @@ void frame_setdefaults(struct ei_widget_t* widget)
 // PRINCIPE : déduit le content_rect de la screen_location
 void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-        widget->screen_location = rect;
         ei_rect_t* content_rect;
         content_rect = malloc(sizeof(ei_rect_t));
         if (rect.size.width !=0 && rect.size.height != 0){
+                widget->screen_location = rect;
                 // La screen_location est copiée tel quel
                 ei_frame_t *frame = (ei_frame_t*)widget;
                 // Gestion des bordures pour le content_rect
@@ -205,7 +205,8 @@ void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                         -2*bw;
         }
         else{
-                content_rect = NULL;
+                widget->screen_location = ei_rect_zero();
+                content_rect = &widget->screen_location;
         }
         widget->content_rect = content_rect;
 }
@@ -330,10 +331,10 @@ void button_setdefaults(struct ei_widget_t* widget)
 
 void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-        widget->screen_location = rect;
         ei_rect_t* content_rect;
         content_rect = malloc(sizeof(ei_rect_t));
         if (rect.size.width !=0 && rect.size.height != 0){
+                widget->screen_location = rect;
                 ei_button_t *button = (ei_button_t*)widget;
                 // Gestion des bordures pour le content_rect
                 int bw = button->border_width;
@@ -350,7 +351,8 @@ void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                         -2*bw;
         }
         else{
-                content_rect = NULL;
+                widget->screen_location = ei_rect_zero();
+                content_rect = &widget->screen_location;
         }
         widget->content_rect = content_rect;
 }
@@ -455,9 +457,9 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
 
         ei_rect_t *content_rect;
-        widget->screen_location = rect;
         content_rect = malloc(sizeof(ei_rect_t));
         if (rect.size.width != 0 && rect.size.height !=0){
+                widget->screen_location = rect;
                 // La screen_location est copiée tel quel
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
                 // Gestion des bordures pour le content_rect
@@ -475,7 +477,8 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                         -2*bw;
         }
         else{
-                content_rect = NULL;
+                widget->screen_location = ei_rect_zero();
+                content_rect = &widget->screen_location;
         }
         widget->content_rect = content_rect;
 }
