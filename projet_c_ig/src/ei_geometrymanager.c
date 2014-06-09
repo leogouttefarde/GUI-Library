@@ -215,14 +215,17 @@ void ei_place(ei_widget_t *widget,
 
                 // Sauvegarde des paramètres
                 ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
-                param->x = malloc(sizeof(int));
-                param->y = malloc(sizeof(int));
-                param->rel_x = malloc(sizeof(float));
-                param->rel_y = malloc(sizeof(float));
-                param->w = malloc(sizeof(int));
-                param->h = malloc(sizeof(int));
-                param->rel_w = malloc(sizeof(float));
-                param->rel_h = malloc(sizeof(float));
+                assert(param);
+
+                param->x = CALLOC_TYPE(int);
+                param->y = CALLOC_TYPE(int);
+                param->rel_x = CALLOC_TYPE(float);
+                param->rel_y = CALLOC_TYPE(float);
+                param->w = CALLOC_TYPE(int);
+                param->h = CALLOC_TYPE(int);
+                param->rel_w = CALLOC_TYPE(float);
+                param->rel_h = CALLOC_TYPE(float);
+                param->anc = CALLOC_TYPE(ei_anchor_t);
 
                 if (anchor)
                         *param->anc = *anchor;

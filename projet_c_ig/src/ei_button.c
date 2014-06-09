@@ -142,9 +142,9 @@ void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
 	else {
 		if (frame->img) {
 			if (frame->img_rect) aff_img(window,rectangle_red,frame->img,frame->img_rect,frame->img_anchor);
-			else printf("frame->img_rect=NULL\n");
+			//else printf("frame->img_rect=NULL\n");
 		}
-		else printf("frame->img=NULL\n");
+		//else printf("frame->img=NULL\n");
 	}
 }
 

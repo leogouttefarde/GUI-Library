@@ -100,10 +100,10 @@ void move(ei_widget_t *widget, ei_size_t dist){
         current = widget->children_head;
 
         // Parcours des fils et des freres
-        while(current){
+        /*while(current){
                 move(current, dist);
                 current = current->next_sibling;
-        }
+        }*/
 }
 
 // Peut-être pas dans le bon fichier

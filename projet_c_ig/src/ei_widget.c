@@ -385,9 +385,11 @@ ei_bool_t resize_handle_button_release(ei_widget_t *widget, ei_event_t *event, v
 {
         assert(widget);
         if (widget) {
-                ei_unbind(ei_ev_mouse_move, widget, NULL, resize_handle_motion, NULL);
-                //ei_unbind(ei_ev_mouse_buttonup, widget, NULL, resize_handle_button_release, NULL);
+                ei_unbind(ei_ev_mouse_move, widget, NULL, resize_handle_motion, user_param);
+                ei_unbind(ei_ev_mouse_buttonup, widget, NULL, resize_handle_button_release, user_param);
                 printf("resize_handle_button_release !\n");
+
+                SAFE_FREE(user_param);
         }
 
         return EI_FALSE;
@@ -398,6 +400,9 @@ ei_bool_t resize_handle_motion(ei_widget_t *widget, ei_event_t *event, void *use
         assert(widget);
         assert(event);
         if (widget && event) {
+                ei_point_t *old_pos = (ei_point_t*)user_param;
+                assert(old_pos);
+
                 int x = event->param.mouse.where.x;
                 int y = event->param.mouse.where.y;
 
@@ -407,14 +412,15 @@ ei_bool_t resize_handle_motion(ei_widget_t *widget, ei_event_t *event, void *use
                 ei_placer_param_t *params = widget->geom_params;
                 assert(params);
 
-                if (toplevel && params && params->x && params->y) {
+                if (toplevel && old_pos) {
                         //ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
-                        printf("resize!  x %d \t y %d\n", x, y);
 
 
-                        ei_size_t add_size = { x - *params->x , y - *params->y };
+                        ei_size_t add_size = { x - old_pos->x , y - old_pos->y };
+                        *old_pos = event->param.mouse.where;
+                        printf("resize!  x %d \t y %d\n", add_size.width, add_size.height);
 
-                        //resize(toplevel, add_size);
+                        resize(toplevel, add_size);
                 }
         }
 
@@ -425,7 +431,15 @@ ei_bool_t resize_handle_button_press(ei_widget_t *widget, ei_event_t *event, voi
 {
         assert(widget);
         if (widget) {
-                ei_bind(ei_ev_mouse_move, widget, NULL, resize_handle_motion, NULL);
+                ei_point_t *press_pos = CALLOC_TYPE(ei_point_t);
+                assert(press_pos);
+
+                press_pos->x = event->param.mouse.where.x;
+                press_pos->y = event->param.mouse.where.y;
+
+
+                ei_bind(ei_ev_mouse_move, widget, NULL, resize_handle_motion, (void*)press_pos);
+                ei_bind(ei_ev_mouse_buttonup, widget, NULL, resize_handle_button_release, (void*)press_pos);
                 printf("resize_handle_button_press !\n");
         }
 
@@ -440,8 +454,10 @@ ei_bool_t mv_handle_button_release(ei_widget_t *widget, ei_event_t *event, void 
         assert(widget);
         if (widget) {
                 printf("mv_handle_button_release !\n");
-                ei_unbind(ei_ev_mouse_move, widget, NULL, mv_handle_motion, NULL);
-                //ei_unbind(ei_ev_mouse_buttonup, widget, NULL, mv_handle_button_release, NULL);
+                ei_unbind(ei_ev_mouse_move, widget, NULL, mv_handle_motion, user_param);
+                ei_unbind(ei_ev_mouse_buttonup, widget, NULL, mv_handle_button_release, user_param);
+
+                SAFE_FREE(user_param);
         }
 
         return EI_FALSE;
@@ -452,6 +468,9 @@ ei_bool_t mv_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_pa
         assert(widget);
         assert(event);
         if (widget && event) {
+                ei_point_t *old_pos = (ei_point_t*)user_param;
+                assert(old_pos);
+
                 int x = event->param.mouse.where.x;
                 int y = event->param.mouse.where.y;
 
@@ -460,16 +479,14 @@ ei_bool_t mv_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_pa
                 ei_widget_t *toplevel = widget->parent;
                 assert(toplevel);
 
-                ei_placer_param_t *params = widget->geom_params;
-                assert(params);
+                if (toplevel && old_pos) {
+                        ei_size_t dist = { x - old_pos->x , y - old_pos->y };
+                        *old_pos = event->param.mouse.where;
 
-                if (toplevel && params && params->x && params->y) {
-                        ei_size_t dist = { x - *params->x , y - *params->y };
-
-                        //move(toplevel, dist);
+                        move(toplevel, dist);
 
 
-                        printf("move!  x %d \t y %d\n", x, y);
+                        printf("move!  x %d \t y %d\n", dist.width, dist.height);
                 }
         }
 
@@ -479,8 +496,17 @@ ei_bool_t mv_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_pa
 ei_bool_t mv_handle_button_press(ei_widget_t *widget, ei_event_t *event, void *user_param)
 {
         assert(widget);
+        assert(event);
+
         if (widget) {
-                ei_bind(ei_ev_mouse_move, widget, NULL, mv_handle_motion, NULL);
+                ei_point_t *press_pos = CALLOC_TYPE(ei_point_t);
+                assert(press_pos);
+
+                press_pos->x = event->param.mouse.where.x;
+                press_pos->y = event->param.mouse.where.y;
+
+                ei_bind(ei_ev_mouse_buttonup, widget, NULL, mv_handle_button_release, (void*)press_pos);
+                ei_bind(ei_ev_mouse_move, widget, NULL, mv_handle_motion, (void*)press_pos);
                 printf("mv_handle_button_press !\n");
         }
 
@@ -585,10 +611,7 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
 
 
                 ei_bind(ei_ev_mouse_buttondown, toplevel_title, NULL, mv_handle_button_press, NULL);
-                ei_bind(ei_ev_mouse_buttonup, toplevel_title, NULL, mv_handle_button_release, NULL);
-
                 ei_bind(ei_ev_mouse_buttondown, square_widget, NULL, resize_handle_button_press, NULL);
-                ei_bind(ei_ev_mouse_buttonup, square_widget, NULL, resize_handle_button_release, NULL);
         }
 }
 
