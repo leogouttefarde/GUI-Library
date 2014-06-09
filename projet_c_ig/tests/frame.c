@@ -7,6 +7,16 @@
 #include "ei_widget.h"
 #include "ei_geometrymanager.h"
 
+ei_bool_t process_key(ei_widget_t* widget, ei_event_t* event, void* user_param)
+{
+	if (event->param.key.key_sym == SDLK_ESCAPE) {
+		ei_app_quit_request();
+		return EI_TRUE;
+	}
+	
+	return EI_FALSE;
+}
+
 /*
  * ei_main --
  *
@@ -37,6 +47,9 @@ int ei_main(int argc, char** argv)
                         &frame_border_width, &frame_relief, NULL, NULL, NULL, &ancre,
                         NULL, NULL, NULL);
         ei_place(frame, NULL, &frame_x, &frame_y, NULL, NULL, NULL, NULL, NULL, NULL );
+
+		/* Hook the keypress callback to the event. */
+		ei_bind(ei_ev_keydown,		NULL, "all", process_key, NULL);
 
         /* Run the application's main loop. */
         ei_app_run();

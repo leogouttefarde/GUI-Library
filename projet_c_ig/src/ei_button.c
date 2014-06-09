@@ -9,7 +9,7 @@ ei_linked_point_t *ei_button_arc(ei_point_t centre, int rayon, int angle_tete,
 {
 	ei_linked_point_t *Point_suivant = suivant;
 	ei_linked_point_t *Point;
-	for (int theta = angle_queue; theta >= angle_tete; theta = theta - 5) {
+	for (int theta = angle_queue; theta >= angle_tete; theta = theta -5) {
 		Point = CALLOC_TYPE(ei_linked_point_t);
 		assert(Point != NULL);
 
@@ -95,7 +95,6 @@ ei_linked_point_t *ei_button_rounded_frame(ei_rect_t rectangle, int rayon,
 		ei_point_t arrondi_bg = { xrec + rayon - rayon * cos(-3 * M_PI / 4),
 			yrec + hauteur - rayon + rayon * sin(-3 * M_PI / 4) };
 
-
 		ei_point_t arrondi_td = { xrec + longueur - rayon + rayon * cos(M_PI / 4),
 			yrec + rayon - rayon * sin(M_PI / 4) };
 
@@ -131,8 +130,7 @@ void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
 {
 	//printf("debut dessin frame \n");
 	ei_button_draw_loc(window, rectangle, frame->bg_color, frame->relief, 0, frame->border_width, clipper);
-
-
+	
 	ei_rect_t rectangle_red = reduction(rectangle, frame->border_width);
 	//printf("fin dessin, debut texte\n");
 	if (frame->text && frame->text_font && frame->text_anchor) {
@@ -147,7 +145,7 @@ void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
 			else printf("frame->img_rect=NULL\n");
 		}
 		else printf("frame->img=NULL\n");
-	}		
+	}
 }
 
 void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
@@ -196,7 +194,7 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
 
 	if (relief == ei_relief_none) {
 		Liste = ei_button_rounded_frame(rectangle, rayon, 0);
-		ei_draw_polygon(window, Liste, couleur, clipper);
+		ei_draw_polygon(window, Liste, couleur, NULL);
 		free_lp(Liste);
 	} else {
 		ei_color_t couleur_eclairee, couleur_assombrie, couleur_haute,
@@ -223,22 +221,18 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
 		ei_linked_point_t *partie_haute =
 			ei_button_rounded_frame(rectangle, rayon, 1);
 		ei_draw_polygon(window, partie_haute, couleur_haute, clipper);
+		free_lp(partie_haute);
+
 		ei_linked_point_t *partie_basse = ei_button_rounded_frame(rectangle, rayon, -1);
 		ei_draw_polygon(window, partie_basse, couleur_basse, clipper);
+		free_lp(partie_basse);
 
 		ei_rect_t rectangle_interieur=reduction(rectangle,marge);
-		/*
-		rectangle_interieur.top_left.x = rectangle.top_left.x + marge;
-		rectangle_interieur.top_left.y = rectangle.top_left.y + marge;
-		rectangle_interieur.size.width = rectangle.size.width - 2 * marge;
-		rectangle_interieur.size.height = rectangle.size.height - 2 * marge;
-		*/
-
-		Liste = ei_button_rounded_frame(rectangle_interieur, rayon - marge, 0);
+		if (rayon!=0) Liste=ei_button_rounded_frame(rectangle_interieur, rayon -marge, 0);
+		else Liste=Liste=ei_button_rounded_frame(rectangle_interieur, 0, 0);
 		ei_draw_polygon(window, Liste, couleur, clipper);
 
-		free_lp(partie_haute);
-		free_lp(partie_basse);
+
 		free_lp(Liste);
 	}
 }
@@ -261,7 +255,6 @@ void ei_button_text(ei_surface_t window, ei_rect_t clipper, char *text,
 	ei_point_t bot_mid = { top_gauche.x + longueur / 2, top_gauche.y + hauteur };
 	ei_point_t bot_gauche = { top_gauche.x + longueur * 0, top_gauche.y + hauteur };
 	ei_point_t gauche_mid = { top_gauche.x + longueur * 0, top_gauche.y + hauteur / 2 };
-
 
 	switch (anchor) {
 
