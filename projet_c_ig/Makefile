@@ -125,7 +125,7 @@ ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 
 ########## Tests personnels
 
-tests :  test_shape test_placer test_relative test_button2 test_geom
+tests :  test_shape test_placer test_relative test_button2 test_geom test_resize
 
 # ATTENTION a LINKER LES BIBLIOTHEQUES MATHEMATIQUES
 test_shape : ${OBJDIR}/test_shape.o ${LIBEIBASE} ${LIBEI}
@@ -158,6 +158,11 @@ test_button2 : ${OBJDIR}/test_button2.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/test_button2.o : ${TESTS}/test_button2.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_button2.c -o ${OBJDIR}/test_button2.o ${MATHFLAGS} 
 
+test_resize : ${OBJDIR}/test_resize.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o test_resize ${OBJDIR}/test_resize.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/test_resize.o : ${TESTS}/test_resize.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_resize.c -o ${OBJDIR}/test_resize.o ${MATHFLAGS} 
 
 ########## Compilation séparée des sources
 

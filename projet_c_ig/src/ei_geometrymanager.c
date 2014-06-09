@@ -139,68 +139,6 @@ void  ei_register_placer_manager()
 
 
 
-/* Fonction de redimensionnement
- * Conserve les proportions des fils */
-void resize(ei_widget_t *widget, ei_size_t add_size){
-
-        // Tous les ancrages sont nw
-        // Car le redimensionnement vient du se
-        ei_anchor_t anc = ei_anc_northwest;
-
-        int w_w;
-        int w_h;
-
-
-        // Taille du widget
-        w_w = widget->screen_location.size.width;
-        w_h = widget->screen_location.size.height;
-        w_w = w_w + add_size.width;
-        w_h = w_h + add_size.height;
-
-        ei_place(widget, &anc, NULL, NULL, &w_w, &w_h, NULL, NULL, NULL,
-                        NULL);
-
-        // Parcours des enfants et redessin
-        ei_widget_t *current;
-        current = widget->children_head;
-        while(current){
-                resize(current, add_size);
-                current = current->next_sibling;
-        }
-}
-
-/* Fonction de mouvement
- * Deplacement brut */
-void move(ei_widget_t *widget, ei_size_t dist){
-
-
-        ei_anchor_t anc = ei_anc_northwest;
-
-        int x;
-        int y;
-
-        // Position top_left et taille du pere
-        int p_x = widget->screen_location.top_left.x;
-        int p_y = widget->screen_location.top_left.y;
-
-        // Nouveau x absolu
-        x = p_x + dist.width;
-        y = p_y + dist.height;
-
-        // On deplace le pere
-        ei_place(widget, &anc, &x, &y, NULL, NULL, NULL,
-                        NULL, NULL, NULL);
-
-        // On deplace ses fils
-        ei_widget_t *current;
-        current = widget->children_head;
-
-        // Parcours des fils et des freres
-        while(current){
-                move(current, dist);
-                current = current->next_sibling;
-        }
-}
 
 /**
  * \brief       Configures the geometry of a widget using the "placer" geometry manager.
