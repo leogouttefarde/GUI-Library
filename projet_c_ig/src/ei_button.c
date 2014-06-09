@@ -120,10 +120,17 @@ void ei_frame_draw(ei_surface_t window,ei_rect_t rectangle,ei_frame_t* frame){
 	printf("debut dessin frame \n");
 	ei_button_draw_loc(window,rectangle, frame->bg_color,frame->relief,0,frame->border_width);
 	printf("fin dessin, debut texte\n");
+	ei_rect_t rectangle_red=reduction(rectangle,frame->border_width);
 	if (frame->text&&frame->text_font&&frame->text_anchor) {
 		printf("frame->text non null\n");
-		ei_rect_t rectangle_red=reduction(rectangle,frame->border_width);
 		ei_button_text(window,rectangle_red,frame->text,frame->text_font,frame->text_color,frame->text_anchor);
+	}
+	else {
+		if (frame->img) {
+			if (frame->img_rect) aff_img(window,rectangle_red,frame->img,frame->img_rect,frame->img_anchor);
+			else printf("frame->img_rect=NULL\n");
+		}
+		else printf("frame->img=NULL\n");
 	}
 }
 
