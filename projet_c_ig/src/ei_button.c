@@ -178,12 +178,24 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
 }
 void ei_bar_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipper) {
 	ei_rect_t rec=toplevel->widget.screen_location;
+	ei_linked_point_t lp;
+//Dessin de la bordure
+	ei_rect_t bord=rec;
+	bord.top_left=plus(rec.top_left,0,toplevel->bar_height);
+	bord.size.height=bord.size.height-toplevel->bar_height;
+	lp=ei_rect_to_points(bord);
+	ei_color_t bord_color=obscurcir(toplevel->color,0.3);
+	ei_draw_polygon(surface,&lp,bord_color,clipper);
+//Dessin du content_rect
+   lp =ei_rect_to_points(*toplevel->widget.content_rect);
+   ei_draw_polygon(surface, &lp, toplevel->color, clipper);
+
 //Dessin de la barre	
 	//printf("début ei_bar_draw\n");
-	ei_color_t bar_color={0xff,0xff,0xff,0xff};
-	rec.size.height=toplevel->bar_height;
-	ei_linked_point_t lp=ei_rect_to_points(rec);
-	ei_draw_polygon(surface,&lp,bar_color,NULL);
+	ei_rect_t bar=rec;
+	bar.size.height=toplevel->bar_height;
+	lp=ei_rect_to_points(bar);
+	ei_draw_polygon(surface,&lp,toplevel->bar_color,clipper);
 	//printf("barre déssinée, on dessine le bouton \n");
 //Dessin du bouton close
 	ei_color_t btn_c_color={0,0,0,255};
@@ -196,13 +208,13 @@ void ei_bar_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipp
 	ei_button_draw_loc(surface,btn_c,btn_c_color,toplevel->rel_btn_close,0,marge,clipper);
 	//printf("bouton déssiné\n");
 //Dessin du bouton resize
-	ei_color_t btn_r_color=eclaircir(toplevel->color,0.3);
+	ei_color_t btn_r_color=eclaircir(toplevel->color,0.2);
 	ei_rect_t btn_r;
 	ei_size_t btn_r_s={toplevel->resize_size,toplevel->resize_size};
 	btn_r.size=btn_r_s;
 	int width=toplevel->widget.screen_location.size.width;
 	int height=toplevel->widget.screen_location.size.height;
-	btn_r.top_left=plus(rec.top_left,width-toplevel->resize_size,height-toplevel->resize_size);
+	btn_r.top_left=plus(rec.top_left,width-toplevel->resize_size-toplevel->border_width,height-toplevel->resize_size-toplevel->border_width);
 	ei_button_draw_loc(surface,btn_r,btn_r_color,ei_relief_none,0,0,clipper);
 //Affichage du titre
 	ei_rect_t rec_txt;
@@ -404,3 +416,12 @@ ei_color_t eclaircir(ei_color_t couleur, float coeff_couleur) {
 		couleur_eclairee.alpha = 255;
 		return couleur_eclairee;
 }
+ei_color_t obscurcir(ei_color_t couleur, float coeff_couleur) {
+		ei_color_t couleur_assombrie;
+		couleur_assombrie.red = MAX(couleur.red - coeff_couleur * 255, 0);
+		couleur_assombrie.green = MAX(couleur.green - coeff_couleur * 255, 0);
+		couleur_assombrie.blue = MAX(couleur.blue - coeff_couleur * 255, 0);
+		couleur_assombrie.alpha = 255;
+		return couleur_assombrie;
+}
+

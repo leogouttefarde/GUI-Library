@@ -107,8 +107,9 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
 void move(ei_widget_t *widget, ei_size_t dist)
 {
         assert(widget);
-
         if (widget) {
+                ei_placer_param_t *param =
+                        (ei_placer_param_t*)widget->geom_params;
                 ei_anchor_t anc = ei_anc_northwest;
 
                 int x;
@@ -123,8 +124,8 @@ void move(ei_widget_t *widget, ei_size_t dist)
                 y = p_y + dist.height;
 
                 // On deplace le pere
-                ei_place(widget, &anc, &x, &y, NULL, NULL, NULL,
-                                NULL, NULL, NULL);
+                ei_place(widget, &anc, &x, &y, param->w, param->h, NULL,
+                                NULL, param->rel_w, param->rel_h);
         }
 }
 
