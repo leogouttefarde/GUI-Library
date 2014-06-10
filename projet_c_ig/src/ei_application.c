@@ -24,6 +24,8 @@ static ei_bool_t quit_request = EI_FALSE;
 
 
 
+// TODO mettre les callbacks dans un callback.h
+
 /* Fonction de redimensionnement
  * Conserve les proportions des fils */
 void resize(ei_widget_t *widget, ei_size_t add_size){

@@ -172,8 +172,8 @@ void ei_event_process(ei_event_t *event)
                                         call = EI_TRUE;
                                         break;
 
-                                // Pour les boutons de la souris, on
-                                // appelle le callback sur selected
+                                        // Pour les boutons de la souris, on
+                                        // appelle le callback sur selected
                                 case ei_ev_mouse_buttondown:
                                 case ei_ev_mouse_buttonup:
                                 case ei_ev_mouse_move:
