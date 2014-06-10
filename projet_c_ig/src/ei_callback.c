@@ -208,7 +208,39 @@ ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
 }
 
 // TODO TODO DO
-ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event,
-                void *user_param){
+ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
+{
+        // For all buttons if pressed release
+        // Find all button widgets and release if pressed
+        if (widget){
+                if (widget->wclass && !strcmp(widget->wclass->name, "button")) {
+
+                        ei_button_t *button = (ei_button_t*)widget;
+                        if (button->clic){
+                                button->relief = ei_relief_raised;
+                                button->clic = false;
+                                // Appel du callback du bouton
+                                if (button->callback){
+                                        res = button->callback((ei_widget_t*)button, NULL, button->user_param);
+                                }
+                        }
+                }
+        }
+
+        // Find toplevel move/resize event & delete it
+
+        // On regarde si le release etait précédé d'un déplacement ou d'un
+        // redimensionnement
+        if (toplevel->move){
+                toplevel->move = false;
+                toplevel->resize = false;
+                ei_unbind(ei_ev_mouse_move, widget, NULL,
+                                toplevel_callback_move_move, NULL);
+        }
+        else if (toplevel->resize){
+                ei_unbind(ei_ev_mouse_move, widget, NULL,
+                                toplevel_callback_move_resize, NULL);
+        }
+
         return EI_FALSE;
 }

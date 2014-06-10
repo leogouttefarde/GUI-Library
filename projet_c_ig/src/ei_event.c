@@ -201,9 +201,11 @@ void ei_event_process(ei_event_t *event)
                 }
 
 
-                link = link->next;
-                if (!link)
-                        done = EI_TRUE;
+                if (!done) {
+                        link = link->next;
+                        if (!link)
+                                done = EI_TRUE;
+                }
         }
 }
 
