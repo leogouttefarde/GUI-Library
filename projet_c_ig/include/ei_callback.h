@@ -33,4 +33,6 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, v
 // Quand on relache la souris sur le bouton
 ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param);
 
+ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t
+                *event, void *user_param);
 #endif

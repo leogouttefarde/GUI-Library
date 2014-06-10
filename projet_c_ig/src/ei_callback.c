@@ -96,10 +96,14 @@ ei_bool_t toplevel_callback_move_resize(ei_widget_t *widget, struct ei_event_t
         case ei_axis_both :
                 w = event->param.mouse.where.x - toplevel->move_pos.x + 1;
                 h = event->param.mouse.where.y - toplevel->move_pos.y + 1;
+                break;
         case ei_axis_x:
                 w = event->param.mouse.where.x - toplevel->move_pos.x + 1;
+                break;
         case ei_axis_y:
                 h = event->param.mouse.where.y - toplevel->move_pos.y + 1;
+                break;
+        default : break;
         }
 
         resize(widget, ei_size(w,h));
@@ -171,12 +175,14 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, v
 
                         ei_button_t *button = (ei_button_t*)widget;
                         button->relief = ei_relief_sunken;
+                        button->clic = true;
                 }
         }
         return EI_FALSE;
 }
 
-// NE PAS SUPPRIMER
+// TODO la gestion du relief doit etre faite par le callback
+// all_callback_release
 // gère le cas ou on  release sur le widget
 // Quand on relache la souris sur le bouton
 ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
@@ -187,13 +193,21 @@ ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
                 if (!strcmp(widget->wclass->name, "button")) {
 
                         ei_button_t *button = (ei_button_t*)widget;
-                        button->relief = ei_relief_raised;
-
-                        // Appel du callback du bouton
-                        if (button->callback){
-                                res = button->callback((ei_widget_t*)button, NULL, button->user_param);
+                        if (button->clic){
+                                button->relief = ei_relief_raised;
+                                button->clic = false;
+                                // Appel du callback du bouton
+                                if (button->callback){
+                                        res = button->callback((ei_widget_t*)button, NULL, button->user_param);
+                                }
                         }
                 }
         }
         return res;
+}
+
+// TODO TODO DO
+ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event,
+                void *user_param){
+        return EI_FALSE;
 }
