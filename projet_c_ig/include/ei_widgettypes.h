@@ -53,20 +53,24 @@ typedef struct ei_button_t {
 
 typedef struct ei_toplevel_t {
         ei_widget_t widget;
-        // Hauteur de la barre de titre
-		  int bar_height;
-		  ei_relief_t rel_btn_close;
         ei_color_t	color;
+        //Barre de titre
+		  int bar_height;
         int		border_width;
+		  //titre
         char*		title;
         ei_font_t	title_font;
+		  ei_color_t title_color;
+		//bouton close
         ei_bool_t	closable;
+		  ei_relief_t rel_btn_close;
+		  //bouton resize
         ei_axis_set_t	resizable;
+        int             resize_size;
+		  //
         ei_size_t*	min_size;
         // Pour le calcul du deplacement
         ei_point_t move_pos;
-        // Taille du bouton de resize (carré)
-        int             resize_size;
         // Booleans pour detecter les différents release << Useless
         // bool            move;
         // bool             resize;
