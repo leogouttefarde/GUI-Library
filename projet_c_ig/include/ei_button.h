@@ -6,6 +6,9 @@
 #include "hw_interface.h"
 #include "ei_widgettypes.h"
 
+void ei_frame_draw(ei_surface_t window,ei_rect_t rectangle,ei_frame_t* frame,
+                ei_rect_t *clipper);
+
 void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_button_t *button, ei_rect_t *clipper);
 
 void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipper);
@@ -32,12 +35,4 @@ void ei_insert_text(ei_surface_t window,ei_rect_t clipper,char* text, ei_font_t 
 
 void aff_img(ei_surface_t window, ei_rect_t rectangle,ei_surface_t img, ei_rect_t* img_rect, ei_anchor_t img_anchor);
 
-void ei_frame_draw(ei_surface_t window,ei_rect_t rectangle,ei_frame_t* frame,
-                ei_rect_t *clipper);
-
-ei_rect_t reduction(ei_rect_t rectangle, int marge);
-
-ei_color_t eclaircir(ei_color_t couleur, float coeff_couleur);
-
-ei_color_t obscurcir(ei_color_t couleur, float coeff_couleur);
 #endif

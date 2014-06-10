@@ -361,11 +361,12 @@ void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 
                 content_rect->top_left.y =  content_rect->top_left.y +
                         bw;
-
+					
                 content_rect->size.width =  content_rect->size.width +
                         - 2*bw;
                 content_rect->size.height =  content_rect->size.height +
                         -2*bw;
+					
         }
         else{
                 widget->screen_location = ei_rect_zero();
