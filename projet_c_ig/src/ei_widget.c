@@ -566,45 +566,6 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                 if(min_size){
                         toplevel->min_size = *min_size;
                 }
-
-                ei_widget_t *toplevel_title = ei_widget_create("frame", widget);
-                ei_widget_t *square_widget = ei_widget_create("frame", widget);
-
-                // add_child(toplevel, toplevel_title);
-                // add_child(toplevel, square_widget);
-
-                ei_size_t       frame_size              = {300,30};
-                int             frame_x                 = 10;
-                int             frame_y                 = 10;
-                ei_color_t      frame_color             = {0xFF, 0, 0, 0xff};
-                ei_relief_t     frame_relief            = ei_relief_raised;
-                int             frame_border_width      = 6;
-
-                ei_frame_configure(toplevel_title, &frame_size, &frame_color,
-                                &frame_border_width, &frame_relief, NULL, NULL, NULL, NULL,
-                                NULL, NULL, NULL);
-
-                ei_place(toplevel_title, NULL, &frame_x, &frame_y, NULL, NULL, NULL, NULL, NULL, NULL);
-
-                frame_y = 50;
-                frame_color.red = 0;
-                frame_color.green = 255;
-                ei_frame_configure(square_widget, &frame_size, &frame_color,
-                                &frame_border_width, &frame_relief, NULL, NULL, NULL, NULL,
-                                NULL, NULL, NULL);
-
-                ei_place(square_widget, NULL, &frame_x, &frame_y, NULL, NULL, NULL, NULL, NULL, NULL);
-
-
-                ei_bind(ei_ev_mouse_buttondown, toplevel_title, NULL, mv_handle_button_press, NULL);
-                ei_bind(ei_ev_mouse_buttonup, toplevel_title, NULL, mv_handle_button_release, NULL);
-
-                ei_bind(ei_ev_mouse_buttondown, square_widget, NULL, resize_handle_button_press, NULL);
-                ei_bind(ei_ev_mouse_buttonup, square_widget, NULL, resize_handle_button_release, NULL);
-
-
-                // ei_unbind(ei_ev_mouse_buttonup, widget, NULL, mv_handle_button_release, NULL);
-                // ei_unbind(ei_ev_mouse_buttonup, widget, NULL, resize_handle_button_release, NULL);
         }
 }
 
