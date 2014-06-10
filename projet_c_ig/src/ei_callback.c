@@ -96,10 +96,14 @@ ei_bool_t toplevel_callback_move_resize(ei_widget_t *widget, struct ei_event_t
         case ei_axis_both :
                 w = event->param.mouse.where.x - toplevel->move_pos.x + 1;
                 h = event->param.mouse.where.y - toplevel->move_pos.y + 1;
+                break;
         case ei_axis_x:
                 w = event->param.mouse.where.x - toplevel->move_pos.x + 1;
+                break;
         case ei_axis_y:
                 h = event->param.mouse.where.y - toplevel->move_pos.y + 1;
+                break;
+        default : break;
         }
 
         resize(widget, ei_size(w,h));
@@ -200,4 +204,10 @@ ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
                 }
         }
         return res;
+}
+
+// TODO TODO DO
+ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event,
+                void *user_param){
+        return EI_FALSE;
 }
