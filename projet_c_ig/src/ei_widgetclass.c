@@ -464,7 +464,12 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
         ms->height = 50;
 
         toplevel->min_size = ms;
-		  //toplevel->old_pos=widget.screen_location;
+
+        // Gestion du move, resize
+        toplevel->move_pos = ei_point(0,0);
+        toplevel->move = false;
+        toplevel->resize = false;
+        toplevel->resize_size = 10;
 }
 
 void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
@@ -516,3 +521,11 @@ void    ei_toplevel_register_class()
 
         toplevel_table->next = NULL;
 }
+<<<<<<< HEAD
+=======
+
+
+
+
+
+>>>>>>> e92422f354e763e6b453aa1acac94e806d5ebb36

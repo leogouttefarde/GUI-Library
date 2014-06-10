@@ -18,7 +18,7 @@ LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
 			${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o \
 			${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o \
 			${OBJDIR}/ei_button.o ${OBJDIR}/ei_core.o \
-			${OBJDIR}/ei_linkedlist.o
+			${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o
 
 
 
@@ -26,39 +26,39 @@ LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
 
 ifeq (${PLATFORM},Darwin)
 
-	# Building for Mac OS X
+# Building for Mac OS X
 
-	PLATDIR		= _osx
-	INCFLAGS	:= ${INCFLAGS} -I/opt/local/include/SDL
-	LINK		= ${CC}
-	LIBEI		= ${OBJDIR}/libei.a
-	LIBEIBASE	= ${PLATDIR}/libeibase.a
-	LIBS		= ${LIBEIBASE} -L/opt/local/lib -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image -framework AppKit
+PLATDIR		= _osx
+INCFLAGS	:= ${INCFLAGS} -I/opt/local/include/SDL
+LINK		= ${CC}
+LIBEI		= ${OBJDIR}/libei.a
+LIBEIBASE	= ${PLATDIR}/libeibase.a
+LIBS		= ${LIBEIBASE} -L/opt/local/lib -lSDL -lSDL_ttf -lSDL_gfx -lSDL_image -framework AppKit
 
 else
-	ifeq (${PLATFORM},Linux)
+   ifeq (${PLATFORM},Linux)
 
-	# Building for Linux
+# Building for Linux
 
-	PLATDIR		= _x11
-	INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL
-	LINK		= ${CC}
-	LIBEI		= ${OBJDIR}/libei.a
-	LIBEIBASE	= ${PLATDIR}/libeibase.a
-	LIBSDLGFX       = ${PLATDIR}/libSDL_gfx.a
-	#LIBSDLGFX       = -lSDL_gfx
-	LIBS		= ${LIBEIBASE} -lSDL -lSDL_ttf ${LIBSDLGFX} -lSDL_image -lm
+PLATDIR		= _x11
+INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL
+LINK		= ${CC}
+LIBEI		= ${OBJDIR}/libei.a
+LIBEIBASE	= ${PLATDIR}/libeibase.a
+LIBSDLGFX       = ${PLATDIR}/libSDL_gfx.a
+#LIBSDLGFX       = -lSDL_gfx
+LIBS		= ${LIBEIBASE} -lSDL -lSDL_ttf ${LIBSDLGFX} -lSDL_image -lm
 
 	else
 
-	# Building for Windows
+# Building for Windows
 
-	PLATDIR		= _win
-	INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL -I/usr/local/include/SDL
-	LINK		= ${CC} -mwindows -mno-cygwin
-	LIBEI		= ${OBJDIR}/libei.lib
-	LIBEIBASE	= ${PLATDIR}/libeibase.lib
-	LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a /usr/lib/SDL_image.lib -L/usr/lib -lSDL
+PLATDIR		= _win
+INCFLAGS	:= ${INCFLAGS} -I/usr/include/SDL -I/usr/local/include/SDL
+LINK		= ${CC} -mwindows -mno-cygwin
+LIBEI		= ${OBJDIR}/libei.lib
+LIBEIBASE	= ${PLATDIR}/libeibase.lib
+LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a /usr/lib/SDL_image.lib -L/usr/lib -lSDL
 
 	endif
  endif
@@ -133,7 +133,7 @@ ${OBJDIR}/move_resize.o : ${TESTS}/move_resize.c
 
 ########## Tests personnels
 
-tests :  test_shape test_placer test_relative test_button2 test_geom test_resize
+tests :  toplevel test_shape test_placer test_relative test_button2 test_geom test_resize
 
 # ATTENTION a LINKER LES BIBLIOTHEQUES MATHEMATIQUES
 test_shape : ${OBJDIR}/test_shape.o ${LIBEIBASE} ${LIBEI}
@@ -177,6 +177,12 @@ test_frame_2 : ${OBJDIR}/test_frame_2.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/test_frame_2.o : ${TESTS}/test_frame_2.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_frame_2.c -o ${OBJDIR}/test_frame_2.o ${MATHFLAGS} 
+
+toplevel : ${OBJDIR}/toplevel.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o toplevel ${OBJDIR}/toplevel.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/toplevel.o : ${TESTS}/toplevel.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/toplevel.c -o ${OBJDIR}/toplevel.o ${MATHFLAGS} 
 
 ########## Compilation séparée des sources
 

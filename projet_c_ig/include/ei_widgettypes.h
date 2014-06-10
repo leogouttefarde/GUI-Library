@@ -4,6 +4,7 @@
 
 #include "ei_geometrymanager.h"
 #include "ei_widget.h"
+#include <stdbool.h>
 
 
 //Definition du type frame
@@ -50,6 +51,7 @@ typedef struct ei_button_t {
 
 typedef struct ei_toplevel_t {
         ei_widget_t widget;
+        // Hauteur de la barre de titre
 		  int bar_height;
 		  ei_relief_t rel_btn_close;
         ei_color_t	color;
@@ -59,7 +61,13 @@ typedef struct ei_toplevel_t {
         ei_bool_t	closable;
         ei_axis_set_t	resizable;
         ei_size_t*	min_size;
-		  ei_point_t old_pos;
+        // Pour le calcul du deplacement
+        ei_point_t move_pos;
+        // Taille du bouton de resize (carré)
+        int             resize_size;
+        // Booleans pour detecter les différents release
+        bool            move;
+        bool             resize;
 } ei_toplevel_t;
 
 /**
