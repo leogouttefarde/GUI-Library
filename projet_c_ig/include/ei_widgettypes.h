@@ -57,6 +57,7 @@ typedef struct ei_toplevel_t {
         //Barre de titre
 		  int bar_height;
         int		border_width;
+		  ei_color_t bar_color;
 		  //titre
         char*		title;
         ei_font_t	title_font;
