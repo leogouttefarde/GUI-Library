@@ -216,6 +216,7 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 	hw_surface_lock(img);
 	ei_rect_t nv_img_rect;
 	if (img_rect) {
+		printf("img_rect size{%i,%i}\n",img_rect->size.width,img_rect->size.height);
 		nv_img_rect=*img_rect;
 	} else {
 		nv_img_rect=hw_surface_get_rect(img);
@@ -269,7 +270,9 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 	}
 	
 	ei_rect_t img_part = { ancre, rectangle.size };
-
+	
+	//printf("img_part size{%i,%i}\n",img_part.size.width,img_part.size.height);
+	//printf("rectangle size{%i,%i}\n",rectangle.size.width,rectangle.size.height);
 	result = ei_copy_surface(window, &rectangle, img, &img_part, 1);
 
 	hw_surface_unlock(img);
