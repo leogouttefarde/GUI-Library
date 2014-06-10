@@ -128,7 +128,7 @@ void ei_invalidate_widget(ei_widget_t *widget)
 
         ei_linkedlist_add(&ei_invalid_widgets, widget);
 }
-
+int iii;
 // Draw récursif selon la hiérarchie des widgets
 void ei_draw_widget(ei_widget_t *widget){
 
@@ -146,6 +146,8 @@ void ei_draw_widget(ei_widget_t *widget){
 
                 // Les freres du widget courant sont enfin dessinés
                 ei_draw_widget(widget->next_sibling);
+
+                printf("rec %08lX %d\n", widget, iii++);
         }
 }
 
@@ -155,11 +157,18 @@ void ei_draw_widgets()
         ei_widget_t *widget = NULL;
 
         while (link) {
+                printf("link %08lX\n", link);
+                ei_widget_t *widget = link->elem;
+                printf("widget %08lX\n", widget);
+                if (widget && widget->wclass){
+                        printf("wclass %s\n", widget->wclass->name);
+                }
+        iii = 0;
                 widget = (ei_widget_t*)link->elem;
 
+                link = link->next;
                 ei_draw_widget(widget);
 
-                link = link->next;
         }
 }
 

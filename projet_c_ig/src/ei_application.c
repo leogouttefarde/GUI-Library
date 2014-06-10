@@ -101,14 +101,14 @@ void ei_app_run()
 
         while (!quit_request) {
 
-                ei_draw_widget(ei_get_root()); // DEBUG : DRAW ALL
-                //ei_draw_widgets();
+                //ei_draw_widget(ei_get_root()); // DEBUG : DRAW ALL
+                ei_draw_widgets();
 
                 ei_invalidate_rects();
 
                 // Update des surfaces
                 hw_surface_update_rects(root_surface, NULL); // DEBUG : UPDATE ALL
-                //hw_surface_update_rects(root_surface, ei_get_update_rects());
+                //hw_surface_update_rects(root_surface, ei_get_update_rects()); // OK
 
                 ei_invalidate_reset();
 
