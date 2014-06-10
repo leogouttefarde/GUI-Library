@@ -378,127 +378,6 @@ void    ei_button_configure (ei_widget_t*               widget,
         }
 }
 
-
-ei_bool_t resize_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_param);
-
-ei_bool_t resize_handle_button_release(ei_widget_t *widget, ei_event_t *event, void *user_param)
-{
-        assert(widget);
-        if (widget) {
-                ei_unbind(ei_ev_mouse_move, widget, NULL, resize_handle_motion, NULL);
-                printf("resize_handle_button_release !\n");
-
-                SAFE_FREE(user_param);
-        }
-
-        return EI_FALSE;
-}
-
-ei_bool_t resize_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_param)
-{
-        assert(widget);
-        assert(event);
-        if (widget && event) {
-                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget->parent;
-                assert(toplevel);
-
-                ei_point_t *old_pos = &toplevel->move_pos;
-
-                int x = event->param.mouse.where.x;
-                int y = event->param.mouse.where.y;
-
-                if (toplevel) {
-                        //ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
-
-
-                        ei_size_t add_size = { x - old_pos->x , y - old_pos->y };
-                        *old_pos = event->param.mouse.where;
-                        printf("resize!  x %d \t y %d\n", add_size.width, add_size.height);
-
-                        resize(toplevel, add_size);
-                }
-        }
-
-        return EI_FALSE;
-}
-
-ei_bool_t resize_handle_button_press(ei_widget_t *widget, ei_event_t *event, void *user_param)
-{
-        assert(widget);
-        if (widget) {
-                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget->parent;
-                assert(toplevel);
-
-                toplevel->move_pos = event->param.mouse.where;
-
-                ei_bind(ei_ev_mouse_move, widget, NULL, resize_handle_motion, NULL);
-                printf("resize_handle_button_press !\n");
-        }
-
-        return EI_FALSE;
-}
-
-
-ei_bool_t mv_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_param);
-
-ei_bool_t mv_handle_button_release(ei_widget_t *widget, ei_event_t *event, void *user_param)
-{
-        assert(widget);
-        if (widget) {
-                printf("mv_handle_button_release !\n");
-                ei_unbind(ei_ev_mouse_move, widget, NULL, mv_handle_motion, NULL);
-        }
-
-        return EI_FALSE;
-}
-
-ei_bool_t mv_handle_motion(ei_widget_t *widget, ei_event_t *event, void *user_param)
-{
-        assert(widget);
-        assert(event);
-        if (widget && event) {
-                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget->parent;
-                assert(toplevel);
-
-                ei_point_t *old_pos = &toplevel->move_pos;
-
-                int x = event->param.mouse.where.x;
-                int y = event->param.mouse.where.y;
-
-                //ei_place(widget, NULL, &x, &y, NULL, NULL, NULL, NULL, NULL, NULL);
-
-                if (toplevel) {
-                        ei_size_t dist = { x - old_pos->x , y - old_pos->y };
-                        *old_pos = event->param.mouse.where;
-
-                        move(toplevel, dist);
-
-
-                        printf("move!  x %d \t y %d\n", dist.width, dist.height);
-                }
-        }
-
-        return EI_FALSE;
-}
-
-ei_bool_t mv_handle_button_press(ei_widget_t *widget, ei_event_t *event, void *user_param)
-{
-        assert(widget);
-        assert(event);
-
-        if (widget) {
-                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget->parent;
-                assert(toplevel);
-
-                toplevel->move_pos = event->param.mouse.where;
-
-                ei_bind(ei_ev_mouse_move, widget, NULL, mv_handle_motion, NULL);
-                printf("mv_handle_button_press !\n");
-        }
-
-        return EI_FALSE;
-}
-
 void add_child(ei_widget_t *widget, ei_widget_t *child)
 {
         if (widget) {
@@ -546,7 +425,9 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
 
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
                 if (requested_size){
-                        toplevel->widget.requested_size = *requested_size;
+						 		ei_size_t rqst_s=*requested_size;
+						 		rqst_s.height=rqst_s.height+toplevel->bar_height;
+                        toplevel->widget.requested_size = rqst_s;
                 }
                 if (color){
                         toplevel->color = *color;

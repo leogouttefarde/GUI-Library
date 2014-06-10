@@ -177,14 +177,16 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
 	//printf("fin dessin bouton\n");
 }
 void ei_bar_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipper) {
-	printf("début ei_bar_draw\n");
+
+//Dessin de la barre	
+	//printf("début ei_bar_draw\n");
 	ei_color_t bar_color={0xff,0xff,0xff,0xff};
 	ei_rect_t rec=toplevel->widget.screen_location;
 	rec.size.height=toplevel->bar_height;
 	ei_linked_point_t lp=ei_rect_to_points(rec);
 	ei_draw_polygon(surface,&lp,bar_color,NULL);
-	printf("barre déssinée, on dessine le bouton \n");
-
+	//printf("barre déssinée, on dessine le bouton \n");
+//Dessin du bouton close
 	ei_color_t btn_color={0,0,0,255};
 	int marge=toplevel->bar_height*0.25;
 	ei_rect_t btn;
@@ -194,7 +196,7 @@ void ei_bar_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipp
 	marge=0.2*btn.size.height;
 	ei_button_draw_loc(surface,btn,btn_color,toplevel->rel_btn_close,0,marge,NULL);
 	printf("bouton déssiné\n");
-
+//Dessin du bouton resize
 }
 
 /**
