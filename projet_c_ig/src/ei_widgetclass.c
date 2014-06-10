@@ -427,7 +427,7 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
                         ei_rect_to_points(*toplevel->widget.content_rect);
                 ei_draw_polygon(surface, &lp, toplevel->color, clipper);
 
-					 //ei_bar_draw(surface,toplevel,clipper);
+					 ei_bar_draw(surface,toplevel,clipper);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
@@ -488,10 +488,12 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                 int bw = toplevel->border_width;
                 *content_rect = rect;
                 content_rect->top_left =plus(rect.top_left,0,toplevel->bar_height);
+					 /*
                 content_rect->size.width =  content_rect->size.width +
                         - 2*bw;
                 content_rect->size.height =  content_rect->size.height +
                         -2*bw;
+					*/
         }
         else{
 			  //printf("on est ds else\n");

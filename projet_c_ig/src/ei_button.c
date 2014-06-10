@@ -189,11 +189,11 @@ void ei_bar_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipp
 	int marge=toplevel->bar_height*0.25;
 	ei_rect_t btn;
 	btn.top_left=plus(rec.top_left,marge,marge);
-	btn.size.width=1-2*marge;
-	btn.size.height=1-2*marge;
+	btn.size.width=toplevel->bar_height-2*marge;
+	btn.size.height=toplevel->bar_height-2*marge;
 	marge=0.2*btn.size.height;
 	ei_button_draw_loc(surface,btn,btn_color,toplevel->rel_btn_close,0,marge,NULL);
-	printf("bouton déssiné");
+	printf("bouton déssiné\n");
 
 }
 
