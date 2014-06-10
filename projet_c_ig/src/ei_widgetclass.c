@@ -430,9 +430,10 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
         }
 
         if (pick_surface){
-			  		ei_rect_t pick_clipper=toplevel->widget.screen_location;
+		//ei_rect_t pick_clipper=toplevel->widget.screen_location;
                 /* Dessin de la surface de picking */
-                pick_surface_draw(pick_surface, widget, &pick_clipper);
+                //pick_surface_draw(pick_surface, widget, &pick_clipper);
+                pick_surface_draw(pick_surface, widget, clipper);
         }
 }
 
