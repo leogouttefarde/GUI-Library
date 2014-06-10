@@ -93,34 +93,32 @@ void ei_unbind(ei_eventtype_t eventtype,
         if (eventtype < ei_ev_last) {
                 ei_linkedlist_t *list = &ei_events[eventtype];
 
-                if (list) {
-                        ei_linked_elem_t *link = list->head;
-                        ei_binding_t *binding = NULL;
+                ei_linked_elem_t *link = list->head;
+                ei_binding_t *binding = NULL;
 
-                        /* Unbind all links */
-                        while (link) {
-                                binding = (ei_binding_t*)link->elem;
+                /* Unbind all links */
+                while (link) {
+                        binding = (ei_binding_t*)link->elem;
 
-                                if (binding) {
-                                        if (    (widget == binding->widget)
-                                                && ((tag == NULL) || !strcmp(tag, binding->tag))
-                                                && (callback == binding->callback)
-                                                && (user_param == binding->user_param)
-                                                ) {
+                        if (binding) {
+                                if (    (widget == binding->widget)
+                                        && ((tag == NULL) || !strcmp(tag, binding->tag))
+                                        && (callback == binding->callback)
+                                        && (user_param == binding->user_param)
+                                        ) {
 
-                                                printf("Unbind link %x !\n", link);
-
+                                        printf("Unbind link %x !\n", link);
 
 
-                                                if (binding->tag)
-                                                        SAFE_FREE(binding->tag);
 
-                                                ei_linkedlist_pop_link(list, link, true);
-                                        }
+                                        if (binding->tag)
+                                                SAFE_FREE(binding->tag);
+
+                                        ei_linkedlist_pop_link(list, link, true);
                                 }
-
-                                link = link->next;
                         }
+
+                        link = link->next;
                 }
         }
 

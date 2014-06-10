@@ -129,13 +129,13 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t
         // On verifie que le toplevel est redimensionnable
         if(m_y < y + t_h){
                 // Si titre, on bind CE WIDGET et la fonction de deplacement
-                toplevel->move = true;
-                toplevel->resize = false;
+                // toplevel->move = true;
+                // toplevel->resize = false;
                 ei_bind(ei_ev_mouse_move, widget, NULL, toplevel_callback_move_move, NULL);
         }
         else if (toplevel->resizable && m_y >= y + h -1 - r_s && m_x >= x + w - 1 - r_s){
-                toplevel->move = false;
-                toplevel->resize = true;
+                // toplevel->move = false;
+                // toplevel->resize = true;
                 // Si resize, on bind ce widget et la fonction de resize
                 ei_bind(ei_ev_mouse_move, widget, NULL,
                                 toplevel_callback_move_resize, NULL);
@@ -147,7 +147,7 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t
 
 // TODO A SUPPRIMER
 // remplacer par un all_callback_release
-ei_bool_t toplevel_callback_release(ei_widget_t *widget, struct ei_event_t
+/*ei_bool_t toplevel_callback_release(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param){
         ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
         // On regarde si le release etait précédé d'un déplacement ou d'un
@@ -165,7 +165,7 @@ ei_bool_t toplevel_callback_release(ei_widget_t *widget, struct ei_event_t
                                 toplevel_callback_move_resize, NULL);
         }
         return EI_FALSE;
-}
+}*/
 
 // Peut-être pas dans le bon fichier
 // Enfonce les boutons
@@ -186,7 +186,7 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, v
 // all_callback_release
 // gère le cas ou on  release sur le widget
 // Quand on relache la souris sur le bouton
-ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
+/*ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
         ei_bool_t res = EI_FALSE;
 
@@ -205,16 +205,19 @@ ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
                 }
         }
         return res;
-}
+}*/
 
 // TODO TODO DO
 ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
-        // For all buttons if pressed release
+        ei_widget_t *widget = ei_app_root_widget();
+
         // Find all button widgets and release if pressed
-        if (widget){
+        while (widget) {
                 if (widget->wclass && !strcmp(widget->wclass->name, "button")) {
 
+                        // TODO : Factoriser avec draw_widget via systm callback sur widget ?
+                        // Ou peut être mieux ainsi ?
                         ei_button_t *button = (ei_button_t*)widget;
                         if (button->clic){
                                 button->relief = ei_relief_raised;
@@ -225,22 +228,51 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
                                 }
                         }
                 }
+
+                if (widget->next_sibling)
+                        widget = widget->next_sibling;
+
+                else
+                        widget = widget->children_head;
         }
 
-        // Find toplevel move/resize event & delete it
 
-        // On regarde si le release etait précédé d'un déplacement ou d'un
-        // redimensionnement
-        if (toplevel->move){
-                toplevel->move = false;
-                toplevel->resize = false;
-                ei_unbind(ei_ev_mouse_move, widget, NULL,
-                                toplevel_callback_move_move, NULL);
+
+        // Find toplevel mouse_move events & delete them all
+
+        // mouse_move_events list
+        ei_linkedlist_t *list = (ei_linkedlist_t*)user_param;
+        assert(list);
+
+        if (!list)
+                return EI_FALSE;
+
+        ei_linked_elem_t *link = list->head, *next = NULL;
+        ei_binding_t *binding = NULL;
+        ei_toplevel_t *toplevel = NULL;
+
+        /* Find toplevel mouse_move events & delete them all */
+        while (link) {
+                binding = (ei_binding_t*)link->elem;
+                widget = binding->widget;
+                next = link->next;
+
+                if (widget && widget->wclass
+                        && !strcmp(widget->wclass->name, "toplevel")) {
+
+                        // Useless now
+                        // toplevel = (ei_toplevel_t*)widget;
+                        // toplevel->move = false;
+                        // toplevel->resize = false;
+
+                        // Pas de tag à libéreron tue direct le lien (unbind instantané)
+                        ei_linkedlist_pop_link(list, link, true);
+                }
+
+
+                link = next;
         }
-        else if (toplevel->resize){
-                ei_unbind(ei_ev_mouse_move, widget, NULL,
-                                toplevel_callback_move_resize, NULL);
-        }
+
 
         return EI_FALSE;
 }

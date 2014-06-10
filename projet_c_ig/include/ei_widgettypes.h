@@ -67,9 +67,9 @@ typedef struct ei_toplevel_t {
         ei_point_t move_pos;
         // Taille du bouton de resize (carré)
         int             resize_size;
-        // Booleans pour detecter les différents release
-        bool            move;
-        bool             resize;
+        // Booleans pour detecter les différents release << Useless
+        // bool            move;
+        // bool             resize;
 } ei_toplevel_t;
 
 /**
