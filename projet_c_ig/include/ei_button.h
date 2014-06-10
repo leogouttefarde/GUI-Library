@@ -43,4 +43,6 @@ void ei_frame_draw(ei_surface_t window,ei_rect_t rectangle,ei_frame_t* frame,
 
 ei_rect_t reduction(ei_rect_t rectangle, int marge);
 
+ei_color_t eclaircir(ei_color_t couleur, float coeff_couleur);
+
 #endif
