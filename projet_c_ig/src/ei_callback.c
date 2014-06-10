@@ -38,10 +38,10 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
 
         // On recupere les parametres
         ei_placer_param_t *param;
+        ei_placer_param_t param_sauv;
         param = (ei_placer_param_t*)widget->geom_params;
-
-        // On distingue le cas ou le widget est absolu et le cas
-        // relatif
+        param_sauv = *param;
+        // On distingue le cas ou le widget a une taille absolue et le cas relatif
         if (param->w)
                 rel_w_p = NULL;
         else
@@ -51,11 +51,53 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
                 rel_h_p = NULL;
         else
                 a_h_p = NULL;
-        // Placement du widget pere
-        // La taille devient automatiquement absolue
-        ei_place(widget, param->anc, param->x, param->y, a_w_p, a_h_p, param->rel_x, param->rel_y, rel_w_p,
-                        rel_h_p);
 
+        ei_anchor_t anc = ei_anc_northwest;
+        // Placement du widget pere avec ancrage northwest, point d'ancrage =
+        // top_left
+        ei_place(widget, &anc, &widget->screen_location.top_left.x, 
+                        &widget->screen_location.top_left.y, a_w_p, 
+                        a_h_p, NULL, NULL, rel_w_p , rel_h_p);
+        /* VERSION AMELIORE - conservation des paramètres d'ancrage de
+         * l'utilisateur
+         *
+         * 
+        // Calcul de la nouvelle position du point d'ancrage
+        // Position du widget
+        int x1 = widget->screen_location.top_left.x;
+        int y1 = widget->screen_location.top_left.y;
+        int x2 = x1 + w - 1;
+        int y2 = y1 + h - 1;
+
+        // Calcul du nouveau point d'ancrage
+        ei_anchor_t *anc = param_sauv.anc;
+        if(!anc || !*anc){
+        anc = malloc(sizeof(ei_anchor_t));
+         *anc = ei_anchor_t ei_anc_northwest;
+         }
+         switch(*anc){
+         case ei_anc_northwest:
+         param->x = 
+         break;
+         case ei_anc_north:
+         break;
+         case ei_anc_northeast:
+         break;
+         case ei_anc_east:
+         break;
+         case ei_anc_southeast:
+         break;
+         case ei_anc_south:
+         break;
+         case ei_anc_southwest:
+         break;
+         case ei_anc_west:
+         break;
+         case ei_anc_center:
+         break;
+         default:
+         break;
+         }*/
 }
 
 /* Fonction de mouvement
@@ -160,23 +202,23 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
 // TODO A SUPPRIMER
 // remplacer par un all_callback_release
 /*ei_bool_t toplevel_callback_release(ei_widget_t *widget, struct ei_event_t
-                *event, void *user_param){
-        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
-        // On regarde si le release etait précédé d'un déplacement ou d'un
-        // redimensionnement
-        if (toplevel->move){
-                toplevel->move = false;
-                toplevel->resize = false;
-                ei_unbind(ei_ev_mouse_move, widget, NULL,
-                                toplevel_callback_move_move, NULL);
-        }
-        else if (toplevel->resize){
-                toplevel->move = false;
-                toplevel->resize = false;
-                ei_unbind(ei_ev_mouse_move, widget, NULL,
-                                toplevel_callback_move_resize, NULL);
-        }
-        return EI_FALSE;
+ *event, void *user_param){
+ ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+// On regarde si le release etait précédé d'un déplacement ou d'un
+// redimensionnement
+if (toplevel->move){
+toplevel->move = false;
+toplevel->resize = false;
+ei_unbind(ei_ev_mouse_move, widget, NULL,
+toplevel_callback_move_move, NULL);
+}
+else if (toplevel->resize){
+toplevel->move = false;
+toplevel->resize = false;
+ei_unbind(ei_ev_mouse_move, widget, NULL,
+toplevel_callback_move_resize, NULL);
+}
+return EI_FALSE;
 }*/
 
 // Peut-être pas dans le bon fichier
@@ -201,24 +243,24 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, v
 // gère le cas ou on  release sur le widget
 // Quand on relache la souris sur le bouton
 /*ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
-{
-        ei_bool_t done = EI_FALSE;
+  {
+  ei_bool_t done = EI_FALSE;
 
-        if (widget){
-                if (!strcmp(widget->wclass->name, "button")) {
+  if (widget){
+  if (!strcmp(widget->wclass->name, "button")) {
 
-                        ei_button_t *button = (ei_button_t*)widget;
-                        if (button->clic){
-                                button->relief = ei_relief_raised;
-                                button->clic = false;
-                                // Appel du callback du bouton
-                                if (button->callback){
-                                        done = button->callback((ei_widget_t*)button, NULL, button->user_param);
-                                }
-                        }
-                }
-        }
-        return done;
+  ei_button_t *button = (ei_button_t*)widget;
+  if (button->clic){
+  button->relief = ei_relief_raised;
+  button->clic = false;
+// Appel du callback du bouton
+if (button->callback){
+done = button->callback((ei_widget_t*)button, NULL, button->user_param);
+}
+}
+}
+}
+return done;
 }*/
 
 
