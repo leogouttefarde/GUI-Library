@@ -202,9 +202,14 @@ void ei_bar_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipp
 	btn_r.size=btn_r_s;
 	int width=toplevel->widget.screen_location.size.width;
 	int height=toplevel->widget.screen_location.size.height;
-
 	btn_r.top_left=plus(rec.top_left,width-toplevel->resize_size,height-toplevel->resize_size);
 	ei_button_draw_loc(surface,btn_r,btn_r_color,ei_relief_none,0,0,clipper);
+//Affichage du titre
+	ei_rect_t rec_txt;
+	rec_txt.top_left=plus(rec.top_left,2*marge+btn_c.size.width,0);
+	rec_txt.size.height=toplevel->bar_height;
+	rec_txt.size.width=toplevel->widget.screen_location.size.width-2*(2*marge+btn_c.size.width);
+	ei_button_text(surface,rec_txt,toplevel->title,toplevel->title_font,toplevel->title_color,0);
 }
 
 /**
