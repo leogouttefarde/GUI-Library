@@ -78,8 +78,8 @@ void move(ei_widget_t *widget, ei_size_t dist){
 ei_bool_t toplevel_callback_move_move(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param){
         ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
-        int w = event->param.mouse.where.x - toplevel->move_pos.x + 1;
-        int h = event->param.mouse.where.y - toplevel->move_pos.y + 1;
+        int w = event->param.mouse.where.x - toplevel->move_pos.x;
+        int h = event->param.mouse.where.y - toplevel->move_pos.y;
         move(widget, ei_size(w,h));
         // On sauvegarde le dernier point
         toplevel->move_pos = event->param.mouse.where;
@@ -94,8 +94,8 @@ ei_bool_t toplevel_callback_move_resize(ei_widget_t *widget, struct ei_event_t
         // On verifie sur quels axes le widget est redimensionnable:
         switch (toplevel->resizable){
         case ei_axis_both :
-                w = event->param.mouse.where.x - toplevel->move_pos.x + 1;
-                h = event->param.mouse.where.y - toplevel->move_pos.y + 1;
+                w = event->param.mouse.where.x - toplevel->move_pos.x;
+                h = event->param.mouse.where.y - toplevel->move_pos.y;
                 break;
         case ei_axis_x:
                 w = event->param.mouse.where.x - toplevel->move_pos.x + 1;
@@ -164,6 +164,7 @@ ei_bool_t toplevel_callback_release(ei_widget_t *widget, struct ei_event_t
                 ei_unbind(ei_ev_mouse_move, widget, NULL,
                                 toplevel_callback_move_resize, NULL);
         }
+        return EI_FALSE;
 }
 
 // Peut-être pas dans le bon fichier
