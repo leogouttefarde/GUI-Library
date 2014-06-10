@@ -342,6 +342,7 @@ void button_setdefaults(struct ei_widget_t* widget)
         button->img_anchor = ei_anc_center;
         button->callback = NULL;
         button->user_param = NULL;
+        button->clic = false;
 }
 
 void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
