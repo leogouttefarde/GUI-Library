@@ -98,10 +98,10 @@ ei_bool_t toplevel_callback_move_resize(ei_widget_t *widget, struct ei_event_t
                 h = event->param.mouse.where.y - toplevel->move_pos.y;
                 break;
         case ei_axis_x:
-                w = event->param.mouse.where.x - toplevel->move_pos.x + 1;
+                w = event->param.mouse.where.x - toplevel->move_pos.x;
                 break;
         case ei_axis_y:
-                h = event->param.mouse.where.y - toplevel->move_pos.y + 1;
+                h = event->param.mouse.where.y - toplevel->move_pos.y;
                 break;
         default : break;
         }
