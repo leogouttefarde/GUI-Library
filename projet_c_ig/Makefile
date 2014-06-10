@@ -72,9 +72,12 @@ LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a 
 
 TARGETS		=	${LIBEI} \
 				minimal frame button hello_world_absolute hello_world_relative puzzle move
+
+PERSO_TESTS :  toplevel test_shape test_placer test_relative test_button2 test_geom test_resize ensiskype
+
 all : ${TARGETS}
 
-
+tests : PERSO_TESTS
 
 ########## Test-programs
 
@@ -136,7 +139,6 @@ ${OBJDIR}/move_resize.o : ${TESTS}/move_resize.c
 
 ########## Tests personnels
 
-tests :  toplevel test_shape test_placer test_relative test_button2 test_geom test_resize ensiskype
 
 # ATTENTION a LINKER LES BIBLIOTHEQUES MATHEMATIQUES
 test_shape : ${OBJDIR}/test_shape.o ${LIBEIBASE} ${LIBEI}
@@ -229,7 +231,7 @@ doc :
 # Removing all built files.
 
 clean:
-	rm -f ${TARGETS}
+	rm -f ${TARGETS} ${PERSO_TESTS}
 	rm -f *.exe
 	rm -f ${OBJDIR}/*
 

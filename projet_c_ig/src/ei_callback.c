@@ -113,8 +113,8 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
                 break;
         }
 
-        rel_x = (float)(x - p_x) / (float)(p_w -1);
-        rel_y = (float)(y - p_y) / (float)(p_h -1);
+        rel_x = (float)(x) / (float)(p_w -1);
+        rel_y = (float)(y) / (float)(p_h -1);
 
         // On distingue le cas ou le widget a une taille absolue et le cas relatif
         if (param->w)
