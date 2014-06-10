@@ -144,8 +144,6 @@ ei_bool_t ei_is_widget_child(ei_widget_t *widget, ei_widget_t *child)
 
 void ei_invalidate_widget(ei_widget_t *widget)
 {
-        // TODO : if this widget is hidden by another invalid one, do not add
-
         ei_linked_elem_t *link = ei_invalid_widgets.head;
         ei_bool_t add = EI_TRUE;
 
@@ -180,6 +178,7 @@ void ei_draw_widget(ei_widget_t *widget){
         }
 }
 
+/*
 void ei_draw_widgets()
 {
         ei_linked_elem_t *link = ei_invalid_widgets.head;
@@ -192,26 +191,57 @@ void ei_draw_widgets()
 
                 link = link->next;
         }
+}*/
+
+void ei_draw_rect(ei_rect_t rect)
+{
+        ei_widget_t *root = ei_get_root();
+
+        if (root) {
+                root->content_rect = &rect;
+
+                ei_draw_widget(root);
+
+                // Restore default
+                root->content_rect = &root->screen_location;
+        }
+}
+
+void ei_draw_rects()
+{
+        // TODO : if this rect is hidden by another invalid one, do not add
+
+        // TODO : Optimisation
+        // Fusionner les rectangles dont l'intersection est trop grande
+
+
+        ei_linked_elem_t *link = ei_update_rects.head;
+        ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
+        ei_widget_t *widget = NULL;
+
+        while (lrect) {
+                ei_draw_rect(lrect->rect);
+
+                lrect = lrect->next;
+        }
 }
 
 void ei_invalidate_rects()
 {
-        // TODO : Optimisation
-        // Fusionner les rectangles dont l'intersection est trop grande
-        ei_linked_elem_t *link = ei_invalid_widgets.head;
-        ei_rect_t *clipper = NULL;
-        ei_widget_t *widget = NULL;
+        // ei_linked_elem_t *link = ei_invalid_widgets.head;
+        // ei_rect_t *clipper = NULL;
+        // ei_widget_t *widget = NULL;
 
-        while (link) {
-                widget = (ei_widget_t*)(link->elem);
+        // while (link) {
+        //         widget = (ei_widget_t*)(link->elem);
 
-                if (widget) {
-                        clipper = &(widget->screen_location);
-                        ei_invalidate_rect(clipper);
-                }
+        //         if (widget) {
+        //                 clipper = &(widget->screen_location);
+        //                 ei_invalidate_rect(clipper);
+        //         }
 
-                link = link->next;
-        }
+        //         link = link->next;
+        // }
 }
 
 void ei_invalidate_reset()
@@ -233,6 +263,10 @@ ei_linked_rect_t* ei_get_update_rects()
 
 void ei_invalidate_rect(ei_rect_t* rect)
 {
+        // TODO : if this rect is hidden by another invalid one, do not add
+
+        // TODO : Optimisation
+        // Fusionner les rectangles dont l'intersection est trop grande
         if (rect) {
                 ei_linked_rect_t *link = CALLOC_TYPE(ei_linked_rect_t);
                 link->rect = *rect;

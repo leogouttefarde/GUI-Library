@@ -1,7 +1,9 @@
 # Variable definitions.
 
 PLATFORM	= $(shell uname)
-CC		= gcc
+PROFILING	= -p
+#PROFILING	= 
+CC		= gcc ${PROFILING}
 OBJDIR		= ./objs
 TESTS		= ./tests
 INCLUDES	= ./include

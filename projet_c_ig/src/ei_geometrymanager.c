@@ -100,19 +100,25 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 
 }
 
+//void rect_intersection()
 
 /*  Gere le clipping */
 void ei_place_runfunc(struct ei_widget_t*       widget)
 {
         //
         ei_rect_t *clipper;
+        ei_rect_t real_clipper;
         if (widget->parent){
                 clipper = widget->parent->content_rect;  
         }
         else{
                 clipper = &widget->screen_location;
         }
+
+        //real_clipper = rect_intersection(clipper, root->content_rect);
+
         widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
+        //widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), &real_clipper);
 }
 
 void ei_place_releasefunc(struct ei_widget_t*   widget)
@@ -201,15 +207,18 @@ void ei_place(ei_widget_t *widget,
         assert(placer);
 
 
-        if (placer) {
+        if (placer && widget) {
                 /* Display widget */
 
                 // If there is a parent invalidate parent instead
-                ei_widget_t *inval = widget;
-                if (inval && inval->parent)
-                        inval = inval->parent;
+                // ei_widget_t *inval = widget;
+                // if (inval && inval->parent)
+                //         inval = inval->parent;
 
-                ei_invalidate_widget(inval);
+                // ei_invalidate_widget(inval);
+
+                ei_rect_t old_pos = widget->screen_location;
+                ei_app_invalidate_rect(&old_pos);
 
 
                 ei_bool_t gp_alloc = EI_FALSE;
@@ -511,24 +520,29 @@ void ei_place(ei_widget_t *widget,
                         widget->screen_location.size = widget->requested_size;
                         widget->content_rect = &widget->screen_location;
                 }
-        }
 
-        //ei_place_rec(widget, false);
 
-        // Appel récursif sur les enfants pour les replacer
-        ei_widget_t *current = widget->children_head;
-        ei_placer_param_t *current_param;
-        while(current){
-                current_param = (ei_placer_param_t*)current->geom_params;
-                if (current_param){
-                        ei_place(current, current_param->anc, current_param->x,
+                ei_rect_t new_pos = widget->screen_location;
+                ei_app_invalidate_rect(&new_pos);
+
+
+                //ei_place_rec(widget, false);
+
+                // Appel récursif sur les enfants pour les replacer
+                ei_widget_t *current = widget->children_head;
+                ei_placer_param_t *current_param;
+                while(current){
+                        current_param = (ei_placer_param_t*)current->geom_params;
+                        if (current_param){
+                                ei_place(current, current_param->anc, current_param->x,
                                         current_param->y, current_param->w, current_param->h,
                                         current_param->rel_x, current_param->rel_y,
                                         current_param->rel_w, current_param->rel_h);}
-                else{
-                        ei_place(current, NULL, NULL, NULL, NULL, NULL, NULL,
-                                        NULL, NULL, NULL);
+                        else{
+                                ei_place(current, NULL, NULL, NULL, NULL, NULL, NULL,
+                                                NULL, NULL, NULL);
+                        }
+                        current = current->next_sibling;
                 }
-                current = current->next_sibling;
         }
 }
