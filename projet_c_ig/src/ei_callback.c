@@ -115,7 +115,7 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t
         // On cherche si on a cliqué sur le titre, le resize, le close
         int m_x = event->param.mouse.where.x;
         int m_y = event->param.mouse.where.y;
-        int t_h = toplevel->title_height;
+        int t_h = toplevel->bar_height;
         int r_s = toplevel->resize_size;
         int y = widget->screen_location.top_left.y;
         int x = widget->screen_location.top_left.x;

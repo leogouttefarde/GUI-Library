@@ -409,14 +409,6 @@ void toplevel_release(ei_widget_t *widget)
         SAFE_FREE(widget);
 }
 
-
-
-
-
-
-
-
-
 void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
                 ei_surface_t pick_surface, ei_rect_t *clipper)
 {
@@ -430,9 +422,12 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
+
                 ei_linked_point_t lp =
-                        ei_rect_to_points(toplevel->widget.screen_location);
+                        ei_rect_to_points(*toplevel->widget.content_rect);
                 ei_draw_polygon(surface, &lp, toplevel->color, clipper);
+
+					 ei_bar_draw(surface,toplevel,clipper);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
@@ -452,8 +447,11 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 
         ei_size_t s = {100, 100};
         toplevel->widget.requested_size = s;
+		  toplevel->bar_height=20;
 
-        ei_color_t c = {0x00, 0xFF, 0xFF, 0xFF};
+		  toplevel->rel_btn_close=ei_relief_raised;
+
+        ei_color_t c = {0x00, 0x00, 0x00, 0xFF};
         toplevel->color = c;
 
         toplevel->border_width = 4;
@@ -469,7 +467,6 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
         toplevel->min_size = ms;
 
         // Gestion du move, resize
-        toplevel->title_height = 20;
         toplevel->move_pos = ei_point(0,0);
         toplevel->move = false;
         toplevel->resize = false;
@@ -478,32 +475,31 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 
 void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-
         ei_rect_t *content_rect;
         content_rect = malloc(sizeof(ei_rect_t));
+		  //printf("width rect:%i\n",rect.size.width);
+		  //printf("height rect:%i\n",rect.size.height);
         if (rect.size.width != 0 && rect.size.height !=0){
+			  //printf("CAS IF \n");
                 widget->screen_location = rect;
                 // La screen_location est copiée tel quel
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
                 // Gestion des bordures pour le content_rect
                 int bw = toplevel->border_width;
                 *content_rect = rect;
-                content_rect->top_left.x =  content_rect->top_left.x +
-                        bw;
-
-                content_rect->top_left.y =  content_rect->top_left.y +
-                        bw;
-
+                content_rect->top_left =plus(rect.top_left,0,toplevel->bar_height);
                 content_rect->size.width =  content_rect->size.width +
                         - 2*bw;
                 content_rect->size.height =  content_rect->size.height +
                         -2*bw;
         }
         else{
+			  //printf("on est ds else\n");
                 widget->screen_location = ei_rect_zero();
                 content_rect = &widget->screen_location;
         }
         widget->content_rect = content_rect;
+		  
 }
 
 /**
@@ -526,8 +522,3 @@ void    ei_toplevel_register_class()
 
         toplevel_table->next = NULL;
 }
-
-
-
-
-

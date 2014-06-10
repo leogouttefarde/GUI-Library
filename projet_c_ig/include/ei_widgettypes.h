@@ -51,29 +51,26 @@ typedef struct ei_button_t {
         bool clic;
 } ei_button_t;
 
-
-
 typedef struct ei_toplevel_t {
         ei_widget_t widget;
+        // Hauteur de la barre de titre
+		  int bar_height;
+		  ei_relief_t rel_btn_close;
         ei_color_t	color;
         int		border_width;
         char*		title;
+        ei_font_t	title_font;
         ei_bool_t	closable;
         ei_axis_set_t	resizable;
         ei_size_t*	min_size;
-        // Derniere position de la souris
         // Pour le calcul du deplacement
         ei_point_t move_pos;
-        // Hauteur de la barre de titre
-        int             title_height;
         // Taille du bouton de resize (carré)
         int             resize_size;
         // Booleans pour detecter les différents release
         bool            move;
         bool             resize;
 } ei_toplevel_t;
-
-
 
 /**
  * \brief       Placer geometry manager
