@@ -138,6 +138,24 @@ void  ei_register_placer_manager()
         ei_geometrymanager_register(placer);
 }
 
+/*
+void ei_place_rec(ei_widget_t *widget, bool place_cur) {
+
+        if (widget) {
+                if (place_cur) {
+                        // Placement du widget
+                        ei_placer_param_t *param;
+                        param = (ei_placer_param_t*)widget->geom_params;
+                        if (param) {
+                                ei_place(widget, param->anc, param->x, param->y, param->w, param->h,
+                                                param->rel_x, param->rel_y, param->rel_w, param->rel_h);
+                        }
+                }
+
+                ei_place_rec(widget->children_head, true);
+                ei_place_rec(widget->next_sibling, true);
+        }
+}*/
 
 /**
  * \brief       Configures the geometry of a widget using the "placer" geometry manager.
@@ -185,7 +203,14 @@ void ei_place(ei_widget_t *widget,
 
         if (placer) {
                 /* Display widget */
-                ei_invalidate_widget(widget);
+
+                // If there is a parent invalidate parent instead
+                ei_widget_t *inval = widget;
+                if (inval && inval->parent)
+                        inval = inval->parent;
+
+                ei_invalidate_widget(inval);
+
 
                 ei_bool_t gp_alloc = EI_FALSE;
                 // On verifie que le widget est bien géré par le placeur,
@@ -503,6 +528,8 @@ void ei_place(ei_widget_t *widget,
                         widget->content_rect = &widget->screen_location;
                 }
         }
+
+        //ei_place_rec(widget, false);
 
         // Appel récursif sur les enfants pour les replacer
         ei_widget_t *current = widget->children_head;

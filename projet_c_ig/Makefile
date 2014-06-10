@@ -18,7 +18,8 @@ LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
 			${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o \
 			${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o \
 			${OBJDIR}/ei_button.o ${OBJDIR}/ei_core.o \
-			${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o
+			${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o \
+			${OBJDIR}/ei_utilities.o 
 
 
 

@@ -108,7 +108,7 @@ void ei_app_run()
 
                 // Update des surfaces
                 hw_surface_update_rects(root_surface, NULL); // DEBUG : UPDATE ALL
-                //hw_surface_update_rects(root_surface, ei_get_update_rects());
+                //hw_surface_update_rects(root_surface, ei_get_update_rects()); // OK
 
                 ei_invalidate_reset();
 

@@ -13,6 +13,7 @@
 #include "ei_utils.h"
 #include "ei_button.h"
 #include "ei_common.h"
+#include "ei_utilities.h"
 
 
 // TODO : Gérer les widgetclass via des linkedlist
@@ -422,12 +423,7 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
-
-                ei_linked_point_t lp =
-                        ei_rect_to_points(*toplevel->widget.content_rect);
-                ei_draw_polygon(surface, &lp, toplevel->color, clipper);
-
-					 ei_bar_draw(surface,toplevel,clipper);
+					 ei_toplevel_draw(surface,toplevel,clipper);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
@@ -448,11 +444,14 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 
         ei_size_t s = {100, 100};
         toplevel->widget.requested_size = s;
+
 		  toplevel->bar_height=20;
+		  ei_color_t bar_color={255,255,255,255};
+		  toplevel->bar_color=bar_color;
 
 		  toplevel->rel_btn_close=ei_relief_raised;
 
-        ei_color_t c = {0x00, 0x00, 0x00, 0xFF};
+        ei_color_t c = {0x00, 0xff, 0x00, 0xFF};
         toplevel->color = c;
 
         toplevel->border_width = 4;
@@ -493,16 +492,10 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                 // Gestion des bordures pour le content_rect
                 int bw = toplevel->border_width;
                 *content_rect = rect;
-                content_rect->top_left =plus(rect.top_left,0,toplevel->bar_height);
+                content_rect->top_left =plus(rect.top_left,bw,bw+toplevel->bar_height);
                 content_rect->size.height=widget->screen_location
-                        .size.height - toplevel->bar_height;
-
-                /*
-                   content_rect->size.width =  content_rect->size.width +
-                   - 2*bw;
-                   content_rect->size.height =  content_rect->size.height +
-                   -2*bw;
-                   */
+                        .size.height - toplevel->bar_height-2*bw;
+					 content_rect->size.width =widget->screen_location.size.width-2*bw;
         }
         else{
                 //printf("on est ds else\n");
