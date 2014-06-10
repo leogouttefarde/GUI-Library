@@ -122,11 +122,42 @@ void ei_init()
         ei_linkedlist_init(&ei_update_rects);
 }
 
+ei_bool_t ei_is_widget_child(ei_widget_t *widget, ei_widget_t *child)
+{
+        if (widget) {
+                ei_widget_t *cur = widget->children_head;
+
+                while (cur) {
+                        if (cur == widget)
+                                return EI_TRUE;
+
+
+                        if (cur->next_sibling)
+                                cur = cur->next_sibling;
+                        else
+                                cur = cur->children_head;
+                }
+        }
+
+        return EI_FALSE;
+}
+
 void ei_invalidate_widget(ei_widget_t *widget)
 {
         // TODO : if this widget is hidden by another invalid one, do not add
 
-        ei_linkedlist_add(&ei_invalid_widgets, widget);
+        ei_linked_elem_t *link = ei_invalid_widgets.head;
+        ei_bool_t add = EI_TRUE;
+
+        while (link && add) {
+                if ((widget == link->elem) || ei_is_widget_child(link->elem, widget))
+                        add = EI_FALSE;
+
+                link = link->next;
+        }
+
+        if (add)
+                ei_linkedlist_add(&ei_invalid_widgets, widget);
 }
 
 // Draw récursif selon la hiérarchie des widgets
@@ -155,7 +186,7 @@ void ei_draw_widgets()
         ei_widget_t *widget = NULL;
 
         while (link) {
-                widget = (ei_widget_t*)link->elem;
+                ei_widget_t *widget = (ei_widget_t*)link->elem;
 
                 ei_draw_widget(widget);
 
