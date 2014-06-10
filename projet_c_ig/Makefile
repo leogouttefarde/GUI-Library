@@ -133,7 +133,7 @@ ${OBJDIR}/move_resize.o : ${TESTS}/move_resize.c
 
 ########## Tests personnels
 
-tests :  test_shape test_placer test_relative test_button2 test_geom test_resize
+tests :  toplevel test_shape test_placer test_relative test_button2 test_geom test_resize
 
 # ATTENTION a LINKER LES BIBLIOTHEQUES MATHEMATIQUES
 test_shape : ${OBJDIR}/test_shape.o ${LIBEIBASE} ${LIBEI}
@@ -177,6 +177,12 @@ test_frame_2 : ${OBJDIR}/test_frame_2.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/test_frame_2.o : ${TESTS}/test_frame_2.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_frame_2.c -o ${OBJDIR}/test_frame_2.o ${MATHFLAGS} 
+
+toplevel : ${OBJDIR}/toplevel.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o toplevel ${OBJDIR}/toplevel.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/toplevel.o : ${TESTS}/toplevel.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/toplevel.c -o ${OBJDIR}/toplevel.o ${MATHFLAGS} 
 
 ########## Compilation séparée des sources
 
