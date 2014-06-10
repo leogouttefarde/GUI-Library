@@ -177,27 +177,34 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
 	//printf("fin dessin bouton\n");
 }
 void ei_bar_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipper) {
-
+	ei_rect_t rec=toplevel->widget.screen_location;
 //Dessin de la barre	
 	//printf("début ei_bar_draw\n");
 	ei_color_t bar_color={0xff,0xff,0xff,0xff};
-	ei_rect_t rec=toplevel->widget.screen_location;
 	rec.size.height=toplevel->bar_height;
 	ei_linked_point_t lp=ei_rect_to_points(rec);
 	ei_draw_polygon(surface,&lp,bar_color,NULL);
 	//printf("barre déssinée, on dessine le bouton \n");
 //Dessin du bouton close
-	ei_color_t btn_color={0,0,0,255};
+	ei_color_t btn_c_color={0,0,0,255};
 	int marge=toplevel->bar_height*0.25;
-	ei_rect_t btn;
-	btn.top_left=plus(rec.top_left,marge,marge);
-	btn.size.width=toplevel->bar_height-2*marge;
-	btn.size.height=toplevel->bar_height-2*marge;
-	marge=0.2*btn.size.height;
-	ei_button_draw_loc(surface,btn,btn_color,toplevel->rel_btn_close,0,marge,NULL);
+	ei_rect_t btn_c;
+	btn_c.top_left=plus(rec.top_left,marge,marge);
+	btn_c.size.width=toplevel->bar_height-2*marge;
+	btn_c.size.height=toplevel->bar_height-2*marge;
+	marge=0.2*btn_c.size.height;
+	ei_button_draw_loc(surface,btn_c,btn_c_color,toplevel->rel_btn_close,0,marge,clipper);
 	//printf("bouton déssiné\n");
 //Dessin du bouton resize
-	
+	ei_color_t btn_r_color=eclaircir(toplevel->color,0.3);
+	ei_rect_t btn_r;
+	ei_size_t btn_r_s={toplevel->resize_size,toplevel->resize_size};
+	btn_r.size=btn_r_s;
+	int width=toplevel->widget.screen_location.size.width;
+	int height=toplevel->widget.screen_location.size.height;
+
+	btn_r.top_left=plus(rec.top_left,width-toplevel->resize_size,height-toplevel->resize_size);
+	ei_button_draw_loc(surface,btn_r,btn_r_color,ei_relief_none,0,0,clipper);
 }
 
 /**
@@ -382,4 +389,13 @@ ei_rect_t reduction(ei_rect_t rectangle, int marge)
 	rectangle_reduit.size.height = rectangle.size.height - 2 * marge;
 
 	return rectangle_reduit;
+}
+
+ei_color_t eclaircir(ei_color_t couleur, float coeff_couleur) {
+		ei_color_t couleur_eclairee;
+		couleur_eclairee.red = MIN(couleur.red + coeff_couleur * 255, 255);
+		couleur_eclairee.green = MIN(couleur.green + coeff_couleur * 255, 255);
+		couleur_eclairee.blue = MIN(couleur.blue + coeff_couleur * 255, 255);
+		couleur_eclairee.alpha = 255;
+		return couleur_eclairee;
 }

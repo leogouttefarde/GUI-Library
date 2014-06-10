@@ -489,6 +489,9 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                 int bw = toplevel->border_width;
                 *content_rect = rect;
                 content_rect->top_left =plus(rect.top_left,0,toplevel->bar_height);
+					  widget->screen_location.size.height=widget->screen_location
+						  .size.height+toplevel->bar_height;
+
 					 /*
                 content_rect->size.width =  content_rect->size.width +
                         - 2*bw;
