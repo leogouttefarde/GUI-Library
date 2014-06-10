@@ -37,6 +37,30 @@ void ei_linkedlist_add(ei_linkedlist_t *list, ei_elem_t elem)
         }
 }
 
+ei_bool_t ei_linkedlist_has(ei_linkedlist_t *list, ei_elem_t elem)
+{
+        ei_bool_t has = EI_FALSE;
+
+        if (list) {
+                ei_linked_elem_t *link = list->head;
+
+                while (link && !has) {
+                        if (elem == link->elem)
+                                has = EI_TRUE;
+
+                        link = link->next;
+                }
+        }
+
+        return has;
+}
+
+void ei_linkedlist_add_unique(ei_linkedlist_t *list, ei_elem_t elem)
+{
+        if (!ei_linkedlist_has(list, elem))
+                ei_linkedlist_add(list, elem);
+}
+
 void ei_linkedlist_pop_link(ei_linkedlist_t *list, ei_linked_elem_t *link, ei_bool_t free_elem)
 {
         if (list && link) {

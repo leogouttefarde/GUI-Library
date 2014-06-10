@@ -101,8 +101,8 @@ void ei_app_run()
 
         while (!quit_request) {
 
-                //ei_draw_widget(ei_get_root()); // DEBUG : DRAW ALL
-                ei_draw_widgets();
+                ei_draw_widget(ei_get_root()); // DEBUG : DRAW ALL
+                //ei_draw_widgets();
 
                 ei_invalidate_rects();
 

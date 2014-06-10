@@ -49,4 +49,9 @@ void ei_linkedlist_pop_link(ei_linkedlist_t *list, ei_linked_elem_t *link, ei_bo
 
 void ei_linkedlist_empty(ei_linkedlist_t *list, ei_bool_t free_elem);
 
+ei_bool_t ei_linkedlist_has(ei_linkedlist_t *list, ei_elem_t elem);
+
+void ei_linkedlist_add_unique(ei_linkedlist_t *list, ei_elem_t elem);
+
+
 #endif

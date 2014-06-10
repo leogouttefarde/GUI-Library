@@ -203,7 +203,14 @@ void ei_place(ei_widget_t *widget,
 
         if (placer) {
                 /* Display widget */
-                ei_invalidate_widget(widget);
+
+                // If there is a parent invalidate parent instead
+                ei_widget_t *inval = widget;
+                if (inval && inval->parent)
+                        inval = inval->parent;
+
+                ei_invalidate_widget(inval);
+
 
                 ei_bool_t gp_alloc = EI_FALSE;
                 // On verifie que le widget est bien géré par le placeur,
