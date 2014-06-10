@@ -184,7 +184,7 @@ void ei_bar_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipp
 	ei_linked_point_t lp=ei_rect_to_points(rec);
 	ei_draw_polygon(surface,&lp,bar_color,NULL);
 	printf("barre déssinée, on dessine le bouton \n");
-/*
+
 	ei_color_t btn_color={0,0,0,255};
 	int marge=toplevel->bar_height*0.25;
 	ei_rect_t btn;
@@ -194,7 +194,7 @@ void ei_bar_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipp
 	marge=0.2*btn.size.height;
 	ei_button_draw_loc(surface,btn,btn_color,toplevel->rel_btn_close,0,marge,NULL);
 	printf("bouton déssiné");
-*/
+
 }
 
 /**

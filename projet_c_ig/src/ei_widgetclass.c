@@ -426,7 +426,7 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
                         ei_rect_to_points(*toplevel->widget.content_rect);
                 ei_draw_polygon(surface, &lp, toplevel->color, clipper);
 
-					 //ei_bar_draw(surface,toplevel,clipper);
+					 ei_bar_draw(surface,toplevel,clipper);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
@@ -476,10 +476,10 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
         ei_rect_t *content_rect;
         content_rect = malloc(sizeof(ei_rect_t));
-		  printf("width rect:%i\n",rect.size.width);
-		  printf("height rect:%i\n",rect.size.height);
+		  //printf("width rect:%i\n",rect.size.width);
+		  //printf("height rect:%i\n",rect.size.height);
         if (rect.size.width != 0 && rect.size.height !=0){
-			  printf("CAS IF \n");
+			  //printf("CAS IF \n");
                 widget->screen_location = rect;
                 // La screen_location est copiée tel quel
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
@@ -493,7 +493,7 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                         -2*bw;
         }
         else{
-			  printf("on est ds else\n");
+			  //printf("on est ds else\n");
                 widget->screen_location = ei_rect_zero();
                 content_rect = &widget->screen_location;
         }
@@ -521,11 +521,3 @@ void    ei_toplevel_register_class()
 
         toplevel_table->next = NULL;
 }
-<<<<<<< HEAD
-=======
-
-
-
-
-
->>>>>>> e92422f354e763e6b453aa1acac94e806d5ebb36
