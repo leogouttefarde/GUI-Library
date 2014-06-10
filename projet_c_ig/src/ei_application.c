@@ -22,6 +22,8 @@
 #include "ei_utils.h"
 static ei_bool_t quit_request = EI_FALSE;
 
+
+
 /* Fonction de redimensionnement
  * Conserve les proportions des fils */
 void resize(ei_widget_t *widget, ei_size_t add_size){
@@ -78,7 +80,6 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
  * Deplacement brut */
 void move(ei_widget_t *widget, ei_size_t dist){
 
-
         ei_anchor_t anc = ei_anc_northwest;
 
         int x;
@@ -95,33 +96,79 @@ void move(ei_widget_t *widget, ei_size_t dist){
         // On deplace le pere
         ei_place(widget, &anc, &x, &y, NULL, NULL, NULL,
                         NULL, NULL, NULL);
-
-/* Commenté pr compiler
-ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t
-                *event, void *user_param){
-        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
-        toplevel->prec = event->param.mouse.where;*/
-        // On cherche si on a cliquer sur le titre, le resize, le close
-        // TODO
-        // SI TITRE   
-        // On bind ce widget, mouse_move et move
-        // TODO TODO TODO TOU
-        //  SI RESIZE
-        //  On bind mouse_move, resize, le widget
-        //  SI CLOSE
-        //  ???? plus tard
-
-        return EI_FALSE;
 }
 
 ei_bool_t toplevel_callback_move_move(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param){
         ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
-/* Commenté pr compiler
-        int w = event->param.mouse.where.x - toplevel->prec.x + 1;
-        int h = event->param.mouse.where.y - toplevel->prec.y + 1;
-        move(widget, ei_size(w,h));*/
+        int w = event->param.mouse.where.x - toplevel->move_pos.x + 1;
+        int h = event->param.mouse.where.y - toplevel->move_pos.y + 1;
+        move(widget, ei_size(w,h));
+        // On sauvegarde le dernier point
+        toplevel->move_pos = event->param.mouse.where;
         return EI_FALSE;
+}
+
+ei_bool_t toplevel_callback_move_resize(ei_widget_t *widget, struct ei_event_t
+                *event, void *user_param){
+        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+        int w = event->param.mouse.where.x - toplevel->move_pos.x + 1;
+        int h = event->param.mouse.where.y - toplevel->move_pos.y + 1;
+        resize(widget, ei_size(w,h));
+        // On sauvegarde le dernier point
+        toplevel->move_pos = event->param.mouse.where;
+        return EI_FALSE;
+}
+
+ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t
+                *event, void *user_param){
+        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+        toplevel->move_pos = event->param.mouse.where;
+        // On cherche si on a cliqué sur le titre, le resize, le close
+        int m_x = event->param.mouse.where.x;
+        int m_y = event->param.mouse.where.y;
+        int t_h = toplevel->title_height;
+        int r_s = toplevel->resize_size;
+        int y = widget->screen_location.top_left.y;
+        int x = widget->screen_location.top_left.x;
+        int w = widget->screen_location.size.width;
+        int h = widget->screen_location.size.height;
+
+        if (m_y < y + t_h){
+                // Si titre, on bind CE WIDGET et la fonction de deplacement
+                toplevel->move = true;
+                toplevel->resize = false;
+                ei_bind(ei_ev_mouse_move, widget, NULL, toplevel_callback_move_move, NULL);
+        }
+        else if (m_y >= y + h -1 - r_s && m_x >= x + w - 1 - r_s){
+                toplevel->move = false;
+                toplevel->resize = true;
+                // Si resize, on bind ce widget et la fonction de resize
+                ei_bind(ei_ev_mouse_move, widget, NULL,
+                                toplevel_callback_move_resize, NULL);
+        }
+        // TODO si close on supprime le widget
+        return EI_FALSE;
+}
+
+
+ei_bool_t toplevel_callback_release(ei_widget_t *widget, struct ei_event_t
+                *event, void *user_param){
+        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+        // On regarde si le release etait précédé d'un déplacement ou d'un
+        // redimensionnement
+        if (toplevel->move){
+                toplevel->move = false;
+                toplevel->resize = false;
+                ei_unbind(ei_ev_mouse_move, widget, NULL,
+                                toplevel_callback_move_move, NULL);
+        }
+        else if (toplevel->resize){
+                toplevel->move = false;
+                toplevel->resize = false;
+                ei_unbind(ei_ev_mouse_move, widget, NULL,
+                                toplevel_callback_move_resize, NULL);
+        }
 }
 
 // Peut-être pas dans le bon fichier
@@ -141,7 +188,7 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, v
 // Quand on relache la souris sur le bouton
 ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
-        ei_bool_t res;
+        ei_bool_t res = EI_FALSE;
 
         if (widget){
                 if (!strcmp(widget->wclass->name, "button")) {
@@ -155,7 +202,7 @@ ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event,
                         }
                 }
         }
-        return EI_FALSE;
+        return res;
 }
 
 /**
@@ -204,6 +251,9 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         // ei_widget_class
         ei_bind(ei_ev_mouse_buttondown, NULL, "button", button_callback_click, NULL);
         ei_bind(ei_ev_mouse_buttonup, NULL, "button", button_callback_release, NULL);
+
+        ei_bind(ei_ev_mouse_buttondown, NULL, "toplevel", toplevel_callback_click, NULL);
+        ei_bind(ei_ev_mouse_buttonup, NULL, "toplevel", toplevel_callback_release, NULL);
 }
 
 /**
