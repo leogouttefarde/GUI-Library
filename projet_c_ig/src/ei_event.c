@@ -175,16 +175,21 @@ void ei_event_process(ei_event_t *event)
                                 case ei_ev_mouse_buttondown:
                                 case ei_ev_mouse_buttonup:
                                 case ei_ev_mouse_move:
-                                        /* If linked widget is selected */
-                                        if (binding->widget == selected)
-                                                call = EI_TRUE, widget = selected;
 
-                                        /* If selected widget is tagged */
-                                        else if (binding->tag && selected->wclass) {
-                                                if (!strcmp(selected->wclass->name, binding->tag)) {
+                                        if (selected) {
+
+                                                /* If linked widget is selected */
+                                                if (binding->widget == selected)
                                                         call = EI_TRUE, widget = selected;
+
+                                                /* If selected widget is tagged */
+                                                else if (binding->tag && selected->wclass) {
+                                                        if (!strcmp(selected->wclass->name, binding->tag)) {
+                                                                call = EI_TRUE, widget = selected;
+                                                        }
                                                 }
                                         }
+
                                         break;
 
                                 default:
