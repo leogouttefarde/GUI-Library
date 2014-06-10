@@ -12,94 +12,131 @@ static ei_callback_t *callback = NULL;
  * Conserve les proportions des fils */
 void resize(ei_widget_t *widget, ei_size_t add_size){
 
-        //ei_anchor_t anc = ei_anc_northwest;
+        // On recupere les parametres
+        ei_placer_param_t *param;
+        param = (ei_placer_param_t*)widget->geom_params;
 
         // Taille parent , ancienne taille widget
+        int p_x = widget->parent->content_rect->top_left.x;
+        int p_y = widget->parent->content_rect->top_left.y;
         int p_w = widget->parent->content_rect->size.width;
         int p_h = widget->parent->content_rect->size.height;
-        int w = widget->screen_location.size.width;
-        int h = widget->screen_location.size.height;
-
+        int w_w = widget->screen_location.size.width;
+        int w_h = widget->screen_location.size.height;
+        int w_x = widget->screen_location.top_left.x;
+        int w_y = widget->screen_location.top_left.y;
         // Nouvelles tailles
-        int a_w;
-        int a_h;
+        int w;
+        int h;
         float rel_w;
         float rel_h;
 
-        int *a_w_p = &a_w;
-        int *a_h_p = &a_h;
+        // Nouvelles positions
+        int x;
+        int y;
+        float rel_x;
+        float rel_y;
+
+        // Pointeurs sur les nouvelles tailles, positions
+        int *w_p = &w;
+        int *h_p = &h;
         float *rel_w_p = &rel_w;
         float *rel_h_p = &rel_h;
 
-        // Taille du widget
-        // Calcul de la taille absolue du widget
-        a_w = w + add_size.width;
-        a_h = h + add_size.height;
-        rel_w = (float)a_w / (float)p_w;
-        rel_h = (float)a_h / (float)p_h;
+        int *x_p = &x;
+        int *y_p = &y;
+        float *rel_x_p = &rel_x;
+        float *rel_y_p = &rel_y;
 
-        // On recupere les parametres
-        ei_placer_param_t *param;
-        ei_placer_param_t param_sauv;
-        param = (ei_placer_param_t*)widget->geom_params;
-        param_sauv = *param;
+
+        // Calcul de la nouvelle taille absolue du widget
+        w = w_w + add_size.width;
+        h = w_h + add_size.height;
+        rel_w = (float)w / (float)p_w;
+        rel_h = (float)h / (float)p_h;
+
+
+        // Nouvelle position top_left, bottom_right du widget
+        // (le redimensionnement se fait avec ancrage NW)
+        int x1 = w_x;
+        int x2 = x1 + w - 1;
+        int y1 = w_y;
+        int y2 = y1 + h - 1;
+
+        // Calcul du nouveau point d'ancrage
+        ei_anchor_t *anc;
+        anc = malloc(sizeof(ei_anchor_t));
+        if(!param->anc || !*param->anc)
+                *anc = ei_anc_northwest;
+        else
+                *anc = *param->anc;
+
+        switch(*anc){
+        case ei_anc_northwest:
+                x = x1;
+                y = y1;
+                break;
+        case ei_anc_north:
+                x = (x1 + x2) / 2;
+                y = y1;
+                break;
+        case ei_anc_northeast:
+                x = x1 + w - 1;
+                y = y1;
+                break;
+        case ei_anc_east:
+                x = x1 + w - 1;
+                y = (y1 +y2) / 2;
+                break;
+        case ei_anc_southeast:
+                x = x1 + w - 1;
+                y = y1 + h - 1;
+                break;
+        case ei_anc_south:
+                x = (x1 + x2) / 2;
+                y = y1 + h -1;
+                break;
+        case ei_anc_southwest:
+                x = x1;
+                y = y + h -1;
+                break;
+        case ei_anc_west:
+                x = x1;
+                y = (y1 +y2) / 2;
+                break;
+        case ei_anc_center:
+                x = (x1 + x2) / 2;
+                y = (y1 + y2) / 2;
+                break;
+        default:
+                break;
+        }
+
+        rel_x = (float)(x - p_x) / (float)(p_w -1);
+        rel_y = (float)(y - p_y) / (float)(p_h -1);
+
         // On distingue le cas ou le widget a une taille absolue et le cas relatif
         if (param->w)
                 rel_w_p = NULL;
         else
-                a_w_p = NULL;
+                w_p = NULL;
 
         if (param->h)
                 rel_h_p = NULL;
         else
-                a_h_p = NULL;
+                h_p = NULL;
+        if (param->x)
+                rel_x_p = NULL;
+        else
+                x_p = NULL;
 
-        ei_anchor_t anc = ei_anc_northwest;
-        // Placement du widget pere avec ancrage northwest, point d'ancrage =
-        // top_left
-        ei_place(widget, &anc, &widget->screen_location.top_left.x, 
-                        &widget->screen_location.top_left.y, a_w_p, 
-                        a_h_p, NULL, NULL, rel_w_p , rel_h_p);
-        /* VERSION AMELIORE - conservation des paramètres d'ancrage de
-         * l'utilisateur
-         *
-         * 
-        // Calcul de la nouvelle position du point d'ancrage
-        // Position du widget
-        int x1 = widget->screen_location.top_left.x;
-        int y1 = widget->screen_location.top_left.y;
-        int x2 = x1 + w - 1;
-        int y2 = y1 + h - 1;
+        if (param->y)
+                rel_y_p = NULL;
+        else
+                y_p = NULL;
 
-        // Calcul du nouveau point d'ancrage
-        ei_anchor_t *anc = param_sauv.anc;
-        if(!anc || !*anc){
-        anc = malloc(sizeof(ei_anchor_t));
-         *anc = ei_anchor_t ei_anc_northwest;
-         }
-         switch(*anc){
-         case ei_anc_northwest:
-         param->x = 
-         break;
-         case ei_anc_north:
-         break;
-         case ei_anc_northeast:
-         break;
-         case ei_anc_east:
-         break;
-         case ei_anc_southeast:
-         break;
-         case ei_anc_south:
-         break;
-         case ei_anc_southwest:
-         break;
-         case ei_anc_west:
-         break;
-         case ei_anc_center:
-         break;
-         default:
-         break;
-         }*/
+        // Placement du widget
+        ei_place(widget, anc, x_p, y_p, w_p, h_p, rel_x_p, rel_y_p, rel_w_p, rel_h_p);
 }
 
 /* Fonction de mouvement

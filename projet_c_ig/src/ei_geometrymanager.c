@@ -509,10 +509,15 @@ void ei_place(ei_widget_t *widget,
         ei_placer_param_t *current_param;
         while(current){
                 current_param = (ei_placer_param_t*)current->geom_params;
-                ei_place(current, current_param->anc, current_param->x,
+                if (current_param){
+                        ei_place(current, current_param->anc, current_param->x,
                                 current_param->y, current_param->w, current_param->h,
                                 current_param->rel_x, current_param->rel_y,
-                                current_param->rel_w, current_param->rel_h);
+                                current_param->rel_w, current_param->rel_h);}
+                else{
+                        ei_place(current, NULL, NULL, NULL, NULL, NULL, NULL,
+                                        NULL, NULL, NULL);
+                }
                 current = current->next_sibling;
         }
 }
