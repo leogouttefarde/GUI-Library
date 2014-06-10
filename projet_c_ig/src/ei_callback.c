@@ -58,9 +58,10 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
 
         // Nouvelle position top_left, bottom_right du widget
         // (le redimensionnement se fait avec ancrage NW)
-        int x1 = w_x;
+        // DANS LE REPERE DU PARENT
+        int x1 = w_x - p_x;
         int x2 = x1 + w - 1;
-        int y1 = w_y;
+        int y1 = w_y - p_y;
         int y2 = y1 + h - 1;
 
         // Calcul du nouveau point d'ancrage
