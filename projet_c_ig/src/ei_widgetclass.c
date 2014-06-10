@@ -469,8 +469,8 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 
         // Gestion du move, resize
         toplevel->move_pos = ei_point(0,0);
-        toplevel->move = false;
-        toplevel->resize = false;
+        // toplevel->move = false;      << Useless
+        // toplevel->resize = false;    << Useless
         toplevel->resize_size = 10;
 }
 

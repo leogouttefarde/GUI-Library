@@ -75,7 +75,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         ei_bind(ei_ev_mouse_buttondown, NULL, "toplevel", toplevel_callback_click, NULL);
         //ei_bind(ei_ev_mouse_buttonup, NULL, "toplevel", toplevel_callback_release, NULL);
 
-        ei_bind(ei_ev_mouse_buttonup, NULL, "all", all_callback_release, &events[mouse_move]);
+        ei_bind(ei_ev_mouse_buttonup, NULL, "all", all_callback_release, NULL);
 }
 
 /**
