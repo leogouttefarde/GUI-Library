@@ -2,6 +2,7 @@
 #include "ei_button.h"
 #include "ei_draw.h"
 #include "ei_common.h"
+#include "ei_shape.h"
 
 
 ei_linked_point_t *ei_button_arc(ei_point_t centre, int rayon, int angle_tete,
@@ -174,6 +175,26 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
 		//else printf("button->img=NULL\n");
 	}
 	//printf("fin dessin bouton\n");
+}
+void ei_bar_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipper) {
+	printf("début ei_bar_draw\n");
+	ei_color_t bar_color={0xff,0xff,0xff,0xff};
+	ei_rect_t rec=toplevel->widget.screen_location;
+	rec.size.height=toplevel->bar_height;
+	ei_linked_point_t lp=ei_rect_to_points(rec);
+	ei_draw_polygon(surface,&lp,bar_color,NULL);
+	printf("barre déssinée, on dessine le bouton \n");
+/*
+	ei_color_t btn_color={0,0,0,255};
+	int marge=toplevel->bar_height*0.25;
+	ei_rect_t btn;
+	btn.top_left=plus(rec.top_left,marge,marge);
+	btn.size.width=1-2*marge;
+	btn.size.height=1-2*marge;
+	marge=0.2*btn.size.height;
+	ei_button_draw_loc(surface,btn,btn_color,toplevel->rel_btn_close,0,marge,NULL);
+	printf("bouton déssiné");
+*/
 }
 
 /**

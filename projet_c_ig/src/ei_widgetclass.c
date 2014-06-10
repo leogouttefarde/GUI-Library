@@ -408,14 +408,6 @@ void toplevel_release(ei_widget_t *widget)
         SAFE_FREE(widget);
 }
 
-
-
-
-
-
-
-
-
 void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
                 ei_surface_t pick_surface, ei_rect_t *clipper)
 {
@@ -429,9 +421,12 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
+
                 ei_linked_point_t lp =
-                        ei_rect_to_points(toplevel->widget.screen_location);
+                        ei_rect_to_points(*toplevel->widget.content_rect);
                 ei_draw_polygon(surface, &lp, toplevel->color, clipper);
+
+					 //ei_bar_draw(surface,toplevel,clipper);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
@@ -451,8 +446,11 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 
         ei_size_t s = {100, 100};
         toplevel->widget.requested_size = s;
+		  toplevel->bar_height=20;
 
-        ei_color_t c = {0x00, 0xFF, 0xFF, 0xFF};
+		  toplevel->rel_btn_close=ei_relief_raised;
+
+        ei_color_t c = {0x00, 0x00, 0x00, 0xFF};
         toplevel->color = c;
 
         toplevel->border_width = 4;
@@ -466,36 +464,36 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
         ms->height = 50;
 
         toplevel->min_size = ms;
+		  //toplevel->old_pos=widget.screen_location;
 }
 
 void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-
         ei_rect_t *content_rect;
         content_rect = malloc(sizeof(ei_rect_t));
+		  printf("width rect:%i\n",rect.size.width);
+		  printf("height rect:%i\n",rect.size.height);
         if (rect.size.width != 0 && rect.size.height !=0){
+			  printf("CAS IF \n");
                 widget->screen_location = rect;
                 // La screen_location est copiée tel quel
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
                 // Gestion des bordures pour le content_rect
                 int bw = toplevel->border_width;
                 *content_rect = rect;
-                content_rect->top_left.x =  content_rect->top_left.x +
-                        bw;
-
-                content_rect->top_left.y =  content_rect->top_left.y +
-                        bw;
-
+                content_rect->top_left =plus(rect.top_left,0,toplevel->bar_height);
                 content_rect->size.width =  content_rect->size.width +
                         - 2*bw;
                 content_rect->size.height =  content_rect->size.height +
                         -2*bw;
         }
         else{
+			  printf("on est ds else\n");
                 widget->screen_location = ei_rect_zero();
                 content_rect = &widget->screen_location;
         }
         widget->content_rect = content_rect;
+		  
 }
 
 /**
@@ -518,88 +516,3 @@ void    ei_toplevel_register_class()
 
         toplevel_table->next = NULL;
 }
-
-
-/******************************************************************************/
-/*************************************** Fonctions du toplevel ***************/
-
-
-
-void *toplevel_title_alloc()
-{
-        ei_toplevel_title_t *title = CALLOC_TYPE(ei_toplevel_title_t);
-        assert(title);
-
-        return title;
-}
-
-void toplevel_title_release(ei_widget_t *widget)
-{
-        SAFE_FREE(widget);
-}
-
-
-// On se contente de remplir le fond
-void toplevel_title_draw(ei_widget_t *widget, ei_surface_t surface,
-                ei_surface_t pick_surface, ei_rect_t *clipper)
-{
-        ei_toplevel_title_t *title;
-        title = (ei_toplevel_title_t*)widget;
-
-        if (surface){
-                // lock de la surface
-                hw_surface_lock(surface);
-                ei_linked_point_t lp =
-                        ei_rect_to_points(title->widget.screen_location);
-                ei_draw_polygon(surface, &lp, title->color, clipper);
-                //unlock de la surface
-                hw_surface_unlock(surface);
-        }
-        if (pick_surface){
-                /* Dessin de la surface de picking */
-                pick_surface_draw(pick_surface, widget, clipper);
-        }
-}
-
-void toplevel_title_setdefaults(struct ei_widget_t* widget)
-{
-        // on commence par effectuer un recast
-        ei_toplevel_title_t *title;
-        title = (ei_toplevel_title_t*)widget;
-        assert(title);
-        ei_color_t c = {0x33, 0x66, 0xFF, 0xFF};
-        title->color = c;
-        title->toplevel = NULL;
-}
-
-void toplevel_title_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
-{
-
-        widget->screen_location = rect;
-        ei_rect_t *content_rect;
-        content_rect = malloc(sizeof(ei_rect_t));
-        *content_rect = rect;
-        widget->content_rect = content_rect;
-}
-
-/**
- * \brief       Registers the "toplevel" widget class in the program. This must be called only
- *              once before widgets of the class "toplevel" can be created and configured with
- *              \ref ei_toplevel_configure.
- */
-void    ei_toplevel_title_register_class()
-{
-        // Allocation
-        toplevel_title_table = CALLOC_TYPE(ei_widgetclass_t);
-        assert(toplevel_title_table);
-
-        toplevel_title_table->allocfunc= toplevel_title_alloc;
-        toplevel_title_table->drawfunc = toplevel_title_draw;
-        toplevel_title_table->releasefunc = toplevel_title_release;
-        toplevel_title_table->setdefaultsfunc = toplevel_title_setdefaults;
-        toplevel_title_table->geomnotifyfunc = toplevel_title_geomnotify;
-        strcpy(toplevel_title_table->name, "toplevel");
-        toplevel_title_table->next = NULL;
-}
-
-

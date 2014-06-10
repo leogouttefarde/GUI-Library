@@ -20,6 +20,8 @@ ei_linked_point_t* ei_button_rounded_frame(ei_rect_t rectangle, int rayon, part_
 
 void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_button_t *button, ei_rect_t *clipper);
 
+void ei_bar_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipper);
+
 void ei_button_draw_loc(ei_surface_t window,
                 ei_rect_t rectangle,
                 ei_color_t couleur,
