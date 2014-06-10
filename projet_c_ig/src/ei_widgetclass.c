@@ -13,6 +13,7 @@
 #include "ei_utils.h"
 #include "ei_button.h"
 #include "ei_common.h"
+#include "ei_utilities.h"
 
 
 // TODO : Gérer les widgetclass via des linkedlist
@@ -422,12 +423,7 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
-
-                ei_linked_point_t lp =
-                        ei_rect_to_points(*toplevel->widget.content_rect);
-                ei_draw_polygon(surface, &lp, toplevel->color, clipper);
-
-					 ei_bar_draw(surface,toplevel,clipper);
+					 ei_toplevel_draw(surface,toplevel,clipper);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
