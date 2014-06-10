@@ -195,8 +195,9 @@ void ei_bar_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipp
 	btn.size.height=toplevel->bar_height-2*marge;
 	marge=0.2*btn.size.height;
 	ei_button_draw_loc(surface,btn,btn_color,toplevel->rel_btn_close,0,marge,NULL);
-	printf("bouton déssiné\n");
+	//printf("bouton déssiné\n");
 //Dessin du bouton resize
+	
 }
 
 /**
