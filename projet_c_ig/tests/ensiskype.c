@@ -34,6 +34,10 @@ int ei_main(int argc, char** argv)
         ei_size_t	screen_size		= {600, 600};
         ei_color_t	root_bgcol		= {0x52, 0x7f, 0xb4, 0xff};
 
+        /* Create the application and change the color of the background. */
+        ei_app_create(&screen_size, EI_FALSE);
+        ei_frame_configure(ei_app_root_widget(), NULL, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+        /* Initialisation des variables */
         // Fenetre
         ei_widget_t*	toplevel;
         ei_size_t	toplevel_size		= {500,500};
@@ -41,12 +45,44 @@ int ei_main(int argc, char** argv)
         float		toplevel_rel_y		= 0.05;
         ei_color_t	toplevel_color		= {0x88, 0x88, 0x88, 0xff};
         char*		toplevel_title		= "Skype";
-        ei_bool_t	toplevel_closable                = EI_TRUE;
+        ei_bool_t	toplevel_closable                = EI_FALSE;
         ei_axis_set_t	toplevel_resizable               = ei_axis_both;
         int		toplevel_border_width	= 2;
         ei_size_t       *toplevel_min_size;
         toplevel_min_size = malloc(sizeof(ei_size_t));
-        *toplevel_min_size = ei_size(50,50);
+        *toplevel_min_size = ei_size(300,200);
+
+        // Fenetre logo - toplevel
+        ei_widget_t*	logo;
+        ei_size_t       logo_size		= {80,80};
+        int		logo_x	        	= 1.0;
+        int		logo_y	        	= 1.0;
+        ei_color_t      logo_color		= {0x33, 0x88, 0xFF, 0x33};
+        char*		logo_title		= "Logo";
+        ei_bool_t	logo_closable                = EI_TRUE;
+        ei_axis_set_t	logo_resizable               = ei_axis_both;
+        int		logo_border_width	= 0;
+        ei_size_t       *logo_min_size;
+        logo_min_size = malloc(sizeof(ei_size_t));
+        *logo_min_size = ei_size(50,40);
+
+        // Logo frame - frame
+        char*           file                        = "misc/klimt.jpg";
+        ei_widget_t*	logo_frame;
+        ei_anchor_t     logo_frame_anc                           = ei_anc_northwest;
+        ei_size_t	logo_frame_size	            = {60,60};
+        int		logo_frame_x		    = 0;
+        int		logo_frame_y		    = 0;
+        ei_color_t	logo_frame_color		    = {0xFF, 0x66, 0x33, 0x11};
+        ei_relief_t	logo_frame_relief		    = ei_relief_raised;
+        int		logo_frame_border_width	    = 2;
+        ei_surface_t    logo_frame_img              = hw_image_load(file,
+                        ei_app_root_surface());
+        ei_rect_t       *logo_frame_img_rect;
+        logo_frame_img_rect = malloc(sizeof(ei_rect_t));
+        logo_frame_img_rect->top_left                  = ei_point(0,0);
+        logo_frame_img_rect->size                       = ei_size(20,20);
+        ei_anchor_t     logo_frame_img_anchor       = ei_anc_center;
 
         // Liste de contact - frame
         ei_widget_t*	contacts;
@@ -95,20 +131,23 @@ int ei_main(int argc, char** argv)
         conversation_min_size = malloc(sizeof(ei_size_t));
         *conversation_min_size = ei_size(50,50);
 
-        /* Create the application and change the color of the background. */
-        ei_app_create(&screen_size, EI_FALSE);
-        ei_frame_configure(ei_app_root_widget(), NULL, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
         /* Create, configure and place the toplevel on screen. */
         toplevel = ei_widget_create("toplevel", ei_app_root_widget());
         contacts = ei_widget_create("frame", toplevel);
         zone = ei_widget_create("frame", toplevel);
         conversation = ei_widget_create("toplevel", toplevel);
+        logo = ei_widget_create("toplevel", ei_app_root_widget());
+        logo_frame = ei_widget_create("frame", logo);
 
         //toplevel
         ei_toplevel_configure   (toplevel, &toplevel_size, &toplevel_color,
                         &toplevel_border_width, &toplevel_title, &toplevel_closable,
                         &toplevel_resizable, &toplevel_min_size);
+        //logo
+        ei_toplevel_configure   (logo, &logo_size, &logo_color,
+                        &logo_border_width, &logo_title, &logo_closable,
+                        &logo_resizable, &logo_min_size);
         //conversation
         ei_toplevel_configure   (conversation, 
                         &conversation_size, &conversation_color, 
@@ -132,8 +171,16 @@ int ei_main(int argc, char** argv)
                         &contacts_text_font, &contacts_text_color, 
                         &contacts_text_anchor, NULL, NULL, NULL);
 
+        //contacts
+        /*ei_frame_configure(logo_frame, &logo_frame_size, 
+                        &logo_frame_color, &logo_frame_border_width, 
+                        &logo_frame_relief, NULL,
+                        NULL, NULL, NULL, &logo_frame_img,
+                        &logo_frame_img_rect, &logo_frame_img_anchor);*/
         /* PLACEMENT */
         ei_place(toplevel, NULL, NULL, NULL, NULL, NULL, &toplevel_rel_x, &toplevel_rel_y, NULL, NULL);
+        ei_place(logo, NULL, &logo_x, &logo_y, NULL, NULL, NULL, NULL, NULL, NULL);
+        //ei_place(logo_frame, &logo_frame_anc, &logo_frame_x, &logo_frame_y, NULL, NULL, NULL, NULL, NULL, NULL);
         ei_place(conversation, &conversation_anc, NULL, NULL, NULL, NULL, &conversation_rel_x, &conversation_rel_y, NULL, NULL);
         ei_place(zone, &zone_anc, NULL, NULL, NULL, NULL, &zone_rel_x,&zone_rel_y, &zone_rel_w, NULL);
         ei_place(contacts, &contacts_anc, &contacts_x, &contacts_y, &contacts_w, NULL, NULL, NULL, NULL, &contacts_rel_h);
