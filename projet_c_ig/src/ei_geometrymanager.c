@@ -374,37 +374,21 @@ void ei_place(ei_widget_t *widget,
 
                                 if (width) {
                                         w = *width;
-                                        size_abs = true;
+                                }
+                                else if(rel_width){
+                                        int rw = parent_rect.size.width;
+                                        rw = (int)((float)rw * *rel_width);
+                                        w = rw;
                                 }
 
                                 if(height){
                                         h = *height;
-                                        size_abs = true;
                                 }
-
-                                if(rel_width && !size_abs) {
-                                        if (*rel_width < 0. || *rel_width > 1.){
-                                                keep = false;
-                                        }
-                                        else{
-                                                int rw = parent_rect.size.width;
-                                                rw = (int)((float)rw * *rel_width);
-                                                w = rw;
-                                        }
-
+                                else if(rel_height){
+                                        int rh = parent_rect.size.height;
+                                        rh = (int)((float)rh * *rel_height);
+                                        h = rh;
                                 }
-
-                                if(rel_height && !size_abs) {
-                                        if (*rel_height < 0. || *rel_height > 1.){
-                                                keep = false;
-                                        }
-                                        else{
-                                                int rh = parent_rect.size.height;
-                                                rh = (int)((float)rh * *rel_height);
-                                                h = rh;
-                                        }
-                                }
-
                                 // Calcul de la position du point d'ancrage
                                 // Vérification de la longueur
                                 // Assignation des champs du widget

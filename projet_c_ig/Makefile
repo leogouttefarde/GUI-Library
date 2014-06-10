@@ -136,7 +136,7 @@ ${OBJDIR}/move_resize.o : ${TESTS}/move_resize.c
 
 ########## Tests personnels
 
-tests :  toplevel test_shape test_placer test_relative test_button2 test_geom test_resize
+tests :  toplevel test_shape test_placer test_relative test_button2 test_geom test_resize ensiskype
 
 # ATTENTION a LINKER LES BIBLIOTHEQUES MATHEMATIQUES
 test_shape : ${OBJDIR}/test_shape.o ${LIBEIBASE} ${LIBEI}
@@ -186,6 +186,13 @@ toplevel : ${OBJDIR}/toplevel.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/toplevel.o : ${TESTS}/toplevel.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/toplevel.c -o ${OBJDIR}/toplevel.o ${MATHFLAGS} 
+
+ensiskype : ${OBJDIR}/ensiskype.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o ensiskype ${OBJDIR}/ensiskype.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/ensiskype.o : ${TESTS}/ensiskype.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/ensiskype.c -o ${OBJDIR}/ensiskype.o ${MATHFLAGS} 
+
 
 ########## Compilation séparée des sources
 
