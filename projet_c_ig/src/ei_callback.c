@@ -139,6 +139,7 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
         ei_place(widget, anc, x_p, y_p, w_p, h_p, rel_x_p, rel_y_p, rel_w_p, rel_h_p);
 }
 
+//TODO Version qui conserve la relativité
 /* Fonction de mouvement
  * Deplacement brut */
 void move(ei_widget_t *widget, ei_size_t dist)
@@ -151,14 +152,22 @@ void move(ei_widget_t *widget, ei_size_t dist)
 
                 int x;
                 int y;
+                int p_x = 0;
+                int p_y = 0;
+                // Position top_left et taille du widget
+                int w_x = widget->screen_location.top_left.x;
+                int w_y = widget->screen_location.top_left.y;
 
-                // Position top_left et taille du pere
-                int p_x = widget->screen_location.top_left.x;
-                int p_y = widget->screen_location.top_left.y;
+                // Idem parent
+                if (widget->parent->content_rect) {
+                        ei_rect_t p_rect = *widget->parent->content_rect;
+                        p_x = p_rect.top_left.x;
+                        p_y = p_rect.top_left.y;
+                }
 
-                // Nouveau x absolu
-                x = p_x + dist.width;
-                y = p_y + dist.height;
+                // Nouveau x absolu (dans le repere du parent)
+                x = w_x + dist.width - p_x;
+                y = w_y + dist.height - p_y;
 
                 // On deplace le pere
                 ei_place(widget, &anc, &x, &y, param->w, param->h, NULL,
