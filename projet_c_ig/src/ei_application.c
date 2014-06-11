@@ -98,25 +98,26 @@ void ei_app_run()
 {
         ei_event_t event;
         ei_surface_t root_surface = ei_get_root_surface();
+        ei_linked_rect_t *lrect = NULL;
 
         while (!quit_request) {
 
+                /* Draw rectangles */
                 ei_draw_rects();
-                //ei_draw_widget(ei_get_root(), false); // DEBUG : DRAW ALL
 
-
-                // Update des surfaces
-                //hw_surface_update_rects(root_surface, NULL); // DEBUG : UPDATE ALL
-                ei_linked_rect_t *lrect = ei_get_update_rects();
+                /* Update newly drawn rectangles */
+                lrect = ei_get_update_rects();
 
                 if (lrect)
-                        hw_surface_update_rects(root_surface, lrect); // OK
+                        hw_surface_update_rects(root_surface, lrect);
 
+                /* Clear draw rectangle */
                 ei_invalidate_reset();
 
-
+                /* Wait for an event */
                 hw_event_wait_next(&event);
 
+                /* Process each event */
                 ei_event_process(&event);
         };
 }
@@ -130,7 +131,6 @@ void ei_app_run()
  */
 void ei_app_invalidate_rect(ei_rect_t* rect)
 {
-        //printf("ei_app_invalidate_rect %x\n", rect);
         ei_invalidate_rect(rect);
 }
 

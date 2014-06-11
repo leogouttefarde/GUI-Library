@@ -7,7 +7,6 @@
  *  Copyright 2011 Ensimag. All rights reserved.
  */
 
-// pour malloc et NULL
 #include "ei_widget.h"
 #include "ei_widgettypes.h"
 #include "ei_utils.h"
@@ -17,30 +16,24 @@
 #include "ei_geometrymanager.h"
 #include "hw_interface.h"
 #include "ei_application.h"
-#include <assert.h>
+
 
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
 static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0xFF};
 
-void increase_color(ei_color_t *color){
-	if(color->red < 0xFF) {
-		(color->red)++;
-	}
-	else{
-		if (color->green < 0xFF) {
-			(color->green)++;
-		}
-		else{
-			if(color->blue <0xFF) {
-				(color->blue)++;
-			}
-			else{
-				// Trop de widgets créés
-				exit(-1);
-			}
-		}
-	}
+void increase_color(ei_color_t *color)
+{
+        if (color != NULL) {
 
+        	if(color->red < 0xFF)
+        		color->red++;
+
+        	else if (color->green < 0xFF)
+        		color->green++;
+
+        	else if(color->blue < 0xFF)
+        		color->blue++;
+        }
 }
 
 
@@ -98,14 +91,17 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
 
 		*pc = current_pick_color;
 		widget->pick_color = pc;
+
 		increase_color(&current_pick_color);
 
-		if (parent){
+
+		if (parent)
 			widget->pick_id = ei_map_rgba(ei_get_picking_surface(), widget->pick_color);
-		}
-		else{
+
+		else
 			widget->pick_id = 0x0;
-		}
+
+
 		widget->requested_size = ei_size(100,100);
 
 		widget->screen_location = ei_rect(ei_point_zero(), widget->requested_size);
@@ -118,8 +114,8 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
 
 		return widget;
 	}
-	else {
-		return NULL;}
+	else
+	       return NULL;
 }
 
 /**
@@ -130,12 +126,15 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
  */
 void ei_widget_destroy (ei_widget_t* widget){
 	ei_widget_t *current;
-	if (widget){
+
+	if (widget) {
 		current = widget->children_head;
+
 		while (current) {
 			ei_widget_destroy(current);
 			current = current->next_sibling;
 		}
+
 		widget->wclass->releasefunc(widget);
 	}
 }
