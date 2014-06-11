@@ -483,61 +483,6 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 current = current->next_sibling;
         }
 
-        // TODO DEPLACER dans ei_app
-        /*
-        //printf("RUN!\n");
-        ei_rect_t *draw_rect = ei_get_draw_rect();
-        if (draw_rect) {
-        //printf("place run %x", widget);
-
-        //if (widget && widget->wclass) {
-        // printf(" %s  ", widget->wclass->name);
-        //}
-
-        int is_root = 0;
-        //
-        ei_rect_t *clipper = NULL;
-        ei_rect_t *real_clipper = NULL;
-        if (widget->parent){
-        // TODO calcul inutile
-        clipper = rect_intersection(widget->parent->content_rect, 
-        &widget->screen_location);
-        // TODO Celui la doit etre juste
-        //clipper = widget->parent->content_rect;
-
-        //if (widget->parent->content_rect != root->content_rect)
-        real_clipper = rect_intersection(clipper, draw_rect);
-
-
-        SAFE_FREE(clipper);
-        }
-        else{
-        clipper = &widget->screen_location;
-
-        if (clipper) {
-        real_clipper = rect_intersection(clipper, draw_rect);
-        // real_clipper = CALLOC_TYPE(ei_rect_t);
-        // *real_clipper = *root->content_rect;
-        }
-        is_root = 1;
-        //printf("ROOT !  \n");
-        //print_rect(real_clipper);
-        //clipper = &widget->screen_location;
-        }
-
-
-        //print_rect(real_clipper);
-        if (real_clipper) {
-        //printf ("  DRAW");
-        //widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
-        widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
-        //if (is_root)sleep(5), printf("ENDDDD\n");
-        SAFE_FREE(real_clipper);
-        }
-        //else   printf ("INTER???\n");
-        }
-        //else     printf ("ROOT???\n");
-        //printf("\n");*/
 }
 
 void ei_place_releasefunc(struct ei_widget_t*   widget)
@@ -563,24 +508,6 @@ void  ei_register_placer_manager()
         ei_geometrymanager_register(placer);
 }
 
-/*
-   void ei_place_rec(ei_widget_t *widget, bool place_cur) {
-
-   if (widget) {
-   if (place_cur) {
-// Placement du widget
-ei_placer_param_t *param;
-param = (ei_placer_param_t*)widget->geom_params;
-if (param) {
-ei_place(widget, param->anc, param->x, param->y, param->w, param->h,
-param->rel_x, param->rel_y, param->rel_w, param->rel_h);
-}
-}
-
-ei_place_rec(widget->children_head, true);
-ei_place_rec(widget->next_sibling, true);
-}
-}*/
 
 /**
  * \brief       Configures the geometry of a widget using the "placer" geometry manager.

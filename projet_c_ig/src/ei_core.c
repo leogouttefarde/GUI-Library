@@ -83,14 +83,45 @@ ei_rect_t* ei_get_draw_rect()
 
 // Draw récursif selon la hiérarchie des widgets
 void ei_draw_widget(ei_widget_t *widget){
-
         if (widget){
+                /* On calcule le real_clipper du widget */
 
-                // Le widget courant est a affiché en premier (il sera
-                // derriere)
-                if (widget->geom_params && widget->geom_params->manager
-                                && widget->geom_params->manager->runfunc){
-                        widget->geom_params->manager->runfunc(widget);
+                ei_rect_t *draw_rect = ei_get_draw_rect();
+                if (draw_rect) {
+                        int is_root = 0;
+                        //
+                        ei_rect_t *clipper = NULL;
+                        ei_rect_t *real_clipper = NULL;
+                        ei_rect_t *perfect_clipper = NULL;
+                        if (widget->parent){
+                                // Clipper lié au widget = content_rect parent
+                                // INTER screen_location widget
+                                clipper = rect_intersection(widget->parent->content_rect, 
+                                                &widget->screen_location);
+
+                                // Clipper optimisé = rectangle a mettre a jour
+                                // INTER clipper widget
+                                //if (widget->parent->content_rect != root->content_rect)
+                                real_clipper = rect_intersection(clipper, draw_rect);
+                                SAFE_FREE(clipper);
+
+                                //TODO ajouter intersectiona vec rect(root_surface)
+                        }
+                        // Pour le root
+                        else{
+                                clipper = &widget->screen_location;
+                                if (clipper) {
+                                        real_clipper = rect_intersection(clipper, draw_rect);
+                                }
+                                is_root = 1;
+                        }
+                        // Si le real_clipper est non vide
+                        if (real_clipper) {
+                                // Dessin du widget dans le real_clipper
+                                widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
+                                //if (is_root)sleep(5), printf("ENDDDD\n");
+                                SAFE_FREE(real_clipper);
+                        }
                 }
 
                 // Ses enfants seront devant lui et derriere ses freres
@@ -228,9 +259,9 @@ void ei_invalidate_rect(ei_rect_t* rect)
 
                                 /* If duplicate found, do not add */
                                 if (lrect->rect.top_left.x == rect->top_left.x
-                                        && lrect->rect.top_left.y == rect->top_left.y
-                                        && lrect->rect.size.width == rect->size.width
-                                        && lrect->rect.size.height == rect->size.height)
+                                                && lrect->rect.top_left.y == rect->top_left.y
+                                                && lrect->rect.size.width == rect->size.width
+                                                && lrect->rect.size.height == rect->size.height)
                                         add = false;
 
                                 /* Fuse with another if better */
