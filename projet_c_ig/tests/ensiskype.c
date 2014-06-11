@@ -218,7 +218,8 @@ int ei_main(int argc, char** argv)
         ei_place(conversation, &conversation_anc, NULL, NULL, NULL, NULL, &conversation_rel_x, &conversation_rel_y, NULL, NULL);
         ei_place(zone, &zone_anc, NULL, NULL, NULL, NULL, &zone_rel_x,&zone_rel_y, &zone_rel_w, NULL);
         ei_place(contacts, &contacts_anc, &contacts_x, &contacts_y, &contacts_w, NULL, NULL, NULL, NULL, &contacts_rel_h);
-
+        ei_place(contact_1, NULL, &contact_1_x, &contact_1_y, NULL, NULL, NULL,
+                        NULL, &contact_1_rel_w, &contact_1_rel_h);
         /* Hook the keypress callback to the event. */
         ei_bind(ei_ev_keydown,		NULL, "all", process_key, NULL);
 
