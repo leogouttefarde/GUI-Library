@@ -206,15 +206,15 @@ int ei_main(int argc, char** argv)
                         &contact_1_text_color, NULL, NULL, NULL, NULL,
                         &contact_1_callback, NULL);
         //contacts
-        /*ei_frame_configure(logo_frame, &logo_frame_size, 
+        ei_frame_configure(logo_frame, &logo_frame_size, 
           &logo_frame_color, &logo_frame_border_width, 
           &logo_frame_relief, NULL,
           NULL, NULL, NULL, &logo_frame_img,
-          &logo_frame_img_rect, &logo_frame_img_anchor);*/
+          &logo_frame_img_rect, &logo_frame_img_anchor);
         /* PLACEMENT */
         ei_place(toplevel, NULL, NULL, NULL, NULL, NULL, &toplevel_rel_x, &toplevel_rel_y, NULL, NULL);
         ei_place(logo, NULL, &logo_x, &logo_y, NULL, NULL, NULL, NULL, NULL, NULL);
-        //ei_place(logo_frame, &logo_frame_anc, &logo_frame_x, &logo_frame_y, NULL, NULL, NULL, NULL, NULL, NULL);
+        ei_place(logo_frame, &logo_frame_anc, &logo_frame_x, &logo_frame_y, NULL, NULL, NULL, NULL, NULL, NULL);
         ei_place(conversation, &conversation_anc, NULL, NULL, NULL, NULL, &conversation_rel_x, &conversation_rel_y, NULL, NULL);
         ei_place(zone, &zone_anc, NULL, NULL, NULL, NULL, &zone_rel_x,&zone_rel_y, &zone_rel_w, NULL);
         ei_place(contacts, &contacts_anc, &contacts_x, &contacts_y, &contacts_w, NULL, NULL, NULL, NULL, &contacts_rel_h);
