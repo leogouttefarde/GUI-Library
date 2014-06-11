@@ -52,8 +52,17 @@ void resize(ei_widget_t *widget, ei_size_t add_size)
         // Calcul de la nouvelle taille absolue du widget
         w = w_w + add_size.width;
         h = w_h + add_size.height;
+        //Gestion du cas ou on atteint la min_size du toplevel
+        if (!strcmp(widget->wclass->name, "toplevel")){
+                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+                if(toplevel->min_size){       
+                        w = MAX(toplevel->min_size->width, w);
+                        h = MAX(toplevel->min_size->height, h);
+                }
+        }
         rel_w = (float)w / (float)p_w;
         rel_h = (float)h / (float)p_h;
+
 
 
         // Nouvelle position top_left, bottom_right du widget
@@ -202,18 +211,15 @@ ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
                 int w = 0;
                 int h = 0;
 
-                // printf("w %d h %d\n", w, h);
-
+                // ancienne position souris
                 int o_x = toplevel->move_pos.x;
                 int o_y = toplevel->move_pos.y;
 
-                // printf("o_x %d o_y %d\n", o_x, o_y);
-
+                // nouvelle position souris
                 int n_x = event->param.mouse.where.x;
                 int n_y = event->param.mouse.where.y;
 
-                // printf("n_x %d n_y %d\n", n_x, n_y);
-
+                // distance de deplacement
                 w = n_x - o_x;
                 h = n_y - o_y;
 
@@ -235,8 +241,6 @@ ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
                         w = 0;
                         h = 0;
                 }
-
-                //printf("w %d h %d\n", w, h);
 
                 resize(toplevel, ei_size(w,h));
 
