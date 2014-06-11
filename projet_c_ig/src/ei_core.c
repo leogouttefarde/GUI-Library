@@ -159,6 +159,13 @@ void ei_invalidate_widget(ei_widget_t *widget)
                 ei_linkedlist_add(&ei_invalid_widgets, widget);
 }
 
+static ei_rect_t *ei_cur_draw_rect = NULL;
+
+ei_rect_t* ei_get_draw_rect()
+{
+        return ei_cur_draw_rect;
+}
+
 // TODO pourquoi ce bool ??
 // Draw récursif selon la hiérarchie des widgets
 void ei_draw_widget(ei_widget_t *widget){
@@ -199,13 +206,15 @@ void ei_draw_rect(ei_rect_t *rect)
         ei_widget_t *root = ei_get_root();
 
         if (root && rect) {
-                root->content_rect = rect;
+                ei_cur_draw_rect = rect;
 
+                //printf("dd\n");
         //print_rect(rect);
                 ei_draw_widget(root);
+                //printf("eee\n");
 
                 // Restore default
-                root->content_rect = &root->screen_location;
+                ei_cur_draw_rect = NULL;
         }
 }
 
@@ -371,6 +380,8 @@ void ei_invalidate_rect(ei_rect_t* rect)
                                         ei_linkedlist_pop_link(&ei_update_rects, link, true);
 
                                         new_rect = *fused;
+
+                                        SAFE_FREE(fused);
                                 }
                         }
 

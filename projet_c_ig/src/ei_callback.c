@@ -1,11 +1,9 @@
 
 #include "ei_callback.h"
-#include "ei_event.h"
-#include "ei_common.h"
 
 
 static ei_widget_t *pressed = NULL;
-static ei_callback_t *callback = NULL;
+static ei_callback_t callback = NULL;
 
 
 /* Fonction de redimensionnement
@@ -242,7 +240,7 @@ ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
                         h = 0;
                 }
 
-                resize(toplevel, ei_size(w,h));
+                resize((ei_widget_t*)toplevel, ei_size(w,h));
 
                 // On sauvegarde le dernier point
                 toplevel->move_pos = event->param.mouse.where;
@@ -262,60 +260,49 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
                 int m_x = event->param.mouse.where.x;
                 int m_y = event->param.mouse.where.y;
                 int t_h = toplevel->bar_height;
+                // le bouton close est a top_left + 1/4 * bar_height
+                int c_s =   (int)floor((float)t_h * 1. / 4.);
                 int r_s = toplevel->resize_size;
                 int y = widget->screen_location.top_left.y;
                 int x = widget->screen_location.top_left.x;
                 int w = widget->screen_location.size.width;
                 int h = widget->screen_location.size.height;
 
-                // On sauvegarde le dernier point
-                toplevel->move_pos = event->param.mouse.where;
 
                 pressed = widget;
-
-                // On verifie que le toplevel est redimensionnable
-                if(m_y < y + t_h){
-                        // Si titre, on bind CE WIDGET et la fonction de deplacement
-                        callback = all_callback_move_move;
+                // Gestion du close
+                if (toplevel->closable && (m_y >= y + c_s && m_y <= y +
+                                        3 * c_s && m_x >= x + c_s && m_x <= x +
+                                        3 * c_s)){
+                        // On note simplement la demande de fermeture avec un
+                        // booleen (pas de callback a appeler)
+                        toplevel->close = EI_TRUE;
                 }
-                else if (toplevel->resizable && (m_y >= (y + h -1 - r_s)) && (m_x >= (x + w - 1 - r_s))){
-                        // Si resize, on bind ce widget et la fonction de resize
-                        callback = all_callback_move_resize;
-                }
-                else
-                        pressed = NULL;
+                else{
+                        // On sauvegarde le dernier point
+                        toplevel->move_pos = event->param.mouse.where;
 
-                if (pressed)
-                        ei_bind(ei_ev_mouse_move, NULL, "all", callback,
-                                        toplevel);
+                        // On verifie que le toplevel est redimensionnable
+                        if(m_y < y + t_h){
+                                // Si titre, on bind CE WIDGET et la fonction de deplacement
+                                callback = (ei_callback_t*)all_callback_move_move;
+                        }
+                        else if (toplevel->resizable && (m_y >= (y + h -1 - r_s)) && (m_x >= (x + w - 1 - r_s))){
+                                // Si resize, on bind ce widget et la fonction de resize
+                                callback = (ei_callback_t*)all_callback_move_resize;
+                        }
+                        else{
+                                pressed = NULL;
+                        }
+                        if (pressed)
+                                ei_bind(ei_ev_mouse_move, NULL, "all", callback,
+                                                (void*)toplevel);
+                }
         }
-
-        // TODO si close on supprime le widget
         return EI_FALSE;
 }
 
 
-// TODO A SUPPRIMER
-// remplacer par un all_callback_release
-/*ei_bool_t toplevel_callback_release(ei_widget_t *widget, struct ei_event_t
- *event, void *user_param){
- ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
-// On regarde si le release etait précédé d'un déplacement ou d'un
-// redimensionnement
-if (toplevel->move){
-toplevel->move = false;
-toplevel->resize = false;
-ei_unbind(ei_ev_mouse_move, widget, NULL,
-toplevel_callback_move_move, NULL);
-}
-else if (toplevel->resize){
-toplevel->move = false;
-toplevel->resize = false;
-ei_unbind(ei_ev_mouse_move, widget, NULL,
-toplevel_callback_move_resize, NULL);
-}
-return EI_FALSE;
-}*/
 
 // Peut-être pas dans le bon fichier
 // Enfonce les boutons
@@ -334,31 +321,6 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, v
         return EI_FALSE;
 }
 
-// TODO la gestion du relief doit etre faite par le callback
-// all_callback_release
-// gère le cas ou on  release sur le widget
-// Quand on relache la souris sur le bouton
-/*ei_bool_t button_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
-  {
-  ei_bool_t done = EI_FALSE;
-
-  if (widget){
-  if (!strcmp(widget->wclass->name, "button")) {
-
-  ei_button_t *button = (ei_button_t*)widget;
-  if (button->clic){
-  button->relief = ei_relief_raised;
-  button->clic = false;
-// Appel du callback du bouton
-if (button->callback){
-done = button->callback((ei_widget_t*)button, NULL, button->user_param);
-}
-}
-}
-}
-return done;
-}*/
-
 
 
 ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
@@ -375,14 +337,41 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
 
                         ei_app_invalidate_rect(&pressed->screen_location);
 
-                        // Appel du callback du bouton
+                        // Appel du callback du bouton seulement si curseur sur
+                        // le bouton
                         if (button->callback){
-                                done = button->callback((ei_widget_t*)button, NULL, button->user_param);
+                                ei_widget_t *selected;
+                                selected = ei_widget_pick(&event->param.mouse.where);
+                                if (selected == (ei_widget_t*)button)
+                                        done = button->callback(selected, NULL, button->user_param);
                         }
                 }
-                else if (callback && !strcmp(pressed->wclass->name, "toplevel")) {
+                else if (!strcmp(pressed->wclass->name, "toplevel")) {
 
-                        ei_unbind(ei_ev_mouse_move, NULL, "all", callback, pressed);
+                        ei_toplevel_t *toplevel = (ei_toplevel_t*)pressed;
+                        if (toplevel->close){
+                                // On verifie que l'on a relaché sur le bouton
+                                int y = pressed->screen_location.top_left.y;
+                                int x = pressed->screen_location.top_left.x;
+                                int m_x = event->param.mouse.where.x;
+                                int m_y = event->param.mouse.where.y;
+                                int t_h = toplevel->bar_height;
+                                // le bouton close est a top_left + 1/4 * bar_height
+                                int c_s =   (int)floor((float)t_h * 1. / 4.);
+                                if (toplevel->closable && m_y >= y + c_s && m_y <= y +
+                                                3 * c_s && m_x >= x + c_s && m_x <= x +
+                                                3 * c_s){
+                                        // RECHERCHE ET UNBIND
+                                        // DESTRUCTION
+                                        printf("Toplevel detruit");
+                                }
+                        }
+                        else if (callback){
+                                ei_unbind(ei_ev_mouse_move, NULL, "all", *callback, pressed);
+                        }
+
+                        toplevel->close = EI_FALSE;
+
                 }
         }
 

@@ -104,9 +104,13 @@ void ei_app_run()
                 ei_draw_rects();
                 //ei_draw_widget(ei_get_root(), false); // DEBUG : DRAW ALL
 
+
                 // Update des surfaces
                 //hw_surface_update_rects(root_surface, NULL); // DEBUG : UPDATE ALL
-                hw_surface_update_rects(root_surface, ei_get_update_rects()); // OK
+                ei_linked_rect_t *lrect = ei_get_update_rects();
+
+                if (lrect)
+                        hw_surface_update_rects(root_surface, lrect); // OK
 
                 ei_invalidate_reset();
 

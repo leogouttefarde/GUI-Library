@@ -206,7 +206,6 @@ void ei_event_process(ei_event_t *event)
 
                         if (call) {
                                 done = binding->callback(widget, event, binding->user_param);
-                                ei_invalidate_widget(widget);
                         }
                 }
 

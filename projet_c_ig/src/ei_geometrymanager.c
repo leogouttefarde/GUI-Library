@@ -189,13 +189,13 @@ ei_rect_t* rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2)
 
                 int r2_left = x2;
                 int r2_top = y2;
-                int r2_right = x2 + w2;
-                int r2_bottom = y2 + h2;
+                int r2_right = x2 + w2 - 1;
+                int r2_bottom = y2 + h2 - 1;
 
                 int r1_left = x1;
                 int r1_top = y1;
-                int r1_right = x1 + w1;
-                int r1_bottom = y1 + h1;
+                int r1_right = x1 + w1 - 1;
+                int r1_bottom = y1 + h1 - 1;
 
 
                 bool is_intersection =  ( r2_left < r1_right 
@@ -217,8 +217,8 @@ ei_rect_t* rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2)
                                 inter->top_left.x = MAX(r1_left, r2_left);
                                 inter->top_left.y = MAX(r1_top, r2_top);
 
-                                inter->size.width = MIN( r1_right, r2_right) - left;
-                                inter->size.height = MIN(r1_bottom, r2_bottom) - top;
+                                inter->size.width = MIN( r1_right, r2_right) - left + 1;
+                                inter->size.height = MIN(r1_bottom, r2_bottom) - top + 1;
                         }
                 }
                 //else    printf("NO INTER\n"), print_rect(rect1, rect2);
@@ -267,8 +267,8 @@ void print_rect(const ei_rect_t *rect)
 void ei_place_runfunc(struct ei_widget_t*       widget)
 {
         //printf("RUN!\n");
-        ei_widget_t *root = ei_get_root();
-        if (root) {
+        ei_rect_t *draw_rect = ei_get_draw_rect();
+        if (draw_rect) {
                 //printf("place run %x", widget);
 
                 /*if (widget && widget->wclass) {
@@ -287,7 +287,7 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                         //clipper = widget->parent->content_rect;
 
                         //if (widget->parent->content_rect != root->content_rect)
-                        real_clipper = rect_intersection(clipper, root->content_rect);
+                        real_clipper = rect_intersection(clipper, draw_rect);
 
 
                         SAFE_FREE(clipper);
@@ -296,7 +296,7 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                         clipper = &widget->screen_location;
 
                         if (clipper) {
-                                real_clipper = rect_intersection(clipper, root->content_rect);
+                                real_clipper = rect_intersection(clipper, draw_rect);
                                 // real_clipper = CALLOC_TYPE(ei_rect_t);
                                 // *real_clipper = *root->content_rect;
                         }
