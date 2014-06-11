@@ -173,7 +173,7 @@ ei_color_t eclaircir(ei_color_t couleur, float coeff_couleur) {
 		couleur_eclairee.red = MIN(couleur.red + coeff_couleur * 255, 255);
 		couleur_eclairee.green = MIN(couleur.green + coeff_couleur * 255, 255);
 		couleur_eclairee.blue = MIN(couleur.blue + coeff_couleur * 255, 255);
-		couleur_eclairee.alpha = 255;
+		couleur_eclairee.alpha = couleur.alpha;
 		return couleur_eclairee;
 }
 ei_color_t obscurcir(ei_color_t couleur, float coeff_couleur) {
@@ -181,7 +181,7 @@ ei_color_t obscurcir(ei_color_t couleur, float coeff_couleur) {
 		couleur_assombrie.red = MAX(couleur.red - coeff_couleur * 255, 0);
 		couleur_assombrie.green = MAX(couleur.green - coeff_couleur * 255, 0);
 		couleur_assombrie.blue = MAX(couleur.blue - coeff_couleur * 255, 0);
-		couleur_assombrie.alpha = 255;
+		couleur_assombrie.alpha = couleur.alpha;
 		return couleur_assombrie;
 }
 /*BRIEF

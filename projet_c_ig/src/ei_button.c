@@ -122,15 +122,8 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
 		ei_color_t couleur_eclairee, couleur_assombrie, couleur_haute,
 					  couleur_basse;
 		float coeff_couleur = 0.2;
-		couleur_eclairee.red = MIN(couleur.red + coeff_couleur * 255, 255);
-		couleur_eclairee.green = MIN(couleur.green + coeff_couleur * 255, 255);
-		couleur_eclairee.blue = MIN(couleur.blue + coeff_couleur * 255, 255);
-		couleur_eclairee.alpha = 255;
-
-		couleur_assombrie.red = MAX(couleur.red - coeff_couleur * 255, 0);
-		couleur_assombrie.green = MAX(couleur.green - coeff_couleur * 255, 0);
-		couleur_assombrie.blue = MAX(couleur.blue - coeff_couleur * 255, 0);
-		couleur_assombrie.alpha = 255;
+		couleur_eclairee=eclaircir(couleur,coeff_couleur);
+		couleur_assombrie=obscurcir(couleur,coeff_couleur);
 
 		if (relief == ei_relief_raised) {
 			couleur_haute = couleur_eclairee;
