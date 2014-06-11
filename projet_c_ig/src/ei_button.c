@@ -18,7 +18,7 @@ void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
 		//printf("frame->text non null\n");
 		ei_insert_text(window, rectangle_red, frame->text,
 				frame->text_font, frame->text_color,
-				frame->text_anchor);
+				frame->text_anchor,clipper);
 	}
 	else {
 		if (frame->img) {
@@ -43,7 +43,7 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
 	if (button->text) {
 		ei_insert_text(window, rectangle_reduit, button->text,
 				button->text_font, button->text_color,
-				button->text_anchor);
+				button->text_anchor,clipper);
 	}
 	else {
 		if (button->img) {
@@ -114,7 +114,7 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *
 		rec_txt.top_left=plus(rec.top_left,2*marge+btn_c.size.width,0);
 		rec_txt.size.height=toplevel->bar_height;
 		rec_txt.size.width=toplevel->widget.screen_location.size.width-2*(2*marge+btn_c.size.width);
-		ei_insert_text(surface,rec_txt,toplevel->title,toplevel->title_font,toplevel->title_color,0);
+		ei_insert_text(surface,rec_txt,toplevel->title,toplevel->title_font,toplevel->title_color,0,clipper);
 	}
 }
 
@@ -161,15 +161,15 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
 	}
 }
 
-void ei_insert_text(ei_surface_t window, ei_rect_t clipper, char *text,
-		ei_font_t font, ei_color_t color, ei_anchor_t anchor)
+void ei_insert_text(ei_surface_t window, ei_rect_t rectangle, char *text,
+		ei_font_t font, ei_color_t color, ei_anchor_t anchor, ei_rect_t *clipper)
 {
 	//printf("j'affiche le texte \n");
 	int width,height;
 	hw_text_compute_size(text, font, &width, &height);
 	ei_point_t ancre;
-	ancre=find_anchor(clipper,width,height,anchor);
-	ei_draw_text(window, &ancre, text, font, &color, &clipper);
+	ancre=find_anchor(rectangle,width,height,anchor);
+	ei_draw_text(window, &ancre, text, font, &color, clipper);
 }
 
 void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,

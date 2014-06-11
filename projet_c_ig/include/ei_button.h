@@ -31,7 +31,7 @@ void ei_button_draw_loc(ei_surface_t window,
                 int marge,
                 ei_rect_t *clipper);
 
-void ei_insert_text(ei_surface_t window,ei_rect_t clipper,char* text, ei_font_t font,ei_color_t color, ei_anchor_t anchor);
+void ei_insert_text(ei_surface_t window,ei_rect_t rectangle,char* text, ei_font_t font,ei_color_t color, ei_anchor_t anchor, ei_rect_t* clipper);
 
 void aff_img(ei_surface_t window, ei_rect_t rectangle,ei_surface_t img, ei_rect_t* img_rect, ei_anchor_t img_anchor);
 
