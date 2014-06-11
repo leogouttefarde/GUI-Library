@@ -10,6 +10,8 @@
 #ifndef EI_DEBUG_H
 #define EI_DEBUG_H
 
+#include "ei_types.h"
+
 
 void ei_print_color(const ei_color_t *color);
 void ei_print_rect(const ei_rect_t *rect);

@@ -9,7 +9,7 @@
  */
 
 #include "ei_debug.h"
-#include "ei_types.h"
+#include "ei_draw.h"
 
 
 void ei_print_color(const ei_color_t *color)
@@ -70,7 +70,7 @@ void debug_display_surface(ei_surface_t surface){
         ei_size_t size = hw_surface_get_size(surface);
         int x = 0;
         int y = 0; 
-        bool first = true; 
+        ei_bool_t first = EI_TRUE; 
         uint32_t prec_id;
         uint32_t pick_id;
 
@@ -89,11 +89,11 @@ void debug_display_surface(ei_surface_t surface){
                 color.blue = *(addr+ib*sizeof(uint8_t));
                 color.alpha = *(addr+ia*sizeof(uint8_t));
                 // on génére le le code correspondant
-                pick_id = ei_map_rgba(ei_picking_surface, &color);
+                pick_id = ei_map_rgba(ei_get_picking_surface(), &color);
 
                 // Affichage
                 if (first) {
-                        first = false;
+                        first = EI_FALSE;
                         prec_id = pick_id;
                         printf("Pixel : {%i, %i} Pick_id : %x \n", x,y,pick_id);
                 }
@@ -118,12 +118,12 @@ void debug_display_surface(ei_surface_t surface){
 }
 
 void debug_display_picking_surface(){
-        debug_display_surface(ei_picking_surface);
+        debug_display_surface(ei_get_picking_surface());
 }
 
 
 void debug_display_root_surface(){
-        debug_display_surface(ei_root_surface);
+        debug_display_surface(ei_get_root_surface());
 }
 
 
