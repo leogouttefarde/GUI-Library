@@ -262,7 +262,7 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
 {
 
         /* On commence par invalider l'ancien rectangle */
-        ei_app_invalidate_rec(widget->screen_location);
+        ei_app_invalidate_rect(&widget->screen_location);
 
         /* On calcule la nouvelle screen_location */
         

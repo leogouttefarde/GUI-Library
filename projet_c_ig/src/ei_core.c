@@ -216,7 +216,7 @@ void ei_invalidate_rect(ei_rect_t* rect)
                 ei_rect_t new_rect = *rect;
 
                 ei_linked_elem_t *link = ei_update_rects.head, *next = NULL;
-                ei_bool_t add = true;
+                ei_bool_t add = EI_TRUE;
                 ei_rect_t *fusion = NULL;
 
                 /* Check current rectangles for optimization */
