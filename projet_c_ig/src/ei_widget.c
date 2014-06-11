@@ -343,7 +343,11 @@ void    ei_button_configure (ei_widget_t*               widget,
 			button->widget.requested_size = *requested_size;
 		}
 		if (color) {
-			button->color = color;
+                        if (button->color){
+                                SAFE_FREE(button->color);
+                                button->color = CALLOC_TYPE(ei_color_t);
+                        }
+			*button->color = *color;
 		}
 		if (border_width) {
 			button->border_width = *border_width;
