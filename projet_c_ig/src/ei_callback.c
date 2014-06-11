@@ -10,8 +10,8 @@ static ei_callback_t *callback = NULL;
 
 /* Fonction de redimensionnement
  * Conserve les proportions des fils */
-void resize(ei_widget_t *widget, ei_size_t add_size){
-
+void resize(ei_widget_t *widget, ei_size_t add_size)
+{
         // On recupere les parametres
         ei_placer_param_t *param;
         param = (ei_placer_param_t*)widget->geom_params;
@@ -65,14 +65,13 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
         int y2 = y1 + h - 1;
 
         // Calcul du nouveau point d'ancrage
-        ei_anchor_t *anc;
-        anc = malloc(sizeof(ei_anchor_t));
+        ei_anchor_t anc;
         if(!param->anc || !*param->anc)
-                *anc = ei_anc_northwest;
+                anc = ei_anc_northwest;
         else
-                *anc = *param->anc;
+                anc = *param->anc;
 
-        switch(*anc){
+        switch(anc){
         case ei_anc_northwest:
                 x = x1;
                 y = y1;
@@ -137,7 +136,7 @@ void resize(ei_widget_t *widget, ei_size_t add_size){
                 y_p = NULL;
 
         // Placement du widget
-        ei_place(widget, anc, x_p, y_p, w_p, h_p, rel_x_p, rel_y_p, rel_w_p, rel_h_p);
+        ei_place(widget, &anc, x_p, y_p, w_p, h_p, rel_x_p, rel_y_p, rel_w_p, rel_h_p);
 }
 
 //TODO Version qui conserve la relativité
@@ -202,22 +201,45 @@ ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
         if (toplevel) {
                 int w = 0;
                 int h = 0;
+
+                // printf("w %d h %d\n", w, h);
+
+                int o_x = toplevel->move_pos.x;
+                int o_y = toplevel->move_pos.y;
+
+                // printf("o_x %d o_y %d\n", o_x, o_y);
+
+                int n_x = event->param.mouse.where.x;
+                int n_y = event->param.mouse.where.y;
+
+                // printf("n_x %d n_y %d\n", n_x, n_y);
+
+                w = n_x - o_x;
+                h = n_y - o_y;
+
+
                 // On verifie sur quels axes le widget est redimensionnable:
-                switch (toplevel->resizable){
+                switch (toplevel->resizable) {
                 case ei_axis_both :
-                        w = event->param.mouse.where.x - toplevel->move_pos.x;
-                        h = event->param.mouse.where.y - toplevel->move_pos.y;
                         break;
+
                 case ei_axis_x:
-                        w = event->param.mouse.where.x - toplevel->move_pos.x;
+                        w = 0;
                         break;
+
                 case ei_axis_y:
-                        h = event->param.mouse.where.y - toplevel->move_pos.y;
+                        h = 0;
                         break;
-                default : break;
+
+                default:
+                        w = 0;
+                        h = 0;
                 }
 
-                resize(&toplevel->widget, ei_size(w,h));
+                //printf("w %d h %d\n", w, h);
+
+                resize(toplevel, ei_size(w,h));
+
                 // On sauvegarde le dernier point
                 toplevel->move_pos = event->param.mouse.where;
         }
@@ -229,9 +251,9 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
 {
         assert(widget);
 
-        if (widget) {
+        if (widget && widget->wclass && !strcmp(widget->wclass->name, "toplevel")) {
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
-                toplevel->move_pos = event->param.mouse.where;
+
                 // On cherche si on a cliqué sur le titre, le resize, le close
                 int m_x = event->param.mouse.where.x;
                 int m_y = event->param.mouse.where.y;
@@ -242,6 +264,9 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
                 int w = widget->screen_location.size.width;
                 int h = widget->screen_location.size.height;
 
+                // On sauvegarde le dernier point
+                toplevel->move_pos = event->param.mouse.where;
+
                 pressed = widget;
 
                 // On verifie que le toplevel est redimensionnable
@@ -249,7 +274,7 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
                         // Si titre, on bind CE WIDGET et la fonction de deplacement
                         callback = all_callback_move_move;
                 }
-                else if (toplevel->resizable && m_y >= y + h -1 - r_s && m_x >= x + w - 1 - r_s){
+                else if (toplevel->resizable && (m_y >= (y + h -1 - r_s)) && (m_x >= (x + w - 1 - r_s))){
                         // Si resize, on bind ce widget et la fonction de resize
                         callback = all_callback_move_resize;
                 }
@@ -298,6 +323,8 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, v
                 button->relief = ei_relief_sunken;
                 button->clic = true;
 
+                ei_app_invalidate_rect(&widget->screen_location);
+
                 pressed = widget;
         }
         return EI_FALSE;
@@ -341,6 +368,8 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
                         ei_button_t *button = (ei_button_t*)pressed;
                         button->relief = ei_relief_raised;
                         button->clic = false; // Useless
+
+                        ei_app_invalidate_rect(&pressed->screen_location);
 
                         // Appel du callback du bouton
                         if (button->callback){

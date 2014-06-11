@@ -1,6 +1,7 @@
 
 #include "ei_geometrymanager.h"
 #include "ei_core.h"
+#include "ei_common.h"
 #include "ei_linkedlist.h"
 
 
@@ -159,7 +160,7 @@ void ei_invalidate_widget(ei_widget_t *widget)
 }
 
 // Draw récursif selon la hiérarchie des widgets
-void ei_draw_widget(ei_widget_t *widget){
+void ei_draw_widget(ei_widget_t *widget, ei_bool_t sibling){
 
         if (widget){
 
@@ -171,10 +172,12 @@ void ei_draw_widget(ei_widget_t *widget){
                 }
 
                 // Ses enfants seront devant lui et derriere ses freres
-                ei_draw_widget(widget->children_head);
+                ei_draw_widget(widget->children_head, true);
 
-                // Les freres du widget courant sont enfin dessinés
-                ei_draw_widget(widget->next_sibling);
+                if (sibling) {
+                        // Les freres du widget courant sont enfin dessinés
+                        ei_draw_widget(widget->next_sibling, true);
+                }
         }
 }
 
@@ -193,14 +196,15 @@ void ei_draw_widgets()
         }
 }*/
 
-void ei_draw_rect(ei_rect_t rect)
+void ei_draw_rect(ei_rect_t *rect)
 {
         ei_widget_t *root = ei_get_root();
 
-        if (root) {
-                root->content_rect = &rect;
+        if (root && rect) {
+                root->content_rect = rect;
 
-                ei_draw_widget(root);
+        //print_rect(rect);
+                ei_draw_widget(root, false);
 
                 // Restore default
                 root->content_rect = &root->screen_location;
@@ -216,14 +220,19 @@ void ei_draw_rects()
 
 
         ei_linked_elem_t *link = ei_update_rects.head;
-        ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
-        ei_widget_t *widget = NULL;
+        //printf("ei_draw_rects\n");
 
-        while (lrect) {
-                ei_draw_rect(lrect->rect);
+        while (link) {
+                ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
 
-                lrect = lrect->next;
+        //printf("lrect %x", lrect);
+                if (lrect)
+                        ei_draw_rect(&lrect->rect);
+
+                link = link->next;
         }
+
+        //printf("ei_draw_rects END\n");
 }
 
 void ei_invalidate_rects()
@@ -261,6 +270,73 @@ ei_linked_rect_t* ei_get_update_rects()
         return result;
 }
 
+ei_rect_t* ei_smaller_fused(const ei_rect_t *rect1, const ei_rect_t *rect2)
+{
+        ei_rect_t *fuse = NULL;
+
+        ei_rect_t *inter = rect_intersection(rect1, rect2);
+
+        // Ne test que si inter, faster
+        // if (is_inter()) {
+        // if (inter) {
+        //         SAFE_FREE(inter);
+
+                int x1 = rect1->top_left.x;
+                int y1 = rect1->top_left.y;
+
+                int w1 = rect1->size.width;
+                int h1 = rect1->size.height;
+
+
+                int x2 = rect2->top_left.x;
+                int y2 = rect2->top_left.y;
+
+                int w2 = rect2->size.width;
+                int h2 = rect2->size.height;
+
+                int r2_left = x2;
+                int r2_top = y2;
+                int r2_right = x2 + w2;
+                int r2_bottom = y2 + h2;
+
+                int r1_left = x1;
+                int r1_top = y1;
+                int r1_right = x1 + w1;
+                int r1_bottom = y1 + h1;
+
+
+                int left = MIN(r2_left, r1_left);
+                int top = MIN(r2_top, r1_top);
+
+                int right = MAX(r2_right, r1_right);
+                int bottom = MAX(r2_bottom, r1_bottom);
+
+                int width = right - left;
+                int height = bottom - top;
+
+                long long rect1_area = rect1->size.width * rect1->size.height;
+                long long rect2_area = rect2->size.width * rect2->size.height;
+
+                long long current_area = rect1_area + rect2_area;
+
+                long long fused_area = width * height;
+
+                if (fused_area < current_area) {
+                        fuse = CALLOC_TYPE(ei_rect_t);
+                        assert(fuse);
+
+
+                        fuse->top_left.x = left;
+                        fuse->top_left.y = top;
+
+                        fuse->size.width = width;
+                        fuse->size.height = height;
+                }
+        //}
+
+        return fuse;
+}
+
 void ei_invalidate_rect(ei_rect_t* rect)
 {
         // TODO : if this rect is hidden by another invalid one, do not add
@@ -268,20 +344,57 @@ void ei_invalidate_rect(ei_rect_t* rect)
         // TODO : Optimisation
         // Fusionner les rectangles dont l'intersection est trop grande
         if (rect) {
-                ei_linked_rect_t *link = CALLOC_TYPE(ei_linked_rect_t);
-                link->rect = *rect;
-                link->next = NULL;
 
-                // Hack optimisation sujet !
-                ei_linked_elem_t *tail = ei_update_rects.tail;
-                if (tail) {
-                        ei_linked_rect_t *elem = (ei_linked_rect_t*)tail->elem;
+                ei_rect_t new_rect = *rect;
 
-                        if (elem)
-                                elem->next = link;
+                ei_linked_elem_t *link = ei_update_rects.head, *next = NULL;
+                ei_bool_t add = true;
+
+                while (link) {
+                        ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
+                        next = link->next;
+
+                        if (lrect) {
+                                ei_rect_t *fused = NULL;
+
+                                // Ne pas invalider deux fois le mm rectangle
+                                if (lrect->rect.top_left.x == rect->top_left.x
+                                        && lrect->rect.top_left.y == rect->top_left.y
+                                        && lrect->rect.size.width == rect->size.width
+                                        && lrect->rect.size.height == rect->size.height) {
+                                        add = false;
+                                        //printf("YOOOO\n");
+                                        //exit(0);
+                                }
+                                else if (fused = ei_smaller_fused(&lrect->rect, rect)) {
+                                        //printf("AAAAAAAAA\n");
+
+                                        ei_linkedlist_pop_link(&ei_update_rects, link, true);
+
+                                        new_rect = *fused;
+                                }
+                        }
+
+                        link = next;
                 }
 
-                ei_linkedlist_add(&ei_update_rects, link);
+
+                if (add) {
+                        ei_linked_rect_t *link = CALLOC_TYPE(ei_linked_rect_t);
+                        link->rect = new_rect;
+                        link->next = NULL;
+
+                        // Hack optimisation sujet !
+                        ei_linked_elem_t *tail = ei_update_rects.tail;
+                        if (tail) {
+                                ei_linked_rect_t *elem = (ei_linked_rect_t*)tail->elem;
+
+                                if (elem)
+                                        elem->next = link;
+                        }
+
+                        ei_linkedlist_add(&ei_update_rects, link);
+                }
         }
 }
 
