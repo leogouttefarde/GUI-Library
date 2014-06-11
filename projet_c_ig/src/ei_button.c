@@ -67,6 +67,7 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *
 	bord.top_left=plus(rec.top_left,0,toplevel->bar_height);
 	bord.size.height=bord.size.height-toplevel->bar_height;
 	lp=ei_rect_to_points(bord);
+
 	ei_color_t bord_color=obscurcir(toplevel->color,0.3);
 	ei_draw_polygon(surface,&lp,bord_color,clipper);
 //Dessin du content_rect
