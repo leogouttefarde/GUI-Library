@@ -33,15 +33,10 @@ ei_surface_t* ei_get_root_surface_pointer();
 ei_surface_t* ei_get_picking_surface_pointer();
 
 
-void debug_display_picking_surface();
-void debug_display_root_surface();
-
 void ei_invalidate_reset();
 ei_linked_rect_t* ei_get_update_rects();
 void ei_invalidate_rect(ei_rect_t* rect);
-void ei_invalidate_rects();
-void ei_draw_widgets();
+void ei_draw_rects();
 void ei_draw_widget(ei_widget_t *widget);
-void ei_invalidate_widget(ei_widget_t *widget);
 
 #endif

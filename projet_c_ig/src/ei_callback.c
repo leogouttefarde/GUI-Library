@@ -5,146 +5,160 @@
 static ei_widget_t *pressed = NULL;
 static ei_callback_t callback = NULL;
 
+/***** Resize et move *****/
 
 /* Fonction de redimensionnement
- * Conserve les proportions des fils */
+ * Conserve les proportions des fils 
+ *
+ * Pendant le redimensionnement, on ancre
+ * le coin northwest pour plus de confort
+ * */
 void resize(ei_widget_t *widget, ei_size_t add_size)
 {
-        // On recupere les parametres
-        ei_placer_param_t *param;
-        param = (ei_placer_param_t*)widget->geom_params;
+        ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
+        // La fonction resize ne fonctionne que sur le placer
+        if (widget->geom_params && widget->geom_params->manager 
+                        && widget->geom_params->manager == placer) {
+                // On recupere les parametres
+                ei_placer_param_t *param;
+                param = (ei_placer_param_t*)widget->geom_params;
 
-        // Taille parent , ancienne taille widget
-        int p_x = widget->parent->content_rect->top_left.x;
-        int p_y = widget->parent->content_rect->top_left.y;
-        int p_w = widget->parent->content_rect->size.width;
-        int p_h = widget->parent->content_rect->size.height;
-        int w_w = widget->screen_location.size.width;
-        int w_h = widget->screen_location.size.height;
-        int w_x = widget->screen_location.top_left.x;
-        int w_y = widget->screen_location.top_left.y;
-        // Nouvelles tailles
-        int w;
-        int h;
-        float rel_w;
-        float rel_h;
+                // Taille parent , ancienne taille widget
+                int p_x = widget->parent->content_rect->top_left.x;
+                int p_y = widget->parent->content_rect->top_left.y;
+                int p_w = widget->parent->content_rect->size.width;
+                int p_h = widget->parent->content_rect->size.height;
+                int w_w = widget->screen_location.size.width;
+                int w_h = widget->screen_location.size.height;
+                int w_x = widget->screen_location.top_left.x;
+                int w_y = widget->screen_location.top_left.y;
+                // Nouvelles tailles
+                int w;
+                int h;
+                float rel_w;
+                float rel_h;
 
-        // Nouvelles positions
-        int x;
-        int y;
-        float rel_x;
-        float rel_y;
+                // Nouvelles positions
+                int x;
+                int y;
+                float rel_x;
+                float rel_y;
 
-        // Pointeurs sur les nouvelles tailles, positions
-        int *w_p = &w;
-        int *h_p = &h;
-        float *rel_w_p = &rel_w;
-        float *rel_h_p = &rel_h;
+                // Pointeurs sur les nouvelles tailles, positions
+                int *w_p = &w;
+                int *h_p = &h;
+                float *rel_w_p = &rel_w;
+                float *rel_h_p = &rel_h;
 
-        int *x_p = &x;
-        int *y_p = &y;
-        float *rel_x_p = &rel_x;
-        float *rel_y_p = &rel_y;
+                int *x_p = &x;
+                int *y_p = &y;
+                float *rel_x_p = &rel_x;
+                float *rel_y_p = &rel_y;
 
 
-        // Calcul de la nouvelle taille absolue du widget
-        w = w_w + add_size.width;
-        h = w_h + add_size.height;
-        //Gestion du cas ou on atteint la min_size du toplevel
-        if (!strcmp(widget->wclass->name, "toplevel")){
-                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
-                if(toplevel->min_size){       
-                        w = MAX(toplevel->min_size->width, w);
-                        h = MAX(toplevel->min_size->height, h);
+                // Calcul de la nouvelle taille absolue du widget
+                w = w_w + add_size.width;
+                h = w_h + add_size.height;
+                //Gestion du cas ou on atteint la min_size du toplevel
+                if (!strcmp(widget->wclass->name, "toplevel")){
+                        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+                        if(toplevel->min_size){       
+                                w = MAX(toplevel->min_size->width, w);
+                                h = MAX(toplevel->min_size->height, h);
+                        }
                 }
+                rel_w = (float)w / (float)p_w;
+                rel_h = (float)h / (float)p_h;
+
+
+
+                // Nouvelle position top_left, bottom_right du widget
+                // (le redimensionnement se fait avec ancrage NW)
+                // DANS LE REPERE DU PARENT
+                int x1 = w_x - p_x;
+                int x2 = x1 + w - 1;
+                int y1 = w_y - p_y;
+                int y2 = y1 + h - 1;
+
+                // Calcul du nouveau point d'ancrage
+                ei_anchor_t anc;
+                if(!param->anc || !*param->anc)
+                        anc = ei_anc_northwest;
+                else
+                        anc = *param->anc;
+
+                switch(anc){
+                case ei_anc_northwest:
+                        x = x1;
+                        y = y1;
+                        break;
+                case ei_anc_north:
+                        x = (x1 + x2) / 2;
+                        y = y1;
+                        break;
+                case ei_anc_northeast:
+                        x = x1 + w - 1;
+                        y = y1;
+                        break;
+                case ei_anc_east:
+                        x = x1 + w - 1;
+                        y = (y1 +y2) / 2;
+                        break;
+                case ei_anc_southeast:
+                        x = x1 + w - 1;
+                        y = y1 + h - 1;
+                        break;
+                case ei_anc_south:
+                        x = (x1 + x2) / 2;
+                        y = y1 + h -1;
+                        break;
+                case ei_anc_southwest:
+                        x = x1;
+                        y = y + h -1;
+                        break;
+                case ei_anc_west:
+                        x = x1;
+                        y = (y1 +y2) / 2;
+                        break;
+                case ei_anc_center:
+                        x = (x1 + x2) / 2;
+                        y = (y1 + y2) / 2;
+                        break;
+                default:
+                        break;
+                }
+
+                rel_x = (float)(x) / (float)(p_w -1);
+                rel_y = (float)(y) / (float)(p_h -1);
+
+                // On distingue le cas ou le widget a une taille absolue et le cas relatif
+                if (param->w)
+                        rel_w_p = NULL;
+                else
+                        w_p = NULL;
+
+                if (param->h)
+                        rel_h_p = NULL;
+                else
+                        h_p = NULL;
+                if (param->x)
+                        rel_x_p = NULL;
+                else
+                        x_p = NULL;
+
+                if (param->y)
+                        rel_y_p = NULL;
+                else
+                        y_p = NULL;
+
+                // Placement du widget
+                ei_place(widget, &anc, x_p, y_p, w_p, h_p, rel_x_p, rel_y_p, rel_w_p, rel_h_p);
+                // Affichage
+                widget->geom_params->manager->runfunc(widget);
         }
-        rel_w = (float)w / (float)p_w;
-        rel_h = (float)h / (float)p_h;
-
-
-
-        // Nouvelle position top_left, bottom_right du widget
-        // (le redimensionnement se fait avec ancrage NW)
-        // DANS LE REPERE DU PARENT
-        int x1 = w_x - p_x;
-        int x2 = x1 + w - 1;
-        int y1 = w_y - p_y;
-        int y2 = y1 + h - 1;
-
-        // Calcul du nouveau point d'ancrage
-        ei_anchor_t anc;
-        if(!param->anc || !*param->anc)
-                anc = ei_anc_northwest;
-        else
-                anc = *param->anc;
-
-        switch(anc){
-        case ei_anc_northwest:
-                x = x1;
-                y = y1;
-                break;
-        case ei_anc_north:
-                x = (x1 + x2) / 2;
-                y = y1;
-                break;
-        case ei_anc_northeast:
-                x = x1 + w - 1;
-                y = y1;
-                break;
-        case ei_anc_east:
-                x = x1 + w - 1;
-                y = (y1 +y2) / 2;
-                break;
-        case ei_anc_southeast:
-                x = x1 + w - 1;
-                y = y1 + h - 1;
-                break;
-        case ei_anc_south:
-                x = (x1 + x2) / 2;
-                y = y1 + h -1;
-                break;
-        case ei_anc_southwest:
-                x = x1;
-                y = y + h -1;
-                break;
-        case ei_anc_west:
-                x = x1;
-                y = (y1 +y2) / 2;
-                break;
-        case ei_anc_center:
-                x = (x1 + x2) / 2;
-                y = (y1 + y2) / 2;
-                break;
-        default:
-                break;
-        }
-
-        rel_x = (float)(x) / (float)(p_w -1);
-        rel_y = (float)(y) / (float)(p_h -1);
-
-        // On distingue le cas ou le widget a une taille absolue et le cas relatif
-        if (param->w)
-                rel_w_p = NULL;
-        else
-                w_p = NULL;
-
-        if (param->h)
-                rel_h_p = NULL;
-        else
-                h_p = NULL;
-        if (param->x)
-                rel_x_p = NULL;
-        else
-                x_p = NULL;
-
-        if (param->y)
-                rel_y_p = NULL;
-        else
-                y_p = NULL;
-
-        // Placement du widget
-        ei_place(widget, &anc, x_p, y_p, w_p, h_p, rel_x_p, rel_y_p, rel_w_p, rel_h_p);
 }
+
+
 
 //TODO Version qui conserve la relativité
 /* Fonction de mouvement
@@ -152,36 +166,47 @@ void resize(ei_widget_t *widget, ei_size_t add_size)
 void move(ei_widget_t *widget, ei_size_t dist)
 {
         assert(widget);
-        if (widget) {
-                ei_placer_param_t *param =
-                        (ei_placer_param_t*)widget->geom_params;
-                ei_anchor_t anc = ei_anc_northwest;
+        ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
+        // La fonction resize ne fonctionne que sur le placer
+        if (widget->geom_params && widget->geom_params->manager 
+                        && widget->geom_params->manager == placer) {
+                if (widget) {
+                        ei_placer_param_t *param =
+                                (ei_placer_param_t*)widget->geom_params;
+                        ei_anchor_t anc = ei_anc_northwest;
 
-                int x;
-                int y;
-                int p_x = 0;
-                int p_y = 0;
-                // Position top_left et taille du widget
-                int w_x = widget->screen_location.top_left.x;
-                int w_y = widget->screen_location.top_left.y;
+                        int x;
+                        int y;
+                        int p_x = 0;
+                        int p_y = 0;
+                        // Position top_left et taille du widget
+                        int w_x = widget->screen_location.top_left.x;
+                        int w_y = widget->screen_location.top_left.y;
 
-                // Idem parent
-                if (widget->parent->content_rect) {
-                        ei_rect_t p_rect = *widget->parent->content_rect;
-                        p_x = p_rect.top_left.x;
-                        p_y = p_rect.top_left.y;
+                        // Idem parent
+                        if (widget->parent->content_rect) {
+                                ei_rect_t p_rect = *widget->parent->content_rect;
+                                p_x = p_rect.top_left.x;
+                                p_y = p_rect.top_left.y;
+                        }
+
+                        // Nouveau x absolu (dans le repere du parent)
+                        x = w_x + dist.width - p_x;
+                        y = w_y + dist.height - p_y;
+
+                        // On deplace le pere
+                        ei_place(widget, &anc, &x, &y, param->w, param->h, NULL,
+                                        NULL, param->rel_w, param->rel_h);
+                        // Affichage
+                        widget->geom_params->manager->runfunc(widget);
                 }
-
-                // Nouveau x absolu (dans le repere du parent)
-                x = w_x + dist.width - p_x;
-                y = w_y + dist.height - p_y;
-
-                // On deplace le pere
-                ei_place(widget, &anc, &x, &y, param->w, param->h, NULL,
-                                NULL, param->rel_w, param->rel_h);
         }
 }
 
+
+/***** Callbacks *****/
+
+// Gestion du mouvement de la souris pour un toplevel
 ei_bool_t all_callback_move_move(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param)
 {
@@ -199,7 +224,7 @@ ei_bool_t all_callback_move_move(ei_widget_t *widget, struct ei_event_t
         return EI_FALSE;
 }
 
-// toplevel-> all
+// Gestion du resize
 ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param)
 {
@@ -249,6 +274,9 @@ ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
         return EI_FALSE;
 }
 
+// Callback pour gérer le clic sur un toplevel(deplacement, redimensionnement,
+// fermeture)
+// Si nécessaire effectue les bind avec toplevel en param
 ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
         assert(widget);
@@ -304,7 +332,6 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
 
 
 
-// Peut-être pas dans le bon fichier
 // Enfonce les boutons
 ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
@@ -322,7 +349,7 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, v
 }
 
 
-
+// Gere le relachement de la souris
 ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
         ei_bool_t done = EI_FALSE;

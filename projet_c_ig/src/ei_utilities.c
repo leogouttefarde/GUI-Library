@@ -5,7 +5,8 @@ ei_linked_point_t *ei_button_arc(ei_point_t centre, int rayon, int angle_tete,
 		int angle_queue, ei_linked_point_t * suivant)
 {
 	ei_linked_point_t *Point_suivant = suivant;
-	ei_linked_point_t *Point;
+	ei_linked_point_t *Point = NULL;
+
 	for (float theta = angle_queue; theta >= angle_tete; theta = theta -0.5) {
 		Point = CALLOC_TYPE(ei_linked_point_t);
 		assert(Point != NULL);
@@ -51,6 +52,7 @@ ei_linked_point_t *trait(ei_point_t queue, ei_point_t tete,
 		Point->next = Point_suivant;
 		Point_suivant = Point;
 	}
+
 	return Point;
 }
 
