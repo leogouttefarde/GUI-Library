@@ -3,7 +3,7 @@
 
 
 static ei_widget_t *pressed = NULL;
-static ei_callback_t *callback = NULL;
+static ei_callback_t callback = NULL;
 
 
 /* Fonction de redimensionnement
@@ -295,7 +295,7 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
                                 pressed = NULL;
                         }
                         if (pressed)
-                                ei_bind(ei_ev_mouse_move, NULL, "all", *callback,
+                                ei_bind(ei_ev_mouse_move, NULL, "all", callback,
                                                 (void*)toplevel);
                 }
         }
