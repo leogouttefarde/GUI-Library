@@ -216,64 +216,44 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 	hw_surface_lock(img);
 	ei_rect_t nv_img_rect;
 	if (img_rect) {
-		printf("img_rect size{%i,%i}\n",img_rect->size.width,img_rect->size.height);
+		//printf("img_rect size{%i,%i}\n",img_rect->size.width,img_rect->size.height);
 		nv_img_rect=*img_rect;
 	} else {
 		nv_img_rect=hw_surface_get_rect(img);
 	}
 
-	int width=rectangle.size.width;
-	int height=rectangle.size.height;
+	int w_dst=rectangle.size.width;
+	int h_dst=rectangle.size.height;
+	int w_ori=nv_img_rect.size.width;
+	int h_ori=nv_img_rect.size.height;
+	int cstraint_w=MIN(w_dst,w_ori);
+	int cstraint_h=MIN(h_dst,h_ori);
+	ei_size_t s={cstraint_w,cstraint_h};
 
-	ei_point_t ancre;
-	ei_point_t top_gauche = nv_img_rect.top_left;
-	int longueur=nv_img_rect.size.width;
-	int hauteur=nv_img_rect.size.height;
-	ei_point_t top_mid = { top_gauche.x + longueur / 2, top_gauche.y };
-	ei_point_t centre = { top_gauche.x + longueur / 2, top_gauche.y + hauteur / 2 };
-	ei_point_t top_droite = { top_gauche.x + longueur, top_gauche.y + hauteur * 0 };
-	ei_point_t droite_mid = { top_gauche.x + longueur, top_gauche.y + hauteur / 2 };
-	ei_point_t bot_droite = { top_gauche.x + longueur, top_gauche.y + hauteur };
-	ei_point_t bot_mid = { top_gauche.x + longueur / 2, top_gauche.y + hauteur };
-	ei_point_t bot_gauche = { top_gauche.x + longueur * 0, top_gauche.y + hauteur };
-	ei_point_t gauche_mid = { top_gauche.x + longueur * 0, top_gauche.y + hauteur / 2 };
-
-	switch (img_anchor) {
-		case ei_anc_none:
-		case ei_anc_center:
-			ancre = plus(centre, -width / 2, -height / 2);
-			break;
-		case ei_anc_north:
-			ancre = plus(top_mid, -width / 2, 0);
-			break;
-		case ei_anc_northeast:
-			ancre = plus(top_droite, -width, 0);
-			break;
-		case ei_anc_east:
-			ancre = plus(droite_mid, -width, 0);
-			break;
-		case ei_anc_southeast:
-			ancre = plus(bot_droite, -width, -height);
-			break;
-		case ei_anc_south:
-			ancre = plus(bot_mid, -width / 2, -height);
-			break;
-		case ei_anc_southwest:
-			ancre = plus(bot_gauche, 0, -height);
-			break;
-		case ei_anc_west:
-			ancre = plus(gauche_mid, 0, -height / 2);
-			break;
-		case ei_anc_northwest:
-			ancre = top_gauche;
-			break;
+	ei_rect_t img_part;
+	if (w_ori>w_dst||h_ori>h_dst) {
+		ei_point_t ancre;
+		ancre=find_anchor(nv_img_rect,cstraint_w,cstraint_h,img_anchor);
+		ei_size_t s={cstraint_w,cstraint_h};
+		img_part.top_left=ancre;
+		img_part.size=s;
+	} else {
+		img_part=nv_img_rect;
 	}
-	
-	ei_rect_t img_part = { ancre, rectangle.size };
+
+	ei_rect_t rec_dst;
+	if	(s.width==rectangle.size.width&&s.height==rectangle.size.height) {
+		rec_dst=rectangle;
+	} else {
+		ei_point_t ancre_dst;
+		ancre_dst=find_anchor(rectangle,cstraint_w,cstraint_h,img_anchor);
+	 	rec_dst.top_left=ancre_dst;
+		rec_dst.size=s;
+	}	  
 	
 	//printf("img_part size{%i,%i}\n",img_part.size.width,img_part.size.height);
 	//printf("rectangle size{%i,%i}\n",rectangle.size.width,rectangle.size.height);
-	result = ei_copy_surface(window, &rectangle, img, &img_part, 1);
+	result = ei_copy_surface(window, &rec_dst, img, &img_part, 1);
 
 	hw_surface_unlock(img);
 

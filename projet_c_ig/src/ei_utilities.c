@@ -170,3 +170,52 @@ ei_color_t obscurcir(ei_color_t couleur, float coeff_couleur) {
 		couleur_assombrie.alpha = 255;
 		return couleur_assombrie;
 }
+/*BRIEF
+ *trouve l'ancre dans un rectangle à partir de deux contrainte et de l'ancre
+*/
+ei_point_t find_anchor(ei_rect_t rectangle,int width,int height, ei_anchor_t position) {
+	ei_point_t ancre;
+	ei_point_t top_gauche = rectangle.top_left;
+	int longueur=rectangle.size.width;
+	int hauteur=rectangle.size.height;
+	ei_point_t top_mid = { top_gauche.x + longueur / 2, top_gauche.y };
+	ei_point_t centre = { top_gauche.x + longueur / 2, top_gauche.y + hauteur / 2 };
+	ei_point_t top_droite = { top_gauche.x + longueur, top_gauche.y + hauteur * 0 };
+	ei_point_t droite_mid = { top_gauche.x + longueur, top_gauche.y + hauteur / 2 };
+	ei_point_t bot_droite = { top_gauche.x + longueur, top_gauche.y + hauteur };
+	ei_point_t bot_mid = { top_gauche.x + longueur / 2, top_gauche.y + hauteur };
+	ei_point_t bot_gauche = { top_gauche.x + longueur * 0, top_gauche.y + hauteur };
+	ei_point_t gauche_mid = { top_gauche.x + longueur * 0, top_gauche.y + hauteur / 2 };
+	switch (position) {
+		case ei_anc_none:
+		case ei_anc_center:
+			ancre = plus(centre, -width / 2, -height / 2);
+			break;
+		case ei_anc_north:
+			ancre = plus(top_mid, -width / 2, 0);
+			break;
+		case ei_anc_northeast:
+			ancre = plus(top_droite, -width, 0);
+			break;
+		case ei_anc_east:
+			ancre = plus(droite_mid, -width, 0);
+			break;
+		case ei_anc_southeast:
+			ancre = plus(bot_droite, -width, -height);
+			break;
+		case ei_anc_south:
+			ancre = plus(bot_mid, -width / 2, -height);
+			break;
+		case ei_anc_southwest:
+			ancre = plus(bot_gauche, 0, -height);
+			break;
+		case ei_anc_west:
+			ancre = plus(gauche_mid, 0, -height / 2);
+			break;
+		case ei_anc_northwest:
+			ancre = top_gauche;
+			break;
+		}
+
+	return(ancre);
+}

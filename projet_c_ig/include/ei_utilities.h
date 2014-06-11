@@ -25,4 +25,5 @@ ei_color_t eclaircir(ei_color_t couleur, float coeff_couleur);
 
 ei_color_t obscurcir(ei_color_t couleur, float coeff_couleur);
 
+ei_point_t find_anchor(ei_rect_t rectangle,int width,int height, ei_anchor_t position);
 #endif
