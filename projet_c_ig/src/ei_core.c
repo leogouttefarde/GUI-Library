@@ -205,21 +205,25 @@ void ei_draw_widget(ei_widget_t *widget){
                                 SAFE_FREE(clipper);
 
                                 //TODO ajouter intersectiona vec rect(root_surface)
+                                ei_rect_t *temp = malloc(sizeof(ei_rect_t));
+                                *temp =  hw_surface_get_rect(ei_get_root_surface());
+                                perfect_clipper =
+                                        rect_intersection(real_clipper, temp);
                         }
                         // Pour le root
                         else{
                                 clipper = &widget->screen_location;
                                 if (clipper) {
-                                        real_clipper = rect_intersection(clipper, draw_rect);
+                                        perfect_clipper = rect_intersection(clipper, draw_rect);
                                 }
                                 is_root = 1;
                         }
                         // Si le real_clipper est non vide
-                        if (real_clipper) {
+                        if (perfect_clipper) {
                                 // Dessin du widget dans le real_clipper
-                                widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
+                                widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), perfect_clipper);
                                 //if (is_root)sleep(5), printf("ENDDDD\n");
-                                SAFE_FREE(real_clipper);
+                                SAFE_FREE(perfect_clipper);
                         }
                 }
 
