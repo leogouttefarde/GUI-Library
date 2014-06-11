@@ -100,172 +100,16 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 
 }
 
-// ei_rect_t* rect_intersection(ei_rect_t *rect1, ei_rect_t *rect2)
-// {
-//         ei_rect_t *inter = NULL;
-
-//         if (rect1 && rect2) {
-//                 int x1 = rect1->top_left.x;
-//                 int y1 = rect1->top_left.y;
-
-//                 int w1 = rect1->size.width;
-//                 int h1 = rect1->size.height;
-
-
-//                 int x2 = rect2->top_left.x;
-//                 int y2 = rect2->top_left.y;
-
-//                 int w2 = rect2->size.width;
-//                 int h2 = rect2->size.height;
-
-
-//                 if ()
-
-
-//                 inter = CALLOC_TYPE(ei_rect_t);
-
-//                 inter.top_left.x = ;
-//                 inter.top_left.y = ;
-
-//                 inter.size.width = ;
-//                 inter.size.height = ;
-//         }
-
-//         return inter;
-// }
-// Prend en argument des rectangle, renvoie un POINTEUR
-/*ei_rect_t* rect_intersection(ei_rect_t rect1, ei_rect_t rect2){
-        ei_rect_t* inter;
-        ei_point_t tl;
-        ei_point_t br;
-
-        int x1 = rect1.top_left.x;
-        int y1 = rect1.top_left.y;
-        int w1 = rect1.size.width;
-        int h1 = rect1.size.height;
-        int x2 = rect2.top_left.x;
-        int y2 = rect2.top_left.y;
-        int w2 = rect2.size.width;
-        int h2 = rect2.size.height;
-
-        // Topleft de l'intersection
-        tl.x = MAX(x1,x2);
-        tl.y = MAX(y1,y2);
-
-        // Bottom_right de l'intersection
-        br.x = MIN(x1 + w1 - 1, x2 + w2 -1);
-        br.y = MIN(y1 + h1 - 1, y2 + h2 -1 );
-
-        inter = malloc(sizeof(ei_rect_t));
-        inter->top_left = tl;
-        inter->size = ei_size(br.x - tl.x + 1, br.y - tl.y + 1);
-        return inter;
-}*/
-
-ei_bool_t ei_is_rect_inter(const ei_rect_t *rect1, const ei_rect_t *rect2)
-{
-        ei_bool_t is_intersection = EI_FALSE;
-
-
-        if (rect1 && rect2) {
-                int x1, y1, x2, y2;
-                int w1, h1, w2, h2;
-                int rect1_right, rect1_bottom, rect2_right, rect2_bottom;
-
-                x1 = rect1->top_left.x;
-                y1 = rect1->top_left.y;
-
-                w1 = rect1->size.width;
-                h1 = rect1->size.height;
-
-
-                x2 = rect2->top_left.x;
-                y2 = rect2->top_left.y;
-
-                w2 = rect2->size.width;
-                h2 = rect2->size.height;
-
-
-
-                rect2_right = x2 + w2 - 1;
-                rect2_bottom = y2 + h2 - 1;
-
-                rect1_right = x1 + w1 - 1;
-                rect1_bottom = y1 + h1 - 1;
-
-
-                if ( (x2 < rect1_right)
-                        && (rect2_right > x1)
-                        && (y2 < rect1_bottom)
-                        && (rect2_bottom > y1) )
-                        is_intersection = EI_TRUE;
-        }
-
-        return is_intersection;
-}
-
-ei_rect_t* rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2) 
-{
-        ei_rect_t *inter = NULL;
-
-
-        if (ei_is_rect_inter(rect1, rect2)) {
-                int x1, y1, x2, y2;
-                int w1, h1, w2, h2;
-                int r1_right, r1_bottom, r2_right, r2_bottom;
-
-
-                x1 = rect1->top_left.x;
-                y1 = rect1->top_left.y;
-
-                w1 = rect1->size.width;
-                h1 = rect1->size.height;
-
-
-                x2 = rect2->top_left.x;
-                y2 = rect2->top_left.y;
-
-                w2 = rect2->size.width;
-                h2 = rect2->size.height;
-
-
-
-                r2_right = x2 + w2 - 1;
-                r2_bottom = y2 + h2 - 1;
-
-                r1_right = x1 + w1 - 1;
-                r1_bottom = y1 + h1 - 1;
-
-
-                inter = CALLOC_TYPE(ei_rect_t);
-                assert(inter);
-
-                if (inter) {
-                        int left, top;
-
-                        left = MAX(x1, x2);
-                        top = MAX(y1, y2);
-
-                        inter->top_left.x = MAX(x1, x2);
-                        inter->top_left.y = MAX(y1, y2);
-
-                        inter->size.width = MIN(r1_right, r2_right) - left + 1;
-                        inter->size.height = MIN(r1_bottom, r2_bottom) - top + 1;
-                }
-        }
-
-        return inter;
-}
 
 /*  Gere le clipping */
 void ei_place_runfunc(struct ei_widget_t*       widget)
 {
 
         /* On commence par invalider l'ancien rectangle */
-        ei_app_invalidate_rect(&widget->screen_location);
+        ei_invalidate_rect(&widget->screen_location);
 
         /* On calcule la nouvelle screen_location */
-        
+
         // Placement
         ei_anchor_t anc;
         bool keep = true;
@@ -280,6 +124,10 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         ei_rect_t parent_rect;
         ei_rect_t screen_location;
 
+        // Récupération des paramètres pour l'ancrage
+        ei_placer_param_t *param =
+                (ei_placer_param_t*)widget->geom_params;
+        
         // Definition du rectangle contenant le widget
         if (widget->parent){
                 // Theoriquement le second cas n'arrive jamais
@@ -294,9 +142,6 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 xmax = xmin + parent_rect.size.width - 1;
                 ymax = ymin + parent_rect.size.height - 1;
 
-                // Récupération des paramètres pour l'ancrage
-                ei_placer_param_t *param =
-                        (ei_placer_param_t*)widget->geom_params;
                 /* NE PAS EFFACER */
                 /*
                 // Verification de la validité du point x, y
@@ -342,7 +187,6 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 screen_location.size = widget->requested_size;
                 int w;
                 int h;
-                bool size_abs = false;
                 w= widget->requested_size.width;
                 h = widget->requested_size.height;
 
@@ -466,14 +310,20 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 screen_location = ei_rect_zero();
                 }*/
 
-                // Appel a geomnotify
-                widget->wclass->geomnotifyfunc(widget, screen_location);
+        }
+        // Root
+        else{
+                screen_location.top_left = ei_point(0,0);
+                screen_location.size = ei_size(*param->w, *param->h);
+
         }
 
+        // Appel a geomnotify
+        widget->wclass->geomnotifyfunc(widget, screen_location);
 
         /* On invalide le nouveau rectangle*/
         ei_rect_t new_pos = widget->screen_location;
-        ei_app_invalidate_rect(&new_pos);
+        ei_invalidate_rect(&new_pos);
 
         /* Appels récursifs sur les enfants */
         // Appel récursif sur les enfants pour les replacer
@@ -483,61 +333,6 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 current = current->next_sibling;
         }
 
-        // TODO DEPLACER dans ei_app
-        /*
-        //printf("RUN!\n");
-        ei_rect_t *draw_rect = ei_get_draw_rect();
-        if (draw_rect) {
-        //printf("place run %x", widget);
-
-        //if (widget && widget->wclass) {
-        // printf(" %s  ", widget->wclass->name);
-        //}
-
-        int is_root = 0;
-        //
-        ei_rect_t *clipper = NULL;
-        ei_rect_t *real_clipper = NULL;
-        if (widget->parent){
-        // TODO calcul inutile
-        clipper = rect_intersection(widget->parent->content_rect, 
-        &widget->screen_location);
-        // TODO Celui la doit etre juste
-        //clipper = widget->parent->content_rect;
-
-        //if (widget->parent->content_rect != root->content_rect)
-        real_clipper = rect_intersection(clipper, draw_rect);
-
-
-        SAFE_FREE(clipper);
-        }
-        else{
-        clipper = &widget->screen_location;
-
-        if (clipper) {
-        real_clipper = rect_intersection(clipper, draw_rect);
-        // real_clipper = CALLOC_TYPE(ei_rect_t);
-        // *real_clipper = *root->content_rect;
-        }
-        is_root = 1;
-        //printf("ROOT !  \n");
-        //print_rect(real_clipper);
-        //clipper = &widget->screen_location;
-        }
-
-
-        //print_rect(real_clipper);
-        if (real_clipper) {
-        //printf ("  DRAW");
-        //widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
-        widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
-        //if (is_root)sleep(5), printf("ENDDDD\n");
-        SAFE_FREE(real_clipper);
-        }
-        //else   printf ("INTER???\n");
-        }
-        //else     printf ("ROOT???\n");
-        //printf("\n");*/
 }
 
 void ei_place_releasefunc(struct ei_widget_t*   widget)
@@ -563,24 +358,6 @@ void  ei_register_placer_manager()
         ei_geometrymanager_register(placer);
 }
 
-/*
-   void ei_place_rec(ei_widget_t *widget, bool place_cur) {
-
-   if (widget) {
-   if (place_cur) {
-// Placement du widget
-ei_placer_param_t *param;
-param = (ei_placer_param_t*)widget->geom_params;
-if (param) {
-ei_place(widget, param->anc, param->x, param->y, param->w, param->h,
-param->rel_x, param->rel_y, param->rel_w, param->rel_h);
-}
-}
-
-ei_place_rec(widget->children_head, true);
-ei_place_rec(widget->next_sibling, true);
-}
-}*/
 
 /**
  * \brief       Configures the geometry of a widget using the "placer" geometry manager.
@@ -625,22 +402,11 @@ void ei_place(ei_widget_t *widget,
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
         assert(placer);
 
+        ei_bool_t gp_alloc;
 
         if (placer && widget) {
                 /* Display widget */
 
-                // If there is a parent invalidate parent instead
-                // ei_widget_t *inval = widget;
-                // if (inval && inval->parent)
-                //         inval = inval->parent;
-
-                // ei_invalidate_widget(inval);
-
-                ei_rect_t old_pos = widget->screen_location;
-                ei_app_invalidate_rect(&old_pos);
-
-
-                ei_bool_t gp_alloc = EI_FALSE;
 
                 // On verifie que le widget est bien géré par le placeur,
                 // sinon on le modifie pour qu'il le soit

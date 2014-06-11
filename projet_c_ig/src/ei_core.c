@@ -8,6 +8,8 @@
 static ei_widget_t *ei_root = NULL;
 static ei_surface_t ei_root_surface = NULL;
 static ei_surface_t ei_picking_surface = NULL;
+
+// Liste de rectangles a update
 static ei_linkedlist_t ei_update_rects;
 static ei_rect_t *ei_cur_draw_rect = NULL;
 
@@ -50,6 +52,7 @@ ei_surface_t ei_get_picking_surface(){
         return ei_picking_surface;
 }
 
+/*** Fonctions ***/
 void ei_init()
 {
         ei_event_init();
@@ -76,21 +79,152 @@ ei_bool_t ei_is_widget_child(ei_widget_t *widget, ei_widget_t *child)
         return EI_FALSE;
 }
 
+/***** Calculs d'intersections de rectangles *****/
+ei_bool_t ei_is_rect_inter(const ei_rect_t *rect1, const ei_rect_t *rect2)
+{
+        ei_bool_t is_intersection = EI_FALSE;
+
+
+        if (rect1 && rect2) {
+                int x1, y1, x2, y2;
+                int w1, h1, w2, h2;
+                int rect1_right, rect1_bottom, rect2_right, rect2_bottom;
+
+                x1 = rect1->top_left.x;
+                y1 = rect1->top_left.y;
+
+                w1 = rect1->size.width;
+                h1 = rect1->size.height;
+
+
+                x2 = rect2->top_left.x;
+                y2 = rect2->top_left.y;
+
+                w2 = rect2->size.width;
+                h2 = rect2->size.height;
+
+
+
+                rect2_right = x2 + w2 - 1;
+                rect2_bottom = y2 + h2 - 1;
+
+                rect1_right = x1 + w1 - 1;
+                rect1_bottom = y1 + h1 - 1;
+
+
+                if ( (x2 < rect1_right)
+                                && (rect2_right > x1)
+                                && (y2 < rect1_bottom)
+                                && (rect2_bottom > y1) )
+                        is_intersection = EI_TRUE;
+        }
+
+        return is_intersection;
+}
+
+ei_rect_t* rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2) 
+{
+        ei_rect_t *inter = NULL;
+
+
+        if (ei_is_rect_inter(rect1, rect2)) {
+                int x1, y1, x2, y2;
+                int w1, h1, w2, h2;
+                int r1_right, r1_bottom, r2_right, r2_bottom;
+
+
+                x1 = rect1->top_left.x;
+                y1 = rect1->top_left.y;
+
+                w1 = rect1->size.width;
+                h1 = rect1->size.height;
+
+
+                x2 = rect2->top_left.x;
+                y2 = rect2->top_left.y;
+
+                w2 = rect2->size.width;
+                h2 = rect2->size.height;
+
+
+
+                r2_right = x2 + w2 - 1;
+                r2_bottom = y2 + h2 - 1;
+
+                r1_right = x1 + w1 - 1;
+                r1_bottom = y1 + h1 - 1;
+
+
+                inter = CALLOC_TYPE(ei_rect_t);
+                assert(inter);
+
+                if (inter) {
+                        int left, top;
+
+                        left = MAX(x1, x2);
+                        top = MAX(y1, y2);
+
+                        inter->top_left.x = MAX(x1, x2);
+                        inter->top_left.y = MAX(y1, y2);
+
+                        inter->size.width = MIN(r1_right, r2_right) - left + 1;
+                        inter->size.height = MIN(r1_bottom, r2_bottom) - top + 1;
+                }
+        }
+
+        return inter;
+}
 ei_rect_t* ei_get_draw_rect()
 {
         return ei_cur_draw_rect;
 }
 
+/***** Dessin de widgets *****/
 // Draw récursif selon la hiérarchie des widgets
 void ei_draw_widget(ei_widget_t *widget){
-
         if (widget){
+                /* On calcule le real_clipper du widget */
 
-                // Le widget courant est a affiché en premier (il sera
-                // derriere)
-                if (widget->geom_params && widget->geom_params->manager
-                                && widget->geom_params->manager->runfunc){
-                        widget->geom_params->manager->runfunc(widget);
+                ei_rect_t *draw_rect = ei_get_draw_rect();
+                if (draw_rect) {
+                        int is_root = 0;
+                        //
+                        ei_rect_t *clipper = NULL;
+                        ei_rect_t *real_clipper = NULL;
+                        ei_rect_t *perfect_clipper = NULL;
+                        if (widget->parent){
+                                // Clipper lié au widget = content_rect parent
+                                // INTER screen_location widget
+                                clipper = rect_intersection(widget->parent->content_rect, 
+                                                &widget->screen_location);
+
+                                // Clipper optimisé = rectangle a mettre a jour
+                                // INTER clipper widget
+                                //if (widget->parent->content_rect != root->content_rect)
+                                real_clipper = rect_intersection(clipper, draw_rect);
+                                SAFE_FREE(clipper);
+
+                                //TODO ajouter intersectiona vec rect(root_surface)
+                                ei_rect_t *temp = malloc(sizeof(ei_rect_t));
+                                *temp =  hw_surface_get_rect(ei_get_root_surface());
+                                perfect_clipper =
+                                        rect_intersection(real_clipper, temp);
+                        }
+                        // Pour le root
+                        else{
+                                clipper = &widget->screen_location;
+                                if (clipper) {
+                                        perfect_clipper = rect_intersection(clipper, draw_rect);
+                                }
+                                is_root = 1;
+                        }
+                        // Si le real_clipper est non vide
+                        if (perfect_clipper) {
+                                // Dessin du widget dans le real_clipper
+                                widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), perfect_clipper);
+                                //if (is_root)sleep(5), printf("ENDDDD\n");
+                                SAFE_FREE(perfect_clipper);
+                        }
                 }
 
                 // Ses enfants seront devant lui et derriere ses freres
@@ -101,6 +235,7 @@ void ei_draw_widget(ei_widget_t *widget){
         }
 }
 
+// Demande la mise a jour d'un rectangle sur tous les widgets
 void ei_draw_rect(ei_rect_t *rect)
 {
         ei_widget_t *root = ei_get_root();
@@ -115,6 +250,7 @@ void ei_draw_rect(ei_rect_t *rect)
         }
 }
 
+// Demande a mise a jour de l'écran sur tous les rectangles invalidate
 void ei_draw_rects()
 {
         ei_linked_elem_t *link = ei_update_rects.head;
@@ -228,9 +364,9 @@ void ei_invalidate_rect(ei_rect_t* rect)
 
                                 /* If duplicate found, do not add */
                                 if (lrect->rect.top_left.x == rect->top_left.x
-                                        && lrect->rect.top_left.y == rect->top_left.y
-                                        && lrect->rect.size.width == rect->size.width
-                                        && lrect->rect.size.height == rect->size.height)
+                                                && lrect->rect.top_left.y == rect->top_left.y
+                                                && lrect->rect.size.width == rect->size.width
+                                                && lrect->rect.size.height == rect->size.height)
                                         add = false;
 
                                 /* Fuse with another if better */

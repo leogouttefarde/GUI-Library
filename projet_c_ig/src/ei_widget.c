@@ -425,6 +425,9 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
 			&& !strcmp(widget->wclass->name, "toplevel")) {
 
 		ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+		if (border_width) {
+			toplevel->border_width = *border_width;
+		}
 		if (requested_size){
 			ei_size_t rqst_s=*requested_size;
 			rqst_s.height=rqst_s.height+toplevel->bar_height+2*toplevel->border_width;
@@ -435,9 +438,6 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
 		}
 		if (color){
 			toplevel->color = *color;
-		}
-		if (border_width) {
-			toplevel->border_width = *border_width;
 		}
 		if(title){
                         make_string_copy(&toplevel->title, *title);

@@ -76,6 +76,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         //ei_bind(ei_ev_mouse_buttonup, NULL, "toplevel", toplevel_callback_release, NULL);
 
         ei_bind(ei_ev_mouse_buttonup, NULL, "all", all_callback_release, NULL);
+
 }
 
 /**
@@ -105,6 +106,10 @@ void ei_app_run()
         ei_surface_t root_surface = ei_get_root_surface();
         ei_linked_rect_t *lrect = NULL;
 
+        // On appelle la runfunc du root pour lancer le programme
+        ei_widget_t *root = ei_get_root();
+        root->geom_params->manager->runfunc(root);
+
         while (!quit_request) {
 
                 /* Draw rectangles */
@@ -114,6 +119,7 @@ void ei_app_run()
                 lrect = ei_get_update_rects();
 
                 if (lrect)
+                        // Mise a jour a l'ecran
                         hw_surface_update_rects(root_surface, lrect);
 
                 /* Clear draw rectangle */
