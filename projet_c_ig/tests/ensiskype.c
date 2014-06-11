@@ -25,6 +25,19 @@ ei_bool_t process_key(ei_widget_t* widget, ei_event_t* event, void* user_param)
 }
 
 /*
+ * button_press --
+ *
+ *	Callback called when a user clicks on the button.
+ */
+ei_bool_t button_press(ei_widget_t* widget, ei_event_t* event, void* user_param)
+{
+        printf("Click !\n");
+        return EI_TRUE;
+}
+
+
+
+/*
  * ei_main --
  *
  *	Main function of the application.
@@ -131,6 +144,20 @@ int ei_main(int argc, char** argv)
         conversation_min_size = malloc(sizeof(ei_size_t));
         *conversation_min_size = ei_size(50,50);
 
+        // Contact 1 - button
+        ei_widget_t*	contact_1;
+        ei_size_t	contact_1_size		= {300,200};
+        int		contact_1_x		= 0;
+        int		contact_1_y		= 0;
+        float           contact_1_rel_w         = 1.0;
+        float           contact_1_rel_h         = 0.10;
+        ei_color_t	contact_1_color		= {0x22, 0xCC, 0x88, 0xAA};
+        char*		contact_1_title		= "Bill Gates";
+        ei_color_t	contact_1_text_color	= {0x00, 0x00, 0x00, 0xff};
+        int		contact_1_corner_radius	= 5;
+        ei_relief_t	contact_1_relief		= ei_relief_raised;
+        int		contact_1_border_width	= 6;
+        ei_callback_t	contact_1_callback 	= button_press;
 
         /* Create, configure and place the toplevel on screen. */
         toplevel = ei_widget_create("toplevel", ei_app_root_widget());
@@ -139,6 +166,7 @@ int ei_main(int argc, char** argv)
         conversation = ei_widget_create("toplevel", toplevel);
         logo = ei_widget_create("toplevel", ei_app_root_widget());
         logo_frame = ei_widget_create("frame", logo);
+        contact_1 = ei_widget_create("button", contacts);
 
         //toplevel
         ei_toplevel_configure   (toplevel, &toplevel_size, &toplevel_color,
@@ -158,25 +186,30 @@ int ei_main(int argc, char** argv)
                         &conversation_min_size);
 
         //zone de texte
-        ei_frame_configure(zone, &zone_size, 
-                        &zone_color, &zone_border_width, 
-                        &zone_relief, &zone_text, 
-                        &zone_text_font, &zone_text_color, 
+        ei_frame_configure(zone, &zone_size,
+                        &zone_color, &zone_border_width,
+                        &zone_relief, &zone_text,
+                        &zone_text_font, &zone_text_color,
                         &zone_text_anchor, NULL, NULL, NULL);
 
         //contacts
-        ei_frame_configure(contacts, &contacts_size, 
-                        &contacts_color, &contacts_border_width, 
-                        &contacts_relief, &contacts_text, 
-                        &contacts_text_font, &contacts_text_color, 
+        ei_frame_configure(contacts, &contacts_size,
+                        &contacts_color, &contacts_border_width,
+                        &contacts_relief, &contacts_text,
+                        &contacts_text_font, &contacts_text_color,
                         &contacts_text_anchor, NULL, NULL, NULL);
-
+        // Contact 1
+        ei_button_configure (contact_1, &contact_1_size, &contact_1_color,
+                        &contact_1_border_width, &contact_1_corner_radius,
+                        &contact_1_relief, &contact_1_title, NULL,
+                        &contact_1_text_color, NULL, NULL, NULL, NULL,
+                        &contact_1_callback, NULL);
         //contacts
         /*ei_frame_configure(logo_frame, &logo_frame_size, 
-                        &logo_frame_color, &logo_frame_border_width, 
-                        &logo_frame_relief, NULL,
-                        NULL, NULL, NULL, &logo_frame_img,
-                        &logo_frame_img_rect, &logo_frame_img_anchor);*/
+          &logo_frame_color, &logo_frame_border_width, 
+          &logo_frame_relief, NULL,
+          NULL, NULL, NULL, &logo_frame_img,
+          &logo_frame_img_rect, &logo_frame_img_anchor);*/
         /* PLACEMENT */
         ei_place(toplevel, NULL, NULL, NULL, NULL, NULL, &toplevel_rel_x, &toplevel_rel_y, NULL, NULL);
         ei_place(logo, NULL, &logo_x, &logo_y, NULL, NULL, NULL, NULL, NULL, NULL);

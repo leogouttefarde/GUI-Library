@@ -73,11 +73,12 @@ LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a 
 TARGETS		=	${LIBEI} \
 				minimal frame button hello_world_absolute hello_world_relative puzzle
 
-PERSO_TESTS :  toplevel test_shape test_placer test_relative test_button2 test_geom test_resize ensiskype test_inter move
+PERSO_TESTS =  ensiskype toplevel test_shape test_placer test_relative \
+			   test_button2 test_geom test_resize ensiskype test_inter move
 
 all : ${TARGETS}
 
-tests : PERSO_TESTS
+tests : ${PERSO_TESTS}
 
 ########## Test-programs
 
