@@ -78,34 +78,44 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *
 	bar.size.height=toplevel->bar_height;
 	lp=ei_rect_to_points(bar);
 	ei_draw_polygon(surface,&lp,toplevel->bar_color,clipper);
-	//printf("barre déssinée, on dessine le bouton \n");
-//Dessin du bouton close
-	ei_color_t btn_c_color={0,0,0,255};
-	int marge=toplevel->bar_height*0.25;
+	int marge;
 	ei_rect_t btn_c;
-	btn_c.top_left=plus(rec.top_left,marge,marge);
-	btn_c.size.width=toplevel->bar_height-2*marge;
-	btn_c.size.height=toplevel->bar_height-2*marge;
-	marge=0.2*btn_c.size.height;
-	ei_button_draw_loc(surface,btn_c,btn_c_color,toplevel->rel_btn_close,0,marge,clipper);
+	if (toplevel->closable) {
+	//Dessin du bouton close
+		ei_color_t btn_c_color={0,0,0,255};
+		marge=toplevel->bar_height*0.25;
+		btn_c.top_left=plus(rec.top_left,marge,marge);
+		btn_c.size.width=toplevel->bar_height-2*marge;
+		btn_c.size.height=toplevel->bar_height-2*marge;
+		marge=0.2*btn_c.size.height;
+		ei_button_draw_loc(surface,btn_c,btn_c_color,toplevel->rel_btn_close,0,marge,clipper);
+	} else {
+		marge=0;
+		btn_c.size.width=0;
+		btn_c.size.height=0;
+	}
 	//printf("bouton déssiné\n");
-//Dessin du bouton resize
-	ei_color_t btn_r_color=eclaircir(toplevel->color,0.2);
-	ei_rect_t btn_r;
-	ei_size_t btn_r_s={toplevel->resize_size,toplevel->resize_size};
-	btn_r.size=btn_r_s;
-	//int width=rec.top_left.x+toplevel->bar_height+2*toplevel->border_width;
-	//int height=rec.top_left.y+toplevel->bar_height+2*toplevel->border_width;
-	int width=rec.size.width;
-	int height=rec.size.height;
-	btn_r.top_left=plus(rec.top_left,width-toplevel->resize_size-toplevel->border_width,height-toplevel->resize_size-toplevel->border_width);
-	ei_button_draw_loc(surface,btn_r,btn_r_color,ei_relief_none,0,0,clipper);
-//Affichage du titre
-	ei_rect_t rec_txt;
-	rec_txt.top_left=plus(rec.top_left,2*marge+btn_c.size.width,0);
-	rec_txt.size.height=toplevel->bar_height;
-	rec_txt.size.width=toplevel->widget.screen_location.size.width-2*(2*marge+btn_c.size.width);
-	ei_insert_text(surface,rec_txt,toplevel->title,toplevel->title_font,toplevel->title_color,0);
+	if (toplevel->resizable) {
+	//Dessin du bouton resize
+		ei_color_t btn_r_color=eclaircir(toplevel->color,0.2);
+		ei_rect_t btn_r;
+		ei_size_t btn_r_s={toplevel->resize_size,toplevel->resize_size};
+		btn_r.size=btn_r_s;
+		//int width=rec.top_left.x+toplevel->bar_height+2*toplevel->border_width;
+		//int height=rec.top_left.y+toplevel->bar_height+2*toplevel->border_width;
+		int width=rec.size.width;
+		int height=rec.size.height;
+		btn_r.top_left=plus(rec.top_left,width-toplevel->resize_size-toplevel->border_width,height-toplevel->resize_size-toplevel->border_width);
+		ei_button_draw_loc(surface,btn_r,btn_r_color,ei_relief_none,0,0,clipper);
+	}
+	if (toplevel->title) {
+	//Affichage du titre
+		ei_rect_t rec_txt;
+		rec_txt.top_left=plus(rec.top_left,2*marge+btn_c.size.width,0);
+		rec_txt.size.height=toplevel->bar_height;
+		rec_txt.size.width=toplevel->widget.screen_location.size.width-2*(2*marge+btn_c.size.width);
+		ei_insert_text(surface,rec_txt,toplevel->title,toplevel->title_font,toplevel->title_color,0);
+	}
 }
 
 void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
