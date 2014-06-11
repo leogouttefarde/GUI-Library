@@ -134,14 +134,14 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
 
                 ei_rect_t rec; // What's this for ?
 
-//                if (widget->parent)
+                //if (widget->parent)
                 rec = frame->widget.screen_location;
 
                 /* TODO  Le probleme vient du fait que le content_rect du
                  * root_widget est modifié */
                 // Random fix, apprently not completely fixing though
-                // else
-                //       rec = *frame->widget.content_rect;
+                 //else
+                 //      rec = *frame->widget.content_rect;
 
                 //rec.size = frame->widget.requested_size;
 
