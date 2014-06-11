@@ -101,10 +101,9 @@ void ei_app_run()
         ei_surface_t root_surface = ei_get_root_surface();
         ei_linked_rect_t *lrect = NULL;
 
-        // On invalide le root pour lancer le programme
-        ei_rect_t *root_rect = malloc(sizeof(ei_rect_t));
-        *root_rect = hw_surface_get_rect(root_surface);
-        ei_invalidate_rect(root_rect);
+        // On appelle la runfunc du root pour lancer le programme
+        ei_widget_t *root = ei_get_root();
+        root->geom_params->manager->runfunc(root);
 
         while (!quit_request) {
 

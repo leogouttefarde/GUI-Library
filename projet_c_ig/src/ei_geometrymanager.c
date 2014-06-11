@@ -124,6 +124,10 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         ei_rect_t parent_rect;
         ei_rect_t screen_location;
 
+        // Récupération des paramètres pour l'ancrage
+        ei_placer_param_t *param =
+                (ei_placer_param_t*)widget->geom_params;
+        
         // Definition du rectangle contenant le widget
         if (widget->parent){
                 // Theoriquement le second cas n'arrive jamais
@@ -138,9 +142,6 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 xmax = xmin + parent_rect.size.width - 1;
                 ymax = ymin + parent_rect.size.height - 1;
 
-                // Récupération des paramètres pour l'ancrage
-                ei_placer_param_t *param =
-                        (ei_placer_param_t*)widget->geom_params;
                 /* NE PAS EFFACER */
                 /*
                 // Verification de la validité du point x, y
@@ -186,7 +187,6 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 screen_location.size = widget->requested_size;
                 int w;
                 int h;
-                bool size_abs = false;
                 w= widget->requested_size.width;
                 h = widget->requested_size.height;
 
@@ -310,10 +310,16 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 screen_location = ei_rect_zero();
                 }*/
 
-                // Appel a geomnotify
-                widget->wclass->geomnotifyfunc(widget, screen_location);
+        }
+        // Root
+        else{
+                screen_location.top_left = ei_point(0,0);
+                screen_location.size = ei_size(*param->w, *param->h);
+
         }
 
+        // Appel a geomnotify
+        widget->wclass->geomnotifyfunc(widget, screen_location);
 
         /* On invalide le nouveau rectangle*/
         ei_rect_t new_pos = widget->screen_location;
