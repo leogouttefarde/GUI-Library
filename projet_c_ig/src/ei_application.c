@@ -101,14 +101,12 @@ void ei_app_run()
 
         while (!quit_request) {
 
-                ei_invalidate_rects();
-
-                ei_draw_widget(ei_get_root()); // DEBUG : DRAW ALL
-                //ei_draw_widgets();
+                ei_draw_rects();
+                //ei_draw_widget(ei_get_root(), false); // DEBUG : DRAW ALL
 
                 // Update des surfaces
-                hw_surface_update_rects(root_surface, NULL); // DEBUG : UPDATE ALL
-                //hw_surface_update_rects(root_surface, ei_get_update_rects()); // OK
+                //hw_surface_update_rects(root_surface, NULL); // DEBUG : UPDATE ALL
+                hw_surface_update_rects(root_surface, ei_get_update_rects()); // OK
 
                 ei_invalidate_reset();
 
@@ -128,6 +126,7 @@ void ei_app_run()
  */
 void ei_app_invalidate_rect(ei_rect_t* rect)
 {
+        //printf("ei_app_invalidate_rect %x\n", rect);
         ei_invalidate_rect(rect);
 }
 

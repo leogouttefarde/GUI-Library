@@ -71,9 +71,9 @@ LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a 
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-				minimal frame button hello_world_absolute hello_world_relative puzzle move
+				minimal frame button hello_world_absolute hello_world_relative puzzle
 
-PERSO_TESTS :  toplevel test_shape test_placer test_relative test_button2 test_geom test_resize ensiskype
+PERSO_TESTS :  toplevel test_shape test_placer test_relative test_button2 test_geom test_resize ensiskype test_inter move
 
 all : ${TARGETS}
 
@@ -195,6 +195,11 @@ ensiskype : ${OBJDIR}/ensiskype.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/ensiskype.o : ${TESTS}/ensiskype.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/ensiskype.c -o ${OBJDIR}/ensiskype.o ${MATHFLAGS} 
 
+test_inter : ${OBJDIR}/test_inter.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o test_inter ${OBJDIR}/test_inter.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/test_inter.o : ${TESTS}/test_inter.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_inter.c -o ${OBJDIR}/test_inter.o ${MATHFLAGS} 
 
 ########## Compilation séparée des sources
 

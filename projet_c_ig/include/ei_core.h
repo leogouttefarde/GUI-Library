@@ -41,7 +41,7 @@ ei_linked_rect_t* ei_get_update_rects();
 void ei_invalidate_rect(ei_rect_t* rect);
 void ei_invalidate_rects();
 void ei_draw_widgets();
-void ei_draw_widget(ei_widget_t *widget);
+void ei_draw_widget(ei_widget_t *widget, ei_bool_t sibling);
 void ei_invalidate_widget(ei_widget_t *widget);
 
 #endif

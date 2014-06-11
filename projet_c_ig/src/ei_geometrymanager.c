@@ -100,25 +100,195 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 
 }
 
-//void rect_intersection()
+// ei_rect_t* rect_intersection(ei_rect_t *rect1, ei_rect_t *rect2)
+// {
+//         ei_rect_t *inter = NULL;
+
+//         if (rect1 && rect2) {
+//                 int x1 = rect1->top_left.x;
+//                 int y1 = rect1->top_left.y;
+
+//                 int w1 = rect1->size.width;
+//                 int h1 = rect1->size.height;
+
+
+//                 int x2 = rect2->top_left.x;
+//                 int y2 = rect2->top_left.y;
+
+//                 int w2 = rect2->size.width;
+//                 int h2 = rect2->size.height;
+
+
+//                 if ()
+
+
+//                 inter = CALLOC_TYPE(ei_rect_t);
+
+//                 inter.top_left.x = ;
+//                 inter.top_left.y = ;
+
+//                 inter.size.width = ;
+//                 inter.size.height = ;
+//         }
+
+//         return inter;
+// }
+
+
+ei_rect_t* rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2) 
+{
+        ei_rect_t *inter = NULL;
+        // printf("calc inter entre\n\n");
+        // print_rect(rect1);
+        // printf("\net\n\n");
+        // print_rect(rect2);
+
+        if (rect1 && rect2) {
+                int x1 = rect1->top_left.x;
+                int y1 = rect1->top_left.y;
+
+                int w1 = rect1->size.width;
+                int h1 = rect1->size.height;
+
+
+                int x2 = rect2->top_left.x;
+                int y2 = rect2->top_left.y;
+
+                int w2 = rect2->size.width;
+                int h2 = rect2->size.height;
+
+
+
+                int r2_left = x2;
+                int r2_top = y2;
+                int r2_right = x2 + w2;
+                int r2_bottom = y2 + h2;
+
+                int r1_left = x1;
+                int r1_top = y1;
+                int r1_right = x1 + w1;
+                int r1_bottom = y1 + h1;
+
+
+                bool is_intersection =  ( r2_left < r1_right 
+                                        && r2_right > r1_left 
+                                        && r2_top < r1_bottom 
+                                        && r2_bottom > r1_top 
+                                        );
+
+                if(is_intersection)
+                {
+                        //printf("r1 coupe r2 !!!!!!!!!!!!!!!\n");
+                        inter = CALLOC_TYPE(ei_rect_t);
+                        assert(inter);
+
+                        if (inter) {
+                                int left = MAX(r1_left, r2_left);
+                                int top = MAX(r1_top, r2_top);
+
+                                inter->top_left.x = MAX(r1_left, r2_left);
+                                inter->top_left.y = MAX(r1_top, r2_top);
+
+                                inter->size.width = MIN( r1_right, r2_right) - left;
+                                inter->size.height = MIN(r1_bottom, r2_bottom) - top;
+                        }
+                }
+                //else    printf("NO INTER\n"), print_rect(rect1, rect2);
+        }
+        // printf("\n\nRésultat\n\n");
+        // print_rect(inter);
+
+        return inter;
+}
+
+void print_rect(const ei_rect_t *rect)
+{
+        if (rect) {
+                int left = rect->top_left.x;
+                int top = rect->top_left.y;
+
+                int right = rect->size.width + left;
+                int bottom = rect->size.height + top;
+
+                int w = rect->size.width;
+                int h = rect->size.height;
+
+                // printf("rect %08lX\n\n", rect);
+
+                // printf("left %d\t", left);
+                // printf("right %d\n", right);
+
+                // printf("top %d\t", top);
+                // printf("bottom %d\n", bottom);
+
+                // printf("width %d\t", w);
+                // printf("height %d\n\n\n", h);
+
+                printf("left %d\t", left);
+                printf("right %d\t", right);
+
+                printf("top %d\t", top);
+                printf("bottom %d\t", bottom);
+
+                printf("width %d\t", w);
+                printf("height %d\n\n", h);
+        }
+}
 
 /*  Gere le clipping */
 void ei_place_runfunc(struct ei_widget_t*       widget)
 {
+        //printf("RUN!\n");
+        ei_widget_t *root = ei_get_root();
+        if (root) {
+        //printf("place run %x", widget);
+
+        /*if (widget && widget->wclass) {
+                printf(" %s  ", widget->wclass->name);
+        }*/
+
+                int is_root = 0;
         //
-        ei_rect_t *clipper;
-        ei_rect_t real_clipper;
+        ei_rect_t *clipper = NULL;
+                ei_rect_t *real_clipper = NULL;
         if (widget->parent){
-                clipper = widget->parent->content_rect;  
+                clipper = rect_intersection(widget->parent->content_rect, 
+                                                &widget->screen_location);
+                //clipper = widget->parent->content_rect;
+
+                //if (widget->parent->content_rect != root->content_rect)
+                        real_clipper = rect_intersection(clipper, root->content_rect);
+
+
+                SAFE_FREE(clipper);
         }
         else{
                 clipper = &widget->screen_location;
+
+                if (clipper) {
+                        real_clipper = rect_intersection(clipper, root->content_rect);
+                        // real_clipper = CALLOC_TYPE(ei_rect_t);
+                        // *real_clipper = *root->content_rect;
+                }
+                is_root = 1;
+                //printf("ROOT !  \n");
+                //print_rect(real_clipper);
+                //clipper = &widget->screen_location;
         }
 
-        //real_clipper = rect_intersection(clipper, root->content_rect);
 
-        widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
-        //widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), &real_clipper);
+        //print_rect(real_clipper);
+                if (real_clipper) {
+                        //printf ("  DRAW");
+                        //widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
+                        widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
+//if (is_root)sleep(5), printf("ENDDDD\n");
+                        SAFE_FREE(real_clipper);
+                }
+                //else   printf ("INTER???\n");
+        }
+        //else     printf ("ROOT???\n");
+        //printf("\n");
 }
 
 void ei_place_releasefunc(struct ei_widget_t*   widget)
@@ -222,6 +392,7 @@ void ei_place(ei_widget_t *widget,
 
 
                 ei_bool_t gp_alloc = EI_FALSE;
+
                 // On verifie que le widget est bien géré par le placeur,
                 // sinon on le modifie pour qu'il le soit
                 if (widget) {
@@ -350,13 +521,13 @@ void ei_place(ei_widget_t *widget,
                                 if (x)
                                         x_anc = *x + xmin;
                                 else if(rel_x)
-                                        x_anc = xmin + (int)(*rel_x * ((float)xmax - (float)xmin));
+                                        x_anc = xmin + (int)ceil((ceil(*rel_x) * ((float)xmax - (float)xmin)));
                                 else
                                         x_anc = 0;
                                 if(y)
                                         y_anc = *y + ymin;
                                 else if (rel_y)
-                                        y_anc = ymin + (int)(*rel_y * ((float)ymax - (float)ymin));
+                                        y_anc = ymin + (int)ceil((ceil(*rel_y) * ((float)ymax - (float)ymin)));
                                 else
                                         y_anc = 0;
 
@@ -377,7 +548,7 @@ void ei_place(ei_widget_t *widget,
                                 }
                                 else if(rel_width){
                                         int rw = parent_rect.size.width;
-                                        rw = (int)((float)rw * *rel_width);
+                                        rw = (int)ceil((float)rw * *rel_width);
                                         w = rw;
                                 }
 
@@ -386,7 +557,7 @@ void ei_place(ei_widget_t *widget,
                                 }
                                 else if(rel_height){
                                         int rh = parent_rect.size.height;
-                                        rh = (int)((float)rh * *rel_height);
+                                        rh = (int)ceil((float)rh * *rel_height);
                                         h = rh;
                                 }
                                 // Calcul de la position du point d'ancrage

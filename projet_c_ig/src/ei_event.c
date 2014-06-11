@@ -107,7 +107,7 @@ void ei_unbind(ei_eventtype_t eventtype,
                                         && (user_param == binding->user_param)
                                         ) {
 
-                                        printf("Unbind link %x !\n", link);
+                                        //printf("Unbind link %x !\n", link);
 
 
 
@@ -122,7 +122,7 @@ void ei_unbind(ei_eventtype_t eventtype,
                 }
         }
 
-        printf("ei_unbind END\n");
+        //printf("ei_unbind END\n");
 }
 
 void ei_event_process(ei_event_t *event)
@@ -146,6 +146,13 @@ void ei_event_process(ei_event_t *event)
                 || event->type == ei_ev_mouse_buttonup
                 || event->type == ei_ev_mouse_move) {
                 selected = ei_widget_pick(&event->param.mouse.where);
+        /*printf("selected %08lX", selected);
+
+        if (selected && selected->wclass)
+                printf("   %s", selected->wclass->name);
+
+
+        printf("\n");*/
         }
 
         // Parcours de tous les links

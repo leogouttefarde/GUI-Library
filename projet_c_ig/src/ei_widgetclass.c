@@ -132,8 +132,15 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 hw_surface_lock(surface);
 
 
-                ei_rect_t rec;
-                rec = frame->widget.screen_location;
+                ei_rect_t rec; // What's this for ?
+
+                if (widget->parent)
+                        rec = frame->widget.screen_location;
+
+                // Random fix, apprently not completely fixing though
+                else
+                        rec = *frame->widget.content_rect;
+
                 //rec.size = frame->widget.requested_size;
 
                 ei_frame_draw(surface,rec,frame,clipper);
