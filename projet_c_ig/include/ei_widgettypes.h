@@ -72,6 +72,8 @@ typedef struct ei_toplevel_t {
         ei_size_t*	min_size;
         // Pour le calcul du deplacement
         ei_point_t move_pos;
+        // Pour detecter une demande de fermeture
+        ei_bool_t   close;
         // Booleans pour detecter les différents release << Useless
         // bool            move;
         // bool             resize;

@@ -472,8 +472,6 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
         ei_color_t title_color={0,0,0,255};
         toplevel->title_color=title_color;
 
-        toplevel->closable = true;
-        toplevel->resizable = true;
 
         ei_size_t *ms = CALLOC_TYPE(ei_size_t);
         assert(ms);
@@ -484,9 +482,12 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 
         // Gestion du move, resize
         toplevel->move_pos = ei_point(0,0);
-        // toplevel->move = false;      << Useless
-        // toplevel->resize = false;    << Useless
         toplevel->resize_size = 10;
+
+        // Pas de demande de fermeture par defaut
+        toplevel->closable = true;
+        toplevel->resizable = ei_axis_both;
+        toplevel->close = EI_FALSE;
 }
 
 void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
