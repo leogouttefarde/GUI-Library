@@ -1,5 +1,16 @@
 #include "ei_utilities.h"
 #include "ei_common.h"
+/**
+ * @brief Converts a part of a circle, given by cenre, radius, and two angles in a list of linked points. Use: The second angle given needs to be greater than the first.
+ *
+ *@param centre The centre of the circle.
+ *@param rayon The radius of the circle.
+ *@param angle_tete The angle of the point which will be head of the list/
+ *@param angle_queue The angle of the point which will end the list, will be linked to suivant.
+ *@param suivant The element after the end of the list, in case you need to chain this segment with others points, else put NULL.
+ *
+ *@return The head of the list
+ */
 
 ei_linked_point_t *ei_button_arc(ei_point_t centre, int rayon, int angle_tete,
 		int angle_queue, ei_linked_point_t * suivant)
@@ -21,10 +32,13 @@ ei_linked_point_t *ei_button_arc(ei_point_t centre, int rayon, int angle_tete,
 }
 
 /**
- *\brief Algo simple qui marche pour des traits horizontaux,verticaux ou diagonaux
- *@param queue La fin de la liste de points chainées qui sera reliées à suivant
- *@param tete La tete de la liste, point qui est renvoyé à la fin
- *@param suivant la liste à la laquelle on va chainer le trait que l'on crée
+ *@brief Algorithm inspired by bresenham but much lighter. It creates a list of points which are between two points. Works well with vertical, horizontal or diagonal segment.
+ *
+ *@param queue The point which will end the list, will be linked to suivant
+ *@param tete The point which will be head of the list
+ *@param suivant The element after the end of the list, in case you need to chain this segment with others points, else put NULL
+ *
+ * @return a linked list of points which represents a segment
  */
 
 ei_linked_point_t *trait(ei_point_t queue, ei_point_t tete,
@@ -55,7 +69,16 @@ ei_linked_point_t *trait(ei_point_t queue, ei_point_t tete,
 
 	return Point;
 }
-
+/**
+ * @brief Converts a rectangle in a list of linked point, which represent the rounded countours of the rectangle, or you can choose to get only the top or bottom part of this rectangle
+ *
+ * @param rectangle The original rectangle
+ * @param rayon The radius of the rounded angles
+ * @param partie Which part of the rectangle -1=>bot,0=>complete,1=>top
+ *
+ * @return The head of a list of linked point
+ *
+*/
 ei_linked_point_t *ei_button_rounded_frame(ei_rect_t rectangle, int rayon,
 		part_rect_t partie)
 {
@@ -141,7 +164,12 @@ ei_linked_point_t *ei_button_rounded_frame(ei_rect_t rectangle, int rayon,
 	}
 	return Liste;
 }
-
+/**
+ *  @brief free a linked list of points
+ *
+ *  @param The list to be free
+ *
+ */
 void free_lp(ei_linked_point_t * Liste)
 {
 	ei_linked_point_t *Suivant;
@@ -152,13 +180,28 @@ void free_lp(ei_linked_point_t * Liste)
 		Liste = Suivant;
 	}
 }
-
+/**
+ * @brief Add a point and one coordinates
+ *
+ * @param A The point to be add the coordinates
+ * @param abs abcisse of the coordinates
+ * @param ord ordinate of the coordinates
+ *
+ * @return The calculated point
+ */
 ei_point_t plus(ei_point_t A, int abc, int ord)
 {
 	ei_point_t point = { A.x + abc, A.y + ord };
 	return point;
 }
-
+/**
+ * @brief Reducts a rectangle
+ *
+ * @param rectangle The rectangle to be reduced
+ * @param marge The size of the reduction
+ *
+ * @return the reduced rectangle
+ */
 ei_rect_t reduction(ei_rect_t rectangle, int marge)
 {
 	ei_rect_t rectangle_reduit;
