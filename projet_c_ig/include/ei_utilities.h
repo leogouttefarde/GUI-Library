@@ -32,10 +32,10 @@ static inline void make_string_copy(const char **dest, const char *src)
 {
         const uint32_t src_size = strlen(src);
         const uint32_t src_size_f = src_size + 1;
-        *dest = malloc(src_size_f);
+        *dest = calloc(src_size_f, 1);
 
         if (*dest)
-                strncpy(*dest, src, src_size);
+                strncpy(*dest, src, src_size_f);
 }
 
 #endif
