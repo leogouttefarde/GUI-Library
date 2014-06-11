@@ -16,6 +16,7 @@
 #include "ei_geometrymanager.h"
 #include "hw_interface.h"
 #include "ei_application.h"
+#include "ei_utilities.h"
 
 
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
@@ -124,18 +125,26 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
  *
  * @param       widget          The widget that is to be destroyed.
  */
-void ei_widget_destroy (ei_widget_t* widget){
-	ei_widget_t *current;
-
+void ei_widget_destroy(ei_widget_t* widget)
+{
 	if (widget) {
-		current = widget->children_head;
+		ei_widget_t *current = widget->children_head;
 
 		while (current) {
 			ei_widget_destroy(current);
 			current = current->next_sibling;
 		}
 
-		widget->wclass->releasefunc(widget);
+                SAFE_FREE(widget->pick_color);
+
+                if (widget->content_rect != &widget->screen_location)
+                        SAFE_FREE(widget->content_rect);
+
+
+                if (widget->wclass && widget->wclass->releasefunc)
+                        widget->wclass->releasefunc(widget);
+
+                SAFE_FREE(widget);
 	}
 }
 
@@ -342,11 +351,8 @@ void    ei_button_configure (ei_widget_t*               widget,
 			button->widget.requested_size = *requested_size;
 		}
 		if (color) {
-                        if (button->color){
-                                SAFE_FREE(button->color);
-                                button->color = CALLOC_TYPE(ei_color_t);
-                        }
-			*button->color = *color;
+                        if (button->color)
+			     *button->color = *color;
 		}
 		if (border_width) {
 			button->border_width = *border_width;
@@ -358,7 +364,7 @@ void    ei_button_configure (ei_widget_t*               widget,
 			button->relief = *relief;
 		}
 		if (text) {
-			button->text = *text;
+                        make_string_copy(&button->text, *text);
 		}
 		if(text_font){
 			button->text_font = *text_font;
@@ -370,29 +376,9 @@ void    ei_button_configure (ei_widget_t*               widget,
 			button->text_anchor = *text_anchor;
 		}
 		if(img) {
-			/*
-			printf("segfault incoming\n");
-			ei_size_t s=hw_surface_get_size(img);
-			printf("s{%i,%i}\n",s.width,s.height);
-			printf("segfault incoming\n");
-			ei_surface_t dest_surf=hw_surface_create(ei_app_root_surface(),&s,1);
-			printf("segfault incoming button->img\n");
-			assert(dest_surf);
-			hw_surface_lock(dest_surf);
-			printf("segfault incoming\n");
-			printf("segfault incoming\n");
-			hw_surface_lock(img);
-			printf("segfault incoming\n");
-			ei_copy_surface(dest_surf,NULL,img,NULL,0);
-			printf("segfault incoming\n");
-			hw_surface_unlock(dest_surf);
-			hw_surface_unlock(img);
-			button->img=dest_surf;
-			*/
 			button->img=*img;
 		}
-		if(img_rect && *img_rect){
-			button->img_rect = CALLOC_TYPE(ei_rect_t);
+		if(img_rect && *img_rect && button->img_rect){
 			*button->img_rect = **img_rect;
 		}
 		if(img_anchor) {
@@ -454,7 +440,7 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
 			toplevel->border_width = *border_width;
 		}
 		if(title){
-			toplevel->title = *title;
+                        make_string_copy(&toplevel->title, *title);
 		}
 		if (closable){
 			toplevel->closable = *closable;
