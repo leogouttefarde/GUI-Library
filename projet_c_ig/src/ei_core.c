@@ -208,10 +208,10 @@ void ei_draw_rect(ei_rect_t *rect)
         if (root && rect) {
                 ei_cur_draw_rect = rect;
 
-                printf("dd\n");
+                //printf("dd\n");
         //print_rect(rect);
                 ei_draw_widget(root);
-                printf("eee\n");
+                //printf("eee\n");
 
                 // Restore default
                 ei_cur_draw_rect = NULL;
