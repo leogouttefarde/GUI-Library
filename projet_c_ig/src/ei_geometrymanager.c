@@ -133,6 +133,34 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 
 //         return inter;
 // }
+// Prend en argument des rectangle, renvoie un POINTEUR
+/*ei_rect_t* rect_intersection(ei_rect_t rect1, ei_rect_t rect2){
+        ei_rect_t* inter;
+        ei_point_t tl;
+        ei_point_t br;
+
+        int x1 = rect1.top_left.x;
+        int y1 = rect1.top_left.y;
+        int w1 = rect1.size.width;
+        int h1 = rect1.size.height;
+        int x2 = rect2.top_left.x;
+        int y2 = rect2.top_left.y;
+        int w2 = rect2.size.width;
+        int h2 = rect2.size.height;
+
+        // Topleft de l'intersection
+        tl.x = MAX(x1,x2);
+        tl.y = MAX(y1,y2);
+
+        // Bottom_right de l'intersection
+        br.x = MIN(x1 + w1 - 1, x2 + w2 -1);
+        br.y = MIN(y1 + h1 - 1, y2 + h2 -1 );
+
+        inter = malloc(sizeof(ei_rect_t));
+        inter->top_left = tl;
+        inter->size = ei_size(br.x - tl.x + 1, br.y - tl.y + 1);
+        return inter;
+}*/
 
 
 ei_rect_t* rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2) 
@@ -171,10 +199,10 @@ ei_rect_t* rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2)
 
 
                 bool is_intersection =  ( r2_left < r1_right 
-                                        && r2_right > r1_left 
-                                        && r2_top < r1_bottom 
-                                        && r2_bottom > r1_top 
-                                        );
+                                && r2_right > r1_left 
+                                && r2_top < r1_bottom 
+                                && r2_bottom > r1_top 
+                                );
 
                 if(is_intersection)
                 {
@@ -241,48 +269,50 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         //printf("RUN!\n");
         ei_widget_t *root = ei_get_root();
         if (root) {
-        //printf("place run %x", widget);
+                //printf("place run %x", widget);
 
-        /*if (widget && widget->wclass) {
-                printf(" %s  ", widget->wclass->name);
-        }*/
+                /*if (widget && widget->wclass) {
+                  printf(" %s  ", widget->wclass->name);
+                  }*/
 
                 int is_root = 0;
-        //
-        ei_rect_t *clipper = NULL;
+                //
+                ei_rect_t *clipper = NULL;
                 ei_rect_t *real_clipper = NULL;
-        if (widget->parent){
-                clipper = rect_intersection(widget->parent->content_rect, 
-                                                &widget->screen_location);
-                //clipper = widget->parent->content_rect;
+                if (widget->parent){
+                        // TODO calcul inutile
+                        clipper = rect_intersection(widget->parent->content_rect, 
+                                        &widget->screen_location);
+                        // TODO Celui la doit etre juste
+                        //clipper = widget->parent->content_rect;
 
-                //if (widget->parent->content_rect != root->content_rect)
+                        //if (widget->parent->content_rect != root->content_rect)
                         real_clipper = rect_intersection(clipper, root->content_rect);
 
 
-                SAFE_FREE(clipper);
-        }
-        else{
-                clipper = &widget->screen_location;
-
-                if (clipper) {
-                        real_clipper = rect_intersection(clipper, root->content_rect);
-                        // real_clipper = CALLOC_TYPE(ei_rect_t);
-                        // *real_clipper = *root->content_rect;
+                        SAFE_FREE(clipper);
                 }
-                is_root = 1;
-                //printf("ROOT !  \n");
+                else{
+                        clipper = &widget->screen_location;
+
+                        if (clipper) {
+                                real_clipper = rect_intersection(clipper, root->content_rect);
+                                // real_clipper = CALLOC_TYPE(ei_rect_t);
+                                // *real_clipper = *root->content_rect;
+                        }
+                        is_root = 1;
+                        //printf("ROOT !  \n");
+                        //print_rect(real_clipper);
+                        //clipper = &widget->screen_location;
+                }
+
+
                 //print_rect(real_clipper);
-                //clipper = &widget->screen_location;
-        }
-
-
-        //print_rect(real_clipper);
                 if (real_clipper) {
                         //printf ("  DRAW");
                         //widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
                         widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
-//if (is_root)sleep(5), printf("ENDDDD\n");
+                        //if (is_root)sleep(5), printf("ENDDDD\n");
                         SAFE_FREE(real_clipper);
                 }
                 //else   printf ("INTER???\n");
@@ -315,22 +345,22 @@ void  ei_register_placer_manager()
 }
 
 /*
-void ei_place_rec(ei_widget_t *widget, bool place_cur) {
+   void ei_place_rec(ei_widget_t *widget, bool place_cur) {
 
-        if (widget) {
-                if (place_cur) {
-                        // Placement du widget
-                        ei_placer_param_t *param;
-                        param = (ei_placer_param_t*)widget->geom_params;
-                        if (param) {
-                                ei_place(widget, param->anc, param->x, param->y, param->w, param->h,
-                                                param->rel_x, param->rel_y, param->rel_w, param->rel_h);
-                        }
-                }
+   if (widget) {
+   if (place_cur) {
+// Placement du widget
+ei_placer_param_t *param;
+param = (ei_placer_param_t*)widget->geom_params;
+if (param) {
+ei_place(widget, param->anc, param->x, param->y, param->w, param->h,
+param->rel_x, param->rel_y, param->rel_w, param->rel_h);
+}
+}
 
-                ei_place_rec(widget->children_head, true);
-                ei_place_rec(widget->next_sibling, true);
-        }
+ei_place_rec(widget->children_head, true);
+ei_place_rec(widget->next_sibling, true);
+}
 }*/
 
 /**
@@ -521,13 +551,13 @@ void ei_place(ei_widget_t *widget,
                                 if (x)
                                         x_anc = *x + xmin;
                                 else if(rel_x)
-                                        x_anc = xmin + (int)ceil((ceil(*rel_x) * ((float)xmax - (float)xmin)));
+                                        x_anc = xmin + (int)floor(*rel_x * ((float)xmax - (float)xmin));
                                 else
                                         x_anc = 0;
                                 if(y)
                                         y_anc = *y + ymin;
                                 else if (rel_y)
-                                        y_anc = ymin + (int)ceil((ceil(*rel_y) * ((float)ymax - (float)ymin)));
+                                        y_anc = ymin + (int)floor(*rel_y * ((float)ymax - (float)ymin));
                                 else
                                         y_anc = 0;
 
@@ -706,9 +736,9 @@ void ei_place(ei_widget_t *widget,
                         current_param = (ei_placer_param_t*)current->geom_params;
                         if (current_param){
                                 ei_place(current, current_param->anc, current_param->x,
-                                        current_param->y, current_param->w, current_param->h,
-                                        current_param->rel_x, current_param->rel_y,
-                                        current_param->rel_w, current_param->rel_h);}
+                                                current_param->y, current_param->w, current_param->h,
+                                                current_param->rel_x, current_param->rel_y,
+                                                current_param->rel_w, current_param->rel_h);}
                         else{
                                 ei_place(current, NULL, NULL, NULL, NULL, NULL, NULL,
                                                 NULL, NULL, NULL);

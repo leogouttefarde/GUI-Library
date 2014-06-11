@@ -159,8 +159,9 @@ void ei_invalidate_widget(ei_widget_t *widget)
                 ei_linkedlist_add(&ei_invalid_widgets, widget);
 }
 
+// TODO pourquoi ce bool ??
 // Draw récursif selon la hiérarchie des widgets
-void ei_draw_widget(ei_widget_t *widget, ei_bool_t sibling){
+void ei_draw_widget(ei_widget_t *widget){
 
         if (widget){
 
@@ -172,12 +173,9 @@ void ei_draw_widget(ei_widget_t *widget, ei_bool_t sibling){
                 }
 
                 // Ses enfants seront devant lui et derriere ses freres
-                ei_draw_widget(widget->children_head, true);
-
-                if (sibling) {
+                ei_draw_widget(widget->children_head);
                         // Les freres du widget courant sont enfin dessinés
-                        ei_draw_widget(widget->next_sibling, true);
-                }
+                        ei_draw_widget(widget->next_sibling);
         }
 }
 
@@ -204,7 +202,7 @@ void ei_draw_rect(ei_rect_t *rect)
                 root->content_rect = rect;
 
         //print_rect(rect);
-                ei_draw_widget(root, false);
+                ei_draw_widget(root);
 
                 // Restore default
                 root->content_rect = &root->screen_location;
@@ -225,7 +223,7 @@ void ei_draw_rects()
         while (link) {
                 ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
 
-        //printf("lrect %x", lrect);
+                //printf("lrect %x", lrect);
                 if (lrect)
                         ei_draw_rect(&lrect->rect);
 
@@ -281,57 +279,58 @@ ei_rect_t* ei_smaller_fused(const ei_rect_t *rect1, const ei_rect_t *rect2)
         // if (inter) {
         //         SAFE_FREE(inter);
 
-                int x1 = rect1->top_left.x;
-                int y1 = rect1->top_left.y;
+        int x1 = rect1->top_left.x;
+        int y1 = rect1->top_left.y;
 
-                int w1 = rect1->size.width;
-                int h1 = rect1->size.height;
-
-
-                int x2 = rect2->top_left.x;
-                int y2 = rect2->top_left.y;
-
-                int w2 = rect2->size.width;
-                int h2 = rect2->size.height;
-
-                int r2_left = x2;
-                int r2_top = y2;
-                int r2_right = x2 + w2;
-                int r2_bottom = y2 + h2;
-
-                int r1_left = x1;
-                int r1_top = y1;
-                int r1_right = x1 + w1;
-                int r1_bottom = y1 + h1;
+        int w1 = rect1->size.width;
+        int h1 = rect1->size.height;
 
 
-                int left = MIN(r2_left, r1_left);
-                int top = MIN(r2_top, r1_top);
+        int x2 = rect2->top_left.x;
+        int y2 = rect2->top_left.y;
 
-                int right = MAX(r2_right, r1_right);
-                int bottom = MAX(r2_bottom, r1_bottom);
+        int w2 = rect2->size.width;
+        int h2 = rect2->size.height;
 
-                int width = right - left;
-                int height = bottom - top;
+        int r2_left = x2;
+        int r2_top = y2;
+        int r2_right = x2 + w2 - 1;
+        int r2_bottom = y2 + h2 - 1;
 
-                long long rect1_area = rect1->size.width * rect1->size.height;
-                long long rect2_area = rect2->size.width * rect2->size.height;
-
-                long long current_area = rect1_area + rect2_area;
-
-                long long fused_area = width * height;
-
-                if (fused_area < current_area) {
-                        fuse = CALLOC_TYPE(ei_rect_t);
-                        assert(fuse);
+        int r1_left = x1;
+        int r1_top = y1;
+        // ATTENTION AU -1
+        int r1_right = x1 + w1 - 1;
+        int r1_bottom = y1 + h1 - 1;
 
 
-                        fuse->top_left.x = left;
-                        fuse->top_left.y = top;
+        int left = MIN(r2_left, r1_left);
+        int top = MIN(r2_top, r1_top);
 
-                        fuse->size.width = width;
-                        fuse->size.height = height;
-                }
+        int right = MAX(r2_right, r1_right);
+        int bottom = MAX(r2_bottom, r1_bottom);
+
+        int width = right - left + 1;
+        int height = bottom - top + 1;
+
+        long long rect1_area = rect1->size.width * rect1->size.height;
+        long long rect2_area = rect2->size.width * rect2->size.height;
+
+        long long current_area = rect1_area + rect2_area;
+
+        long long fused_area = width * height;
+
+        if (fused_area < current_area) {
+                fuse = CALLOC_TYPE(ei_rect_t);
+                assert(fuse);
+
+
+                fuse->top_left.x = left;
+                fuse->top_left.y = top;
+
+                fuse->size.width = width;
+                fuse->size.height = height;
+        }
         //}
 
         return fuse;
@@ -359,9 +358,9 @@ void ei_invalidate_rect(ei_rect_t* rect)
 
                                 // Ne pas invalider deux fois le mm rectangle
                                 if (lrect->rect.top_left.x == rect->top_left.x
-                                        && lrect->rect.top_left.y == rect->top_left.y
-                                        && lrect->rect.size.width == rect->size.width
-                                        && lrect->rect.size.height == rect->size.height) {
+                                                && lrect->rect.top_left.y == rect->top_left.y
+                                                && lrect->rect.size.width == rect->size.width
+                                                && lrect->rect.size.height == rect->size.height) {
                                         add = false;
                                         //printf("YOOOO\n");
                                         //exit(0);

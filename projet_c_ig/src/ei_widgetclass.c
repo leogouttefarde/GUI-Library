@@ -134,12 +134,14 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
 
                 ei_rect_t rec; // What's this for ?
 
-                if (widget->parent)
-                        rec = frame->widget.screen_location;
+//                if (widget->parent)
+                rec = frame->widget.screen_location;
 
+                /* TODO  Le probleme vient du fait que le content_rect du
+                 * root_widget est modifié */
                 // Random fix, apprently not completely fixing though
-                else
-                        rec = *frame->widget.content_rect;
+                // else
+                //       rec = *frame->widget.content_rect;
 
                 //rec.size = frame->widget.requested_size;
 
@@ -368,12 +370,12 @@ void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 
                 content_rect->top_left.y =  content_rect->top_left.y +
                         bw;
-					
+
                 content_rect->size.width =  content_rect->size.width +
                         - 2*bw;
                 content_rect->size.height =  content_rect->size.height +
                         -2*bw;
-					
+
         }
         else{
                 widget->screen_location = ei_rect_zero();
@@ -431,13 +433,13 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
-					 ei_toplevel_draw(surface,toplevel,clipper);
+                ei_toplevel_draw(surface,toplevel,clipper);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
 
         if (pick_surface){
-		//ei_rect_t pick_clipper=toplevel->widget.screen_location;
+                //ei_rect_t pick_clipper=toplevel->widget.screen_location;
                 /* Dessin de la surface de picking */
                 //pick_surface_draw(pick_surface, widget, &pick_clipper);
                 pick_surface_draw(pick_surface, widget, clipper);
@@ -454,11 +456,11 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
         ei_size_t s = {100, 100};
         toplevel->widget.requested_size = s;
 
-		  toplevel->bar_height=20;
-		  ei_color_t bar_color={255,255,255,255};
-		  toplevel->bar_color=bar_color;
+        toplevel->bar_height=20;
+        ei_color_t bar_color={255,255,255,255};
+        toplevel->bar_color=bar_color;
 
-		  toplevel->rel_btn_close=ei_relief_raised;
+        toplevel->rel_btn_close=ei_relief_raised;
 
         ei_color_t c = {0x00, 0xff, 0x00, 0xFF};
         toplevel->color = c;
@@ -466,9 +468,9 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
         toplevel->border_width = 4;
 
         toplevel->title = "Toplevel";
-		  toplevel->title_font=ei_default_font;
-		  ei_color_t title_color={0,0,0,255};
-		  toplevel->title_color=title_color;
+        toplevel->title_font=ei_default_font;
+        ei_color_t title_color={0,0,0,255};
+        toplevel->title_color=title_color;
 
         toplevel->closable = true;
         toplevel->resizable = true;
@@ -491,10 +493,10 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
         ei_rect_t *content_rect;
         content_rect = malloc(sizeof(ei_rect_t));
-		  //printf("width rect:%i\n",rect.size.width);
-		  //printf("height rect:%i\n",rect.size.height);
+        //printf("width rect:%i\n",rect.size.width);
+        //printf("height rect:%i\n",rect.size.height);
         if (rect.size.width != 0 && rect.size.height !=0){
-			  //printf("CAS IF \n");
+                //printf("CAS IF \n");
                 widget->screen_location = rect;
                 // La screen_location est copiée tel quel
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
@@ -504,7 +506,7 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                 content_rect->top_left =plus(rect.top_left,bw,bw+toplevel->bar_height);
                 content_rect->size.height=widget->screen_location
                         .size.height - toplevel->bar_height-2*bw;
-					 content_rect->size.width =widget->screen_location.size.width-2*bw;
+                content_rect->size.width =widget->screen_location.size.width-2*bw;
         }
         else{
                 //printf("on est ds else\n");
