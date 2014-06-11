@@ -456,7 +456,7 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
         ei_size_t s = {100, 100};
         toplevel->widget.requested_size = s;
 
-        toplevel->bar_height=20;
+        toplevel->bar_height=25;
         ei_color_t bar_color={255,255,255,255};
         toplevel->bar_color=bar_color;
 

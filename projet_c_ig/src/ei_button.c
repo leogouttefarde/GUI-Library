@@ -168,14 +168,22 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 	int result;
 
 	//printf("jaffiche l'image");
-	assert(img_rect);
-
+	//assert(img_rect);
+	ei_rect_t img_rec1=hw_surface_get_rect(img);
+	
+	//printf("img size {%i,%i}\n",test.size.width,test.size.height);
 	ei_rect_t nv_img_rect;
 	if (img_rect) {
 		//printf("img_rect size{%i,%i}\n",img_rect->size.width,img_rect->size.height);
 		nv_img_rect=*img_rect;
+		if (nv_img_rect.top_left.x>img_rec1.size.width||nv_img_rect.top_left.y>img_rec1.size.height) {
+			printf("Attention, the left_corner of your img_rec selection is out of the image, you favorite library relocate it to (0,0)\n");
+		  nv_img_rect.top_left=ei_point(0,0);	
+		}
+		if (nv_img_rect.top_left.x+nv_img_rect.size.width>img_rec1.size.width) nv_img_rect.size.width=img_rec1.size.width-nv_img_rect.top_left.x;
+		if (nv_img_rect.top_left.y+nv_img_rect.size.height>img_rec1.size.height) nv_img_rect.size.height=img_rec1.size.height-nv_img_rect.top_left.y;
 	} else {
-		nv_img_rect=hw_surface_get_rect(img);
+		nv_img_rect=img_rec1;
 	}
 
 	int w_dst=rectangle.size.width;
