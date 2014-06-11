@@ -346,30 +346,32 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
                                         done = button->callback(selected, NULL, button->user_param);
                         }
                 }
-                else if (callback && !strcmp(pressed->wclass->name, "toplevel")) {
+                else if (!strcmp(pressed->wclass->name, "toplevel")) {
 
                         ei_toplevel_t *toplevel = (ei_toplevel_t*)pressed;
                         if (toplevel->close){
-                                toplevel->close = EI_FALSE;
                                 // On verifie que l'on a relaché sur le bouton
-                                int y = widget->screen_location.top_left.y;
-                                int x = widget->screen_location.top_left.x;
+                                int y = pressed->screen_location.top_left.y;
+                                int x = pressed->screen_location.top_left.x;
                                 int m_x = event->param.mouse.where.x;
                                 int m_y = event->param.mouse.where.y;
                                 int t_h = toplevel->bar_height;
                                 // le bouton close est a top_left + 1/4 * bar_height
                                 int c_s =   (int)floor((float)t_h * 1. / 4.);
-                                toplevel->close = false;
-                                if (toplevel->closable && (m_y >= y + c_s && m_y <= y +
-                                                        3 * c_s && m_x >= x + c_s && m_x <= x +
-                                                        3 * c_s)){
+                                if (toplevel->closable && m_y >= y + c_s && m_y <= y +
+                                                3 * c_s && m_x >= x + c_s && m_x <= x +
+                                                3 * c_s){
                                         // RECHERCHE ET UNBIND
                                         // DESTRUCTION
-                                        printf("Toplevel detruit");}
+                                        printf("Toplevel detruit");
+                                }
                         }
-                        else{
+                        else if (callback){
                                 ei_unbind(ei_ev_mouse_move, NULL, "all", *callback, pressed);
                         }
+
+                        toplevel->close = EI_FALSE;
+
                 }
         }
 
