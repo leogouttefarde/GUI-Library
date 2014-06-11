@@ -280,7 +280,7 @@ void    ei_frame_configure (ei_widget_t* widget,
 			frame->relief = *relief;
 		}
 		if (text) {
-			frame->text = *text;
+                        make_string_copy(&frame->text, *text);
 		}
 		if (text_font){
 			frame->text_font = *text_font;
