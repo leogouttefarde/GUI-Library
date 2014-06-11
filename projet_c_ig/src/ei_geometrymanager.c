@@ -578,7 +578,7 @@ void ei_place(ei_widget_t *widget,
                                 }
                                 else if(rel_width){
                                         int rw = parent_rect.size.width;
-                                        rw = (int)ceil((float)rw * *rel_width);
+                                        rw = (int)floor((float)rw * *rel_width);
                                         w = rw;
                                 }
 
@@ -587,7 +587,7 @@ void ei_place(ei_widget_t *widget,
                                 }
                                 else if(rel_height){
                                         int rh = parent_rect.size.height;
-                                        rh = (int)ceil((float)rh * *rel_height);
+                                        rh = (int)floor((float)rh * *rel_height);
                                         h = rh;
                                 }
                                 // Calcul de la position du point d'ancrage
