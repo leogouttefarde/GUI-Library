@@ -526,22 +526,23 @@ void ei_place(ei_widget_t *widget,
                         anc = ei_anc_northwest;
                         if (anchor && *anchor)
                                 anc = *anchor;
-
+                        /* NE PAS EFFACER */
+                        /*
                         // Verification de la validité du point x, y
                         if(x && keep){
-                                keep = *x + xmin <= xmax;
+                        keep = *x + xmin <= xmax;
                         }
                         else if (rel_x && keep){
-                                keep = *rel_x >= 0. && *rel_x <= 1.;
+                        keep = *rel_x >= 0. && *rel_x <= 1.;
                         }
 
                         if(y && keep){
-                                keep = *y + ymin <= ymax;
+                        keep = *y + ymin <= ymax;
                         }
                         else if (rel_x && keep){
-                                keep = *rel_x >= 0. && *rel_x <= 1.;
+                        keep = *rel_x >= 0. && *rel_x <= 1.;
                         }
-
+                        */
 
 
                         // On continue seulement si le point donné en argument
@@ -677,12 +678,13 @@ void ei_place(ei_widget_t *widget,
                                           break;
 
                                 }
-                                // On recadre les valeurs qui debordent
-                                x1 = (x1 >= xmin)?x1:xmin;
-                                x2 = (x2 <= xmax)?x2:xmax;
-                                y1 = (y1 >= ymin)?y1:ymin;
-                                y2 = (y2 <= ymax )?y2:ymax;
-
+                                /* NE PAS EFFACER*/
+                                /*                              // On recadre les valeurs qui debordent
+                                                                x1 = (x1 >= xmin)?x1:xmin;
+                                                                x2 = (x2 <= xmax)?x2:xmax;
+                                                                y1 = (y1 >= ymin)?y1:ymin;
+                                                                y2 = (y2 <= ymax )?y2:ymax;
+                                                                */
                                 w = x2 - x1 + 1;
                                 h = y2 - y1 + 1;
 

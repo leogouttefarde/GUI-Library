@@ -95,7 +95,7 @@ int ei_main(int argc, char** argv)
         ei_rect_t       *logo_frame_img_rect;
         logo_frame_img_rect = malloc(sizeof(ei_rect_t));
         logo_frame_img_rect->top_left                  = ei_point(0,0);
-        logo_frame_img_rect->size                       = ei_size(40,40);
+        logo_frame_img_rect->size                       = ei_size(41,41);
         ei_anchor_t     logo_frame_img_anchor       = ei_anc_center;
 
         // Liste de contact - frame

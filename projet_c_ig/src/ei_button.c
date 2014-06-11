@@ -18,7 +18,7 @@ void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
 		//printf("frame->text non null\n");
 		ei_insert_text(window, rectangle_red, frame->text,
 				frame->text_font, frame->text_color,
-				frame->text_anchor);
+				frame->text_anchor,clipper);
 	}
 	else {
 		if (frame->img) {
@@ -43,7 +43,7 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
 	if (button->text) {
 		ei_insert_text(window, rectangle_reduit, button->text,
 				button->text_font, button->text_color,
-				button->text_anchor);
+				button->text_anchor,clipper);
 	}
 	else {
 		if (button->img) {
@@ -79,34 +79,44 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *
 	bar.size.height=toplevel->bar_height;
 	lp=ei_rect_to_points(bar);
 	ei_draw_polygon(surface,&lp,toplevel->bar_color,clipper);
-	//printf("barre déssinée, on dessine le bouton \n");
-//Dessin du bouton close
-	ei_color_t btn_c_color={0,0,0,255};
-	int marge=toplevel->bar_height*0.25;
+	int marge;
 	ei_rect_t btn_c;
-	btn_c.top_left=plus(rec.top_left,marge,marge);
-	btn_c.size.width=toplevel->bar_height-2*marge;
-	btn_c.size.height=toplevel->bar_height-2*marge;
-	marge=0.2*btn_c.size.height;
-	ei_button_draw_loc(surface,btn_c,btn_c_color,toplevel->rel_btn_close,0,marge,clipper);
+	if (toplevel->closable) {
+	//Dessin du bouton close
+		ei_color_t btn_c_color={0,0,0,255};
+		marge=toplevel->bar_height*0.25;
+		btn_c.top_left=plus(rec.top_left,marge,marge);
+		btn_c.size.width=toplevel->bar_height-2*marge;
+		btn_c.size.height=toplevel->bar_height-2*marge;
+		marge=0.2*btn_c.size.height;
+		ei_button_draw_loc(surface,btn_c,btn_c_color,toplevel->rel_btn_close,0,marge,clipper);
+	} else {
+		marge=0;
+		btn_c.size.width=0;
+		btn_c.size.height=0;
+	}
 	//printf("bouton déssiné\n");
-//Dessin du bouton resize
-	ei_color_t btn_r_color=eclaircir(toplevel->color,0.2);
-	ei_rect_t btn_r;
-	ei_size_t btn_r_s={toplevel->resize_size,toplevel->resize_size};
-	btn_r.size=btn_r_s;
-	//int width=rec.top_left.x+toplevel->bar_height+2*toplevel->border_width;
-	//int height=rec.top_left.y+toplevel->bar_height+2*toplevel->border_width;
-	int width=rec.size.width;
-	int height=rec.size.height;
-	btn_r.top_left=plus(rec.top_left,width-toplevel->resize_size-toplevel->border_width,height-toplevel->resize_size-toplevel->border_width);
-	ei_button_draw_loc(surface,btn_r,btn_r_color,ei_relief_none,0,0,clipper);
-//Affichage du titre
-	ei_rect_t rec_txt;
-	rec_txt.top_left=plus(rec.top_left,2*marge+btn_c.size.width,0);
-	rec_txt.size.height=toplevel->bar_height;
-	rec_txt.size.width=toplevel->widget.screen_location.size.width-2*(2*marge+btn_c.size.width);
-	ei_insert_text(surface,rec_txt,toplevel->title,toplevel->title_font,toplevel->title_color,0);
+	if (toplevel->resizable) {
+	//Dessin du bouton resize
+		ei_color_t btn_r_color=eclaircir(toplevel->color,0.2);
+		ei_rect_t btn_r;
+		ei_size_t btn_r_s={toplevel->resize_size,toplevel->resize_size};
+		btn_r.size=btn_r_s;
+		//int width=rec.top_left.x+toplevel->bar_height+2*toplevel->border_width;
+		//int height=rec.top_left.y+toplevel->bar_height+2*toplevel->border_width;
+		int width=rec.size.width;
+		int height=rec.size.height;
+		btn_r.top_left=plus(rec.top_left,width-toplevel->resize_size-toplevel->border_width,height-toplevel->resize_size-toplevel->border_width);
+		ei_button_draw_loc(surface,btn_r,btn_r_color,ei_relief_none,0,0,clipper);
+	}
+	if (toplevel->title) {
+	//Affichage du titre
+		ei_rect_t rec_txt;
+		rec_txt.top_left=plus(rec.top_left,2*marge+btn_c.size.width,0);
+		rec_txt.size.height=toplevel->bar_height;
+		rec_txt.size.width=toplevel->widget.screen_location.size.width-2*(2*marge+btn_c.size.width);
+		ei_insert_text(surface,rec_txt,toplevel->title,toplevel->title_font,toplevel->title_color,0,clipper);
+	}
 }
 
 void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
@@ -152,15 +162,15 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
 	}
 }
 
-void ei_insert_text(ei_surface_t window, ei_rect_t clipper, char *text,
-		ei_font_t font, ei_color_t color, ei_anchor_t anchor)
+void ei_insert_text(ei_surface_t window, ei_rect_t rectangle, char *text,
+		ei_font_t font, ei_color_t color, ei_anchor_t anchor, ei_rect_t *clipper)
 {
 	//printf("j'affiche le texte \n");
 	int width,height;
 	hw_text_compute_size(text, font, &width, &height);
 	ei_point_t ancre;
-	ancre=find_anchor(clipper,width,height,anchor);
-	ei_draw_text(window, &ancre, text, font, &color, &clipper);
+	ancre=find_anchor(rectangle,width,height,anchor);
+	ei_draw_text(window, &ancre, text, font, &color, clipper);
 }
 
 void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
@@ -169,14 +179,22 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 	int result;
 
 	//printf("jaffiche l'image");
-	assert(img_rect);
-
+	//assert(img_rect);
+	ei_rect_t img_rec1=hw_surface_get_rect(img);
+	
+	//printf("img size {%i,%i}\n",test.size.width,test.size.height);
 	ei_rect_t nv_img_rect;
 	if (img_rect) {
 		//printf("img_rect size{%i,%i}\n",img_rect->size.width,img_rect->size.height);
 		nv_img_rect=*img_rect;
+		if (nv_img_rect.top_left.x>img_rec1.size.width||nv_img_rect.top_left.y>img_rec1.size.height) {
+			printf("Attention, the left_corner of your img_rec selection is out of the image, you favorite library relocate it to (0,0)\n");
+		  nv_img_rect.top_left=ei_point(0,0);	
+		}
+		if (nv_img_rect.top_left.x+nv_img_rect.size.width>img_rec1.size.width) nv_img_rect.size.width=img_rec1.size.width-nv_img_rect.top_left.x;
+		if (nv_img_rect.top_left.y+nv_img_rect.size.height>img_rec1.size.height) nv_img_rect.size.height=img_rec1.size.height-nv_img_rect.top_left.y;
 	} else {
-		nv_img_rect=hw_surface_get_rect(img);
+		nv_img_rect=img_rec1;
 	}
 
 	int w_dst=rectangle.size.width;

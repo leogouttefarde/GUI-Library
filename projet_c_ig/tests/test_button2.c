@@ -73,12 +73,12 @@ int ei_main(int argc, char** argv)
 	printf("ok ici numero 0\n");
 
 /* Create, configure and place the button on screen. */
-	ei_size_t	button_size		= {300,200};
+	ei_size_t	button_size		= {200,200};
 	int		button_x		= 150;
 	int		button_y		= 200;
 	ei_rect_t* rec=malloc(sizeof(ei_rect_t));
-	rec->top_left.x=100;rec->top_left.y=100;
-	rec->size.width=50;rec->size.height=50;
+	rec->top_left.x=600;rec->top_left.y=600;
+	rec->size.width=1000;rec->size.height=1000;
 	printf("ok ici");
 	button = ei_widget_create("button", ei_app_root_widget());
 	ei_button_configure	(button, &button_size, &button_color,
