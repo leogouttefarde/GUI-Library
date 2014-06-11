@@ -4,6 +4,7 @@
 #include "ei_common.h"
 #include "ei_shape.h"
 #include "ei_utilities.h"
+#include "ei_geometrymanager.h"
 
 /* Frame draw */
 void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
@@ -22,7 +23,7 @@ void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
 	}
 	else {
 		if (frame->img) {
-			if (frame->img_rect) aff_img(window,rectangle_red,frame->img,frame->img_rect,frame->img_anchor);
+			if (frame->img_rect) aff_img(window,rectangle_red,frame->img,frame->img_rect,frame->img_anchor,clipper);
 			//else printf("frame->img_rect=NULL\n");
 		}
 		//else printf("frame->img=NULL\n");
@@ -49,7 +50,7 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
 		if (button->img) {
 			if (button->img_rect)
 				aff_img(window, rectangle_reduit, button->img,
-						button->img_rect, button->img_anchor);
+						button->img_rect, button->img_anchor,clipper);
 			//else printf("button->img_rect=NULL\n");
 		}
 		//else printf("button->img=NULL\n");
@@ -173,7 +174,7 @@ void ei_insert_text(ei_surface_t window, ei_rect_t rectangle, char *text,
 }
 
 void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
-		ei_rect_t * img_rect, ei_anchor_t img_anchor)
+		ei_rect_t * img_rect, ei_anchor_t img_anchor, ei_rect_t *clipper)
 {
 	int result;
 
@@ -227,12 +228,45 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 	
 	//printf("img_part size{%i,%i}\n",img_part.size.width,img_part.size.height);
 	//printf("rectangle size{%i,%i}\n",rectangle.size.width,rectangle.size.height);
+	
+	// Gestion du clipper
+/*
+	ei_rect_t* rec_inter=rect_intersection(&rec_dst,clipper);
+
+	if (rec_inter!=NULL || clipper=NULL) {
+		hw_surface_lock(img);
+		if (rec_inter!=rec_dst && clipper!=NULL) {
+			rec_dst.size=rec_inter->size;
+			img_part.size=rec_inter->size;
+			if (rec_dst.top_left.x-clipper->top_left.x<0) rec_dst.top_left.x=clipper.top_left.x;
+			if (rec_dst.top_left.y-clipper->top_left.y<0) rec_dst.top_left.y=clipper.top_left.y;
+		}	
+			result = ei_copy_surface(window, &rec_dst, img, &img_part, 1);
+			assert(!result);
+			hw_surface_unlock(img);
+	}
+	//printf("result %x\n", result);
+*/
+	if (clipper) {
+		if (rec_dst.top_left.x<clipper->top_left.x) {
+			rec_dst.top_left.x=clipper->top_left.x;
+			rec_dst.size.width=rec_dst.size.width-(clipper->top_left.x-rec_dst.top_left.x);
+		}
+		if (rec_dst.top_left.y<clipper->top_left.y) {
+			rec_dst.top_left.y=clipper->top_left.y;
+			rec_dst.size.height=rec_dst.size.height-(clipper->top_left.y-rec_dst.top_left.y);
+		}
+		if (rec_dst.top_left.x+rec_dst.size.width>clipper->top_left.x+clipper->size.width) {
+			rec_dst.size.width=rec_dst.size.width-((rec_dst.top_left.x+rec_dst.size.width)-(clipper->top_left.x+clipper->size.width));
+		}
+		if (rec_dst.top_left.y+rec_dst.size.height>clipper->top_left.y+clipper->size.height) {
+			rec_dst.size.height=rec_dst.size.height-((rec_dst.top_left.y+rec_dst.size.height)-(clipper->top_left.y+clipper->size.height));
+		}
+	}
+	img_part.size=rec_dst.size;
 	hw_surface_lock(img);
 	result = ei_copy_surface(window, &rec_dst, img, &img_part, 1);
-
-	hw_surface_unlock(img);
-
 	assert(!result);
-	//printf("result %x\n", result);
+	hw_surface_unlock(img);
 }
 
