@@ -60,6 +60,7 @@ ei_linked_point_t *ei_button_rounded_frame(ei_rect_t rectangle, int rayon,
 	ei_linked_point_t *Liste = NULL;
 	int hauteur = rectangle.size.height;
 	int longueur = rectangle.size.width;
+	ei_point_t tl=rectangle.top_left;
 	int xrec = rectangle.top_left.x;
 	int yrec = rectangle.top_left.y;
 
@@ -92,16 +93,29 @@ ei_linked_point_t *ei_button_rounded_frame(ei_rect_t rectangle, int rayon,
 		Liste = trait(gauche_bot, gauche_top, Liste);
 		Liste = ei_button_arc(centre_tg, rayon, -270, -180, Liste);
 	} else {
-		int h = MIN(longueur / 2, hauteur / 2);
-
+		int h;
 		ei_point_t arrondi_bg = { xrec + rayon - rayon * cos(-3 * M_PI / 4),
 			yrec + hauteur - rayon + rayon * sin(-3 * M_PI / 4) };
 
 		ei_point_t arrondi_td = { xrec + longueur - rayon + rayon * cos(M_PI / 4),
 			yrec + rayon - rayon * sin(M_PI / 4) };
-
-		ei_point_t pt_int_bg = { xrec + h, yrec + hauteur - h };
-		ei_point_t pt_int_td = { xrec + longueur - h, yrec + h };
+		ei_point_t pt_int_bg;
+		ei_point_t pt_int_td;
+		if (longueur>hauteur) {
+			h=hauteur/2;
+			//pt_int_bg = { xrec + hauteur/2, yrec + hauteur/2};
+			pt_int_bg=plus(tl,h,h);
+			//pt_int_td = { xrec + longueur - hauteur/2, yrec + hauteur/2 };
+			pt_int_td=plus(tl,longueur-h,h);
+		} else {
+			h=longueur/2;
+			//pt_int_bg = { xrec + longueur/2, yrec + hauteur - longueur/2};
+			pt_int_bg=plus(tl,h,hauteur-h);
+			//pt_int_td = { xrec + longueur/2, yrec + longueur/2 };
+			pt_int_td=plus(tl,h,h);
+		}
+		//printf("pt_int_bg {%i,%i}\n",pt_int_bg.x,pt_int_bg.y);
+		//printf("pt_int_td {%i,%i}\n",pt_int_td.x,pt_int_td.y);
 
 		if (partie == haute) {
 			Liste = ei_button_arc(centre_bg, rayon, 180, 225, Liste);
@@ -198,7 +212,7 @@ ei_point_t find_anchor(ei_rect_t rectangle,int width,int height, ei_anchor_t pos
 			ancre = plus(top_droite, -width, 0);
 			break;
 		case ei_anc_east:
-			ancre = plus(droite_mid, -width, 0);
+			ancre = plus(droite_mid, -width, -height/2);
 			break;
 		case ei_anc_southeast:
 			ancre = plus(bot_droite, -width, -height);

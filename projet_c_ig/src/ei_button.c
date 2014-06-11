@@ -58,6 +58,7 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
 }
 
 void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipper) {
+//présuposés: screenlocation.size={2*bw+content_rect largeur, bar + 2*bw +content_rect hauteur}
 	ei_rect_t rec=toplevel->widget.screen_location;
 	ei_linked_point_t lp;
 //Dessin de la bordure
@@ -93,8 +94,10 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *
 	ei_rect_t btn_r;
 	ei_size_t btn_r_s={toplevel->resize_size,toplevel->resize_size};
 	btn_r.size=btn_r_s;
-	int width=toplevel->widget.screen_location.size.width;
-	int height=toplevel->widget.screen_location.size.height;
+	//int width=rec.top_left.x+toplevel->bar_height+2*toplevel->border_width;
+	//int height=rec.top_left.y+toplevel->bar_height+2*toplevel->border_width;
+	int width=rec.size.width;
+	int height=rec.size.height;
 	btn_r.top_left=plus(rec.top_left,width-toplevel->resize_size-toplevel->border_width,height-toplevel->resize_size-toplevel->border_width);
 	ei_button_draw_loc(surface,btn_r,btn_r_color,ei_relief_none,0,0,clipper);
 //Affichage du titre
@@ -151,6 +154,7 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
 		else Liste=ei_button_rounded_frame(rectangle_interieur, 0, 0);
 		ei_draw_polygon(window, Liste, couleur, clipper);
 		free_lp(Liste);
+
 	}
 }
 
@@ -160,48 +164,8 @@ void ei_insert_text(ei_surface_t window, ei_rect_t clipper, char *text,
 	//printf("j'affiche le texte \n");
 	int width,height;
 	hw_text_compute_size(text, font, &width, &height);
-	int longueur = clipper.size.width;
-	int hauteur = clipper.size.height;
 	ei_point_t ancre;
-	ei_point_t top_gauche = clipper.top_left;
-	ei_point_t top_mid = { top_gauche.x + longueur / 2, top_gauche.y };
-	ei_point_t centre = { top_gauche.x + longueur / 2, top_gauche.y + hauteur / 2 };
-	ei_point_t top_droite = { top_gauche.x + longueur, top_gauche.y + hauteur * 0 };
-	ei_point_t droite_mid = { top_gauche.x + longueur, top_gauche.y + hauteur / 2 };
-	ei_point_t bot_droite = { top_gauche.x + longueur, top_gauche.y + hauteur };
-	ei_point_t bot_mid = { top_gauche.x + longueur / 2, top_gauche.y + hauteur };
-	ei_point_t bot_gauche = { top_gauche.x + longueur * 0, top_gauche.y + hauteur };
-	ei_point_t gauche_mid = { top_gauche.x + longueur * 0, top_gauche.y + hauteur / 2 };
-	switch (anchor) {
-		case ei_anc_none:
-		case ei_anc_center:
-			ancre = plus(centre, -width / 2, -height / 2);
-			break;
-		case ei_anc_north:
-			ancre = plus(top_mid, -width / 2, 0);
-			break;
-		case ei_anc_northeast:
-			ancre = plus(top_droite, -width, 0);
-			break;
-		case ei_anc_east:
-			ancre = plus(droite_mid, -width, 0);
-			break;
-		case ei_anc_southeast:
-			ancre = plus(bot_droite, -width, -height);
-			break;
-		case ei_anc_south:
-			ancre = plus(bot_mid, -width / 2, -height);
-			break;
-		case ei_anc_southwest:
-			ancre = plus(bot_gauche, 0, -height);
-			break;
-		case ei_anc_west:
-			ancre = plus(gauche_mid, 0, -height / 2);
-			break;
-		case ei_anc_northwest:
-			ancre = top_gauche;
-			break;
-	}
+	ancre=find_anchor(clipper,width,height,anchor);
 	ei_draw_text(window, &ancre, text, font, &color, &clipper);
 }
 

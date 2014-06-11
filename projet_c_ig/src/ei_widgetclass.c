@@ -289,6 +289,7 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 // lock de la surface
                 hw_surface_lock(surface);
                 ei_button_draw(surface,button->widget.screen_location,button, clipper);
+					 printf("scrnloc isze{%i,%i}\n",button->widget.screen_location.size.width,button->widget.screen_location.size.height);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
@@ -375,7 +376,6 @@ void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                         - 2*bw;
                 content_rect->size.height =  content_rect->size.height +
                         -2*bw;
-
         }
         else{
                 widget->screen_location = ei_rect_zero();

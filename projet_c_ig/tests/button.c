@@ -46,9 +46,9 @@ int ei_main(int argc, char** argv)
 	ei_color_t	root_bgcol		= {0x52, 0x7f, 0xb4, 0xff};
 
 	ei_widget_t*	button;
-	ei_size_t	button_size		= {300,200};
-	int		button_x		= 150;
-	int		button_y		= 200;
+	ei_size_t	button_size		= {137,486};
+	int		button_x		= 10;
+	int		button_y		= 20;
 	ei_color_t	button_color		= {0x88, 0x88, 0x88, 0xff};
 	char*		button_title		= "Mon premier Bouton !";
 	ei_color_t	button_text_color	= {0x00, 0x00, 0x00, 0xff};
