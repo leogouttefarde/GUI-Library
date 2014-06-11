@@ -294,10 +294,9 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 xmax = xmin + parent_rect.size.width - 1;
                 ymax = ymin + parent_rect.size.height - 1;
 
-                // Definition de l'ancrage
-                anc = ei_anc_northwest;
-                if (anchor && *anchor)
-                        anc = *anchor;
+                // Récupération des paramètres pour l'ancrage
+                ei_placer_param_t *param =
+                        (ei_placer_param_t*)widget->geom_params;
                 /* NE PAS EFFACER */
                 /*
                 // Verification de la validité du point x, y
@@ -322,16 +321,16 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 /*if (keep){ */
 
                 // Assignation x_anx, y_anc
-                if (x)
-                        x_anc = *x + xmin;
-                else if(rel_x)
-                        x_anc = xmin + (int)floor(*rel_x * ((float)xmax - (float)xmin));
+                if (param->x)
+                        x_anc = *param->x + xmin;
+                else if(param->rel_x)
+                        x_anc = xmin + (int)floor(*param->rel_x * ((float)xmax - (float)xmin));
                 else
                         x_anc = 0;
-                if(y)
-                        y_anc = *y + ymin;
-                else if (rel_y)
-                        y_anc = ymin + (int)floor(*rel_y * ((float)ymax - (float)ymin));
+                if(param->y)
+                        y_anc = *param->y + ymin;
+                else if (param->rel_y)
+                        y_anc = ymin + (int)floor(*param->rel_y * ((float)ymax - (float)ymin));
                 else
                         y_anc = 0;
 
@@ -347,21 +346,21 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 w= widget->requested_size.width;
                 h = widget->requested_size.height;
 
-                if (width) {
-                        w = *width;
+                if (param->w) {
+                        w = *param->w;
                 }
-                else if(rel_width){
+                else if(param->rel_w){
                         int rw = parent_rect.size.width;
-                        rw = (int)floor((float)rw * *rel_width);
+                        rw = (int)floor((float)rw * *param->rel_w);
                         w = rw;
                 }
 
-                if(height){
-                        h = *height;
+                if(param->h){
+                        h = *param->h;
                 }
-                else if(rel_height){
+                else if(param->rel_h ){
                         int rh = parent_rect.size.height;
-                        rh = (int)floor((float)rh * *rel_height);
+                        rh = (int)floor((float)rh * *param->rel_h);
                         h = rh;
                 }
                 // Calcul de la position du point d'ancrage
@@ -373,6 +372,12 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 int x2;
                 int y1;
                 int y2;
+
+                // Definition de l'ancrage
+                anc = ei_anc_northwest;
+                if (param->anc && *param->anc)
+                        anc = *param->anc;
+
                 switch (anc) {
                         //      ei_anc_none             = 0,    ///< No anchor defined.
                 case ei_anc_center : 
@@ -460,26 +465,9 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 // on affiche pas le widget
                 screen_location = ei_rect_zero();
                 }*/
- 
+
                 // Appel a geomnotify
                 widget->wclass->geomnotifyfunc(widget, screen_location);
-        }
-        // Gestion du root widget
-        else{
-                if(x)
-                        widget->screen_location.top_left.x = *x;
-
-                if(y)
-                        widget->screen_location.top_left.y = *y;
-
-                if (width)
-                        widget->requested_size.width = *width;
-
-                if (height)
-                        widget->requested_size.height = *height;
-
-                widget->screen_location.size = widget->requested_size;
-                widget->content_rect = &widget->screen_location;
         }
 
 
@@ -490,66 +478,66 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         /* Appels récursifs sur les enfants */
         // Appel récursif sur les enfants pour les replacer
         ei_widget_t *current = widget->children_head;
-        ei_placer_param_t *current_param;
         while(current){
-                current->geom_params.manager->runfunc(current);
+                current->geom_params->manager->runfunc(current);
                 current = current->next_sibling;
         }
-}
 
-//printf("RUN!\n");
-ei_rect_t *draw_rect = ei_get_draw_rect();
-if (draw_rect) {
+        // TODO DEPLACER dans ei_app
+        /*
+        //printf("RUN!\n");
+        ei_rect_t *draw_rect = ei_get_draw_rect();
+        if (draw_rect) {
         //printf("place run %x", widget);
 
-        /*if (widget && widget->wclass) {
-          printf(" %s  ", widget->wclass->name);
-          }*/
+        //if (widget && widget->wclass) {
+        // printf(" %s  ", widget->wclass->name);
+        //}
 
         int is_root = 0;
         //
         ei_rect_t *clipper = NULL;
         ei_rect_t *real_clipper = NULL;
         if (widget->parent){
-                // TODO calcul inutile
-                clipper = rect_intersection(widget->parent->content_rect, 
-                                &widget->screen_location);
-                // TODO Celui la doit etre juste
-                //clipper = widget->parent->content_rect;
+        // TODO calcul inutile
+        clipper = rect_intersection(widget->parent->content_rect, 
+        &widget->screen_location);
+        // TODO Celui la doit etre juste
+        //clipper = widget->parent->content_rect;
 
-                //if (widget->parent->content_rect != root->content_rect)
-                real_clipper = rect_intersection(clipper, draw_rect);
+        //if (widget->parent->content_rect != root->content_rect)
+        real_clipper = rect_intersection(clipper, draw_rect);
 
 
-                SAFE_FREE(clipper);
+        SAFE_FREE(clipper);
         }
         else{
-                clipper = &widget->screen_location;
+        clipper = &widget->screen_location;
 
-                if (clipper) {
-                        real_clipper = rect_intersection(clipper, draw_rect);
-                        // real_clipper = CALLOC_TYPE(ei_rect_t);
-                        // *real_clipper = *root->content_rect;
-                }
-                is_root = 1;
-                //printf("ROOT !  \n");
-                //print_rect(real_clipper);
-                //clipper = &widget->screen_location;
+        if (clipper) {
+        real_clipper = rect_intersection(clipper, draw_rect);
+        // real_clipper = CALLOC_TYPE(ei_rect_t);
+        // *real_clipper = *root->content_rect;
+        }
+        is_root = 1;
+        //printf("ROOT !  \n");
+        //print_rect(real_clipper);
+        //clipper = &widget->screen_location;
         }
 
 
         //print_rect(real_clipper);
         if (real_clipper) {
-                //printf ("  DRAW");
-                //widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
-                widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
-                //if (is_root)sleep(5), printf("ENDDDD\n");
-                SAFE_FREE(real_clipper);
+        //printf ("  DRAW");
+        //widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
+        widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
+        //if (is_root)sleep(5), printf("ENDDDD\n");
+        SAFE_FREE(real_clipper);
         }
         //else   printf ("INTER???\n");
-}
-//else     printf ("ROOT???\n");
-//printf("\n");
+        }
+        //else     printf ("ROOT???\n");
+        //printf("\n");*/
 }
 
 void ei_place_releasefunc(struct ei_widget_t*   widget)
@@ -726,3 +714,4 @@ void ei_place(ei_widget_t *widget,
                         param->rel_h = NULL;
 
         }
+}
