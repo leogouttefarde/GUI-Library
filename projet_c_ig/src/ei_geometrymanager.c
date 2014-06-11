@@ -266,59 +266,296 @@ void print_rect(const ei_rect_t *rect)
 /*  Gere le clipping */
 void ei_place_runfunc(struct ei_widget_t*       widget)
 {
-        //printf("RUN!\n");
-        ei_rect_t *draw_rect = ei_get_draw_rect();
-        if (draw_rect) {
-                //printf("place run %x", widget);
 
-                /*if (widget && widget->wclass) {
-                  printf(" %s  ", widget->wclass->name);
-                  }*/
+        /* On commence par invalider l'ancien rectangle */
+        ei_app_invalidate_rec(widget->screen_location);
 
-                int is_root = 0;
-                //
-                ei_rect_t *clipper = NULL;
-                ei_rect_t *real_clipper = NULL;
-                if (widget->parent){
-                        // TODO calcul inutile
-                        clipper = rect_intersection(widget->parent->content_rect, 
-                                        &widget->screen_location);
-                        // TODO Celui la doit etre juste
-                        //clipper = widget->parent->content_rect;
+        /* On calcule la nouvelle screen_location */
+        
+        // Placement
+        ei_anchor_t anc;
+        bool keep = true;
+        int xmin;
+        int xmax;
+        int ymin;
+        int ymax;
 
-                        //if (widget->parent->content_rect != root->content_rect)
-                        real_clipper = rect_intersection(clipper, draw_rect);
+        // Point d'ancrage
+        int x_anc;
+        int y_anc;
+        ei_rect_t parent_rect;
+        ei_rect_t screen_location;
 
+        // Definition du rectangle contenant le widget
+        if (widget->parent){
+                // Theoriquement le second cas n'arrive jamais
+                if (widget->parent->content_rect) 
+                        parent_rect = *(widget->parent->content_rect);
+                else
+                        parent_rect = hw_surface_get_rect(ei_get_root_surface());
 
-                        SAFE_FREE(clipper);
+                // Rectangle englobant
+                xmin = parent_rect.top_left.x;
+                ymin = parent_rect.top_left.y;
+                xmax = xmin + parent_rect.size.width - 1;
+                ymax = ymin + parent_rect.size.height - 1;
+
+                // Definition de l'ancrage
+                anc = ei_anc_northwest;
+                if (anchor && *anchor)
+                        anc = *anchor;
+                /* NE PAS EFFACER */
+                /*
+                // Verification de la validité du point x, y
+                if(x && keep){
+                keep = *x + xmin <= xmax;
                 }
-                else{
-                        clipper = &widget->screen_location;
-
-                        if (clipper) {
-                                real_clipper = rect_intersection(clipper, draw_rect);
-                                // real_clipper = CALLOC_TYPE(ei_rect_t);
-                                // *real_clipper = *root->content_rect;
-                        }
-                        is_root = 1;
-                        //printf("ROOT !  \n");
-                        //print_rect(real_clipper);
-                        //clipper = &widget->screen_location;
+                else if (rel_x && keep){
+                keep = *rel_x >= 0. && *rel_x <= 1.;
                 }
 
-
-                //print_rect(real_clipper);
-                if (real_clipper) {
-                        //printf ("  DRAW");
-                        //widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
-                        widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
-                        //if (is_root)sleep(5), printf("ENDDDD\n");
-                        SAFE_FREE(real_clipper);
+                if(y && keep){
+                keep = *y + ymin <= ymax;
                 }
-                //else   printf ("INTER???\n");
+                else if (rel_x && keep){
+                keep = *rel_x >= 0. && *rel_x <= 1.;
+                }
+                */
+
+
+                // On continue seulement si le point donné en argument
+                // est dans le content_rect
+                /*if (keep){ */
+
+                // Assignation x_anx, y_anc
+                if (x)
+                        x_anc = *x + xmin;
+                else if(rel_x)
+                        x_anc = xmin + (int)floor(*rel_x * ((float)xmax - (float)xmin));
+                else
+                        x_anc = 0;
+                if(y)
+                        y_anc = *y + ymin;
+                else if (rel_y)
+                        y_anc = ymin + (int)floor(*rel_y * ((float)ymax - (float)ymin));
+                else
+                        y_anc = 0;
+
+                // On calcule la taille du widget
+
+                // Taille par defaut
+                // Priorité : taille fournie en argument > requested >
+                // defaut
+                screen_location.size = widget->requested_size;
+                int w;
+                int h;
+                bool size_abs = false;
+                w= widget->requested_size.width;
+                h = widget->requested_size.height;
+
+                if (width) {
+                        w = *width;
+                }
+                else if(rel_width){
+                        int rw = parent_rect.size.width;
+                        rw = (int)floor((float)rw * *rel_width);
+                        w = rw;
+                }
+
+                if(height){
+                        h = *height;
+                }
+                else if(rel_height){
+                        int rh = parent_rect.size.height;
+                        rh = (int)floor((float)rh * *rel_height);
+                        h = rh;
+                }
+                // Calcul de la position du point d'ancrage
+                // Vérification de la longueur
+                // Assignation des champs du widget
+                // x1, y1 = top_left du widget
+                // x2, y2 = bottom_right
+                int x1;
+                int x2;
+                int y1;
+                int y2;
+                switch (anc) {
+                        //      ei_anc_none             = 0,    ///< No anchor defined.
+                case ei_anc_center : 
+                        // Le + 1 est important (/2 tronque)
+                        // exemple
+                        // XXXX avec w = 4, C le centre
+                        // 0C00
+                        // 0000
+                        x1 = x_anc - (w / 2) + 1;
+                        x2 = x_anc + (w / 2);
+                        y1 = y_anc - (h / 2) + 1;
+                        y2 = y_anc + (h / 2);
+                        break;                  ///< Anchor in the center.
+                case ei_anc_north : 
+                        x1 = x_anc - (w / 2) - 1;
+                        x2 = x_anc + (w / 2);
+                        y1 = y_anc;
+                        y2 = y_anc + h -1 ;
+                        break;  ///< Anchor on the top side, centered horizontally.
+                case ei_anc_northeast :
+                        x1 = x_anc - w + 1;
+                        x2 = x_anc;
+                        y1 = y_anc;
+                        y2 = y_anc + h - 1;
+                        break;  ///< Anchor on the top-right corner.
+                case ei_anc_east :
+                        x1 = x_anc - w +1;
+                        x2 = x_anc;
+                        y1 = y_anc - (h / 2) +1;
+                        y2 = y_anc + (h / 2);
+                        break;          ///< Anchor on the right side, centered vertically.
+                case ei_anc_southeast:
+                        x1 = x_anc - w + 1;
+                        x2 = x_anc;
+                        y1 = y_anc - h + 1;
+                        y2 = y_anc;
+                        break;  ///< Anchor on the bottom-right corner.
+                case ei_anc_south:
+                        x1 = x_anc - ( w / 2)  + 1;
+                        x2 = x_anc + ( w / 2);
+                        y1 = y_anc - h + 1;
+                        y2 = y_anc;
+                        break;          ///< Anchor on the bottom side, centered horizontally.
+                case ei_anc_southwest:  
+                        x1 = x_anc;
+                        x2 = x_anc + w -1;
+                        y1 = y_anc -h +1;
+                        y2 = y_anc;
+                        break;  ///< Anchor on the bottom-left corner.
+                case ei_anc_west:
+                        x1 = x_anc;
+                        x2 = x_anc + w -1;
+                        y1 = y_anc - (h / 2) + 1;
+                        y2 = y_anc + (h / 2);
+                        break;          ///< Anchor on the left side, centered vertically.
+                case ei_anc_northwest: 
+                        x1 = x_anc;
+                        x2 = x_anc + w -1;
+                        y1 = y_anc;
+                        y2 = y_anc + h - 1;
+                        break;
+                default : exit(-1);
+                          break;
+                }
+                /* NE PAS EFFACER*/
+                /*                              // On recadre les valeurs qui debordent
+                                                x1 = (x1 >= xmin)?x1:xmin;
+                                                x2 = (x2 <= xmax)?x2:xmax;
+                                                y1 = (y1 >= ymin)?y1:ymin;
+                                                y2 = (y2 <= ymax )?y2:ymax;
+                                                */
+                w = x2 - x1 + 1;
+                h = y2 - y1 + 1;
+                // on assigne enfin les valeurs calculées
+                screen_location.top_left.x
+                        = x1;
+                screen_location.top_left.y
+                        = y1;
+                screen_location.size.width 
+                        = w;
+                screen_location.size.height
+                        = h;
+                /*      }
+                        else{
+                // on affiche pas le widget
+                screen_location = ei_rect_zero();
+                }*/
+ 
+                // Appel a geomnotify
+                widget->wclass->geomnotifyfunc(widget, screen_location);
         }
-        //else     printf ("ROOT???\n");
-        //printf("\n");
+        // Gestion du root widget
+        else{
+                if(x)
+                        widget->screen_location.top_left.x = *x;
+
+                if(y)
+                        widget->screen_location.top_left.y = *y;
+
+                if (width)
+                        widget->requested_size.width = *width;
+
+                if (height)
+                        widget->requested_size.height = *height;
+
+                widget->screen_location.size = widget->requested_size;
+                widget->content_rect = &widget->screen_location;
+        }
+
+
+        /* On invalide le nouveau rectangle*/
+        ei_rect_t new_pos = widget->screen_location;
+        ei_app_invalidate_rect(&new_pos);
+
+        /* Appels récursifs sur les enfants */
+        // Appel récursif sur les enfants pour les replacer
+        ei_widget_t *current = widget->children_head;
+        ei_placer_param_t *current_param;
+        while(current){
+                current->geom_params.manager->runfunc(current);
+                current = current->next_sibling;
+        }
+}
+
+//printf("RUN!\n");
+ei_rect_t *draw_rect = ei_get_draw_rect();
+if (draw_rect) {
+        //printf("place run %x", widget);
+
+        /*if (widget && widget->wclass) {
+          printf(" %s  ", widget->wclass->name);
+          }*/
+
+        int is_root = 0;
+        //
+        ei_rect_t *clipper = NULL;
+        ei_rect_t *real_clipper = NULL;
+        if (widget->parent){
+                // TODO calcul inutile
+                clipper = rect_intersection(widget->parent->content_rect, 
+                                &widget->screen_location);
+                // TODO Celui la doit etre juste
+                //clipper = widget->parent->content_rect;
+
+                //if (widget->parent->content_rect != root->content_rect)
+                real_clipper = rect_intersection(clipper, draw_rect);
+
+
+                SAFE_FREE(clipper);
+        }
+        else{
+                clipper = &widget->screen_location;
+
+                if (clipper) {
+                        real_clipper = rect_intersection(clipper, draw_rect);
+                        // real_clipper = CALLOC_TYPE(ei_rect_t);
+                        // *real_clipper = *root->content_rect;
+                }
+                is_root = 1;
+                //printf("ROOT !  \n");
+                //print_rect(real_clipper);
+                //clipper = &widget->screen_location;
+        }
+
+
+        //print_rect(real_clipper);
+        if (real_clipper) {
+                //printf ("  DRAW");
+                //widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), clipper);
+                widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
+                //if (is_root)sleep(5), printf("ENDDDD\n");
+                SAFE_FREE(real_clipper);
+        }
+        //else   printf ("INTER???\n");
+}
+//else     printf ("ROOT???\n");
+//printf("\n");
 }
 
 void ei_place_releasefunc(struct ei_widget_t*   widget)
@@ -494,258 +731,4 @@ void ei_place(ei_widget_t *widget,
                 else
                         param->rel_h = NULL;
 
-
-                // Placement
-                ei_anchor_t anc;
-                bool keep = true;
-                int xmin;
-                int xmax;
-                int ymin;
-                int ymax;
-
-                int x_anc;
-                int y_anc;
-                ei_rect_t parent_rect;
-                ei_rect_t screen_location;
-
-                // Definition du rectangle contenant le widget
-                if (widget->parent){
-                        // Theoriquement le second cas n'arrive jamais
-                        if (widget->parent->content_rect) 
-                                parent_rect = *(widget->parent->content_rect);
-                        else
-                                parent_rect = hw_surface_get_rect(ei_get_root_surface());
-
-                        // Rectangle englobant
-                        xmin = parent_rect.top_left.x;
-                        ymin = parent_rect.top_left.y;
-                        xmax = xmin + parent_rect.size.width - 1;
-                        ymax = ymin + parent_rect.size.height - 1;
-
-                        // Definition de l'ancrage
-                        anc = ei_anc_northwest;
-                        if (anchor && *anchor)
-                                anc = *anchor;
-                        /* NE PAS EFFACER */
-                        /*
-                        // Verification de la validité du point x, y
-                        if(x && keep){
-                        keep = *x + xmin <= xmax;
-                        }
-                        else if (rel_x && keep){
-                        keep = *rel_x >= 0. && *rel_x <= 1.;
-                        }
-
-                        if(y && keep){
-                        keep = *y + ymin <= ymax;
-                        }
-                        else if (rel_x && keep){
-                        keep = *rel_x >= 0. && *rel_x <= 1.;
-                        }
-                        */
-
-
-                        // On continue seulement si le point donné en argument
-                        // est dans le content_rect
-                        if (keep){
-                                // Assignation x_anx, y_anc
-                                if (x)
-                                        x_anc = *x + xmin;
-                                else if(rel_x)
-                                        x_anc = xmin + (int)floor(*rel_x * ((float)xmax - (float)xmin));
-                                else
-                                        x_anc = 0;
-                                if(y)
-                                        y_anc = *y + ymin;
-                                else if (rel_y)
-                                        y_anc = ymin + (int)floor(*rel_y * ((float)ymax - (float)ymin));
-                                else
-                                        y_anc = 0;
-
-                                // On calcule la taille du widget
-
-                                // Taille par defaut
-                                // Priorité : taille fournie en argument > requested >
-                                // defaut
-                                screen_location.size = widget->requested_size;
-                                int w;
-                                int h;
-                                bool size_abs = false;
-                                w= widget->requested_size.width;
-                                h = widget->requested_size.height;
-
-                                if (width) {
-                                        w = *width;
-                                }
-                                else if(rel_width){
-                                        int rw = parent_rect.size.width;
-                                        rw = (int)floor((float)rw * *rel_width);
-                                        w = rw;
-                                }
-
-                                if(height){
-                                        h = *height;
-                                }
-                                else if(rel_height){
-                                        int rh = parent_rect.size.height;
-                                        rh = (int)floor((float)rh * *rel_height);
-                                        h = rh;
-                                }
-                                // Calcul de la position du point d'ancrage
-                                // Vérification de la longueur
-                                // Assignation des champs du widget
-                                // x1, y1 = top_left du widget
-                                // x2, y2 = bottom_right
-                                int x1;
-                                int x2;
-                                int y1;
-                                int y2;
-                                switch (anc) {
-                                        //      ei_anc_none             = 0,    ///< No anchor defined.
-                                case ei_anc_center : 
-                                        // Le + 1 est important (/2 tronque)
-                                        // exemple
-                                        // XXXX avec w = 4, C le centre
-                                        // 0C00
-                                        // 0000
-                                        x1 = x_anc - (w / 2) + 1;
-                                        x2 = x_anc + (w / 2);
-                                        y1 = y_anc - (h / 2) + 1;
-                                        y2 = y_anc + (h / 2);
-
-
-                                        break;                  ///< Anchor in the center.
-                                case ei_anc_north : 
-
-                                        x1 = x_anc - (w / 2) - 1;
-                                        x2 = x_anc + (w / 2);
-                                        y1 = y_anc;
-                                        y2 = y_anc + h -1 ;
-
-                                        break;  ///< Anchor on the top side, centered horizontally.
-                                case ei_anc_northeast :
-                                        x1 = x_anc - w + 1;
-                                        x2 = x_anc;
-                                        y1 = y_anc;
-                                        y2 = y_anc + h - 1;
-
-                                        break;  ///< Anchor on the top-right corner.
-                                case ei_anc_east :
-
-                                        x1 = x_anc - w +1;
-                                        x2 = x_anc;
-                                        y1 = y_anc - (h / 2) +1;
-                                        y2 = y_anc + (h / 2);
-
-                                        break;          ///< Anchor on the right side, centered vertically.
-                                case ei_anc_southeast:
-                                        x1 = x_anc - w + 1;
-                                        x2 = x_anc;
-                                        y1 = y_anc - h + 1;
-                                        y2 = y_anc;
-
-                                        break;  ///< Anchor on the bottom-right corner.
-                                case ei_anc_south:
-
-                                        x1 = x_anc - ( w / 2)  + 1;
-                                        x2 = x_anc + ( w / 2);
-                                        y1 = y_anc - h + 1;
-                                        y2 = y_anc;
-
-                                        break;          ///< Anchor on the bottom side, centered horizontally.
-                                case ei_anc_southwest:  
-                                        x1 = x_anc;
-                                        x2 = x_anc + w -1;
-                                        y1 = y_anc -h +1;
-                                        y2 = y_anc;
-
-                                        break;  ///< Anchor on the bottom-left corner.
-                                case ei_anc_west:
-                                        x1 = x_anc;
-                                        x2 = x_anc + w -1;
-                                        y1 = y_anc - (h / 2) + 1;
-                                        y2 = y_anc + (h / 2);
-
-                                        break;          ///< Anchor on the left side, centered vertically.
-                                case ei_anc_northwest: 
-                                        x1 = x_anc;
-                                        x2 = x_anc + w -1;
-                                        y1 = y_anc;
-                                        y2 = y_anc + h - 1;
-
-                                        break;
-                                default : exit(-1);
-                                          break;
-
-                                }
-                                /* NE PAS EFFACER*/
-                                /*                              // On recadre les valeurs qui debordent
-                                                                x1 = (x1 >= xmin)?x1:xmin;
-                                                                x2 = (x2 <= xmax)?x2:xmax;
-                                                                y1 = (y1 >= ymin)?y1:ymin;
-                                                                y2 = (y2 <= ymax )?y2:ymax;
-                                                                */
-                                w = x2 - x1 + 1;
-                                h = y2 - y1 + 1;
-
-                                // on assigne enfin les valeurs calculées
-                                screen_location.top_left.x
-                                        = x1;
-                                screen_location.top_left.y
-                                        = y1;
-                                screen_location.size.width 
-                                        = w;
-                                screen_location.size.height
-                                        = h;
-
-                        }
-                        else{
-                                // on affiche pas le widget
-                                screen_location = ei_rect_zero();
-                        }
-                        // Appel a geomnotify
-                        widget->wclass->geomnotifyfunc(widget, screen_location);
-                }
-                // Gestion du root widget
-                else{
-                        if(x)
-                                widget->screen_location.top_left.x = *x;
-
-                        if(y)
-                                widget->screen_location.top_left.y = *y;
-
-                        if (width)
-                                widget->requested_size.width = *width;
-
-                        if (height)
-                                widget->requested_size.height = *height;
-
-                        widget->screen_location.size = widget->requested_size;
-                        widget->content_rect = &widget->screen_location;
-                }
-
-
-                ei_rect_t new_pos = widget->screen_location;
-                ei_app_invalidate_rect(&new_pos);
-
-
-                //ei_place_rec(widget, false);
-
-                // Appel récursif sur les enfants pour les replacer
-                ei_widget_t *current = widget->children_head;
-                ei_placer_param_t *current_param;
-                while(current){
-                        current_param = (ei_placer_param_t*)current->geom_params;
-                        if (current_param){
-                                ei_place(current, current_param->anc, current_param->x,
-                                                current_param->y, current_param->w, current_param->h,
-                                                current_param->rel_x, current_param->rel_y,
-                                                current_param->rel_w, current_param->rel_h);}
-                        else{
-                                ei_place(current, NULL, NULL, NULL, NULL, NULL, NULL,
-                                                NULL, NULL, NULL);
-                        }
-                        current = current->next_sibling;
-                }
         }
-}
