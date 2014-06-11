@@ -289,7 +289,7 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 // lock de la surface
                 hw_surface_lock(surface);
                 ei_button_draw(surface,button->widget.screen_location,button, clipper);
-					 printf("scrnloc isze{%i,%i}\n",button->widget.screen_location.size.width,button->widget.screen_location.size.height);
+					 //printf("scrnloc isze{%i,%i}\n",button->widget.screen_location.size.width,button->widget.screen_location.size.height);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }

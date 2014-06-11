@@ -47,14 +47,14 @@ int ei_main(int argc, char** argv)
 
 	ei_widget_t*	button;
 	ei_size_t	button_size		= {137,486};
-	int		button_x		= 10;
-	int		button_y		= 20;
+	int		button_x		= 50;
+	int		button_y		= 50;
 	ei_color_t	button_color		= {0x88, 0x88, 0x88, 0xff};
 	char*		button_title		= "Mon premier Bouton !";
 	ei_color_t	button_text_color	= {0x00, 0x00, 0x00, 0xff};
 	int		button_corner_radius	= 20;
 	ei_relief_t	button_relief		= ei_relief_raised;
-	int		button_border_width	= 6;
+	int		button_border_width	= 20;
 	ei_callback_t	button_callback 	= button_press;
 
 	/* Create the application and change the color of the background. */

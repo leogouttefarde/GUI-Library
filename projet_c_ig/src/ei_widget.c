@@ -17,6 +17,7 @@
 #include "ei_geometrymanager.h"
 #include "hw_interface.h"
 #include "ei_application.h"
+#include <assert.h>
 
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
 static ei_color_t current_pick_color = {0x00, 0x00, 0x00, 0xFF};
@@ -283,9 +284,16 @@ void    ei_frame_configure (ei_widget_t* widget,
 			frame->text_anchor = *text_anchor;
 		}
 		if (img){
+			/*
 			ei_size_t s=hw_surface_get_size(img);
 			frame->img=hw_surface_create(ei_app_root_surface(),&s,0);
+			hw_surface_lock(frame->img);
+			hw_surface_lock(img);
 			ei_copy_surface(frame->img,NULL,img,NULL,0);
+			hw_surface_unlock(frame->img);
+			hw_surface_unlock(img);
+			*/
+			frame->img=*img;
 		}
 		if (img_rect){
 			frame->img_rect = *img_rect;
@@ -359,7 +367,26 @@ void    ei_button_configure (ei_widget_t*               widget,
 			button->text_anchor = *text_anchor;
 		}
 		if(img) {
-			button->img = *img;
+			/*
+			printf("segfault incoming\n");
+			ei_size_t s=hw_surface_get_size(img);
+			printf("s{%i,%i}\n",s.width,s.height);
+			printf("segfault incoming\n");
+			ei_surface_t dest_surf=hw_surface_create(ei_app_root_surface(),&s,1);
+			printf("segfault incoming button->img\n");
+			assert(dest_surf);
+			hw_surface_lock(dest_surf);
+			printf("segfault incoming\n");
+			printf("segfault incoming\n");
+			hw_surface_lock(img);
+			printf("segfault incoming\n");
+			ei_copy_surface(dest_surf,NULL,img,NULL,0);
+			printf("segfault incoming\n");
+			hw_surface_unlock(dest_surf);
+			hw_surface_unlock(img);
+			button->img=dest_surf;
+			*/
+			button->img=*img;
 		}
 		if(img_rect && *img_rect){
 			button->img_rect = CALLOC_TYPE(ei_rect_t);

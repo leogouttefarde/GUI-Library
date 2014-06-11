@@ -116,7 +116,7 @@ void ei_button_draw_loc(ei_surface_t window, ei_rect_t rectangle,
 
 	if (relief == ei_relief_none) {
 		Liste = ei_button_rounded_frame(rectangle, rayon, 0);
-		ei_draw_polygon(window, Liste, couleur, NULL);
+		ei_draw_polygon(window, Liste, couleur, clipper);
 		free_lp(Liste);
 	} else {
 		ei_color_t couleur_eclairee, couleur_assombrie, couleur_haute,
@@ -170,7 +170,6 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 	//printf("jaffiche l'image");
 	assert(img_rect);
 
-	hw_surface_lock(img);
 	ei_rect_t nv_img_rect;
 	if (img_rect) {
 		//printf("img_rect size{%i,%i}\n",img_rect->size.width,img_rect->size.height);
@@ -210,6 +209,7 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 	
 	//printf("img_part size{%i,%i}\n",img_part.size.width,img_part.size.height);
 	//printf("rectangle size{%i,%i}\n",rectangle.size.width,rectangle.size.height);
+	hw_surface_lock(img);
 	result = ei_copy_surface(window, &rec_dst, img, &img_part, 1);
 
 	hw_surface_unlock(img);
