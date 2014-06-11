@@ -162,105 +162,99 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
         return inter;
 }*/
 
+ei_bool_t ei_is_rect_inter(const ei_rect_t *rect1, const ei_rect_t *rect2)
+{
+        ei_bool_t is_intersection = EI_FALSE;
+
+
+        if (rect1 && rect2) {
+                int x1, y1, x2, y2;
+                int w1, h1, w2, h2;
+                int rect1_right, rect1_bottom, rect2_right, rect2_bottom;
+
+                x1 = rect1->top_left.x;
+                y1 = rect1->top_left.y;
+
+                w1 = rect1->size.width;
+                h1 = rect1->size.height;
+
+
+                x2 = rect2->top_left.x;
+                y2 = rect2->top_left.y;
+
+                w2 = rect2->size.width;
+                h2 = rect2->size.height;
+
+
+
+                rect2_right = x2 + w2 - 1;
+                rect2_bottom = y2 + h2 - 1;
+
+                rect1_right = x1 + w1 - 1;
+                rect1_bottom = y1 + h1 - 1;
+
+
+                if ( (x2 < rect1_right)
+                        && (rect2_right > x1)
+                        && (y2 < rect1_bottom)
+                        && (rect2_bottom > y1) )
+                        is_intersection = EI_TRUE;
+        }
+
+        return is_intersection;
+}
 
 ei_rect_t* rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2) 
 {
         ei_rect_t *inter = NULL;
-        // printf("calc inter entre\n\n");
-        // print_rect(rect1);
-        // printf("\net\n\n");
-        // print_rect(rect2);
-
-        if (rect1 && rect2) {
-                int x1 = rect1->top_left.x;
-                int y1 = rect1->top_left.y;
-
-                int w1 = rect1->size.width;
-                int h1 = rect1->size.height;
 
 
-                int x2 = rect2->top_left.x;
-                int y2 = rect2->top_left.y;
-
-                int w2 = rect2->size.width;
-                int h2 = rect2->size.height;
-
+        if (ei_is_rect_inter(rect1, rect2)) {
+                int x1, y1, x2, y2;
+                int w1, h1, w2, h2;
+                int r1_right, r1_bottom, r2_right, r2_bottom;
 
 
-                int r2_left = x2;
-                int r2_top = y2;
-                int r2_right = x2 + w2 - 1;
-                int r2_bottom = y2 + h2 - 1;
+                x1 = rect1->top_left.x;
+                y1 = rect1->top_left.y;
 
-                int r1_left = x1;
-                int r1_top = y1;
-                int r1_right = x1 + w1 - 1;
-                int r1_bottom = y1 + h1 - 1;
+                w1 = rect1->size.width;
+                h1 = rect1->size.height;
 
 
-                bool is_intersection =  ( r2_left < r1_right 
-                                && r2_right > r1_left 
-                                && r2_top < r1_bottom 
-                                && r2_bottom > r1_top 
-                                );
+                x2 = rect2->top_left.x;
+                y2 = rect2->top_left.y;
 
-                if(is_intersection)
-                {
-                        //printf("r1 coupe r2 !!!!!!!!!!!!!!!\n");
-                        inter = CALLOC_TYPE(ei_rect_t);
-                        assert(inter);
+                w2 = rect2->size.width;
+                h2 = rect2->size.height;
 
-                        if (inter) {
-                                int left = MAX(r1_left, r2_left);
-                                int top = MAX(r1_top, r2_top);
 
-                                inter->top_left.x = MAX(r1_left, r2_left);
-                                inter->top_left.y = MAX(r1_top, r2_top);
 
-                                inter->size.width = MIN( r1_right, r2_right) - left + 1;
-                                inter->size.height = MIN(r1_bottom, r2_bottom) - top + 1;
-                        }
+                r2_right = x2 + w2 - 1;
+                r2_bottom = y2 + h2 - 1;
+
+                r1_right = x1 + w1 - 1;
+                r1_bottom = y1 + h1 - 1;
+
+
+                inter = CALLOC_TYPE(ei_rect_t);
+                assert(inter);
+
+                if (inter) {
+                        int left, top;
+
+                        left = MAX(x1, x2);
+                        top = MAX(y1, y2);
+
+                        inter->top_left.x = MAX(x1, x2);
+                        inter->top_left.y = MAX(y1, y2);
+
+                        inter->size.width = MIN(r1_right, r2_right) - left + 1;
+                        inter->size.height = MIN(r1_bottom, r2_bottom) - top + 1;
                 }
-                //else    printf("NO INTER\n"), print_rect(rect1, rect2);
         }
-        // printf("\n\nRésultat\n\n");
-        // print_rect(inter);
 
         return inter;
-}
-
-void print_rect(const ei_rect_t *rect)
-{
-        if (rect) {
-                int left = rect->top_left.x;
-                int top = rect->top_left.y;
-
-                int right = rect->size.width + left;
-                int bottom = rect->size.height + top;
-
-                int w = rect->size.width;
-                int h = rect->size.height;
-
-                // printf("rect %08lX\n\n", rect);
-
-                // printf("left %d\t", left);
-                // printf("right %d\n", right);
-
-                // printf("top %d\t", top);
-                // printf("bottom %d\n", bottom);
-
-                // printf("width %d\t", w);
-                // printf("height %d\n\n\n", h);
-
-                printf("left %d\t", left);
-                printf("right %d\t", right);
-
-                printf("top %d\t", top);
-                printf("bottom %d\t", bottom);
-
-                printf("width %d\t", w);
-                printf("height %d\n\n", h);
-        }
 }
 
 /*  Gere le clipping */
