@@ -262,10 +262,10 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
 {
 
         /* On commence par invalider l'ancien rectangle */
-        ei_app_invalidate_rec(widget->screen_location);
+        ei_invalidate_rect(&widget->screen_location);
 
         /* On calcule la nouvelle screen_location */
-        
+
         // Placement
         ei_anchor_t anc;
         bool keep = true;
@@ -473,7 +473,7 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
 
         /* On invalide le nouveau rectangle*/
         ei_rect_t new_pos = widget->screen_location;
-        ei_app_invalidate_rect(&new_pos);
+        ei_invalidate_rect(&new_pos);
 
         /* Appels récursifs sur les enfants */
         // Appel récursif sur les enfants pour les replacer
@@ -625,22 +625,11 @@ void ei_place(ei_widget_t *widget,
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
         assert(placer);
 
+        ei_bool_t gp_alloc;
 
         if (placer && widget) {
                 /* Display widget */
 
-                // If there is a parent invalidate parent instead
-                // ei_widget_t *inval = widget;
-                // if (inval && inval->parent)
-                //         inval = inval->parent;
-
-                // ei_invalidate_widget(inval);
-
-                ei_rect_t old_pos = widget->screen_location;
-                ei_app_invalidate_rect(&old_pos);
-
-
-                ei_bool_t gp_alloc = EI_FALSE;
 
                 // On verifie que le widget est bien géré par le placeur,
                 // sinon on le modifie pour qu'il le soit
