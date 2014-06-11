@@ -158,8 +158,19 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
 
 void frame_release(struct ei_widget_t* widget)
 {
-        SAFE_FREE(widget);
+        if (widget) {
+                ei_frame_t *frame = (ei_frame_t*)widget;
+
+                SAFE_FREE(frame->text);
+                SAFE_FREE(frame->text_font);
+
+                if (frame->img)
+                        hw_surface_free(frame->img);
+
+                SAFE_FREE(frame->img_rect);
+        }
 }
+
 void frame_setdefaults(struct ei_widget_t* widget)
 {
         assert(widget);
@@ -273,7 +284,13 @@ void *button_alloc()
 
 void button_release(struct ei_widget_t* widget)
 {
-        SAFE_FREE(widget);
+        if (widget) {
+                ei_button_t *button = (ei_button_t*)widget;
+
+                SAFE_FREE(button->color);
+                SAFE_FREE(button->text);
+                SAFE_FREE(button->img_rect);
+        }
 }
 
 void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
@@ -417,7 +434,13 @@ void *toplevel_alloc()
 
 void toplevel_release(ei_widget_t *widget)
 {
-        SAFE_FREE(widget);
+        if (widget) {
+                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+
+                SAFE_FREE(toplevel->title);
+                SAFE_FREE(toplevel->title_font);
+                SAFE_FREE(toplevel->min_size);
+        }
 }
 
 void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,

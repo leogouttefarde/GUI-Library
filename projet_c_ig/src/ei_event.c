@@ -13,6 +13,7 @@
 
 #include "ei_event.h"
 #include "ei_core.h"
+#include "ei_utilities.h"
 #include "ei_linkedlist.h"
 
 
@@ -61,14 +62,8 @@ void ei_bind(ei_eventtype_t eventtype,
                 binding->callback = callback;
                 binding->user_param = user_param;
 
-                if ((widget == NULL) && tag) {
-                        const uint32_t size = strlen(tag) + 1;
-                        char *tag_copy = NULL;
-                        tag_copy = malloc(size);
-                        strncpy(tag_copy, tag, size);
-
-                        binding->tag = tag_copy;
-                }
+                if ((widget == NULL) && tag)
+                        make_string_copy(&binding->tag, tag);
 
                 ei_linkedlist_t *list = &ei_events[eventtype];
 
@@ -76,6 +71,17 @@ void ei_bind(ei_eventtype_t eventtype,
         }
 }
 
+void ei_unbind_link(ei_linkedlist_t *list, ei_linked_elem_t *link)
+{
+        if (list && link) {
+                ei_binding_t *binding = (ei_binding_t*)link->elem;
+
+                if (binding && binding->tag)
+                        SAFE_FREE(binding->tag);
+
+                ei_linkedlist_pop_link(list, link, true);
+        }
+}
 
 /**
  * \brief       Unbinds a callback from an event type and widget or tag.
@@ -93,36 +99,24 @@ void ei_unbind(ei_eventtype_t eventtype,
         if (eventtype < ei_ev_last) {
                 ei_linkedlist_t *list = &ei_events[eventtype];
 
-                ei_linked_elem_t *link = list->head;
+                ei_linked_elem_t *link = list->head, *next = NULL;
                 ei_binding_t *binding = NULL;
 
                 /* Unbind all links */
                 while (link) {
                         binding = (ei_binding_t*)link->elem;
+                        next = link->next;
 
-                        if (binding) {
-                                if (    (widget == binding->widget)
-                                        && ((tag == NULL) || !strcmp(tag, binding->tag))
-                                        && (callback == binding->callback)
-                                        && (user_param == binding->user_param)
-                                        ) {
+                        if (    binding
+                                && (widget == binding->widget)
+                                && ((tag == NULL) || !strcmp(tag, binding->tag))
+                                && (callback == binding->callback)
+                                && (user_param == binding->user_param) )
+                                ei_unbind_link(list, link);
 
-                                        //printf("Unbind link %x !\n", link);
-
-
-
-                                        if (binding->tag)
-                                                SAFE_FREE(binding->tag);
-
-                                        ei_linkedlist_pop_link(list, link, true);
-                                }
-                        }
-
-                        link = link->next;
+                        link = next;
                 }
         }
-
-        //printf("ei_unbind END\n");
 }
 
 void ei_event_process(ei_event_t *event)
@@ -214,6 +208,26 @@ void ei_event_process(ei_event_t *event)
                         link = link->next;
                         if (!link)
                                 done = EI_TRUE;
+                }
+        }
+}
+
+void ei_unbind_all()
+{
+        ei_eventtype_t type;
+        ei_linkedlist_t *list = NULL;
+        ei_linked_elem_t *link = NULL, *next = NULL;
+        ei_binding_t *binding = NULL;
+
+        for (type = 0; type < ei_ev_last; ++type) {
+                list = &ei_events[type];
+                link = list->head;
+
+                /* Unbind all links */
+                while (link) {
+                        next = link->next;
+                        ei_unbind_link(list, link);
+                        link = next;
                 }
         }
 }

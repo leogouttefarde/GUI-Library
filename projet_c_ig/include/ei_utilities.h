@@ -26,4 +26,16 @@ ei_color_t eclaircir(ei_color_t couleur, float coeff_couleur);
 ei_color_t obscurcir(ei_color_t couleur, float coeff_couleur);
 
 ei_point_t find_anchor(ei_rect_t rectangle,int width,int height, ei_anchor_t position);
+
+
+static inline void make_string_copy(const char **dest, const char *src)
+{
+        const uint32_t src_size = strlen(src);
+        const uint32_t src_size_f = src_size + 1;
+        *dest = malloc(src_size_f);
+
+        if (*dest)
+                strncpy(*dest, src, src_size);
+}
+
 #endif
