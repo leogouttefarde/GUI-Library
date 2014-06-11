@@ -244,7 +244,7 @@ doc :
 
 clean:
 	rm -f ${TARGETS} ${PERSO_TESTS}
-	rm -f *.exe
+	rm -f *.exe gmon.out
 	rm -f ${OBJDIR}/*
 
 runf: all

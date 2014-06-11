@@ -15,9 +15,10 @@
 #include "ei_utils.h"
 #include "ei_widgettypes.h"
 #include "ei_application.h"
+#include "ei_linkedlist.h"
 
 // TODO : Gérer les listes avec la classe linkedlist
-static ei_geometrymanager_t *first = NULL;
+static ei_linkedlist_t ei_geometrymanagers = { NULL, NULL };
 
 /**
  * \brief       Registers a geometry manager to the program so that it can be called to manager
@@ -27,26 +28,7 @@ static ei_geometrymanager_t *first = NULL;
  */
 void ei_geometrymanager_register(ei_geometrymanager_t* geometrymanager)
 {
-        if (geometrymanager) {
-                ei_geometrymanager_t *current, *next;
-
-                if (first) {
-                        current = first;
-                        next = current;
-
-                        do {
-                                current = next;
-                                next = current->next;
-                        } while (next);
-
-                        current->next = geometrymanager;
-                }
-                else
-                        first = geometrymanager;
-
-                /* Make sure it is the last geometry manager */
-                geometrymanager->next = NULL;
-        }
+        ei_linkedlist_add(&ei_geometrymanagers, geometrymanager);
 }
 
 
@@ -60,18 +42,21 @@ void ei_geometrymanager_register(ei_geometrymanager_t* geometrymanager)
  */
 ei_geometrymanager_t*   ei_geometrymanager_from_name    (ei_geometrymanager_name_t name)
 {
-        ei_geometrymanager_t *current, *next;
+        ei_geometrymanager_t *current = NULL;
         ei_geometrymanager_t *geometrymanager = NULL;
-        ei_bool_t fail = EI_TRUE;
+        ei_bool_t found = EI_FALSE;
+        ei_linked_elem_t *link = ei_geometrymanagers.head;
 
-        current = first;
-        next = current;
-        while (current && (fail = strncmp(current->name, name, sizeof(ei_geometrymanager_name_t))) && next) {
-                current = next;
-                next = current->next;
+        while (link && !found) {
+                current = (ei_geometrymanager_t*)link->elem;
+
+                if (current && !strncmp(current->name, name, sizeof(ei_geometrymanager_name_t)))
+                        found = EI_TRUE;
+
+                link = link->next;
         }
 
-        if (!fail)
+        if (found)
                 geometrymanager = current;
 
         return geometrymanager;
@@ -335,9 +320,23 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
 
 }
 
-void ei_place_releasefunc(struct ei_widget_t*   widget)
+void ei_place_releasefunc(struct ei_widget_t* widget)
 {
-        SAFE_FREE(widget->geom_params);
+        ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
+
+        if (param) {
+                SAFE_FREE(param->anc);
+                SAFE_FREE(param->x);
+                SAFE_FREE(param->y);
+                SAFE_FREE(param->rel_x);
+                SAFE_FREE(param->rel_y);
+                SAFE_FREE(param->w);
+                SAFE_FREE(param->h);
+                SAFE_FREE(param->rel_w);
+                SAFE_FREE(param->rel_h);
+
+                SAFE_FREE(param);
+        }
 }
 
 /**
@@ -424,23 +423,28 @@ void ei_place(ei_widget_t *widget,
                 }
 
                 if (gp_alloc) {
-                        widget->geom_params = CALLOC_TYPE(ei_placer_param_t);
-                        widget->geom_params->manager = placer;
+                        ei_placer_param_t *param = CALLOC_TYPE(ei_placer_param_t);
+
+                        if (param != NULL) {
+                                widget->geom_params = (ei_geometry_param_t*)param;
+                                widget->geom_params->manager = placer;
+
+                                param->anc = CALLOC_TYPE(ei_anchor_t);
+                                param->x = CALLOC_TYPE(int);
+                                param->y = CALLOC_TYPE(int);
+                                param->rel_x = CALLOC_TYPE(float);
+                                param->rel_y = CALLOC_TYPE(float);
+                                param->w = CALLOC_TYPE(int);
+                                param->h = CALLOC_TYPE(int);
+                                param->rel_w = CALLOC_TYPE(float);
+                                param->rel_h = CALLOC_TYPE(float);
+                        }
                 }
 
                 // Sauvegarde des paramètres
                 ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
                 assert(param);
 
-                param->x = CALLOC_TYPE(int);
-                param->y = CALLOC_TYPE(int);
-                param->rel_x = CALLOC_TYPE(float);
-                param->rel_y = CALLOC_TYPE(float);
-                param->w = CALLOC_TYPE(int);
-                param->h = CALLOC_TYPE(int);
-                param->rel_w = CALLOC_TYPE(float);
-                param->rel_h = CALLOC_TYPE(float);
-                param->anc = CALLOC_TYPE(ei_anchor_t);
 
                 if (anchor)
                         *param->anc = *anchor;
@@ -481,3 +485,9 @@ void ei_place(ei_widget_t *widget,
 
         }
 }
+
+void ei_geometrymanager_free()
+{
+        ei_linkedlist_empty(&ei_geometrymanagers, true);
+}
+

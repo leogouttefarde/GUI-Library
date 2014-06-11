@@ -73,22 +73,23 @@ void debug_display_surface(ei_surface_t surface){
         bool first = true; 
         uint32_t prec_id;
         uint32_t pick_id;
+
+        int ir;
+        int ig;
+        int ib;
+        int ia;
+        hw_surface_get_channel_indices(surface, &ir, &ig, &ib, &ia);
+
         printf("********** Affichage de la surface **********\n");
         while (x< size.width && y < size.height){
                 // on recupere les indices correspondants à l'encodage de la surface
-                ei_color_t *color;
-                color = CALLOC_TYPE(ei_color_t);
-                int ir;
-                int ig;
-                int ib;
-                int ia;
-                hw_surface_get_channel_indices(surface, &ir, &ig, &ib, &ia);
-                color->red = *(addr+ir*sizeof(uint8_t));
-                color->green = *(addr+ig*sizeof(uint8_t));
-                color->blue = *(addr+ib*sizeof(uint8_t));
-                color->alpha = *(addr+ia*sizeof(uint8_t));
+                ei_color_t color;
+                color.red = *(addr+ir*sizeof(uint8_t));
+                color.green = *(addr+ig*sizeof(uint8_t));
+                color.blue = *(addr+ib*sizeof(uint8_t));
+                color.alpha = *(addr+ia*sizeof(uint8_t));
                 // on génére le le code correspondant
-                pick_id = ei_map_rgba(ei_picking_surface, color);
+                pick_id = ei_map_rgba(ei_picking_surface, &color);
 
                 // Affichage
                 if (first) {

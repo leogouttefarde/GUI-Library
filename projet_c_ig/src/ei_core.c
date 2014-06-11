@@ -205,10 +205,10 @@ void ei_draw_widget(ei_widget_t *widget){
                                 SAFE_FREE(clipper);
 
                                 //TODO ajouter intersectiona vec rect(root_surface)
-                                ei_rect_t *temp = malloc(sizeof(ei_rect_t));
-                                *temp =  hw_surface_get_rect(ei_get_root_surface());
-                                perfect_clipper =
-                                        rect_intersection(real_clipper, temp);
+                                ei_rect_t temp;
+                                temp =  hw_surface_get_rect(ei_get_root_surface());
+                                perfect_clipper = rect_intersection(real_clipper, &temp);
+                                SAFE_FREE(real_clipper);
                         }
                         // Pour le root
                         else{

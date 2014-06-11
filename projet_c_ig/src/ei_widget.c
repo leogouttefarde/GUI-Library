@@ -128,11 +128,12 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
 void ei_widget_destroy(ei_widget_t* widget)
 {
 	if (widget) {
-		ei_widget_t *current = widget->children_head;
+		ei_widget_t *current = widget->children_head, *next = NULL;
 
 		while (current) {
+                        next = current->next_sibling;
 			ei_widget_destroy(current);
-			current = current->next_sibling;
+                        current = next;
 		}
 
                 SAFE_FREE(widget->pick_color);
