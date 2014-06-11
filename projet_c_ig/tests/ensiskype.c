@@ -58,7 +58,7 @@ int ei_main(int argc, char** argv)
         float		toplevel_rel_x		= 0.05;
         float		toplevel_rel_y		= 0.05;
         ei_color_t	toplevel_color		= {0x88, 0x88, 0x88, 0xff};
-        char*		toplevel_title		= "Skype";
+        char*		toplevel_title		= "Ensiskype - Parler, tester, déboguer";
         ei_bool_t	toplevel_closable                = EI_FALSE;
         ei_axis_set_t	toplevel_resizable               = ei_axis_both;
         int		toplevel_border_width	= 2;
@@ -81,7 +81,7 @@ int ei_main(int argc, char** argv)
         *logo_min_size = ei_size(50,40);
 
         // Logo frame - frame
-        char*           file                        = "misc/klimt.jpg";
+        char*           file                        = "misc/ensimag.png";
         ei_widget_t*	logo_frame;
         ei_anchor_t     logo_frame_anc                           = ei_anc_northwest;
         ei_size_t	logo_frame_size	            = {60,60};
@@ -207,10 +207,10 @@ int ei_main(int argc, char** argv)
                         &contact_1_callback, NULL);
         //contacts
         ei_frame_configure(logo_frame, &logo_frame_size, 
-          &logo_frame_color, &logo_frame_border_width, 
-          &logo_frame_relief, NULL,
-          NULL, NULL, NULL, &logo_frame_img,
-          &logo_frame_img_rect, &logo_frame_img_anchor);
+                        &logo_frame_color, &logo_frame_border_width, 
+                        &logo_frame_relief, NULL,
+                        NULL, NULL, NULL, &logo_frame_img,
+                        &logo_frame_img_rect, &logo_frame_img_anchor);
         /* PLACEMENT */
         ei_place(toplevel, NULL, NULL, NULL, NULL, NULL, &toplevel_rel_x, &toplevel_rel_y, NULL, NULL);
         ei_place(logo, NULL, &logo_x, &logo_y, NULL, NULL, NULL, NULL, NULL, NULL);
