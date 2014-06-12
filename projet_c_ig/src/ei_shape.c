@@ -167,8 +167,8 @@ void ei_sym_vert(ei_linked_point_t *lp){
 
 void ei_append_point(ei_linked_point_t *lp, ei_point_t point)
 {
-        ei_linked_point_t *prec;
-        ei_linked_point_t *current;
+        ei_linked_point_t *prec = NULL;
+        ei_linked_point_t *current = NULL;
         current = lp;
         while(current) {
                 prec = current;
