@@ -252,7 +252,8 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 */
 	if (clipper) {
 		if (rec_dst.top_left.x<clipper->top_left.x) {
-			img_part.top_left.x=img_part.top_left.x+(clipper->top_left.x-rec_dst.top_left.x);
+			//img_part.top_left.x=img_part.top_left.x+(clipper->top_left.x-rec_dst.top_left.x);
+			printf("clip tl {%i,%i}\n",clipper->top_left.x,clipper->top_left.y);
 			rec_dst.top_left.x=clipper->top_left.x;
 			rec_dst.size.width=rec_dst.size.width-(clipper->top_left.x-rec_dst.top_left.x);
 		}
