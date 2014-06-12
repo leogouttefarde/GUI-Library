@@ -99,7 +99,6 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
 
         // Placement
         ei_anchor_t anc;
-        bool keep = true;
         int xmin;
         int xmax;
         int ymin;
@@ -129,28 +128,10 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 xmax = xmin + parent_rect.size.width - 1;
                 ymax = ymin + parent_rect.size.height - 1;
 
-                /* NE PAS EFFACER */
-                /*
-                // Verification de la validité du point x, y
-                if(x && keep){
-                keep = *x + xmin <= xmax;
-                }
-                else if (rel_x && keep){
-                keep = *rel_x >= 0. && *rel_x <= 1.;
-                }
-
-                if(y && keep){
-                keep = *y + ymin <= ymax;
-                }
-                else if (rel_x && keep){
-                keep = *rel_x >= 0. && *rel_x <= 1.;
-                }
-                */
 
 
                 // On continue seulement si le point donné en argument
                 // est dans le content_rect
-                /*if (keep){ */
 
                 // Assignation x_anx, y_anc
                 if (param->x)
@@ -273,13 +254,6 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 default : exit(-1);
                           break;
                 }
-                /* NE PAS EFFACER*/
-                /*                              // On recadre les valeurs qui debordent
-                                                x1 = (x1 >= xmin)?x1:xmin;
-                                                x2 = (x2 <= xmax)?x2:xmax;
-                                                y1 = (y1 >= ymin)?y1:ymin;
-                                                y2 = (y2 <= ymax )?y2:ymax;
-                                                */
                 w = x2 - x1 + 1;
                 h = y2 - y1 + 1;
                 // on assigne enfin les valeurs calculées
@@ -291,11 +265,6 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                         = w;
                 screen_location.size.height
                         = h;
-                /*      }
-                        else{
-                // on affiche pas le widget
-                screen_location = ei_rect_zero();
-                }*/
 
         }
         // Root
@@ -444,11 +413,30 @@ void ei_place(ei_widget_t *widget,
                                 param->rel_h = CALLOC_TYPE(float);
                         }
                 }
+                // On verifie qu'on a pas un rel_x, rel_y absurdes
+                if (!x && rel_x){
+                        if (*rel_x < 0.)
+                                exit(-1);
+                }
+
+                if (!y && rel_y){
+                        if (*rel_y <  0.)
+                                exit(-1);
+                }
+                // On verifie qu'on a pas un rel_w, rel_h absurdes
+                if (!width && rel_width){
+                        if (*rel_width < 0.)
+                                exit(-1);
+                }
+
+                if (!height && rel_height){
+                        if (*rel_height <  0.)
+                                exit(-1);
+                }
 
                 // Sauvegarde des paramètres
                 ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
                 assert(param);
-
 
                 if (anchor)
                         *param->anc = *anchor;
@@ -502,13 +490,82 @@ void ei_geometrymanager_free()
 
 // Gestion des paramètres
 void ei_grid(ei_widget_t *widget, int *col, int *lin, int *w, int *h){
-        ;
+
+        ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
+        assert(gridder);
+
+        ei_bool_t gp_alloc;
+
+        if (gridder && widget) {
+                // On verifie que le widget est bien géré par le placeur,
+                // sinon on le modifie pour qu'il le soit
+                if (widget) {
+                        gp_alloc = EI_TRUE;
+                        if (widget->geom_params) {
+                                if (widget->geom_params->manager) {
+                                        if (widget->geom_params->manager != gridder) {
+                                                widget->geom_params->manager->releasefunc(widget);
+                                        }
+                                }
+                                else
+                                        gp_alloc = EI_FALSE;
+                        }
+                }
+
+                if (gp_alloc) {
+                        ei_gridder_param_t *param = CALLOC_TYPE(ei_gridder_param_t);
+
+                        if (param != NULL) {
+                                widget->geom_params = (ei_geometry_param_t*)param;
+                                widget->geom_params->manager = gridder;
+                                param->lin = CALLOC_TYPE(int);
+                                param->col = CALLOC_TYPE(int);
+                                param->w = CALLOC_TYPE(int);
+                                param->h = CALLOC_TYPE(int);
+                        }
+                }
+        }
+
+        // Sauvegarde des paramètres
+        ei_gridder_param_t *param = (ei_gridder_param_t*)widget->geom_params;
+        assert(param);
+        if (lin)
+                *param->lin = *lin;
+        else
+                param->lin = NULL;
+        if (col)
+                *param->col = *col;
+        else
+                param->col = NULL;
+        if(w)
+                *param->w = *w;
+        else
+                param->w = NULL;
+        if(h)
+                *param->h = *h;
+        else
+                param->h = NULL;
+
+        // Appel de la runfunc
+        widget->geom_params->manager->runfunc(widget);
 }
 
 
 // Runfunc du gridder
 void ei_gridder_runfunc(ei_widget_t *widget){
+        /* Principe
+         * 
+         * On remonte au père
+         * On parcourt tous les fils du pere
+         *    Pour chaque frere on regarde si gridder
+         * On en deduit la taille max,  la taille min
+         * On divise l'écran en carré elementaires
+         * On utilise ei_place avec des params bien choisis
+         *    ei_place appelle la runfunc
+         * On reappelle ei_grid pour bien remettre les params
+         */
         ;
 }
+
 
 
