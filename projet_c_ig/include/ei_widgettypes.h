@@ -101,6 +101,7 @@ typedef struct ei_gridder_param_t {
         int* col;
         int* w;
         int *h;
+
         // TODO ajouter des positons relatives ?
 } ei_gridder_param_t;
 

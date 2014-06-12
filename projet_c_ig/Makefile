@@ -222,6 +222,8 @@ ei_event : ${OBJDIR}/ei_event.o
 
 ei_geometrymanager : ${OBJDIR}/ei_geometrymanager.o
 
+ei_gridder : ${OBJDIR}/ei_gridder.o
+
 # Compilation
 ${OBJDIR}/%.o: ${SRCDIR}/%.c 
 	$(CC) $(CCFLAGS) ${INCFLAGS} $< -o $@
