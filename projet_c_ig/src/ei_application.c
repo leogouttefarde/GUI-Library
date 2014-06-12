@@ -96,6 +96,8 @@ void ei_app_free()
         ei_unbind_all();
 
         ei_geometrymanager_free();
+
+        hw_quit();
 }
 
 /**

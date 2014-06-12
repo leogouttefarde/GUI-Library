@@ -128,7 +128,55 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
 void ei_widget_destroy(ei_widget_t* widget)
 {
 	if (widget) {
-		ei_widget_t *current = widget->children_head, *next = NULL;
+                ei_widget_t *current = widget->children_head, *next = NULL;
+                ei_bool_t found = EI_FALSE;
+
+                ei_widget_t *parent = widget->parent;
+                if (parent) {
+                        current = parent->children_head;
+                        if (parent->children_head == widget) {
+                                parent->children_head = current->next_sibling;
+                                found = EI_TRUE;
+                        }
+                        if (parent->children_tail == widget) {
+                                parent->children_tail = current->next_sibling;
+                                found = EI_TRUE;
+                        }
+
+
+                        while (current && !found) {
+                                next = current->next_sibling;
+
+                                if (next == widget) {
+                                        current->next_sibling = next->next_sibling;
+                                        found = EI_TRUE;
+                                }
+
+                                current = next;
+                        }
+
+
+                        current = parent->children_head;
+
+                        while (current && !found) {
+                                next = current->next_sibling;
+
+                                if (next == widget) {
+                                        current->next_sibling = next->next_sibling;
+                                        found = EI_TRUE;
+                                }
+
+                                current = next;
+                        }
+                }
+
+                if (widget->geom_params
+                        && widget->geom_params->manager
+                        && widget->geom_params->manager->runfunc)
+                        widget->geom_params->manager->runfunc(widget);
+
+
+                current = widget->children_head;
 
 		while (current) {
                         next = current->next_sibling;

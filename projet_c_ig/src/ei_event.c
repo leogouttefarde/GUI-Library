@@ -212,12 +212,37 @@ void ei_event_process(ei_event_t *event)
         }
 }
 
+// void ei_unbind_widget(ei_widget_t *widget)
+// {
+//         ei_eventtype_t type;
+//         ei_linkedlist_t *list = NULL;
+//         ei_linked_elem_t *link = NULL, *next = NULL;
+//         ei_binding_t *binding = NULL;
+
+//         for (type = 0; type < ei_ev_last; ++type) {
+//                 list = &ei_events[type];
+//                 link = list->head;
+
+//                 /* Unbind all links */
+//                 while (link) {
+//                         next = link->next;
+//                         binding = (ei_binding_t*)link->elem;
+//                         next = link->next;
+
+//                         if (binding && (widget == binding->widget))
+//                                 ei_unbind_link(list, link);
+
+//                         ei_unbind_link(list, link);
+//                         link = next;
+//                 }
+//         }
+// }
+
 void ei_unbind_all()
 {
         ei_eventtype_t type;
         ei_linkedlist_t *list = NULL;
         ei_linked_elem_t *link = NULL, *next = NULL;
-        ei_binding_t *binding = NULL;
 
         for (type = 0; type < ei_ev_last; ++type) {
                 list = &ei_events[type];
