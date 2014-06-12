@@ -178,6 +178,7 @@ void ei_insert_text(ei_surface_t window, ei_rect_t rectangle, char *text,
 void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 		ei_rect_t * img_rect, ei_anchor_t img_anchor, ei_rect_t *clipper)
 {
+	printf("début affichage image");
 	int result;
 
 	//printf("jaffiche l'image");
@@ -251,6 +252,7 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 */
 	if (clipper) {
 		if (rec_dst.top_left.x<clipper->top_left.x) {
+			img_part.top_left.x=img_part.top_left.x+(clipper->top_left.x-rec_dst.top_left.x);
 			rec_dst.top_left.x=clipper->top_left.x;
 			rec_dst.size.width=rec_dst.size.width-(clipper->top_left.x-rec_dst.top_left.x);
 		}
@@ -266,9 +268,13 @@ void aff_img(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 		}
 	}
 	img_part.size=rec_dst.size;
-	hw_surface_lock(img);
-	result = ei_copy_surface(window, &rec_dst, img, &img_part, 1);
-	assert(!result);
-	hw_surface_unlock(img);
+	printf("pas de seg fault ici\n");
+	if (rec_dst.size.width>0 && rec_dst.size.height>0) {
+		hw_surface_lock(img);
+		result = ei_copy_surface(window, &rec_dst, img, &img_part, 1);
+		assert(!result);
+		hw_surface_unlock(img);
+	}
+	printf(" le copy surface est passé \n");
 }
 
