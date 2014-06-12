@@ -264,68 +264,57 @@ void print_image(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 
         /* Clip image */
 	if (clipper) {
-                // if (rec_dst.top_left.x < 0) {
-                //         int old = rec_dst.top_left.x;
-                //         rec_dst.top_left.x = 0;
-                //         img_part.top_left.x = border_size - old;
-                //         rec_dst.size.width = rec_dst.size.width + old;
-
-                // }
-                // if (rec_dst.top_left.y < 0) {
-                //         int old = rec_dst.top_left.y;
-                //         rec_dst.top_left.y = 0;
-                //         img_part.top_left.y = border_size - old;
-                //         rec_dst.size.height = rec_dst.size.height + old;
-                // }
 
                 // On réduit les clippeurs de destination
                 // pour ne pas déborder du clippeur brut
-                // ei_rect_t vor = rec_dst;
-                // ei_rect_t *inter = ei_rect_intersection(&rec_dst, clipper);
-                // if (inter) {
-                //         rec_dst = *inter;
-                //         SAFE_FREE(inter);
+                ei_rect_t vor = rec_dst;
+                ei_rect_t *inter = ei_rect_intersection(&rec_dst, clipper);
+                if (inter) {
+                        rec_dst = *inter;
+                        SAFE_FREE(inter);
 
-                //         // On ajoute la réduction réalisée par l'intersection avec le clipper brut
-                //         // au clippeur de l'image
-                //         // img_part = img_part + (inter - rec_dst)
-                //         img_part.top_left.x+= rec_dst.top_left.x - vor.top_left.x;
-                //         img_part.top_left.y+= rec_dst.top_left.y - vor.top_left.y;
-                //         img_part.size.width+= rec_dst.size.width - vor.size.width;
-                //         img_part.size.height+= rec_dst.size.height - vor.size.height;
-                // }
-                // /* If no intersection, do not display */
-                // else
-                //         display = EI_FALSE;
+                        // On ajoute la réduction réalisée par l'intersection avec le clipper brut
+                        // au clippeur de l'image
+                        // img_part = img_part + (inter - rec_dst)
+                        img_part.top_left.x+= rec_dst.top_left.x - vor.top_left.x;
+                        img_part.top_left.y+= rec_dst.top_left.y - vor.top_left.y;
+                        img_part.size.width+= rec_dst.size.width - vor.size.width;
+                        img_part.size.height+= rec_dst.size.height - vor.size.height;
+                }
+                /* If no intersection, do not display */
+                else
+                        display = EI_FALSE;
 
 
                 // Bug baveux
-		if (rec_dst.top_left.x < clipper->top_left.x) {
-			rec_dst.top_left.x = clipper->top_left.x;
-			rec_dst.size.width =
-			    rec_dst.size.width - (clipper->top_left.x -
-						  rec_dst.top_left.x);
-		}
-		if (rec_dst.top_left.y < clipper->top_left.y) {
-			rec_dst.top_left.y = clipper->top_left.y;
-			rec_dst.size.height =
-			    rec_dst.size.height - (clipper->top_left.y -
-						   rec_dst.top_left.y);
-		}
-		if (rec_dst.top_left.x + rec_dst.size.width >
-		    clipper->top_left.x + clipper->size.width) {
-			rec_dst.size.width =
-			    rec_dst.size.width -
-			    ((rec_dst.top_left.x + rec_dst.size.width) -
-			     (clipper->top_left.x + clipper->size.width));
-		}
-		if (rec_dst.top_left.y + rec_dst.size.height >
-		    clipper->top_left.y + clipper->size.height) {
-			rec_dst.size.height =
-			    rec_dst.size.height -
-			    ((rec_dst.top_left.y + rec_dst.size.height) -
-			     (clipper->top_left.y + clipper->size.height));
-		}
+		// if (rec_dst.top_left.x < clipper->top_left.x) {
+		// 	rec_dst.top_left.x = clipper->top_left.x;
+		// 	rec_dst.size.width =
+		// 	    rec_dst.size.width - (clipper->top_left.x -
+		// 				  rec_dst.top_left.x);
+		// }
+		// if (rec_dst.top_left.y < clipper->top_left.y) {
+		// 	rec_dst.top_left.y = clipper->top_left.y;
+		// 	rec_dst.size.height =
+		// 	    rec_dst.size.height - (clipper->top_left.y -
+		// 				   rec_dst.top_left.y);
+		// }
+
+                // What
+		// if (rec_dst.top_left.x + rec_dst.size.width >
+		//     clipper->top_left.x + clipper->size.width) {
+		// 	rec_dst.size.width =
+		// 	    rec_dst.size.width -
+		// 	    ((rec_dst.top_left.x + rec_dst.size.width) -
+		// 	     (clipper->top_left.x + clipper->size.width));
+		// }
+		// if (rec_dst.top_left.y + rec_dst.size.height >
+		//     clipper->top_left.y + clipper->size.height) {
+		// 	rec_dst.size.height =
+		// 	    rec_dst.size.height -
+		// 	    ((rec_dst.top_left.y + rec_dst.size.height) -
+		// 	     (clipper->top_left.y + clipper->size.height));
+		// }
 	}
 
 	img_part.size = rec_dst.size;
