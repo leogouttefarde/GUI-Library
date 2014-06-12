@@ -344,58 +344,59 @@ void ei_invalidate_rect(ei_rect_t* rect)
                 ei_rect_t temp;
                 temp =  hw_surface_get_rect(ei_get_root_surface());
                 rect = rect_intersection(rect, &temp);
+                if (rect){
+                        /* On ajoute le rectangle */
+                        ei_rect_t new_rect = *rect;
 
-                /* On ajoute le rectangle */
-                ei_rect_t new_rect = *rect;
+                        ei_linked_elem_t *link = ei_update_rects.head, *next = NULL;
+                        ei_bool_t add = EI_TRUE;
+                        ei_rect_t *fusion = NULL;
 
-                ei_linked_elem_t *link = ei_update_rects.head, *next = NULL;
-                ei_bool_t add = EI_TRUE;
-                ei_rect_t *fusion = NULL;
+                        /* Check current rectangles for optimization */
+                        while (link) {
+                                ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
+                                next = link->next;
 
-                /* Check current rectangles for optimization */
-                while (link) {
-                        ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
-                        next = link->next;
+                                if (lrect) {
 
-                        if (lrect) {
+                                        /* If duplicate found, do not add */
+                                        if (lrect->rect.top_left.x == rect->top_left.x
+                                                        && lrect->rect.top_left.y == rect->top_left.y
+                                                        && lrect->rect.size.width == rect->size.width
+                                                        && lrect->rect.size.height == rect->size.height)
+                                                add = false;
 
-                                /* If duplicate found, do not add */
-                                if (lrect->rect.top_left.x == rect->top_left.x
-                                                && lrect->rect.top_left.y == rect->top_left.y
-                                                && lrect->rect.size.width == rect->size.width
-                                                && lrect->rect.size.height == rect->size.height)
-                                        add = false;
-
-                                /* Fuse with another if better */
-                                else if ( (fusion = ei_smaller_fused(&lrect->rect, rect)) ) {
-                                        ei_linkedlist_pop_link(&ei_update_rects, link, true);
-                                        new_rect = *fusion;
-                                        SAFE_FREE(fusion);
+                                        /* Fuse with another if better */
+                                        else if ( (fusion = ei_smaller_fused(&lrect->rect, rect)) ) {
+                                                ei_linkedlist_pop_link(&ei_update_rects, link, true);
+                                                new_rect = *fusion;
+                                                SAFE_FREE(fusion);
+                                        }
                                 }
+
+                                link = next;
                         }
 
-                        link = next;
-                }
 
+                        /* Program a new rectangle for invalidation */
+                        if (add) {
+                                ei_linked_rect_t *new_link = CALLOC_TYPE(ei_linked_rect_t);
 
-                /* Program a new rectangle for invalidation */
-                if (add) {
-                        ei_linked_rect_t *new_link = CALLOC_TYPE(ei_linked_rect_t);
+                                if (new_link) {
+                                        new_link->rect = new_rect;
+                                        new_link->next = NULL;
 
-                        if (new_link) {
-                                new_link->rect = new_rect;
-                                new_link->next = NULL;
+                                        /* Keep internal ei_linked_rect_t list valid */
+                                        ei_linked_elem_t *tail = ei_update_rects.tail;
+                                        if (tail) {
+                                                ei_linked_rect_t *elem = (ei_linked_rect_t*)tail->elem;
 
-                                /* Keep internal ei_linked_rect_t list valid */
-                                ei_linked_elem_t *tail = ei_update_rects.tail;
-                                if (tail) {
-                                        ei_linked_rect_t *elem = (ei_linked_rect_t*)tail->elem;
+                                                if (elem)
+                                                        elem->next = new_link;
+                                        }
 
-                                        if (elem)
-                                                elem->next = new_link;
+                                        ei_linkedlist_add(&ei_update_rects, new_link);
                                 }
-
-                                ei_linkedlist_add(&ei_update_rects, new_link);
                         }
                 }
         }

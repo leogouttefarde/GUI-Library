@@ -485,6 +485,7 @@ void ei_place(ei_widget_t *widget,
                 else
                         param->rel_h = NULL;
 
+                widget->geom_params->manager->runfunc(widget);
         }
 }
 
