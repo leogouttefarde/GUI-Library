@@ -11,6 +11,7 @@
 #define EI_EVENT_PV_H
 
 #include "ei_event.h"
+#include "ei_linkedlist.h"
 
 
 /* Event binding */
@@ -22,8 +23,13 @@ typedef struct ei_binding_t {
 } ei_binding_t;
 
 
+void ei_event_init();
+
 void ei_event_process(ei_event_t *event);
 
+void ei_unbind_link(ei_linkedlist_t *list, ei_linked_elem_t *link);
+
+void ei_unbind_all();
 
 
 #endif

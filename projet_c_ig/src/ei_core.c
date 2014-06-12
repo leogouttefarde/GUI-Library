@@ -1,8 +1,8 @@
 
 #include "ei_geometrymanager.h"
 #include "ei_core.h"
-#include "ei_common.h"
 #include "ei_linkedlist.h"
+#include "ei_event_pv.h"
 
 
 static ei_widget_t *ei_root = NULL;
@@ -187,8 +187,6 @@ void ei_draw_widget(ei_widget_t *widget){
 
                 ei_rect_t *draw_rect = ei_get_draw_rect();
                 if (draw_rect) {
-                        int is_root = 0;
-                        //
                         ei_rect_t *clipper = NULL;
                         ei_rect_t *real_clipper = NULL;
                         if (widget->parent){
@@ -209,13 +207,11 @@ void ei_draw_widget(ei_widget_t *widget){
                                 if (clipper) {
                                         real_clipper = rect_intersection(clipper, draw_rect);
                                 }
-                                is_root = 1;
                         }
                         // Si le real_clipper est non vide
                         if (real_clipper) {
                                 // Dessin du widget dans le real_clipper
                                 widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
-                                //if (is_root)sleep(5), printf("ENDDDD\n");
                                 SAFE_FREE(real_clipper);
                         }
                 }

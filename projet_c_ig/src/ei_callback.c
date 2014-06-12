@@ -313,11 +313,11 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
                         // On verifie que le toplevel est redimensionnable
                         if(m_y < y + t_h){
                                 // Si titre, on bind CE WIDGET et la fonction de deplacement
-                                callback = (ei_callback_t*)all_callback_move_move;
+                                callback = all_callback_move_move;
                         }
                         else if (toplevel->resizable && (m_y >= (y + h -1 - r_s)) && (m_x >= (x + w - 1 - r_s))){
                                 // Si resize, on bind ce widget et la fonction de resize
-                                callback = (ei_callback_t*)all_callback_move_resize;
+                                callback = all_callback_move_resize;
                         }
                         else{
                                 pressed = NULL;

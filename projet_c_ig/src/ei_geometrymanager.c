@@ -8,8 +8,7 @@
  *
  */
 
-#include <string.h>
-#include "ei_geometrymanager.h"
+#include "ei_geometrymanager_pv.h"
 #include "ei_common.h"
 #include "ei_core.h"
 #include "ei_utils.h"

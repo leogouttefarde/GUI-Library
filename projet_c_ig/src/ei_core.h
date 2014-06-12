@@ -12,8 +12,7 @@
 #ifndef EI_GLOBAL_H
 #define EI_GLOBAL_H
 
-#include <stdbool.h>
-#include <stdlib.h>
+#include "ei_common.h"
 #include "hw_interface.h"
 #include "ei_types.h"
 #include "ei_widget.h"

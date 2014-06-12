@@ -1,16 +1,16 @@
 # Variable definitions.
 
 PLATFORM	= $(shell uname)
-PROFILING	= -p
-#PROFILING	= 
+#PROFILING	= -p
+PROFILING	= 
 CC		= gcc ${PROFILING}
 OBJDIR		= ./objs
 TESTS		= ./tests
 INCLUDES	= ./include
 INCFLAGS	:= -I${INCLUDES}
-#OPTFLAGS	:= -Os -DNDEBUG -Werror
+#OPTFLAGS	:= -O3 -DNDEBUG -Werror
 OPTFLAGS	:= -g
-CCFLAGS		:= -c ${OPTFLAGS} -Wall -std=c99
+CCFLAGS		:= -c ${OPTFLAGS} -Werror -Wall -std=c99
 SRCDIR		:= ./src
 MATHFLAGS 	:= -lm
 

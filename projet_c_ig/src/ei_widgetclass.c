@@ -8,7 +8,7 @@
  *
  */
 
-#include "ei_widgetclass.h"
+#include "ei_widgetclass_pv.h"
 #include "ei_widgettypes.h"
 #include "ei_shape.h"
 #include "ei_utils.h"

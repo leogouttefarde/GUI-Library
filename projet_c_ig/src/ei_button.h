@@ -1,10 +1,11 @@
+
 #ifndef EI_BUTTON_H
 #define EI_BUTTON_H
-
 
 #include "ei_types.h"
 #include "hw_interface.h"
 #include "ei_widgettypes.h"
+
 
 void ei_frame_draw(ei_surface_t window,ei_rect_t rectangle,ei_frame_t* frame,
                 ei_rect_t *clipper);
@@ -33,6 +34,9 @@ void ei_button_draw_loc(ei_surface_t window,
 
 void ei_insert_text(ei_surface_t window,ei_rect_t rectangle,char* text, ei_font_t font,ei_color_t color, ei_anchor_t anchor, ei_rect_t* clipper);
 
-void aff_img(ei_surface_t window, ei_rect_t rectangle,ei_surface_t img, ei_rect_t* img_rect, ei_anchor_t img_anchor, ei_rect_t* clipper);
+void print_image(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
+             ei_rect_t *img_rect, ei_anchor_t img_anchor, ei_rect_t *clipper);
+
+
 
 #endif

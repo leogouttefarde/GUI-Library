@@ -1,6 +1,7 @@
 #ifndef EI_UTILITIES_H
 #define EI_UTILITIES_H
 
+#include "ei_common.h"
 #include "ei_types.h"
 
 typedef enum {
@@ -28,14 +29,17 @@ ei_color_t obscurcir(ei_color_t couleur, float coeff_couleur);
 ei_point_t find_anchor(ei_rect_t rectangle,int width,int height, ei_anchor_t position);
 
 
-static inline void make_string_copy(const char **dest, const char *src)
+static inline void make_string_copy(char **dest_ptr, const char *src)
 {
-        const uint32_t src_size = strlen(src);
-        const uint32_t src_size_f = src_size + 1;
-        *dest = calloc(src_size_f, 1);
+        if (dest_ptr && src) {
+                const uint32_t src_size = strlen(src);
+                const uint32_t src_size_full = src_size + 1;
+                char *dest = malloc(src_size_full);
+                *dest_ptr = dest;
 
-        if (*dest)
-                strncpy(*dest, src, src_size_f);
+                if (dest)
+                        strncpy(dest, src, src_size_full);
+        }
 }
 
 #endif

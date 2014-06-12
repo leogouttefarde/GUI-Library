@@ -1,26 +1,24 @@
 /**
- *  @file       ei_application.h
+ *  @file       ei_application.c
  *  @brief      Manages the main steps of a graphical application: initialization, main window,
  *              main loop, quitting, resource freeing.
  *
  *  \author 
- *  Created by François Bérard on 30.12.11.
- *  Copyright 2011 Ensimag. All rights reserved.
+ *  Created by Antoine Delaite, Eric Burel, Léo Gouttefarde on 09.06.14
+ *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
 
-#include <stdbool.h>
-#include <string.h>
-#include <stdlib.h>
-
 #include "ei_application.h"
 #include "ei_common.h"
-#include "ei_event.h"
+#include "ei_event_pv.h"
+#include "ei_widgetclass_pv.h"
 #include "ei_widgettypes.h"
 #include "ei_core.h"
 #include "ei_callback.h"
 #include "ei_utils.h"
 #include "ei_gridder.h"
+#include "ei_geometrymanager_pv.h"
 
 
 static ei_bool_t quit_request = EI_FALSE;

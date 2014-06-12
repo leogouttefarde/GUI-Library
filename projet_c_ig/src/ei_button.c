@@ -295,8 +295,17 @@ void print_image(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 	if (rec_dst.size.width > 0 && rec_dst.size.height > 0) {
 		hw_surface_lock(img);
 
-		int result = ei_copy_surface(window, &rec_dst, img, &img_part, 1);
+
+                #ifndef NDEBUG
+		int result = 
+                #endif
+
+                ei_copy_surface(window, &rec_dst, img, &img_part, 1);
+
+                #ifndef NDEBUG
 		assert(result == 0);
+                #endif
+
 
 		hw_surface_unlock(img);
 	}

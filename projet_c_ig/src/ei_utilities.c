@@ -56,7 +56,7 @@ ei_linked_point_t *trait(ei_point_t queue, ei_point_t tete,
 	if (diffy != 0) {
 		coeffy = (diffy) / abs(diffy);
 	}
-	ei_linked_point_t *Point;
+	ei_linked_point_t *Point = NULL;
 	for (int i = 0; i <= nb_iterations; i++) {
 		Point = CALLOC_TYPE(ei_linked_point_t);
 		assert(Point != NULL);

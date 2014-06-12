@@ -9,7 +9,8 @@
  */
 
 #include "ei_debug.h"
-#include "ei_draw.h"
+#include "ei_common.h"
+#include "ei_core.h"
 
 
 void ei_print_color(const ei_color_t *color)
@@ -56,7 +57,7 @@ void ei_print_rect(const ei_rect_t *rect)
 void ei_print_rects(ei_linked_rect_t *lrect)
 {
         while (lrect) {
-                print_rect(&lrect->rect);
+                ei_print_rect(&lrect->rect);
                 lrect = lrect->next;
         }
 }

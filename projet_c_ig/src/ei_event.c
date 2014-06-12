@@ -117,26 +117,13 @@ void ei_event_process(ei_event_t *event)
         ei_linkedlist_t list = ei_events[event->type];
         ei_linked_elem_t *link = list.head;
         ei_binding_t *binding = NULL;
-        ei_widget_t *widget = NULL, *selected = NULL;
+        ei_widget_t *widget = NULL, *selection = NULL;
+        ei_bool_t selected = EI_FALSE;
 
-
+        /* If no binding, finish */
         if (!link)
                 done = EI_TRUE;
 
-        // Si l'event est lié aux boutons de la souris on selectionne le widget
-        // TODO : Optimisation : ne faire que si un binding est lié à cet événement
-        if (event->type == ei_ev_mouse_buttondown
-                || event->type == ei_ev_mouse_buttonup
-                || event->type == ei_ev_mouse_move) {
-                selected = ei_widget_pick(&event->param.mouse.where);
-        /*printf("selected %08lX", selected);
-
-        if (selected && selected->wclass)
-                printf("   %s", selected->wclass->name);
-
-
-        printf("\n");*/
-        }
 
         // Parcours de tous les links
         while (!done) {
@@ -161,21 +148,25 @@ void ei_event_process(ei_event_t *event)
                                         break;
 
                                         // Pour les boutons de la souris, on
-                                        // appelle le callback sur selected
+                                        // appelle le callback sur selection
                                 case ei_ev_mouse_buttondown:
                                 case ei_ev_mouse_buttonup:
                                 case ei_ev_mouse_move:
+                                        if (!selected) {
+                                                selection = ei_widget_pick(&event->param.mouse.where);
+                                                selected = EI_TRUE;
+                                        }
 
-                                        if (selected) {
+                                        if (selection) {
 
-                                                /* If linked widget is selected */
-                                                if (binding->widget == selected)
-                                                        call = EI_TRUE, widget = selected;
+                                                /* If linked widget is selection */
+                                                if (binding->widget == selection)
+                                                        call = EI_TRUE, widget = selection;
 
-                                                /* If selected widget is tagged */
-                                                else if (binding->tag && selected->wclass) {
-                                                        if (!strcmp(selected->wclass->name, binding->tag)) {
-                                                                call = EI_TRUE, widget = selected;
+                                                /* If selection widget is tagged */
+                                                else if (binding->tag && selection->wclass) {
+                                                        if (!strcmp(selection->wclass->name, binding->tag)) {
+                                                                call = EI_TRUE, widget = selection;
                                                         }
                                                 }
                                         }
@@ -200,32 +191,6 @@ void ei_event_process(ei_event_t *event)
                 }
         }
 }
-
-// void ei_unbind_widget(ei_widget_t *widget)
-// {
-//         ei_eventtype_t type;
-//         ei_linkedlist_t *list = NULL;
-//         ei_linked_elem_t *link = NULL, *next = NULL;
-//         ei_binding_t *binding = NULL;
-
-//         for (type = 0; type < ei_ev_last; ++type) {
-//                 list = &ei_events[type];
-//                 link = list->head;
-
-//                 /* Unbind all links */
-//                 while (link) {
-//                         next = link->next;
-//                         binding = (ei_binding_t*)link->elem;
-//                         next = link->next;
-
-//                         if (binding && (widget == binding->widget))
-//                                 ei_unbind_link(list, link);
-
-//                         ei_unbind_link(list, link);
-//                         link = next;
-//                 }
-//         }
-// }
 
 void ei_unbind_all()
 {
