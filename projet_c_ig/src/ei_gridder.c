@@ -1,4 +1,3 @@
-#include <stdio.h>
 #include "ei_gridder.h"
 /***** Gridder *****/
 
@@ -72,7 +71,11 @@ ei_rect_t get_elem_rect(ei_widget_t *parent){
                                 }
 
                                 l_max = (float)MAX(l_max, l_curr);
+                                if (param->force_h)
+                                        l_max = (float)MAX(l_max, *param->force_h);
                                 c_max = (float)MAX(c_max, c_curr);
+                                if (param->force_w)
+                                        c_max = (float)MAX(c_max, *param->force_w);
                         }
                 }
                 current = current->next_sibling;
@@ -155,7 +158,8 @@ void ei_grid_runfunc(ei_widget_t *widget){
 }
 
 // Gestion des paramètres
-void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h){
+void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h, int
+                *force_w, int *force_h){
 
         ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
         assert(gridder);
@@ -188,6 +192,8 @@ void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h){
                                 param->col = CALLOC_TYPE(int);
                                 param->w = CALLOC_TYPE(int);
                                 param->h = CALLOC_TYPE(int);
+                                param->force_w = CALLOC_TYPE(int);
+                                param->force_h = CALLOC_TYPE(int);
                         }
                 }
         }
@@ -211,6 +217,14 @@ void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h){
                 *param->h = *h;
         else
                 param->h = NULL;
+        if(force_w)
+                *param->force_w = *force_w;
+        else
+                param->force_w = NULL;
+        if(force_h)
+                *param->force_h = *force_h;
+        else
+                param->force_h = NULL;
 
         param->seen = EI_FALSE;
 
@@ -228,7 +242,8 @@ void ei_grid_releasefunc(struct ei_widget_t* widget)
                 SAFE_FREE(param->col);
                 SAFE_FREE(param->w);
                 SAFE_FREE(param->h);
-
+                SAFE_FREE(param->force_w);
+                SAFE_FREE(param->force_h);
                 SAFE_FREE(param);
         }
 }

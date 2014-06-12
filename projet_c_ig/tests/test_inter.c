@@ -87,7 +87,7 @@ int ei_main(int argc, char** argv)
         ei_linked_point_t               points[4];
         int                             coords[]                = { 20, 20, 620, 20, 20, 460, 620, 460 };
         ei_color_t                      red                     = { 0xff, 0x00, 0x00, 0xff };
-        ei_color_t                      transp_blue             = { 0x00, 0x00, 0xff, 0x88 };
+        //      ei_color_t                      transp_blue             = { 0x00, 0x00, 0xff, 0x88 };
 
         // Init acces to hardware.
         hw_init();
@@ -163,7 +163,7 @@ int ei_main(int argc, char** argv)
 
         hw_surface_unlock(main_window);
         hw_surface_update_rects(main_window, NULL);
-        
+
 
 
         // Wait for a key press.

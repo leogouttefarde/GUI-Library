@@ -5,24 +5,24 @@ PLATFORM	= $(shell uname)
 PROFILING	= 
 CC		= gcc ${PROFILING}
 OBJDIR		= ./objs
+SRCDIR		:= ./src
 TESTS		= ./tests
 INCLUDES	= ./include
-INCFLAGS	:= -I${INCLUDES}
+INCFLAGS	:= -I${INCLUDES} -I${SRCDIR}
 #OPTFLAGS	:= -O3 -DNDEBUG -Werror
 OPTFLAGS	:= -g
 CCFLAGS		:= -c ${OPTFLAGS} -Werror -Wall -std=c99
-SRCDIR		:= ./src
 MATHFLAGS 	:= -lm
 
 # The list of objects to include in the library
 
 LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
-			${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o \
-			${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o \
-			${OBJDIR}/ei_button.o ${OBJDIR}/ei_core.o \
-			${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o \
-			${OBJDIR}/ei_utilities.o ${OBJDIR}/ei_debug.o \
-			${OBJDIR}/ei_gridder.o
+   ${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o \
+   ${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o \
+   ${OBJDIR}/ei_button.o ${OBJDIR}/ei_core.o \
+   ${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o \
+   ${OBJDIR}/ei_utilities.o ${OBJDIR}/ei_debug.o \
+   ${OBJDIR}/ei_gridder.o
 
 
 # Platform specific definitions (OS X, Linux, Windows)
@@ -74,7 +74,7 @@ TARGETS		=	${LIBEI} \
 				minimal frame button hello_world_absolute hello_world_relative puzzle
 
 PERSO_TESTS =  ensiskype toplevel test_shape test_placer test_relative \
-			   test_button2 test_geom test_resize ensiskype test_inter move\
+			   test_button2 test_geom ensiskype test_inter \
 			   gridder ensigrid
 
 all : ${TARGETS}
@@ -131,13 +131,6 @@ puzzle : ${OBJDIR}/puzzle.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/puzzle.c -o ${OBJDIR}/puzzle.o
 
-# move_resize
-
-move : ${OBJDIR}/move_resize.o ${LIBEIBASE} ${LIBEI}
-	${LINK} -o move ${OBJDIR}/move_resize.o ${LIBEI} ${LIBS}
-
-${OBJDIR}/move_resize.o : ${TESTS}/move_resize.c
-	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/move_resize.c -o ${OBJDIR}/move_resize.o
 
 ########## Tests personnels
 
@@ -179,11 +172,6 @@ test_button3 : ${OBJDIR}/test_button3.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/test_button3.o : ${TESTS}/test_button3.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_button3.c -o ${OBJDIR}/test_button3.o ${MATHFLAGS} 
 
-test_resize : ${OBJDIR}/test_resize.o ${LIBEIBASE} ${LIBEI}
-	${LINK} -o test_resize ${OBJDIR}/test_resize.o ${LIBEI} ${LIBS} ${MATHFLAGS}
-
-${OBJDIR}/test_resize.o : ${TESTS}/test_resize.c
-	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_resize.c -o ${OBJDIR}/test_resize.o ${MATHFLAGS} 
 
 test_frame_2 : ${OBJDIR}/test_frame_2.o ${LIBEIBASE} ${LIBEI}
 	${LINK} -o test_frame_2 ${OBJDIR}/test_frame_2.o ${LIBEI} ${LIBS} ${MATHFLAGS}

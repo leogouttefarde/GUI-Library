@@ -7,7 +7,7 @@
 #include "ei_widget.h"
 #include "ei_geometrymanager.h"
 #include "ei_utils.h"
-
+#include "ei_gridder.h"
 /*
  * process_key --
  *
@@ -84,7 +84,7 @@ int ei_main(int argc, char** argv)
         // Logo frame - frame
         char*           file                        = "misc/ensimag.png";
         ei_widget_t*	logo_frame;
-        ei_anchor_t     logo_frame_anc                           = ei_anc_northwest;
+        // ei_anchor_t     logo_frame_anc                           = ei_anc_northwest;
         ei_size_t	logo_frame_size	            = {60,60};
         ei_color_t	logo_frame_color		    = {0xFF, 0x66, 0x33, 0x11};
         ei_relief_t	logo_frame_relief		    = ei_relief_raised;
@@ -99,7 +99,7 @@ int ei_main(int argc, char** argv)
 
         // Liste de contact - frame
         ei_widget_t*	contacts;
-        ei_anchor_t     contacts_anc                       = ei_anc_northwest;
+        // ei_anchor_t     contacts_anc                       = ei_anc_northwest;
         ei_size_t	contacts_size	            = {100,100};
         int		contacts_lin		    = 0;
         int		contacts_col		    = 0;
@@ -115,7 +115,7 @@ int ei_main(int argc, char** argv)
 
         // Zone de texte - frame
         ei_widget_t*	zone;
-        ei_anchor_t     zone_anc                = ei_anc_southeast;
+        // ei_anchor_t     zone_anc                = ei_anc_southeast;
         ei_size_t	zone_size		= {100,100};
         int		zone_lin	    	= 3;
         int             zone_col                = 2;
@@ -147,8 +147,10 @@ int ei_main(int argc, char** argv)
         // Contact 1 - button
         ei_widget_t*	contact_1;
         ei_size_t	contact_1_size		= {300,200};
-        int          contact_1_w         = 1;
-        int           contact_1_h         = 1;
+        int             contact_1_w             = 1;
+        int             contact_1_h             = 1;
+        int             contact_1_force_w       = 0;
+        int             contact_1_force_h       = 10;
         ei_color_t	contact_1_color		= {0x22, 0xCC, 0x88, 0xAA};
         char*		contact_1_title		= "Bill Gates";
         ei_color_t	contact_1_text_color	= {0x00, 0x00, 0x00, 0xff};
@@ -157,7 +159,7 @@ int ei_main(int argc, char** argv)
         int		contact_1_border_width	= 6;
         ei_callback_t	contact_1_callback 	= button_press;
 
-        // Contact 1 - button
+        // Contact 2 - button
         ei_widget_t*	contact_2;
         ei_size_t	contact_2_size		= {300,200};
         int             contact_2_lin           = 1;
@@ -231,13 +233,14 @@ int ei_main(int argc, char** argv)
                         NULL, NULL, NULL, &logo_frame_img,
                         &logo_frame_img_rect, &logo_frame_img_anchor);
         /* PLACEMENT */
-        ei_grid(toplevel, &toplevel_lin, &toplevel_col, &toplevel_w, &toplevel_h);
-        ei_grid(logo, NULL, &logo_col, NULL, NULL);
-        ei_grid(logo_frame, NULL, NULL, NULL, NULL);
-        ei_grid(zone, &zone_lin, &zone_col, &zone_w, &zone_h);
-        ei_grid(contacts, &contacts_lin, &contacts_col, &contacts_w, &contacts_h);
-        ei_grid(contact_1, NULL, NULL, &contact_1_w, &contact_1_h);
-        ei_grid(contact_2, &contact_2_lin, &contact_2_col, &contact_2_w, &contact_2_h);
+        ei_grid(toplevel, &toplevel_lin, &toplevel_col, &toplevel_w, &toplevel_h, NULL, NULL);
+        ei_grid(logo, NULL, &logo_col, NULL, NULL, NULL, NULL);
+        ei_grid(logo_frame, NULL, NULL, NULL, NULL, NULL, NULL);
+        ei_grid(zone, &zone_lin, &zone_col, &zone_w, &zone_h, NULL, NULL);
+        ei_grid(contacts, &contacts_lin, &contacts_col, &contacts_w, &contacts_h, NULL, NULL);
+        ei_grid(contact_1, NULL, NULL, &contact_1_w, &contact_1_h,
+                        &contact_1_force_w, &contact_1_force_h);
+        ei_grid(contact_2, &contact_2_lin, &contact_2_col, &contact_2_w, &contact_2_h, NULL, NULL);
 
         // On garde ce toplevel avec le placer
         ei_place(conversation, &conversation_anc, NULL, NULL, NULL, NULL, &conversation_rel_x, &conversation_rel_y, NULL, NULL);

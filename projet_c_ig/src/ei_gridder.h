@@ -14,15 +14,17 @@ typedef struct ei_gridder_param_t {
         int* lin;
         int* col;
         int* w;
-        int *h;
+        int* h;
+        // Pour forcer la taille de la grille
+        int* force_w;
+        int* force_h;
         // Booleen pour definir les widgets a recalculer
         ei_bool_t seen;
-
-        // TODO ajouter des positons relatives ?
 } ei_gridder_param_t;
 
 // Gestion des paramètres
-void ei_grid(ei_widget_t *widget, int *col, int *lin, int *w, int *h);
+void ei_grid(ei_widget_t *widget, int *col, int *lin, int *w, int *h, int
+                *force_w, int *force_h);
 
 
 // Runfunc du gridder
