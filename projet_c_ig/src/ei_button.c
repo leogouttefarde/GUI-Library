@@ -34,7 +34,7 @@ void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
 
 	else if (frame->img && frame->img_rect)
 		print_image(window, rectangle_red, frame->img,
-			    frame->img_rect, frame->img_anchor, clipper, frame->border_width);
+			    frame->img_rect, frame->img_anchor, clipper);
 }
 
 void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
@@ -56,7 +56,7 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
 
         	else if (button->img && button->img_rect)
         		print_image(window, rectangle_reduit, button->img,
-        			    button->img_rect, button->img_anchor, clipper, marge);
+        			    button->img_rect, button->img_anchor, clipper);
         }
 }
 
@@ -203,7 +203,7 @@ void ei_insert_text(ei_surface_t window, ei_rect_t rectangle, char *text,
 }
 
 void print_image(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
-	     ei_rect_t * img_rect, ei_anchor_t img_anchor, ei_rect_t * clipper, int border_size)
+	     ei_rect_t * img_rect, ei_anchor_t img_anchor, ei_rect_t * clipper)
 {
         ei_rect_t new_img_rect;
         ei_rect_t real_img_rect = hw_surface_get_rect(img);
