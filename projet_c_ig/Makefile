@@ -21,8 +21,8 @@ LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
 			${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o \
 			${OBJDIR}/ei_button.o ${OBJDIR}/ei_core.o \
 			${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o \
-			${OBJDIR}/ei_utilities.o ${OBJDIR}/ei_debug.o
-
+			${OBJDIR}/ei_utilities.o ${OBJDIR}/ei_debug.o \
+			${OBJDIR}/ei_gridder.o
 
 
 # Platform specific definitions (OS X, Linux, Windows)
@@ -74,7 +74,8 @@ TARGETS		=	${LIBEI} \
 				minimal frame button hello_world_absolute hello_world_relative puzzle
 
 PERSO_TESTS =  ensiskype toplevel test_shape test_placer test_relative \
-			   test_button2 test_geom test_resize ensiskype test_inter move
+			   test_button2 test_geom test_resize ensiskype test_inter move\
+			   gridder
 
 all : ${TARGETS}
 
@@ -208,6 +209,12 @@ test_inter : ${OBJDIR}/test_inter.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/test_inter.o : ${TESTS}/test_inter.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_inter.c -o ${OBJDIR}/test_inter.o ${MATHFLAGS} 
 
+gridder : ${OBJDIR}/gridder.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o gridder ${OBJDIR}/gridder.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/gridder.o : ${TESTS}/gridder.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/gridder.c -o ${OBJDIR}/gridder.o ${MATHFLAGS} 
+
 ########## Compilation séparée des sources
 
 ei_widget : ${OBJDIR}/ei_widget.o
@@ -221,6 +228,8 @@ ei_global : ${OBJDIR}/ei_global.o
 ei_event : ${OBJDIR}/ei_event.o
 
 ei_geometrymanager : ${OBJDIR}/ei_geometrymanager.o
+
+ei_gridder : ${OBJDIR}/ei_gridder.o
 
 # Compilation
 ${OBJDIR}/%.o: ${SRCDIR}/%.c 
