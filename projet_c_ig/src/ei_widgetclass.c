@@ -110,8 +110,8 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 /* TODO  Le probleme vient du fait que le content_rect du
                  * root_widget est modifié */
                 // Random fix, apprently not completely fixing though
-                 //else
-                 //      rec = *frame->widget.content_rect;
+                //else
+                //      rec = *frame->widget.content_rect;
 
                 //rec.size = frame->widget.requested_size;
 
@@ -149,7 +149,7 @@ void frame_setdefaults(struct ei_widget_t* widget)
         // on commence par effectuer un recast
         ei_frame_t *frame;
         frame = (ei_frame_t*)widget;
-        frame->border_width = 3;
+        frame->border_width = 0;
         // ei_surface_t represente un pointeur générique
         frame->img = NULL;
         frame->img_anchor = ei_anc_center;
@@ -283,7 +283,7 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 // lock de la surface
                 hw_surface_lock(surface);
                 ei_button_draw(surface,button->widget.screen_location,button, clipper);
-					 //printf("scrnloc isze{%i,%i}\n",button->widget.screen_location.size.width,button->widget.screen_location.size.height);
+                //printf("scrnloc isze{%i,%i}\n",button->widget.screen_location.size.width,button->widget.screen_location.size.height);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
@@ -354,7 +354,7 @@ void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
         ei_rect_t* content_rect = NULL;
 
         if (    widget->content_rect
-                && (widget->content_rect != &widget->screen_location))
+                        && (widget->content_rect != &widget->screen_location))
                 content_rect = widget->content_rect;
 
         else
@@ -508,7 +508,7 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
         ei_rect_t* content_rect = NULL;
 
         if (    widget->content_rect
-                && (widget->content_rect != &widget->screen_location))
+                        && (widget->content_rect != &widget->screen_location))
                 content_rect = widget->content_rect;
 
         else
