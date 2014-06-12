@@ -21,9 +21,9 @@
 #include "ei_callback.h"
 #include "ei_utils.h"
 #include "ei_gridder.h"
+
+
 static ei_bool_t quit_request = EI_FALSE;
-
-
 
 
 /**
