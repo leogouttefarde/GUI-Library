@@ -20,6 +20,7 @@
 #include "ei_core.h"
 #include "ei_callback.h"
 #include "ei_utils.h"
+#include "ei_gridder.h"
 static ei_bool_t quit_request = EI_FALSE;
 
 
@@ -59,6 +60,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         ei_set_root(ei_widget_create ("frame", NULL));
 
         ei_register_placer_manager();
+        ei_register_gridder_manager();
 
         ei_widget_t *root_widget = ei_get_root();
         ei_place(root_widget, NULL, NULL, NULL, &main_window_size->width, &main_window_size->height
