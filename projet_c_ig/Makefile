@@ -75,7 +75,7 @@ TARGETS		=	${LIBEI} \
 
 PERSO_TESTS =  ensiskype toplevel test_shape test_placer test_relative \
 			   test_button2 test_geom test_resize ensiskype test_inter move\
-			   gridder
+			   gridder ensigrid
 
 all : ${TARGETS}
 
@@ -214,6 +214,12 @@ gridder : ${OBJDIR}/gridder.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/gridder.o : ${TESTS}/gridder.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/gridder.c -o ${OBJDIR}/gridder.o ${MATHFLAGS} 
+
+ensigrid : ${OBJDIR}/ensigrid.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o ensigrid ${OBJDIR}/ensigrid.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/ensigrid.o : ${TESTS}/ensigrid.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/ensigrid.c -o ${OBJDIR}/ensigrid.o ${MATHFLAGS} 
 
 ########## Compilation séparée des sources
 

@@ -7,12 +7,12 @@ ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_rect_t elem_rect){
         ei_rect_t screen_location;
         int w = elem_rect.size.width;
         int h = elem_rect.size.height;
-        if(param->lin) 
-                screen_location.top_left.x = *param->lin * w; 
+        if(param->col) 
+                screen_location.top_left.x = *param->col * w; 
         else
                 screen_location.top_left.x = 0;
-        if(param->col) 
-                screen_location.top_left.y = *param->col * h; 
+        if(param->lin) 
+                screen_location.top_left.y = *param->lin * h; 
         else
                 screen_location.top_left.y = 0;
         if(param->w)
@@ -32,8 +32,8 @@ ei_rect_t get_elem_rect(ei_widget_t *parent){
 
         ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
         // Calcul de la partition de la grille
-        float l_max;
-        float c_max;
+        float l_max = 0.;
+        float c_max = 0.;
         int l_curr;
         int c_curr;
         ei_widget_t *current = parent->children_head;
@@ -46,25 +46,23 @@ ei_rect_t get_elem_rect(ei_widget_t *parent){
                         param =
                                 (ei_gridder_param_t*)current->geom_params;
                         if(param){
-                                l_curr = 0;
-                                c_curr = 0;
+                                l_curr = 0.;
+                                c_curr = 0.;
                                 if(param->lin){
-                                        if(param->w)
+                                        if(param->h)
                                                 l_curr =
-                                                        *param->lin
-                                                        +
-                                                        *param->w;
+                                                        *param->lin + *param->h 
+                                                        - 1;
                                         else
                                                 l_curr =
                                                         *param->lin;
 
                                 }
                                 if(param->col){
-                                        if(param->h)
+                                        if(param->w)
                                                 c_curr =
-                                                        *param->col
-                                                        +
-                                                        *param->h;
+                                                        *param->col + *param->w
+                                                        - 1;
                                         else
                                                 c_curr =
                                                         *param->col;
@@ -81,10 +79,10 @@ ei_rect_t get_elem_rect(ei_widget_t *parent){
         // rectangle elementaire
         ei_rect_t elem_rect = *parent->content_rect;
         elem_rect.size.width = (int)floor(
-                        (float)elem_rect.size.width / l_max);
+                        (float)elem_rect.size.width / (c_max + 1));
         elem_rect.size.height = (int)floor(
-                        (float)elem_rect.size.width
-                        / l_max);
+                        (float)elem_rect.size.height
+                        / (l_max + 1));
 
         return elem_rect;
 }
@@ -122,11 +120,25 @@ void ei_grid_runfunc(ei_widget_t *widget){
                         /* On invalide le nouveau rectangle*/
                         ei_rect_t new_pos = widget->screen_location;
                         ei_invalidate_rect(&new_pos);
+                        
+                        /* Appels récursifs sur les freres pour bien les
+                         * replacer */
+                        ei_widget_t *current = widget->parent->children_head;
+                        // ATTENTION a ne pas rappeler le widget, risque de
+                        // bouclage
+                        while(current && current != widget &&
+                                        current->geom_params&&
+                                        current->geom_params->manager &&
+                                        current->geom_params->manager->runfunc){
 
+                                current->geom_params->manager->runfunc(current);
+                                current = current->next_sibling;
+
+                        }
                         /* Appels récursifs sur les enfants */
                         // Appel récursif sur les enfants pour les replacer
-                        ei_widget_t *current = widget->children_head;
-                        while(current && current->geom_params && current->geom_params &&
+                        current = widget->children_head;
+                        while(current  && current->geom_params &&
                                         current->geom_params->manager &&
                                         current->geom_params->manager->runfunc){
                                 current->geom_params->manager->runfunc(current);
@@ -137,7 +149,7 @@ void ei_grid_runfunc(ei_widget_t *widget){
 }
 
 // Gestion des paramètres
-void ei_grid(ei_widget_t *widget, int *col, int *lin, int *w, int *h){
+void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h){
 
         ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
         assert(gridder);
