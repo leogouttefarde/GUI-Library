@@ -80,6 +80,7 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *
 	bar.size.height=toplevel->bar_height;
 	lp=ei_rect_to_points(bar);
 	ei_draw_polygon(surface,&lp,toplevel->bar_color,clipper);
+	free_lp(lp.next);
 	int marge;
 	ei_rect_t btn_c;
 	if (toplevel->closable) {

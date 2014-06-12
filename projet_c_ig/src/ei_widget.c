@@ -434,8 +434,6 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
 			rqst_s.height=rqst_s.height+toplevel->bar_height+2*toplevel->border_width;
 			rqst_s.width=rqst_s.width+2*toplevel->border_width;
 			toplevel->widget.requested_size = rqst_s;
-
-			toplevel->widget.requested_size = *requested_size;
 		}
 		if (color){
 			toplevel->color = *color;
