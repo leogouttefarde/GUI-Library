@@ -122,7 +122,7 @@ ei_bool_t ei_is_rect_inter(const ei_rect_t *rect1, const ei_rect_t *rect2)
         return is_intersection;
 }
 
-ei_rect_t* rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2) 
+ei_rect_t* ei_rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2)
 {
         ei_rect_t *inter = NULL;
 
@@ -192,20 +192,20 @@ void ei_draw_widget(ei_widget_t *widget){
                         if (widget->parent){
                                 // Clipper lié au widget = content_rect parent
                                 // INTER screen_location widget
-                                clipper = rect_intersection(widget->parent->content_rect, 
+                                clipper = ei_rect_intersection(widget->parent->content_rect, 
                                                 &widget->screen_location);
 
                                 // Clipper optimisé = rectangle a mettre a jour
                                 // INTER clipper widget
                                 //if (widget->parent->content_rect != root->content_rect)
-                                real_clipper = rect_intersection(clipper, draw_rect);
+                                real_clipper = ei_rect_intersection(clipper, draw_rect);
                                 SAFE_FREE(clipper);
                         }
                         // Pour le root
                         else{
                                 clipper = &widget->screen_location;
                                 if (clipper) {
-                                        real_clipper = rect_intersection(clipper, draw_rect);
+                                        real_clipper = ei_rect_intersection(clipper, draw_rect);
                                 }
                         }
                         // Si le real_clipper est non vide
@@ -339,7 +339,7 @@ void ei_invalidate_rect(ei_rect_t* rect)
                 /* On commence par intersecter le rectangle avec le root_widget */
                 ei_rect_t temp;
                 temp =  hw_surface_get_rect(ei_get_root_surface());
-                rect = rect_intersection(rect, &temp);
+                rect = ei_rect_intersection(rect, &temp);
                 if (rect){
                         /* On ajoute le rectangle */
                         ei_rect_t new_rect = *rect;
