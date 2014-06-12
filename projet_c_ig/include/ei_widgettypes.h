@@ -95,7 +95,10 @@ typedef struct ei_placer_param_t {
         float* rel_h;
 } ei_placer_param_t;
 
+typedef struct ei_gridder_param_t {
+        ei_geometry_param_t geom;
 
+} ei_gridder_param_t;
 
 #endif
 

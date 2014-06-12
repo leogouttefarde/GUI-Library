@@ -191,7 +191,6 @@ void ei_draw_widget(ei_widget_t *widget){
                         //
                         ei_rect_t *clipper = NULL;
                         ei_rect_t *real_clipper = NULL;
-                        ei_rect_t *perfect_clipper = NULL;
                         if (widget->parent){
                                 // Clipper lié au widget = content_rect parent
                                 // INTER screen_location widget
@@ -203,27 +202,21 @@ void ei_draw_widget(ei_widget_t *widget){
                                 //if (widget->parent->content_rect != root->content_rect)
                                 real_clipper = rect_intersection(clipper, draw_rect);
                                 SAFE_FREE(clipper);
-
-                                //TODO ajouter intersectiona vec rect(root_surface)
-                                ei_rect_t temp;
-                                temp =  hw_surface_get_rect(ei_get_root_surface());
-                                perfect_clipper = rect_intersection(real_clipper, &temp);
-                                SAFE_FREE(real_clipper);
                         }
                         // Pour le root
                         else{
                                 clipper = &widget->screen_location;
                                 if (clipper) {
-                                        perfect_clipper = rect_intersection(clipper, draw_rect);
+                                        real_clipper = rect_intersection(clipper, draw_rect);
                                 }
                                 is_root = 1;
                         }
                         // Si le real_clipper est non vide
-                        if (perfect_clipper) {
+                        if (real_clipper) {
                                 // Dessin du widget dans le real_clipper
-                                widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), perfect_clipper);
+                                widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
                                 //if (is_root)sleep(5), printf("ENDDDD\n");
-                                SAFE_FREE(perfect_clipper);
+                                SAFE_FREE(real_clipper);
                         }
                 }
 
@@ -294,7 +287,6 @@ ei_rect_t* ei_smaller_fused(const ei_rect_t *rect1, const ei_rect_t *rect2)
                 int w1 = rect1->size.width;
                 int h1 = rect1->size.height;
 
-
                 int x2 = rect2->top_left.x;
                 int y2 = rect2->top_left.y;
 
@@ -348,7 +340,12 @@ ei_rect_t* ei_smaller_fused(const ei_rect_t *rect1, const ei_rect_t *rect2)
 void ei_invalidate_rect(ei_rect_t* rect)
 {
         if (rect) {
+                /* On commence par intersecter le rectangle avec le root_widget */
+                ei_rect_t temp;
+                temp =  hw_surface_get_rect(ei_get_root_surface());
+                rect = rect_intersection(rect, &temp);
 
+                /* On ajoute le rectangle */
                 ei_rect_t new_rect = *rect;
 
                 ei_linked_elem_t *link = ei_update_rects.head, *next = NULL;

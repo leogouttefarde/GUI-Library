@@ -86,6 +86,8 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 }
 
 
+/***** Placer *****/
+
 /*  Gere le clipping */
 void ei_place_runfunc(struct ei_widget_t*       widget)
 {
@@ -112,7 +114,7 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         // Récupération des paramètres pour l'ancrage
         ei_placer_param_t *param =
                 (ei_placer_param_t*)widget->geom_params;
-        
+
         // Definition du rectangle contenant le widget
         if (widget->parent){
                 // Theoriquement le second cas n'arrive jamais
@@ -490,4 +492,20 @@ void ei_geometrymanager_free()
 {
         ei_linkedlist_empty(&ei_geometrymanagers, true);
 }
+
+
+
+/***** Gridder *****/
+
+// Gestion des paramètres
+void ei_grid(ei_widget_t *widget, int *col, int *lin, int *w, int *h){
+        ;
+}
+
+
+// Runfunc du gridder
+void ei_gridder_runfunc(ei_widget_t *widget){
+        ;
+}
+
 

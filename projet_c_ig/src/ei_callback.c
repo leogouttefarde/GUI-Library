@@ -400,6 +400,7 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
                         toplevel->close = EI_FALSE;
 
                 }
+                pressed->geom_params->manager->runfunc(pressed);
         }
 
         pressed = NULL;
