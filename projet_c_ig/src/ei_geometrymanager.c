@@ -315,7 +315,9 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         /* Appels récursifs sur les enfants */
         // Appel récursif sur les enfants pour les replacer
         ei_widget_t *current = widget->children_head;
-        while(current){
+        while(current && current->geom_params && current->geom_params &&
+                        current->geom_params->manager &&
+                        current->geom_params->manager->runfunc){
                 current->geom_params->manager->runfunc(current);
                 current = current->next_sibling;
         }
