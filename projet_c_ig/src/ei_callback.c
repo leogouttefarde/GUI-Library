@@ -400,7 +400,8 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
                                 }
                         }
 
-                        toplevel->close = EI_FALSE;
+                        if (pressed)
+                                toplevel->close = EI_FALSE;
                 }
 
                 if (pressed)

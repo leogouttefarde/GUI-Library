@@ -189,8 +189,6 @@ void ei_widget_destroy(ei_widget_t* widget)
 
                 if (widget->wclass && widget->wclass->releasefunc)
                         widget->wclass->releasefunc(widget);
-
-                SAFE_FREE(widget);
 	}
 }
 
