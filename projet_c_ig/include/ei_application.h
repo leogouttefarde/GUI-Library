@@ -15,7 +15,6 @@
 
 #include "ei_types.h"
 #include "ei_widget.h"
-#include "ei_geometrymanager.h"
 
 
 

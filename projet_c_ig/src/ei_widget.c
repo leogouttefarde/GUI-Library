@@ -162,11 +162,14 @@ void ei_widget_destroy(ei_widget_t* widget)
                         }
                 }
 
-                /* Update geometry manager if any */
+                /* Update geometry manager if any, then release parameters */
                 if (widget->geom_params
                         && widget->geom_params->manager
-                        && widget->geom_params->manager->runfunc)
+                        && widget->geom_params->manager->runfunc) {
+
                         widget->geom_params->manager->runfunc(widget);
+                        widget->geom_params->manager->releasefunc(widget);
+                }
 
 
                 /* Destroy all childs */
@@ -186,8 +189,6 @@ void ei_widget_destroy(ei_widget_t* widget)
 
                 if (widget->wclass && widget->wclass->releasefunc)
                         widget->wclass->releasefunc(widget);
-
-                SAFE_FREE(widget);
 	}
 }
 

@@ -47,9 +47,9 @@ uint32_t		ei_map_rgba		(ei_surface_t surface, const ei_color_t* color);
  * @param	clipper		If not NULL, the drawing is restricted within this rectangle.
  */
 void			ei_draw_polyline	(ei_surface_t			surface,
-                const ei_linked_point_t*	first_point,
-                const ei_color_t		color,
-                const ei_rect_t*		clipper);
+						 const ei_linked_point_t*	first_point,
+						 const ei_color_t		color,
+						 const ei_rect_t*		clipper);
 
 /**
  * \brief	Draws a filled polygon.
@@ -62,9 +62,9 @@ void			ei_draw_polyline	(ei_surface_t			surface,
  * @param	clipper		If not NULL, the drawing is restricted within this rectangle.
  */
 void			ei_draw_polygon		(ei_surface_t			surface,
-                const ei_linked_point_t*	first_point,
-                const ei_color_t		color,
-                const ei_rect_t*		clipper);
+						 const ei_linked_point_t*	first_point,
+						 const ei_color_t		color,
+						 const ei_rect_t*		clipper);
 
 /**
  * \brief	Draws text by calling \ref hw_text_create_surface.
@@ -80,11 +80,11 @@ void			ei_draw_polygon		(ei_surface_t			surface,
  * @param	clipper		If not NULL, the drawing is restricted within this rectangle.
  */
 void			ei_draw_text		(ei_surface_t		surface,
-                const ei_point_t*	where,
-                const char*		text,
-                const ei_font_t	font,
-                const ei_color_t*	color,
-                const ei_rect_t*	clipper);
+						 const ei_point_t*	where,
+						 const char*		text,
+						 const ei_font_t	font,
+						 const ei_color_t*	color,
+						 const ei_rect_t*	clipper);
 
 /**
  * \brief	Fills the surface with the specified color.
@@ -96,8 +96,8 @@ void			ei_draw_text		(ei_surface_t		surface,
  * @param	clipper		If not NULL, the drawing is restricted within this rectangle.
  */
 void			ei_fill			(ei_surface_t		surface,
-                const ei_color_t*	color,
-                const ei_rect_t*	clipper);
+						 const ei_color_t*	color,
+						 const ei_rect_t*	clipper);
 
 
 /**
@@ -117,15 +117,15 @@ void			ei_fill			(ei_surface_t		surface,
  *				destination pixels weighted by the source alpha channel. The
  *				transparency of the final pixels is set	to opaque.
  *				If false, the final pixels are an exact copy of the source pixels,
- including the alpha channel.
+ 				including the alpha channel.
  *
  * @return			Returns 0 on success, 1 on failure (different ROI size).
  */
 int			ei_copy_surface		(ei_surface_t		destination,
-                const ei_rect_t*	dst_rect,
-                const ei_surface_t	source,
-                const ei_rect_t*	src_rect,
-                const ei_bool_t	alpha);
+						 const ei_rect_t*	dst_rect,
+						 const ei_surface_t	source,
+						 const ei_rect_t*	src_rect,
+						 const ei_bool_t	alpha);
 
 
 

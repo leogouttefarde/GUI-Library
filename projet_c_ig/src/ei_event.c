@@ -8,22 +8,11 @@
  *
  */
 
-#include <stdlib.h>
-#include <string.h>
-
-#include "ei_event.h"
+#include "ei_event_pv.h"
 #include "ei_core.h"
 #include "ei_utilities.h"
 #include "ei_linkedlist.h"
 
-
-/* Event binding */
-typedef struct ei_binding_t {
-        ei_tag_t tag;
-        ei_widget_t *widget;
-        ei_callback_t callback;
-        void *user_param;
-} ei_binding_t;
 
 /* Event binding table */
 ei_linkedlist_t ei_events[ei_ev_last];
