@@ -70,9 +70,12 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *
 
 	ei_color_t bord_color=obscurcir(toplevel->color,0.3);
 	ei_draw_polygon(surface,&lp,bord_color,clipper);
+        free_lp(lp.next);
+
 //Dessin du content_rect
    lp =ei_rect_to_points(*toplevel->widget.content_rect);
    ei_draw_polygon(surface, &lp, toplevel->color, clipper);
+        free_lp(lp.next);
 
 //Dessin de la barre	
 	//printf("début ei_bar_draw\n");
