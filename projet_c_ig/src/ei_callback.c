@@ -376,7 +376,11 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
                 else if (!strcmp(pressed->wclass->name, "toplevel")) {
 
                         ei_toplevel_t *toplevel = (ei_toplevel_t*)pressed;
-                        if (toplevel->close){
+
+                        if (callback)
+                                ei_unbind(ei_ev_mouse_move, NULL, "all", *callback, pressed);
+
+                        if (toplevel->close) {
                                 // On verifie que l'on a relaché sur le bouton
                                 int y = pressed->screen_location.top_left.y;
                                 int x = pressed->screen_location.top_left.x;
@@ -391,16 +395,16 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
                                         // RECHERCHE ET UNBIND
                                         // DESTRUCTION
                                         printf("Toplevel detruit");
+                                        ei_widget_destroy(pressed);
+                                        pressed = NULL;
                                 }
-                        }
-                        else if (callback){
-                                ei_unbind(ei_ev_mouse_move, NULL, "all", *callback, pressed);
                         }
 
                         toplevel->close = EI_FALSE;
-
                 }
-                pressed->geom_params->manager->runfunc(pressed);
+
+                if (pressed)
+                        pressed->geom_params->manager->runfunc(pressed);
         }
 
         pressed = NULL;

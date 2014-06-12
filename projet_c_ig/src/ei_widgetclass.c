@@ -7,6 +7,7 @@
  *  Copyright 2011 Ensimag. All rights reserved.
  *
  */
+
 #include "ei_widgetclass.h"
 #include "ei_widgettypes.h"
 #include "ei_shape.h"
@@ -14,21 +15,11 @@
 #include "ei_button.h"
 #include "ei_common.h"
 #include "ei_utilities.h"
+#include "ei_linkedlist.h"
 
 
-// TODO : Gérer les widgetclass via des linkedlist
-// et les parcourir pour avoir une unique variable statique
-
-// variable globale pour stocker les tables de pointeur
-static ei_widgetclass_t *frame_table = NULL;
-static ei_widgetclass_t *button_table = NULL;
-static ei_widgetclass_t *toplevel_table = NULL;
-
-static ei_widgetclass_t *toplevel_title_table = NULL;
-static ei_widgetclass_t *toplevel_close_table = NULL;
-static ei_widgetclass_t *toplevel_resize_table = NULL;
-// Pour gérer les classes supplémentaires, on utilise l'attribut next
-static ei_widgetclass_t *others_table = NULL;
+/* widgetclass linked list */
+static ei_linkedlist_t ei_class_list = { NULL, NULL };
 
 
 /**
@@ -39,20 +30,7 @@ static ei_widgetclass_t *others_table = NULL;
  */
 void ei_widgetclass_register    (ei_widgetclass_t* widgetclass)
 {
-        // TODO : Corriger en gérant les widgetclass via des linkedlist
-        // et les parcourir dans ei_widgetclass_from_name
-        // pour avoir une unique variable statique
-
-        // Faux
-        /*if (others_table){
-          ei_widgetclass_t *tmp = others_table->next;
-          others_table = widgetclass;
-          widgetclass->next = tmp;
-          }
-          else {
-          others_table = widgetclass;
-          others_table->next = NULL;
-          }*/
+        ei_linkedlist_add(&ei_class_list, widgetclass);
 }
 
 
@@ -65,31 +43,23 @@ void ei_widgetclass_register    (ei_widgetclass_t* widgetclass)
  */
 ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
 {
-        // TODO : Gérer les widgetclass via des linkedlist
-        // et les parcourir pour avoir une unique variable statique
+        ei_widgetclass_t *class = NULL;
+        ei_bool_t found = EI_FALSE;
+        ei_linked_elem_t *link = ei_class_list.head;
 
-        if (!strcmp(name,"frame")) {
-                // Les fonctions liées à la classe frame sont déja declarées
-                return frame_table;
+        while (link && !found) {
+                class = (ei_widgetclass_t*)link->elem;
+
+                if (class && !strncmp(class->name, name, sizeof(ei_widgetclass_name_t)))
+                        found = EI_TRUE;
+
+                link = link->next;
         }
-        else if (!strcmp(name,"button")){
-                return button_table;
-        }
-        else if (!strcmp(name,"toplevel")){
-                return toplevel_table;
-        }
-        else if (!strcmp(name, "tl_title")){
-                return toplevel_title_table;
-        }
-        else if (!strcmp(name, "tl_close")){
-                return toplevel_close_table;
-        }
-        else if (!strcmp(name, "tl_resize")){
-                return toplevel_resize_table;
-        }
-        else{
-                return NULL;
-        }
+
+        if (!found)
+                class = NULL;
+
+        return class;
 }
 
 
@@ -255,18 +225,22 @@ void    ei_frame_register_class ()
 {
         // Declaration des fonctions liées à la classe frame
 
+        ei_widgetclass_t *frame_class = NULL;
+
         // Allocation
-        frame_table = CALLOC_TYPE(ei_widgetclass_t);
-        assert(frame_table);
+        frame_class = CALLOC_TYPE(ei_widgetclass_t);
+        assert(frame_class);
 
-        frame_table->allocfunc= frame_alloc;
-        frame_table->drawfunc = frame_draw;
-        frame_table->releasefunc = frame_release;
-        frame_table->setdefaultsfunc = frame_setdefaults;
-        frame_table->geomnotifyfunc = frame_geomnotify;
-        strcpy(frame_table->name, "frame");
+        frame_class->allocfunc= frame_alloc;
+        frame_class->drawfunc = frame_draw;
+        frame_class->releasefunc = frame_release;
+        frame_class->setdefaultsfunc = frame_setdefaults;
+        frame_class->geomnotifyfunc = frame_geomnotify;
+        strcpy(frame_class->name, "frame");
 
-        frame_table->next = NULL;
+        frame_class->next = NULL;
+
+        ei_widgetclass_register(frame_class);
 }
 
 /******************************************************************************/
@@ -415,17 +389,21 @@ void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
  */
 void    ei_button_register_class()
 {
-        // Allocation
-        button_table = CALLOC_TYPE(ei_widgetclass_t);
-        assert(button_table);
+        ei_widgetclass_t *button_class = NULL;
 
-        button_table->allocfunc= button_alloc;
-        button_table->drawfunc = button_draw;
-        button_table->releasefunc = button_release;
-        button_table->setdefaultsfunc = button_setdefaults;
-        button_table->geomnotifyfunc = button_geomnotify;
-        strcpy(button_table->name, "button");
-        button_table->next = NULL;
+        // Allocation
+        button_class = CALLOC_TYPE(ei_widgetclass_t);
+        assert(button_class);
+
+        button_class->allocfunc= button_alloc;
+        button_class->drawfunc = button_draw;
+        button_class->releasefunc = button_release;
+        button_class->setdefaultsfunc = button_setdefaults;
+        button_class->geomnotifyfunc = button_geomnotify;
+        strcpy(button_class->name, "button");
+        button_class->next = NULL;
+
+        ei_widgetclass_register(button_class);
 }
 
 
@@ -565,16 +543,27 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
  */
 void    ei_toplevel_register_class()
 {
+        ei_widgetclass_t *toplevel_class = NULL;
+
         // Allocation
-        toplevel_table = CALLOC_TYPE(ei_widgetclass_t);
-        assert(toplevel_table);
+        toplevel_class = CALLOC_TYPE(ei_widgetclass_t);
+        assert(toplevel_class);
 
-        toplevel_table->allocfunc= toplevel_alloc;
-        toplevel_table->drawfunc = toplevel_draw;
-        toplevel_table->releasefunc = toplevel_release;
-        toplevel_table->setdefaultsfunc = toplevel_setdefaults;
-        toplevel_table->geomnotifyfunc = toplevel_geomnotify;
-        strcpy(toplevel_table->name, "toplevel");
+        toplevel_class->allocfunc= toplevel_alloc;
+        toplevel_class->drawfunc = toplevel_draw;
+        toplevel_class->releasefunc = toplevel_release;
+        toplevel_class->setdefaultsfunc = toplevel_setdefaults;
+        toplevel_class->geomnotifyfunc = toplevel_geomnotify;
+        strcpy(toplevel_class->name, "toplevel");
 
-        toplevel_table->next = NULL;
+        toplevel_class->next = NULL;
+
+        ei_widgetclass_register(toplevel_class);
 }
+
+void ei_widgetclass_free()
+{
+        ei_linkedlist_empty(&ei_class_list, true);
+}
+
+

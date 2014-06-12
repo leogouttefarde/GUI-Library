@@ -92,12 +92,16 @@ void ei_app_free()
         if (picking)
                 hw_surface_free(picking);
 
-        ei_widget_t *root = ei_get_root();
-        ei_widget_destroy(root);
+
+        ei_widget_destroy(ei_get_root());
 
         ei_unbind_all();
 
         ei_geometrymanager_free();
+
+        ei_widgetclass_free();
+
+        hw_quit();
 }
 
 /**

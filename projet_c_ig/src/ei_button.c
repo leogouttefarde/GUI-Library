@@ -1,3 +1,12 @@
+/**
+ *  @file       ei_event.c
+ *  @brief      Allows the binding and unbinding of callbacks to events.
+ *
+ *  \author 
+ *  Created by Antoine Delaite on 04.06.14.
+ *  Copyright 2014 Ensimag. All rights reserved.
+ *
+ */
 
 #include "ei_button.h"
 #include "ei_draw.h"

@@ -17,7 +17,6 @@
 #include "ei_application.h"
 #include "ei_linkedlist.h"
 
-// TODO : Gérer les listes avec la classe linkedlist
 static ei_linkedlist_t ei_geometrymanagers = { NULL, NULL };
 
 /**
@@ -483,6 +482,5 @@ void ei_geometrymanager_free()
 {
         ei_linkedlist_empty(&ei_geometrymanagers, true);
 }
-
 
 

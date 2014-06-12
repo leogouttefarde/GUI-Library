@@ -128,14 +128,56 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
 void ei_widget_destroy(ei_widget_t* widget)
 {
 	if (widget) {
-		ei_widget_t *current = widget->children_head, *next = NULL;
+                ei_widget_t *current = widget->children_head, *next = NULL;
+                ei_bool_t found = EI_FALSE;
 
+                /* Remove widget from parent */
+                ei_widget_t *parent = widget->parent;
+                if (parent) {
+                        current = parent->children_head;
+
+                        /* Remove widget from parent head */
+                        if (parent->children_head == widget) {
+                                parent->children_head = widget->next_sibling;
+                                found = EI_TRUE;
+                        }
+
+                        /* Remove widget from parent childs */
+                        ei_widget_t *last = NULL;
+                        while (current && !found) {
+                                next = current->next_sibling;
+
+                                if (next == widget) {
+                                        current->next_sibling = widget->next_sibling;
+                                        found = EI_TRUE;
+                                }
+
+                                last = current;
+                                current = next;
+                        }
+
+                        /* Remove widget from parent tail */
+                        if (parent->children_tail == widget) {
+                                parent->children_tail = last;
+                        }
+                }
+
+                /* Update geometry manager if any */
+                if (widget->geom_params
+                        && widget->geom_params->manager
+                        && widget->geom_params->manager->runfunc)
+                        widget->geom_params->manager->runfunc(widget);
+
+
+                /* Destroy all childs */
+                current = widget->children_head;
 		while (current) {
                         next = current->next_sibling;
 			ei_widget_destroy(current);
                         current = next;
 		}
 
+                /* Free widget */
                 SAFE_FREE(widget->pick_color);
 
                 if (widget->content_rect != &widget->screen_location)
