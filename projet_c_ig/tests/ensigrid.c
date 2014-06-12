@@ -102,8 +102,8 @@ int ei_main(int argc, char** argv)
         ei_anchor_t     contacts_anc                       = ei_anc_northwest;
         ei_size_t	contacts_size	            = {100,100};
         int		contacts_lin		    = 0;
-        int		contacts_col		    = 1;
-        int             contacts_w                  = 1;
+        int		contacts_col		    = 0;
+        int             contacts_w                  = 2;
         int             contacts_h                  = 5;
         ei_color_t	contacts_color		    = {0x66, 0xFF, 0x33, 0xff};
         ei_relief_t	contacts_relief		    = ei_relief_raised;
@@ -117,10 +117,10 @@ int ei_main(int argc, char** argv)
         ei_widget_t*	zone;
         ei_anchor_t     zone_anc                = ei_anc_southeast;
         ei_size_t	zone_size		= {100,100};
-        int		zone_lin	    	= 4;
-        int             zone_col                = 1;
+        int		zone_lin	    	= 3;
+        int             zone_col                = 2;
         int             zone_w                  = 8;
-        int             zone_h                  = 1;
+        int             zone_h                  = 2;
         ei_color_t	zone_color		= {0xFF, 0xFF, 0xFF, 0xff};
         ei_relief_t	zone_relief		= ei_relief_sunken;
         int		zone_border_width	= 0;
@@ -221,7 +221,7 @@ int ei_main(int argc, char** argv)
         // Contact 2
         ei_button_configure (contact_2, &contact_2_size, &contact_2_color,
                         &contact_2_border_width, &contact_2_corner_radius,
-                        &contact_2_relief, &contact_1_title, NULL,
+                        &contact_2_relief, &contact_2_title, NULL,
                         &contact_2_text_color, NULL, NULL, NULL, NULL,
                         &contact_2_callback, NULL);
         //logo_frame

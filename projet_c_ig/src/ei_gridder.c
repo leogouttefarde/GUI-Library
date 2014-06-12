@@ -1,3 +1,4 @@
+#include <stdio.h>
 #include "ei_gridder.h"
 /***** Gridder *****/
 
@@ -7,14 +8,16 @@ ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_rect_t elem_rect){
         ei_rect_t screen_location;
         int w = elem_rect.size.width;
         int h = elem_rect.size.height;
+        int tl_x = elem_rect.top_left.x;
+        int tl_y = elem_rect.top_left.y;
         if(param->col) 
-                screen_location.top_left.x = *param->col * w; 
+                screen_location.top_left.x = *param->col * w + tl_x; 
         else
-                screen_location.top_left.x = 0;
+                screen_location.top_left.x = tl_x;
         if(param->lin) 
-                screen_location.top_left.y = *param->lin * h; 
+                screen_location.top_left.y = *param->lin * h + tl_y; 
         else
-                screen_location.top_left.y = 0;
+                screen_location.top_left.y = 0 + tl_y;
         if(param->w)
                 screen_location.size.width = *param->w * w;
         else
@@ -56,7 +59,6 @@ ei_rect_t get_elem_rect(ei_widget_t *parent){
                                         else
                                                 l_curr =
                                                         *param->lin;
-
                                 }
                                 if(param->col){
                                         if(param->w)
@@ -120,21 +122,25 @@ void ei_grid_runfunc(ei_widget_t *widget){
                         /* On invalide le nouveau rectangle*/
                         ei_rect_t new_pos = widget->screen_location;
                         ei_invalidate_rect(&new_pos);
-                        
+
                         /* Appels récursifs sur les freres pour bien les
                          * replacer */
+                        // On marque le widget courant comme vu
+                        param->seen = EI_TRUE;
                         ei_widget_t *current = widget->parent->children_head;
-                        // ATTENTION a ne pas rappeler le widget, risque de
-                        // bouclage
-                        while(current && current != widget &&
-                                        current->geom_params&&
+                        ei_gridder_param_t *current_param;
+                        while(current &&
+                                        current->geom_params &&
                                         current->geom_params->manager &&
                                         current->geom_params->manager->runfunc){
-
-                                current->geom_params->manager->runfunc(current);
+                                current_param =
+                                        (ei_gridder_param_t*)current->geom_params;
+                                if (!current_param->seen)
+                                        current->geom_params->manager->runfunc(current);
                                 current = current->next_sibling;
-
                         }
+                        // On remet seen a false
+                        param->seen = EI_FALSE;
                         /* Appels récursifs sur les enfants */
                         // Appel récursif sur les enfants pour les replacer
                         current = widget->children_head;
@@ -206,7 +212,8 @@ void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h){
         else
                 param->h = NULL;
 
-        // Appel de la runfunc
+        param->seen = EI_FALSE;
+
         widget->geom_params->manager->runfunc(widget);
 }
 
