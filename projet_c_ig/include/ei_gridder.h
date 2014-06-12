@@ -15,6 +15,8 @@ typedef struct ei_gridder_param_t {
         int* col;
         int* w;
         int *h;
+        // Booleen pour definir les widgets a recalculer
+        ei_bool_t seen;
 
         // TODO ajouter des positons relatives ?
 } ei_gridder_param_t;
