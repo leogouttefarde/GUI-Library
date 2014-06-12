@@ -552,7 +552,7 @@ void ei_grid(ei_widget_t *widget, int *col, int *lin, int *w, int *h){
 
 
 // Runfunc du gridder
-void ei_gridder_runfunc(ei_widget_t *widget){
+void ei_grid_runfunc(ei_widget_t *widget){
         /* Principe
          * 
          * On remonte au père
@@ -567,5 +567,35 @@ void ei_gridder_runfunc(ei_widget_t *widget){
         ;
 }
 
+void ei_grid_releasefunc(struct ei_widget_t* widget)
+{
+        ei_gridder_param_t *param = (ei_gridder_param_t*)widget->geom_params;
 
+        if (param) {
+                SAFE_FREE(param->lin);
+                SAFE_FREE(param->col);
+                SAFE_FREE(param->w);
+                SAFE_FREE(param->h);
+
+                SAFE_FREE(param);
+        }
+}
+// Register
+/**
+ * \brief       Registers the "gridder" geometry manager in the program. This must be called only
+ *              once before the \ref ei_place function can be called.
+ */
+void  ei_register_gridder_manager()
+{
+        ei_geometrymanager_t *gridder = CALLOC_TYPE(ei_geometrymanager_t);
+        assert(gridder);
+
+        strcpy(gridder->name, "gridder");
+
+        gridder->runfunc = ei_grid_runfunc;
+        gridder->releasefunc = ei_grid_releasefunc;
+        gridder->next = NULL;
+
+        ei_geometrymanager_register(gridder);
+}
 
