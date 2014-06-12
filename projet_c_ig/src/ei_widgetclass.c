@@ -347,7 +347,6 @@ void button_setdefaults(struct ei_widget_t* widget)
         button->img_anchor = ei_anc_center;
         button->callback = NULL;
         button->user_param = NULL;
-        button->clic = false;
 }
 
 void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
@@ -499,7 +498,7 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
         toplevel->resize_size = 10;
 
         // Pas de demande de fermeture par defaut
-        toplevel->closable = true;
+        toplevel->closable = EI_TRUE;
         toplevel->resizable = ei_axis_both;
         toplevel->close = EI_FALSE;
 }
@@ -569,7 +568,7 @@ void    ei_toplevel_register_class()
 
 void ei_widgetclass_free()
 {
-        ei_linkedlist_empty(&ei_class_list, true);
+        ei_linkedlist_empty(&ei_class_list, EI_TRUE);
 }
 
 

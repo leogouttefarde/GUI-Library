@@ -257,7 +257,7 @@ void ei_draw_rects()
 
 void ei_invalidate_reset()
 {
-        ei_linkedlist_empty(&ei_update_rects, true);
+        ei_linkedlist_empty(&ei_update_rects, EI_TRUE);
 }
 
 ei_linked_rect_t* ei_get_update_rects()
@@ -360,11 +360,11 @@ void ei_invalidate_rect(ei_rect_t* rect)
                                                         && lrect->rect.top_left.y == rect->top_left.y
                                                         && lrect->rect.size.width == rect->size.width
                                                         && lrect->rect.size.height == rect->size.height)
-                                                add = false;
+                                                add = EI_FALSE;
 
                                         /* Fuse with another if better */
                                         else if ( (fusion = ei_smaller_fused(&lrect->rect, rect)) ) {
-                                                ei_linkedlist_pop_link(&ei_update_rects, link, true);
+                                                ei_linkedlist_pop_link(&ei_update_rects, link, EI_TRUE);
                                                 new_rect = *fusion;
                                                 SAFE_FREE(fusion);
                                         }

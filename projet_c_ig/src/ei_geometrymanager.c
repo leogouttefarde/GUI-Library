@@ -479,7 +479,7 @@ void ei_place(ei_widget_t *widget,
 
 void ei_geometrymanager_free()
 {
-        ei_linkedlist_empty(&ei_geometrymanagers, true);
+        ei_linkedlist_empty(&ei_geometrymanagers, EI_TRUE);
 }
 
 

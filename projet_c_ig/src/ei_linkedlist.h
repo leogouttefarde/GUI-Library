@@ -3,7 +3,7 @@
  *  @brief	Linked list generic class.
  *
  *  \author 
- *  Created by Léo Gouttefarde on 07.07.14.
+ *  Created by Léo Gouttefarde on 07.07.14
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */

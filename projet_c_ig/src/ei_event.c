@@ -15,7 +15,7 @@
 
 
 /* Event binding table */
-ei_linkedlist_t ei_events[ei_ev_last];
+static ei_linkedlist_t ei_events[ei_ev_last];
 
 
 void ei_event_init()
@@ -68,7 +68,7 @@ void ei_unbind_link(ei_linkedlist_t *list, ei_linked_elem_t *link)
                 if (binding && binding->tag)
                         SAFE_FREE(binding->tag);
 
-                ei_linkedlist_pop_link(list, link, true);
+                ei_linkedlist_pop_link(list, link, EI_TRUE);
         }
 }
 

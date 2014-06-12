@@ -4,7 +4,6 @@
 
 #include "ei_geometrymanager.h"
 #include "ei_widget.h"
-#include <stdbool.h>
 
 
 //Definition du type frame
@@ -47,8 +46,6 @@ typedef struct ei_button_t {
         ei_anchor_t	img_anchor;
         ei_callback_t	callback;
         void *	user_param;
-        // Pour la gestion du release
-        bool clic;
 } ei_button_t;
 
 typedef struct ei_toplevel_t {
