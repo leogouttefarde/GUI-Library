@@ -36,6 +36,8 @@ static inline void make_string_copy(char **dest_ptr, const char *src)
                 const uint32_t src_size = strlen(src);
                 const uint32_t src_size_full = src_size + 1;
                 char *dest = malloc(src_size_full);
+
+                SAFE_FREE(*dest_ptr);
                 *dest_ptr = dest;
 
                 if (dest)

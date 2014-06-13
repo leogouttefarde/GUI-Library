@@ -498,9 +498,7 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                         toplevel->resizable = *resizable;
                 }
                 if(min_size && *min_size){
-                        if (!toplevel->min_size)
-                                toplevel->min_size =
-                                        CALLOC_TYPE(sizeof(ei_size_t));
+                        SAFE_ALLOC(toplevel->min_size, ei_size_t);
                         *toplevel->min_size = **min_size;
                 }
                 else{

@@ -267,7 +267,7 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         }
         // Root
         else{
-                SAFE_RESET(&screen_location, sizeof(screen_location));
+                memset(&screen_location, 0, sizeof(screen_location));
 
                 if (param->w && param->h)
                         screen_location.size = ei_size(*param->w, *param->h);

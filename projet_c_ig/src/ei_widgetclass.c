@@ -484,7 +484,7 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 
         toplevel->border_width = 4;
 
-        toplevel->title = "Toplevel";
+        make_string_copy(&toplevel->title, "Toplevel");
         toplevel->title_font=ei_default_font;
         ei_color_t title_color={0,0,0,255};
         toplevel->title_color=title_color;
