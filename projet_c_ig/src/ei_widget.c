@@ -345,8 +345,7 @@ void    ei_frame_configure (ei_widget_t* widget,
                         frame->img=*img;
                 }
                 if (img_rect && *img_rect){
-                        if (!frame->img_rect)
-                                frame->img = CALLOC_TYPE(ei_rect_t);
+                        SAFE_ALLOC(frame->img_rect, ei_rect_t);
                         frame->img_rect = *img_rect;
                 }
                 else{
@@ -425,8 +424,7 @@ void    ei_button_configure (ei_widget_t*               widget,
                         button->img=*img;
                 }
                 if(img_rect && *img_rect){
-                        if (!button->img_rect)
-                                button->img_rect = CALLOC_TYPE(ei_rect_t);
+                        SAFE_ALLOC(button->img_rect, ei_rect_t);
                         *button->img_rect = **img_rect;
                 }
                 else{

@@ -145,7 +145,7 @@ void frame_setdefaults(struct ei_widget_t* widget)
         // ei_surface_t represente un pointeur générique
         frame->img = NULL;
         frame->img_anchor = ei_anc_center;
-        frame->img_rect = CALLOC_TYPE(ei_rect_t);
+        frame->img_rect = NULL;
 
         if (frame->img_rect) {
                 frame->img_rect->top_left = ei_point_zero();
@@ -307,10 +307,12 @@ void button_setdefaults(struct ei_widget_t* widget)
         ei_color_t *color = CALLOC_TYPE(ei_color_t);
         assert(color);
 
-        color->red = 0xFF;
-        color->green = 0xFF;
-        color->blue = 0x00;
-        color->alpha = 0xFF;
+        if (color != NULL) {
+                color->red = 0xFF;
+                color->green = 0xFF;
+                color->blue = 0x00;
+                color->alpha = 0xFF;
+        }
 
         button->color = color;
 
@@ -323,20 +325,17 @@ void button_setdefaults(struct ei_widget_t* widget)
         ei_color_t tc = {0xFF, 0xFF, 0xFF, 0xFF};
         button->text_color = tc;
         button->text_anchor = ei_anc_center;
-        /*int w;
-          int h;
-          hw_text_compute_size(button->text, button->text_font, &w, &h);
-          button->widget.requested_size = (ei_size(w,h));
-          */
+
         if (button->text && button->text_font)
                 hw_text_compute_size(button->text, button->text_font,
                                 &button->widget.requested_size.width,
                                 &button->widget.requested_size.height);
         else
                 button->widget.requested_size = ei_size(100,20);
+
+
         button->img = NULL;
-        button->img_rect = CALLOC_TYPE(ei_rect_t);
-        assert(button->img_rect);
+        button->img_rect = NULL;
 
         if (button->img_rect) {
                 ei_point_t p = {10,10};
