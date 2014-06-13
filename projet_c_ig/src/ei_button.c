@@ -49,12 +49,15 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
                 ei_rect_t rectangle_reduit = reduction(rectangle, marge);
 
                 if (button->text) {
-						 		ei_rect_t* inter=ei_rect_intersection(&rectangle_reduit,clipper);
-								if (inter)
-									ei_insert_text(window, rectangle_reduit, button->text,
-                                        button->text_font, button->text_color,
-                                        button->text_anchor, inter);
-					 }
+                        ei_rect_t* inter = ei_rect_intersection(&rectangle_reduit,clipper);
+
+                        if (inter)
+                                ei_insert_text(window, rectangle_reduit, button->text,
+                                                button->text_font, button->text_color,
+                                                button->text_anchor, inter);
+
+                        SAFE_FREE(inter);
+                }
 
                 else if (button->img && button->img_rect)
                         print_image(window, rectangle_reduit, button->img,
