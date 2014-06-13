@@ -508,29 +508,36 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 
 void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
+        ei_rect_t screen_location = rect;
+        //Gestion de la min_size
+        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+        if(toplevel->min_size){
+                screen_location.size.width = MAX(toplevel->min_size->width,
+                                screen_location.size.width);
+                screen_location.size.height = MAX(toplevel->min_size->height,
+                                screen_location.size.height);
+        }
+
         ei_rect_t* content_rect = NULL;
 
-        if (    widget->content_rect
+
+        // On recupere le content_rect du widget ou on l'alloue
+        if (widget->content_rect
                         && (widget->content_rect != &widget->screen_location))
                 content_rect = widget->content_rect;
 
         else
                 content_rect = CALLOC_TYPE(ei_rect_t);
 
+        // Calcul du content_rect en prenant en compte les bordures
         if (content_rect != NULL) {
-
-                //printf("width rect:%i\n",rect.size.width);
-                //printf("height rect:%i\n",rect.size.height);
-                if (rect.size.width != 0 && rect.size.height !=0){
-                        //printf("CAS IF \n");
-                        widget->screen_location = rect;
-                        // La screen_location est copiée tel quel
-                        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+                if (screen_location.size.width != 0 && screen_location.size.height !=0){
+                        widget->screen_location = screen_location;
                         // Gestion des bordures pour le content_rect
                         int bw = toplevel->border_width;
-                        *content_rect = rect;
-                        content_rect->top_left =plus(rect.top_left,bw,bw+toplevel->bar_height);
-                        content_rect->size.height=widget->screen_location
+                        *content_rect = screen_location;
+                        content_rect->top_left = plus(screen_location.top_left, bw , bw + toplevel->bar_height);
+                        content_rect->size.height = widget->screen_location
                                 .size.height - toplevel->bar_height-2*bw;
                         content_rect->size.width =widget->screen_location.size.width-2*bw;
                 }

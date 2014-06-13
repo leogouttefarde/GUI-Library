@@ -73,28 +73,13 @@ void resize_placer(ei_widget_t *widget, ei_point_t where){
                         float* rel_x = CALLOC_TYPE(float);
                         float* rel_y = CALLOC_TYPE(float);
 
-
-
                         // Calcul de la nouvelle taille absolue du widget
                         *w = w_w + add_size.width;
                         *h = w_h + add_size.height;
 
-                        /****/
-                        //Gestion du cas ou on atteint la min_size du toplevel
-                        // Plus facile de le placer ici que dans le geomnotify
-                        if (!strcmp(widget->wclass->name, "toplevel")){
-                                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
-                                if(toplevel->min_size){       
-                                        *w = MAX(toplevel->min_size->width, *w);
-                                        *h = MAX(toplevel->min_size->height, *h);
-                                }
-                        }
-                        /****/
-
                         // Calcul des tailles relatives
                         *rel_w = (float)*w / (float)p_w;
                         *rel_h = (float)*h / (float)p_h;
-
 
                         // Nouvelle position top_left, bottom_right du widget
                         // (le redimensionnement se fait avec ancrage NW)
@@ -208,8 +193,8 @@ void resize_gridder(ei_widget_t *widget, ei_point_t where){
 
         // Calcul du rectangle elementaire
         ei_size_t elem_size = widget->screen_location.size;
-        elem_size.width = elem_size.width / *param->w;
-        elem_size.height = elem_size.height / *param->h;
+        elem_size.width = MAX(elem_size.width / *param->w, 1);
+        elem_size.height = MAX(elem_size.height / *param->h, 1);
 
         //Calcul de la nouvelle ligne, colonne
         int *w = CALLOC_TYPE(int);
@@ -222,12 +207,12 @@ void resize_gridder(ei_widget_t *widget, ei_point_t where){
         int *force_h = CALLOC_TYPE(int);
 
         // On introduit un forcage
-        *force_w = MAX(*param->col, *w);
-        *force_h = MAX(*param->lin, *h);
+        *force_w = MAX(*param->w, *w);
+        *force_h = MAX(*param->h, *h);
         if (param->force_w)
-                *force_w = MAX(*force_w, *param->force_w);
+                *force_w = MAX(*param->col + *force_w, *param->force_w);
         if (param->force_h)
-                *force_h = MAX(*force_h, *param->force_h);
+                *force_h = MAX(*param->lin + *force_h, *param->force_h);
 
         //Grid
         ei_grid(widget, param->lin, param->col, w , h,force_w,
@@ -242,7 +227,6 @@ void resize_gridder(ei_widget_t *widget, ei_point_t where){
         SAFE_FREE(force_w);
         SAFE_FREE(force_h);
 }
-
 
 
 
@@ -362,8 +346,8 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
                 ei_rect_t location = widget->screen_location;
                 // On calcule la taille du carré élémentaire
                 ei_size_t elem_size = widget->screen_location.size;
-                elem_size.width = elem_size.width / *param->w;
-                elem_size.height = elem_size.height / *param->h;
+                elem_size.width = MAX(elem_size.width / *param->w, 1);
+                elem_size.height = MAX(elem_size.height / *param->h, 1);
 
                 // On trouve x,y tel que la souris soit a x, y blocs du widget
                 // En theorie x,y valent 0 ou 1 sauf deplacement rapide de la
@@ -390,8 +374,21 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
 
                 *col = *param->col + x;
                 *lin = *param->lin + y;
-                ei_grid(widget, lin, col ,param->w, param->h, param->force_w,
-                                param->force_h);
+
+                // Forcage
+                int *force_w = CALLOC_TYPE(int);
+                int *force_h = CALLOC_TYPE(int);
+
+                *force_w = MAX(*param->col, *col);
+                *force_h = MAX(*param->lin, *lin);
+                if (param->force_w)
+                        *force_w = MAX(*force_w + *param->w, *param->force_w);
+                if (param->force_h)
+                        *force_h =  MAX(*force_h + *param->h, *param->force_h);
+
+
+                ei_grid(widget, lin, col ,param->w, param->h, force_w,
+                                force_h);
 
                 // Maj position toplevel
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
