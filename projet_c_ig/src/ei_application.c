@@ -1,7 +1,5 @@
 /**
  *  @file       ei_application.c
- *  @brief      Manages the main steps of a graphical application: initialization, main window,
- *              main loop, quitting, resource freeing.
  *
  *  \author 
  *  Created by Antoine Delaite, Eric Burel, Léo Gouttefarde on 09.06.14

@@ -71,6 +71,8 @@ void pick_surface_draw(ei_surface_t pick_surface, ei_widget_t *widget, ei_rect_t
         lp = ei_rect_to_points(rect);
 
         ei_draw_polygon(pick_surface, &lp, *widget->pick_color, clipper);
+        free_lp(lp.next);
+
         hw_surface_unlock(pick_surface);        
 }
 
@@ -102,18 +104,8 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 hw_surface_lock(surface);
 
 
-                ei_rect_t rec; // What's this for ?
-
-                //if (widget->parent)
+                ei_rect_t rec;
                 rec = frame->widget.screen_location;
-
-                /* TODO  Le probleme vient du fait que le content_rect du
-                 * root_widget est modifié */
-                // Random fix, apprently not completely fixing though
-                //else
-                //      rec = *frame->widget.content_rect;
-
-                //rec.size = frame->widget.requested_size;
 
                 ei_frame_draw(surface,rec,frame,clipper);
 
