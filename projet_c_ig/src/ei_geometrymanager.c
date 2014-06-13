@@ -411,16 +411,7 @@ void ei_place(ei_widget_t *widget,
                                 param->rel_h = CALLOC_TYPE(float);
                         }
                 }
-                // On verifie qu'on a pas un rel_x, rel_y absurdes
-                if (!x && rel_x){
-                        if (*rel_x < 0.)
-                                exit(-1);
-                }
 
-                if (!y && rel_y){
-                        if (*rel_y <  0.)
-                                exit(-1);
-                }
                 // On verifie qu'on a pas un rel_w, rel_h absurdes
                 if (!width && rel_width){
                         if (*rel_width < 0.)

@@ -1,6 +1,6 @@
 
 #include "ei_callback.h"
-
+#include <stdio.h>
 
 static ei_widget_t *pressed = NULL;
 static ei_callback_t callback = NULL;
@@ -153,8 +153,6 @@ void resize(ei_widget_t *widget, ei_size_t add_size)
 
                 // Placement du widget
                 ei_place(widget, &anc, x_p, y_p, w_p, h_p, rel_x_p, rel_y_p, rel_w_p, rel_h_p);
-                // Affichage
-                widget->geom_params->manager->runfunc(widget);
         }
 }
 
@@ -175,30 +173,55 @@ void move(ei_widget_t *widget, ei_size_t dist)
                                 (ei_placer_param_t*)widget->geom_params;
                         ei_anchor_t anc = ei_anc_northwest;
 
-                        int x;
-                        int y;
+                        int* x = malloc(sizeof(int));
+                        int* y = malloc(sizeof(int));
+                        float* rel_x = malloc(sizeof(int));
+                        float* rel_y = malloc(sizeof(int));
                         int p_x = 0;
                         int p_y = 0;
+                        int p_w = 1;
+                        int p_h = 1;
                         // Position top_left et taille du widget
                         int w_x = widget->screen_location.top_left.x;
                         int w_y = widget->screen_location.top_left.y;
+
+
 
                         // Idem parent
                         if (widget->parent->content_rect) {
                                 ei_rect_t p_rect = *widget->parent->content_rect;
                                 p_x = p_rect.top_left.x;
                                 p_y = p_rect.top_left.y;
+                                p_w = p_rect.size.width;
+                                p_h = p_rect.size.height;
                         }
 
                         // Nouveau x absolu (dans le repere du parent)
-                        x = w_x + dist.width - p_x;
-                        y = w_y + dist.height - p_y;
+                        *x = w_x + dist.width - p_x;
+                        *y = w_y + dist.height - p_y;
+
+                        // Nouveau x relatif
+                        if (param->x){
+                                rel_x = NULL;
+                        }
+                        else{
+                                *rel_x = (float)(*x) / (float)(p_w -1);
+                                printf("rel x %f\n", *rel_x);
+                                x = NULL;
+                        }
+                        if (param->y){
+                                rel_y = NULL;
+                        }
+                        else{
+                                *rel_y = (float)(*y) / (float)(p_h -1);
+                                printf("y %f\n", (float)*y);
+                                printf("rel y %f\n", *rel_y);
+                                y = NULL;
+                        }
 
                         // On deplace le pere
-                        ei_place(widget, &anc, &x, &y, param->w, param->h, NULL,
-                                        NULL, param->rel_w, param->rel_h);
-                        // Affichage
-                        widget->geom_params->manager->runfunc(widget);
+                        ei_place(widget, &anc, x, y, param->w, param->h, rel_x,
+                                        rel_y, param->rel_w, param->rel_h);
                 }
         }
 }

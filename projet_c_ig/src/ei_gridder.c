@@ -126,6 +126,8 @@ void ei_grid_runfunc(ei_widget_t *widget){
                         ei_rect_t new_pos = widget->screen_location;
                         ei_invalidate_rect(&new_pos);
 
+                        // POSSIBILITE de faire ça ici ou dans ei_grid
+                        // (peut etre plus couteux ici)
                         /* Appels récursifs sur les freres pour bien les
                          * replacer */
                         // On marque le widget courant comme vu
