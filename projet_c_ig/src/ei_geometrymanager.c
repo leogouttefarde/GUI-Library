@@ -15,6 +15,7 @@
 #include "ei_linkedlist.h"
 // Pour le type placer_param
 #include "ei_params.h"
+#include <stdio.h>
 static ei_linkedlist_t ei_geometrymanagers = { NULL, NULL };
 
 /**
@@ -371,7 +372,7 @@ void ei_place(ei_widget_t *widget,
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
         assert(placer);
 
-        ei_bool_t gp_alloc;
+        ei_bool_t gp_alloc = EI_FALSE;
 
         if (placer && widget) {
                 /* Display widget */
@@ -379,17 +380,13 @@ void ei_place(ei_widget_t *widget,
 
                 // On verifie que le widget est bien géré par le placeur,
                 // sinon on le modifie pour qu'il le soit
-                if (widget) {
-                        gp_alloc = EI_TRUE;
-                        if (widget->geom_params) {
-                                if (widget->geom_params->manager) {
-                                        if (widget->geom_params->manager != placer) {
-                                                widget->geom_params->manager->releasefunc(widget);
-                                        }
-                                }
-                                else
-                                        gp_alloc = EI_FALSE;
+                gp_alloc = EI_TRUE;
+                if (widget->geom_params && widget->geom_params->manager) {
+                        if (widget->geom_params->manager != placer) {
+                                widget->geom_params->manager->releasefunc(widget);
                         }
+                        else
+                                gp_alloc = EI_FALSE;
                 }
 
                 if (gp_alloc) {
@@ -426,43 +423,64 @@ void ei_place(ei_widget_t *widget,
                 ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
                 assert(param);
 
-                if (anchor)
-                        *param->anc = *anchor;
-                else
-                        param->anc = NULL;
+                if (anchor){
+                        if(!param->anc)
+                                param->anc = CALLOC_TYPE(ei_anchor_t);  
+                        *param->anc = *anchor;}
+                else{
+                        SAFE_FREE(param->anc)
+                }
                 if (x){
+                        if (!param->x)
+                                param->x = CALLOC_TYPE(int);
                         *param->x = *x;
                 }
                 else if (rel_x){
-                        param->x = NULL;
+                        SAFE_FREE(param->x);
+                        if (!param->rel_x)
+                                param->rel_x = CALLOC_TYPE(float);
                         *param->rel_x = *rel_x;
                 }
                 else{
-                        param->rel_x = NULL;
+                        SAFE_FREE(param->rel_x);
+                        if (!param->x)
+                                param->x = CALLOC_TYPE(int);
                         *param->x = 0;
                 }
 
                 if (y){
+                        if(!param->y)
+                                param->y = CALLOC_TYPE(int);
                         *param->y = *y;
                 }
                 else if (rel_y){
-                        param->y = NULL;
+                        SAFE_FREE(param->y);
+                        if(!param->y)
+                                param->rel_y = CALLOC_TYPE(float);
                         *param->rel_y = *rel_y;
                 }
                 else{
-                        param->rel_y = NULL;
+                        SAFE_FREE(param->rel_y);
+                        if(!param->y)
+                                param->y = CALLOC_TYPE(int);
                         *param->y = 0;
                 }
 
                 if (width){
+                        if(!param->w)
+                                param->w = CALLOC_TYPE(int);
                         *param->w = *width;
                 }
                 else if (rel_width){
-                        param->w = NULL;
+                        SAFE_FREE(param->w);
+                        if(!param->w)
+                                param->w = CALLOC_TYPE(int);
                         *param->rel_w = *rel_width;
                 }
                 else{
-                        param->rel_w = NULL;
+                        SAFE_FREE(param->rel_w);
+                        if(!param->w)
+                                param->w = CALLOC_TYPE(int);
                         *param->w = widget->requested_size.width;
                 }
 
@@ -470,13 +488,18 @@ void ei_place(ei_widget_t *widget,
                         *param->h = *height;
                 }
                 else if (rel_height){
-                        param->h = NULL;
+                        SAFE_FREE(param->h);
+                        if (!param->rel_h)
+                                param->rel_h = CALLOC_TYPE(float);
                         *param->rel_h = *rel_height;
                 }
                 else{
-                        param->rel_h = NULL;
+                        SAFE_FREE(param->rel_h);
+                        if (!param->h)
+                                param->h = CALLOC_TYPE(int);
                         *param->h = widget->requested_size.height;
                 }
+
                 widget->geom_params->manager->runfunc(widget);
         }
 }

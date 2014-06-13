@@ -126,29 +126,9 @@ void ei_grid_runfunc(ei_widget_t *widget){
                         ei_rect_t new_pos = widget->screen_location;
                         ei_invalidate_rect(&new_pos);
 
-                        // POSSIBILITE de faire ça ici ou dans ei_grid
-                        // (peut etre plus couteux ici)
-                        /* Appels récursifs sur les freres pour bien les
-                         * replacer */
-                        // On marque le widget courant comme vu
-                        param->seen = EI_TRUE;
-                        ei_widget_t *current = widget->parent->children_head;
-                        ei_gridder_param_t *current_param;
-                        while(current &&
-                                        current->geom_params &&
-                                        current->geom_params->manager &&
-                                        current->geom_params->manager->runfunc){
-                                current_param =
-                                        (ei_gridder_param_t*)current->geom_params;
-                                if (!current_param->seen)
-                                        current->geom_params->manager->runfunc(current);
-                                current = current->next_sibling;
-                        }
-                        // On remet seen a false
-                        param->seen = EI_FALSE;
                         /* Appels récursifs sur les enfants */
                         // Appel récursif sur les enfants pour les replacer
-                        current = widget->children_head;
+                        ei_widget_t *current = widget->children_head;
                         while(current  && current->geom_params &&
                                         current->geom_params->manager &&
                                         current->geom_params->manager->runfunc){
@@ -166,7 +146,7 @@ void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h, int
         ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
         assert(gridder);
 
-        ei_bool_t gp_alloc;
+        ei_bool_t gp_alloc = EI_FALSE;
 
         if (gridder && widget) {
                 // On verifie que le widget est bien géré par le placeur,
@@ -178,9 +158,10 @@ void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h, int
                                         if (widget->geom_params->manager != gridder) {
                                                 widget->geom_params->manager->releasefunc(widget);
                                         }
+                                        else{
+                                                gp_alloc = EI_FALSE;
+                                        }
                                 }
-                                else
-                                        gp_alloc = EI_FALSE;
                         }
                 }
 
@@ -203,34 +184,65 @@ void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h, int
         // Sauvegarde des paramètres
         ei_gridder_param_t *param = (ei_gridder_param_t*)widget->geom_params;
         assert(param);
+
+        if (!param->lin)
+                param->lin = CALLOC_TYPE(int);
         if (lin)
                 *param->lin = *lin;
         else
-                param->lin = NULL;
+                *param->lin = 0;
+
+        if (!param->col)
+                param->col = CALLOC_TYPE(int);
         if (col)
                 *param->col = *col;
         else
-                param->col = NULL;
+                *param->col = 0;
+
+
+        if (!param->w)
+                param->w = CALLOC_TYPE(int);
         if(w)
                 *param->w = *w;
         else
-                param->w = NULL;
+                *param->w = 1;
+
+        if (!param->h)
+                param->h = CALLOC_TYPE(int);
         if(h)
                 *param->h = *h;
         else
-                param->h = NULL;
-        if(force_w)
+                *param->h = 1;
+
+        if(force_w){
+                if (!param->force_w)
+                        param->force_w = CALLOC_TYPE(int);
                 *param->force_w = *force_w;
-        else
-                param->force_w = NULL;
-        if(force_h)
+        }
+        else{
+                SAFE_FREE(param->force_w);
+        }
+
+        if(force_h){
+                if (!param->force_h)
+                        param->force_h = CALLOC_TYPE(int);
                 *param->force_h = *force_h;
-        else
-                param->force_h = NULL;
+        }
+        else{
+                SAFE_FREE(param->force_h);
+        }
 
-        param->seen = EI_FALSE;
-
-        widget->geom_params->manager->runfunc(widget);
+        /* Appels de la runfunc sur tous les sur les freres pour bien les
+         * replacer */
+        // On marque le widget courant comme vu
+        ei_widget_t *current = widget->parent->children_head;
+        while(current &&
+                        current->geom_params &&
+                        current->geom_params->manager &&
+                        current->geom_params->manager->runfunc){
+                current->geom_params->manager->runfunc(current);
+                current = current->next_sibling;
+        }
 }
 
 

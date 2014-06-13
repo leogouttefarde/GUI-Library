@@ -32,8 +32,6 @@ typedef struct ei_gridder_param_t {
         // Pour forcer la taille de la grille
         int* force_w;
         int* force_h;
-        // Booleen pour definir les widgets a recalculer
-        ei_bool_t seen;
 } ei_gridder_param_t;
 
 #endif

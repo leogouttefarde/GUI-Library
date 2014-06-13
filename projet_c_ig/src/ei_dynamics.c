@@ -149,25 +149,22 @@ void resize(ei_widget_t *widget, ei_size_t add_size)
 }
 
 
-void move_placer(ei_widget_t *widget, ei_size_t dist){
+void move_placer(ei_widget_t *widget, ei_point_t where){
 
-}
+        ei_placer_param_t *param =
+                (ei_placer_param_t*)widget->geom_params;
+        ei_anchor_t anc = ei_anc_northwest;
 
-
-
-/* Fonction de mouvement
- * Deplacement brut */
-void move(ei_widget_t *widget, ei_size_t dist)
-{
-        assert(widget);
-        ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
-        // La fonction resize ne fonctionne que sur le placer
-        if (widget->geom_params && widget->geom_params->manager 
-                        && widget->geom_params->manager == placer) {
-                ei_placer_param_t *param =
-                        (ei_placer_param_t*)widget->geom_params;
-                ei_anchor_t anc = ei_anc_northwest;
-
+        if (!strcmp(widget->wclass->name, "toplevel")){
+                // On ne deplace que les toplevels en pratique
+                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;    
+                // Calcul de la distance de deplacement
+                ei_size_t dist;
+                dist.width = where.x - toplevel->move_pos.x;
+                dist.height = where.y - toplevel->move_pos.y;
+                // Sauvegarde de la nouvelle position de la souris
+                toplevel->move_pos = where;    
+                // Calcul
                 int* x = malloc(sizeof(int));
                 int* y = malloc(sizeof(int));
                 float* rel_x = malloc(sizeof(int));
@@ -213,6 +210,74 @@ void move(ei_widget_t *widget, ei_size_t dist)
                         // On deplace le pere
                         ei_place(widget, &anc, x, y, param->w, param->h, rel_x,
                                         rel_y, param->rel_w, param->rel_h);
+
+                        //Free
+                        SAFE_FREE(x);
+                        SAFE_FREE(y);
+                        SAFE_FREE(rel_x);
+                        SAFE_FREE(rel_y);
                 }
+        }
+}
+void move_gridder(ei_widget_t *widget, ei_point_t where){
+        /* PRINCIPE
+         *
+         *  On calcule ecart = where - topleft
+         *  On divise  ecart.x par width elementaire 
+         *  (width elem = width widget / param->w)
+         *  On divise ecart.y par height elementaire
+         *  On obtient le nombre de cases a décaler
+         *  On decale
+         *
+         *  Version naive, on aura des problemes aux bords
+         *  mais pas si mal normalement
+         */
+
+        ei_gridder_param_t *param =
+                (ei_gridder_param_t*)widget->geom_params;
+
+        if (!strcmp(widget->wclass->name, "toplevel")){
+                // On calcule la taille du carré élémentaire
+                ei_size_t size = widget->screen_location.size;
+                size.width = size.width / *param->w;
+                size.height = size.height / *param->h;
+
+                // On calcule l'écart
+                ei_point_t tl = widget->screen_location.top_left;
+                ei_point_t diff = ei_point_sub(where, tl);
+
+                // On en déduit la direction du décalage
+                diff.x = diff.x / size.width;
+                diff.y = diff.y / size.height;
+
+                int *col = malloc(sizeof(int));
+                int *lin = malloc(sizeof(int));
+                *col = *param->col + diff.x;
+                *lin = *param->lin + diff.y;
+                ei_grid(widget, lin, col ,param->w, param->h, param->force_w,
+                                param->force_h);
+
+                //Free
+                SAFE_FREE(lin);
+                SAFE_FREE(col);
+        }
+
+}
+
+/* Fonction de mouvement
+ * Deplacement brut */
+void move(ei_widget_t *widget, ei_point_t where)
+{
+        assert(widget);
+        ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
+        ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
+        // La fonction resize ne fonctionne que sur le placer
+        if (widget->geom_params && widget->geom_params->manager 
+                        && widget->geom_params->manager == placer) {
+                move_placer(widget, where);
+        }
+        else if (widget->geom_params && widget->geom_params->manager 
+                        && widget->geom_params->manager == gridder) {
+                move_gridder(widget, where);
         }
 }

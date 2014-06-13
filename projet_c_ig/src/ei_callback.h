@@ -12,14 +12,6 @@
 #ifndef     EI_CALLBACK_H
 #define     EI_CALLBACK_H
 
-/* Fonction de redimensionnement
- * Conserve les proportions des fils */
-void resize(ei_widget_t *widget, ei_size_t add_size);
-
-/* Fonction de mouvement
- * Deplacement brut */
-void move(ei_widget_t *widget, ei_size_t dist);
-
 
 ei_bool_t toplevel_callback_move_move(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param);

@@ -11,16 +11,9 @@ static ei_callback_t callback = NULL;
 ei_bool_t all_callback_move_move(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param)
 {
+        ei_widget_t *current = (ei_widget_t*)user_param;
+        move(current, event->param.mouse.where);
 
-        ei_toplevel_t *toplevel = (ei_toplevel_t*)user_param;
-        if (toplevel) {
-                int w = event->param.mouse.where.x - toplevel->move_pos.x;
-                int h = event->param.mouse.where.y - toplevel->move_pos.y;
-                move(&toplevel->widget, ei_size(w,h));
-
-                // On sauvegarde le dernier point
-                toplevel->move_pos = event->param.mouse.where;
-        }
 
         return EI_FALSE;
 }
