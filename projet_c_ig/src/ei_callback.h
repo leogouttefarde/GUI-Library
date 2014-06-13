@@ -6,6 +6,7 @@
 #include "ei_types.h"
 #include "ei_event.h"
 #include "ei_common.h"
+#include "ei_dynamics.h"
 #include <stdbool.h>
 #include <string.h>
 #ifndef     EI_CALLBACK_H

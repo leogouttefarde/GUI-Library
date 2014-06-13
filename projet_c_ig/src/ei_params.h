@@ -1,7 +1,10 @@
 #ifndef EI_PARAMS_H
 #define EI_PARAMS_H
 
+// Cet include aurait pu etre supprimé en déclarant ici le type
+// ei_geometry_param_t
 #include "ei_geometrymanager.h"
+
 #include "ei_types.h"
 /**
  * \brief       Placer geometry manager
