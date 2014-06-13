@@ -448,7 +448,9 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
+
                 ei_toplevel_draw(surface,toplevel,clipper);
+
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
