@@ -115,8 +115,8 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t * toplevel,
                 btn_c.top_left = plus(rec.top_left, marge, marge);
                 btn_c.size.width = toplevel->bar_height - 2 * marge;
                 btn_c.size.height = toplevel->bar_height - 2 * marge;
-					 // int border;
-      //           border = 0.2 * btn_c.size.height;
+                //int border;
+                //border = 0.2 * btn_c.size.height;
                 ei_button_draw_loc(surface, btn_c, btn_c_color,
                                 toplevel->rel_btn_close, 0, marge, clipper);
         } else {
@@ -146,18 +146,18 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t * toplevel,
         if (toplevel->title) {
                 /* Affichage du titre */
                 ei_rect_t rec_txt;
-					 int marge_txt=marge + btn_c.size.width+5;
+                int marge_txt=marge + btn_c.size.width+5;
                 rec_txt.top_left = plus(rec.top_left,marge_txt, 0);
                 rec_txt.size.height = toplevel->bar_height;
                 rec_txt.size.width = toplevel->widget.screen_location.size.width -
                         marge_txt;
-					 ei_rect_t rec_clip =rec_txt;
-					 rec_clip.size.width=rec_txt.size.width+marge +btn_c.size.width;
-					 inter =ei_rect_intersection(clipper,&rec_clip);
-					 if (inter) 
-                ei_insert_text(surface, rec_txt, toplevel->title,
-                                toplevel->title_font, toplevel->title_color, 1,
-                                inter);
+                ei_rect_t rec_clip =rec_txt;
+                rec_clip.size.width=rec_txt.size.width+marge +btn_c.size.width;
+                inter =ei_rect_intersection(clipper,&rec_clip);
+                if (inter) 
+                        ei_insert_text(surface, rec_txt, toplevel->title,
+                                        toplevel->title_font, toplevel->title_color, 1,
+                                        inter);
         }
 }
 
@@ -217,9 +217,9 @@ void ei_insert_text(ei_surface_t window, ei_rect_t rectangle, char *text,
         int width, height;
 
         hw_text_compute_size(text, font, &width, &height);
-		  if (clipper && anchor==ei_anc_center && width>rectangle.size.width)
-			  anchor_translation(&anchor);
-		  
+        if (clipper && anchor==ei_anc_center && width>rectangle.size.width)
+                anchor_translation(&anchor);
+
 
         ancre = find_anchor(rectangle, width, height, anchor);
 

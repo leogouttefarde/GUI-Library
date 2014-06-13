@@ -211,6 +211,8 @@ void move_placer(ei_widget_t *widget, ei_point_t where){
                         ei_place(widget, &anc, x, y, param->w, param->h, rel_x,
                                         rel_y, param->rel_w, param->rel_h);
 
+                        // Maj position toplevel
+                        toplevel->move_pos = where;
                         //Free
                         SAFE_FREE(x);
                         SAFE_FREE(y);
@@ -237,26 +239,47 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
                 (ei_gridder_param_t*)widget->geom_params;
 
         if (!strcmp(widget->wclass->name, "toplevel")){
+                ei_rect_t location = widget->screen_location;
                 // On calcule la taille du carré élémentaire
-                ei_size_t size = widget->screen_location.size;
-                size.width = size.width / *param->w;
-                size.height = size.height / *param->h;
+                ei_size_t elem_size = widget->screen_location.size;
+                elem_size.width = elem_size.width / *param->w;
+                elem_size.height = elem_size.height / *param->h;
 
-                // On calcule l'écart
-                ei_point_t tl = widget->screen_location.top_left;
-                ei_point_t diff = ei_point_sub(where, tl);
+                // On trouve x,y tel que la souris soit a x, y blocs du widget
+                // En theorie x,y valent 0 ou 1 sauf deplacement rapide de la
+                // souris
+                int x = where.x - location.top_left.x;
+                int y = where.y - location.top_left.y;
+                if (x<=0) //<< Souris a droite du widget
+                        x = (x - elem_size.width) / elem_size.width;
+                else if (x - location.size.width + 1 > 0)
+                        x = (x - location.size.width + 1 + elem_size.width) / elem_size.width;
+                else
+                        x = 0;
 
-                // On en déduit la direction du décalage
-                diff.x = diff.x / size.width;
-                diff.y = diff.y / size.height;
+                if (y<=0) //<< Souris a droite du widget
+                        y = (y - elem_size.height) / elem_size.height;
+                else if (y - location.size.height + 1> 0)
+                        y = (y + -location.size.height + 1 + elem_size.height) / elem_size.height;
+                else
+                        y = 0;
 
+                /*if (y > 0)
+                  y = MAX(y - location.size.width + 1, 0);
+                  y = y / elem_size.height;
+                  */
+                // On calcul la nouvelle position
                 int *col = malloc(sizeof(int));
                 int *lin = malloc(sizeof(int));
-                *col = *param->col + diff.x;
-                *lin = *param->lin + diff.y;
+
+                *col = *param->col + x;
+                *lin = *param->lin + y;
                 ei_grid(widget, lin, col ,param->w, param->h, param->force_w,
                                 param->force_h);
 
+                // Maj position toplevel
+                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+                toplevel->move_pos = where;
                 //Free
                 SAFE_FREE(lin);
                 SAFE_FREE(col);
