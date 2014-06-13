@@ -52,20 +52,20 @@ typedef struct ei_toplevel_t {
         ei_widget_t widget;
         ei_color_t	color;
         //Barre de titre
-		  int bar_height;
+        int bar_height;
         int		border_width;
-		  ei_color_t bar_color;
-		  //titre
+        ei_color_t bar_color;
+        //titre
         char*		title;
         ei_font_t	title_font;
-		  ei_color_t title_color;
-		//bouton close
+        ei_color_t title_color;
+        //bouton close
         ei_bool_t	closable;
-		  ei_relief_t rel_btn_close;
-		  //bouton resize
+        ei_relief_t rel_btn_close;
+        //bouton resize
         ei_axis_set_t	resizable;
         int             resize_size;
-		  //
+        //
         ei_size_t*	min_size;
         // Pour le calcul du deplacement
         ei_point_t move_pos;
@@ -76,21 +76,6 @@ typedef struct ei_toplevel_t {
         // bool             resize;
 } ei_toplevel_t;
 
-/**
- * \brief       Placer geometry manager
- */
-typedef struct ei_placer_param_t {
-        ei_geometry_param_t geom;       /* ei_geometry_param_t child */
-        ei_anchor_t* anc;
-        int* x;
-        int* y;
-        float* rel_x;
-        float* rel_y;
-        int* w;
-        int* h;
-        float* rel_w;
-        float* rel_h;
-} ei_placer_param_t;
 
 
 #endif

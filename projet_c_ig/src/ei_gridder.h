@@ -7,21 +7,8 @@
 #include <math.h>
 #include "ei_common.h"
 #include "ei_core.h"
-
+#include "ei_params.h"
 /***** Gridder *****/
-
-typedef struct ei_gridder_param_t {
-        ei_geometry_param_t geom;
-        int* lin;
-        int* col;
-        int* w;
-        int* h;
-        // Pour forcer la taille de la grille
-        int* force_w;
-        int* force_h;
-        // Booleen pour definir les widgets a recalculer
-        ei_bool_t seen;
-} ei_gridder_param_t;
 
 // Gestion des paramètres
 void ei_grid(ei_widget_t *widget, int *col, int *lin, int *w, int *h, int

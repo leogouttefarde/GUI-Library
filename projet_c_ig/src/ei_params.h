@@ -1,5 +1,5 @@
-#ifndef EI_PLACER_H
-#define EI_PLACER_H
+#ifndef EI_PARAMS_H
+#define EI_PARAMS_H
 
 #include "ei_geometrymanager.h"
 #include "ei_types.h"
@@ -19,5 +19,18 @@ typedef struct ei_placer_param_t {
         float* rel_h;
 } ei_placer_param_t;
 
+
+typedef struct ei_gridder_param_t {
+        ei_geometry_param_t geom;
+        int* lin;
+        int* col;
+        int* w;
+        int* h;
+        // Pour forcer la taille de la grille
+        int* force_w;
+        int* force_h;
+        // Booleen pour definir les widgets a recalculer
+        ei_bool_t seen;
+} ei_gridder_param_t;
 
 #endif

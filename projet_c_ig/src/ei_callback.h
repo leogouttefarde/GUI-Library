@@ -1,13 +1,13 @@
+#include "ei_core.h"
 #include "ei_widget.h"
 #include "ei_widgettypes.h"
+#include "ei_params.h"
 #include "ei_utils.h"
 #include "ei_types.h"
 #include "ei_event.h"
 #include "ei_common.h"
 #include <stdbool.h>
 #include <string.h>
-// TODO supprimer celui là
-#include "ei_application.h"
 #ifndef     EI_CALLBACK_H
 #define     EI_CALLBACK_H
 

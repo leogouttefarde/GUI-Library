@@ -1,6 +1,5 @@
 
 #include "ei_callback.h"
-#include <stdio.h>
 
 static ei_widget_t *pressed = NULL;
 static ei_callback_t callback = NULL;
@@ -355,7 +354,7 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, v
                 ei_button_t *button = (ei_button_t*)widget;
                 button->relief = ei_relief_sunken;
 
-                ei_app_invalidate_rect(&widget->screen_location);
+                ei_invalidate_rect(&widget->screen_location);
 
                 pressed = widget;
         }
@@ -375,7 +374,7 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
                         ei_button_t *button = (ei_button_t*)pressed;
                         button->relief = ei_relief_raised;
 
-                        ei_app_invalidate_rect(&pressed->screen_location);
+                        ei_invalidate_rect(&pressed->screen_location);
 
                         // Appel du callback du bouton seulement si curseur sur
                         // le bouton

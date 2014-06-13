@@ -14,7 +14,7 @@
 #include "ei_utils.h"
 #include "ei_linkedlist.h"
 // Pour le type placer_param
-#include "ei_placer.h"
+#include "ei_params.h"
 static ei_linkedlist_t ei_geometrymanagers = { NULL, NULL };
 
 /**
