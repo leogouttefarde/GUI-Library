@@ -344,8 +344,13 @@ void    ei_frame_configure (ei_widget_t* widget,
                            */
                         frame->img=*img;
                 }
-                if (img_rect){
+                if (img_rect && *img_rect){
+                        if (!frame->img_rect)
+                                frame->img = CALLOC_TYPE(ei_rect_t);
                         frame->img_rect = *img_rect;
+                }
+                else{
+                        SAFE_FREE(frame->img_rect);
                 }
                 if (img_anchor){
                         frame->img_anchor = *img_anchor;
@@ -419,8 +424,13 @@ void    ei_button_configure (ei_widget_t*               widget,
                 if(img) {
                         button->img=*img;
                 }
-                if(img_rect && *img_rect && button->img_rect){
+                if(img_rect && *img_rect){
+                        if (!button->img_rect)
+                                button->img_rect = CALLOC_TYPE(ei_rect_t);
                         *button->img_rect = **img_rect;
+                }
+                else{
+                        SAFE_FREE(button->img_rect);
                 }
                 if(img_anchor) {
                         button->img_anchor = *img_anchor;
@@ -487,10 +497,14 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                 if(resizable){
                         toplevel->resizable = *resizable;
                 }
-                if(min_size){
-                        ei_size_t *copy = malloc(sizeof(ei_size_t));
-                        *copy = **min_size;
-                        toplevel->min_size = copy;
+                if(min_size && *min_size){
+                        if (!toplevel->min_size)
+                                toplevel->min_size =
+                                        CALLOC_TYPE(sizeof(ei_size_t));
+                        *toplevel->min_size = **min_size;
+                }
+                else{
+                        SAFE_FREE(toplevel->min_size);
                 }
         }
 }
