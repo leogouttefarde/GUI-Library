@@ -73,7 +73,7 @@ LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a 
 TARGETS		=	${LIBEI} \
 				minimal frame button hello_world_absolute hello_world_relative puzzle
 
-PERSO_TESTS =  ensiskype toplevel test_shape test_placer test_relative \
+PERSO_TESTS =  ensiskype toplevel test_placer test_relative \
 			   test_button2 test_geom ensiskype test_inter \
 			   gridder ensigrid
 
@@ -136,11 +136,7 @@ ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 
 
 # ATTENTION a LINKER LES BIBLIOTHEQUES MATHEMATIQUES
-test_shape : ${OBJDIR}/test_shape.o ${LIBEIBASE} ${LIBEI}
-	${LINK} -o test_shape ${OBJDIR}/test_shape.o ${LIBEI} ${LIBS} ${MATHFLAGS}
 
-${OBJDIR}/test_shape.o : ${TESTS}/test_shape.c
-	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_shape.c -o ${OBJDIR}/test_shape.o ${MATHFLAGS} 
 
 test_placer : ${OBJDIR}/test_placer.o ${LIBEIBASE} ${LIBEI}
 	${LINK} -o test_placer ${OBJDIR}/test_placer.o ${LIBEI} ${LIBS} ${MATHFLAGS}

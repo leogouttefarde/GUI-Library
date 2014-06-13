@@ -12,8 +12,6 @@
 
 //**************** Basic functions ****************/
 
-
-
 void ei_direct_append(ei_linked_point_t *lp, ei_point_t point)
 {
         lp->next = CALLOC_TYPE(ei_linked_point_t);
