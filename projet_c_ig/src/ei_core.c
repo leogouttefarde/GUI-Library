@@ -12,6 +12,10 @@ static ei_surface_t ei_picking_surface = NULL;
 // Liste de rectangles a update
 static ei_linkedlist_t ei_update_rects;
 
+#ifdef LEAK_TRACKER
+int ALLOCATION_COUNTER = 0;
+#endif
+
 
 // Setters
 // Au premier appel les 3 pointeurs sont alloués

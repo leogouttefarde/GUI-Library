@@ -99,6 +99,10 @@ void ei_app_free()
         ei_invalidate_reset();
 
         hw_quit();
+
+        #ifdef LEAK_TRACKER
+        printf("\nLeaks : %d\n", ALLOCATION_COUNTER);
+        #endif
 }
 
 /**
