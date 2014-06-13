@@ -48,10 +48,13 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
 
                 ei_rect_t rectangle_reduit = reduction(rectangle, marge);
 
-                if (button->text)
-                        ei_insert_text(window, rectangle_reduit, button->text,
+                if (button->text) {
+						 		ei_rect_t* inter=ei_rect_intersection(&rectangle_reduit,clipper);
+								if (inter)
+									ei_insert_text(window, rectangle_reduit, button->text,
                                         button->text_font, button->text_color,
-                                        button->text_anchor, clipper);
+                                        button->text_anchor, inter);
+					 }
 
                 else if (button->img && button->img_rect)
                         print_image(window, rectangle_reduit, button->img,
@@ -66,22 +69,26 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t * toplevel,
 
         ei_rect_t rec = toplevel->widget.screen_location;
 		  ei_rect_t* inter;
-        ei_linked_point_t lp;
 
         /* Dessin de la bordure */
         ei_rect_t bord = rec;
         bord.top_left = plus(rec.top_left, 0, toplevel->bar_height);
         bord.size.height = bord.size.height - toplevel->bar_height;
-        lp = ei_rect_to_points(bord);
+        //lp = ei_rect_to_points(bord);
 
         ei_color_t bord_color = obscurcir(toplevel->color, 0.3);
-        ei_draw_polygon(surface, &lp, bord_color, clipper);
-        free_lp(lp.next);
+        //ei_draw_polygon(surface, &lp, bord_color, clipper);
+		  inter=ei_rect_intersection(clipper,&bord);
+		  if (inter) ei_fill(surface,&bord_color,inter);
+        //free_lp(lp.next);
 
         /* Dessin du content_rect */
+		  inter=ei_rect_intersection(clipper,toplevel->widget.content_rect);
+		  if (inter) ei_fill(surface,&toplevel->color,inter);
+		  /*
         lp = ei_rect_to_points(*toplevel->widget.content_rect);
         ei_draw_polygon(surface, &lp, toplevel->color, clipper);
-        free_lp(lp.next);
+        free_lp(lp.next);*/
 
         /* Dessin de la barre */
 		  
@@ -150,7 +157,7 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t * toplevel,
 					 if (inter) 
                 ei_insert_text(surface, rec_txt, toplevel->title,
                                 toplevel->title_font, toplevel->title_color, 1,
-                                ei_rect_intersection(clipper,&rec_clip));
+                                inter);
         }
 }
 
