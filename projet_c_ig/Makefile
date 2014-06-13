@@ -11,7 +11,7 @@ INCLUDES	= ./include
 INCFLAGS	:= -I${INCLUDES} -I${SRCDIR}
 #OPTFLAGS	:= -O3 -DNDEBUG -Werror
 OPTFLAGS	:= -g
-CCFLAGS		:= -c ${OPTFLAGS} -Werror -Wall -std=c99
+CCFLAGS		:= -c ${OPTFLAGS}  -Wall -std=c99
 MATHFLAGS 	:= -lm
 
 # The list of objects to include in the library

@@ -307,6 +307,7 @@ void ei_place_releasefunc(struct ei_widget_t* widget)
                 SAFE_FREE(param->rel_h);
 
                 SAFE_FREE(param);
+                widget->geom_params = NULL;
         }
 }
 
@@ -408,79 +409,54 @@ void ei_place(ei_widget_t *widget,
                         }
                 }
 
+                // TODO : if erreur ne rien faire
                 // On verifie qu'on a pas un rel_w, rel_h absurdes
-                if (!width && rel_width){
-                        if (*rel_width < 0.)
-                                exit(-1);
-                }
+                // if (!width && rel_width){
+                //         if (*rel_width < 0.)
+                //                 //exit(-1);
+                // }
 
-                if (!height && rel_height){
-                        if (*rel_height <  0.)
-                                exit(-1);
-                }
+                // if (!height && rel_height){
+                //         if (*rel_height <  0.)
+                //                 //exit(-1);
+                // }
 
                 // Sauvegarde des paramètres
                 ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
                 assert(param);
 
                 if (anchor){
-                        if(!param->anc)
-                                param->anc = CALLOC_TYPE(ei_anchor_t);  
                         *param->anc = *anchor;}
                 else{
                         SAFE_FREE(param->anc)
                 }
                 if (x){
-                        if (!param->x)
-                                param->x = CALLOC_TYPE(int);
                         *param->x = *x;
                 }
                 else if (rel_x){
-                        SAFE_FREE(param->x);
-                        if (!param->rel_x)
-                                param->rel_x = CALLOC_TYPE(float);
                         *param->rel_x = *rel_x;
                 }
                 else{
-                        SAFE_FREE(param->rel_x);
-                        if (!param->x)
-                                param->x = CALLOC_TYPE(int);
                         *param->x = 0;
                 }
 
                 if (y){
-                        if(!param->y)
-                                param->y = CALLOC_TYPE(int);
                         *param->y = *y;
                 }
                 else if (rel_y){
-                        SAFE_FREE(param->y);
-                        if(!param->y)
-                                param->rel_y = CALLOC_TYPE(float);
                         *param->rel_y = *rel_y;
                 }
                 else{
-                        SAFE_FREE(param->rel_y);
-                        if(!param->y)
-                                param->y = CALLOC_TYPE(int);
                         *param->y = 0;
                 }
 
                 if (width){
-                        if(!param->w)
-                                param->w = CALLOC_TYPE(int);
                         *param->w = *width;
                 }
                 else if (rel_width){
-                        SAFE_FREE(param->w);
-                        if(!param->w)
-                                param->w = CALLOC_TYPE(int);
                         *param->rel_w = *rel_width;
                 }
                 else{
-                        SAFE_FREE(param->rel_w);
-                        if(!param->w)
-                                param->w = CALLOC_TYPE(int);
                         *param->w = widget->requested_size.width;
                 }
 
@@ -488,15 +464,9 @@ void ei_place(ei_widget_t *widget,
                         *param->h = *height;
                 }
                 else if (rel_height){
-                        SAFE_FREE(param->h);
-                        if (!param->rel_h)
-                                param->rel_h = CALLOC_TYPE(float);
                         *param->rel_h = *rel_height;
                 }
                 else{
-                        SAFE_FREE(param->rel_h);
-                        if (!param->h)
-                                param->h = CALLOC_TYPE(int);
                         *param->h = widget->requested_size.height;
                 }
 

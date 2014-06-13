@@ -17,7 +17,7 @@ typedef struct ei_frame_t {
         ei_color_t text_color;
         ei_anchor_t text_anchor;
         ei_surface_t img;
-        ei_rect_t* img_rect;
+        ei_rect_t img_rect;
         ei_anchor_t img_anchor;
         /*struct {bool is_txt; 
           union{ char* txt;
@@ -33,7 +33,7 @@ typedef struct ei_frame_t {
 //Definition du type button
 typedef struct ei_button_t {
         ei_widget_t widget;
-        ei_color_t	*color;
+        ei_color_t	color;
         int		border_width;
         int		corner_radius;
         ei_relief_t	relief;
@@ -42,7 +42,7 @@ typedef struct ei_button_t {
         ei_color_t	text_color;
         ei_anchor_t	text_anchor;
         ei_surface_t	img;
-        ei_rect_t*	img_rect;
+        ei_rect_t	img_rect;
         ei_anchor_t	img_anchor;
         ei_callback_t	callback;
         void *	user_param;
@@ -66,7 +66,7 @@ typedef struct ei_toplevel_t {
         ei_axis_set_t	resizable;
         int             resize_size;
         //
-        ei_size_t*	min_size;
+        ei_size_t	min_size;
         // Pour le calcul du deplacement
         ei_point_t move_pos;
         // Pour detecter une demande de fermeture

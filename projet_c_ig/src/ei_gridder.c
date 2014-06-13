@@ -258,7 +258,9 @@ void ei_grid_releasefunc(struct ei_widget_t* widget)
                 SAFE_FREE(param->h);
                 SAFE_FREE(param->force_w);
                 SAFE_FREE(param->force_h);
+
                 SAFE_FREE(param);
+                widget->geom_params = NULL;
         }
 }
 // Register

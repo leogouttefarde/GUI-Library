@@ -115,8 +115,8 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t * toplevel,
                 btn_c.top_left = plus(rec.top_left, marge, marge);
                 btn_c.size.width = toplevel->bar_height - 2 * marge;
                 btn_c.size.height = toplevel->bar_height - 2 * marge;
-					 int border;
-                border = 0.2 * btn_c.size.height;
+					 // int border;
+      //           border = 0.2 * btn_c.size.height;
                 ei_button_draw_loc(surface, btn_c, btn_c_color,
                                 toplevel->rel_btn_close, 0, marge, clipper);
         } else {
