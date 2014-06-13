@@ -11,7 +11,6 @@ static ei_surface_t ei_picking_surface = NULL;
 
 // Liste de rectangles a update
 static ei_linkedlist_t ei_update_rects;
-static ei_rect_t *ei_cur_draw_rect = NULL;
 
 
 // Setters
@@ -174,18 +173,14 @@ ei_rect_t* ei_rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2)
 
         return inter;
 }
-ei_rect_t* ei_get_draw_rect()
-{
-        return ei_cur_draw_rect;
-}
 
 /***** Dessin de widgets *****/
 // Draw récursif selon la hiérarchie des widgets
-void ei_draw_widget(ei_widget_t *widget){
+void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
+{
         if (widget){
                 /* On calcule le real_clipper du widget */
 
-                ei_rect_t *draw_rect = ei_get_draw_rect();
                 if (draw_rect) {
                         ei_rect_t *clipper = NULL;
                         ei_rect_t *real_clipper = NULL;
@@ -217,10 +212,10 @@ void ei_draw_widget(ei_widget_t *widget){
                 }
 
                 // Ses enfants seront devant lui et derriere ses freres
-                ei_draw_widget(widget->children_head);
+                ei_draw_widget(widget->children_head, draw_rect);
 
                 // Les freres du widget courant sont enfin dessinés
-                ei_draw_widget(widget->next_sibling);
+                ei_draw_widget(widget->next_sibling, draw_rect);
         }
 }
 
@@ -230,12 +225,7 @@ void ei_draw_rect(ei_rect_t *rect)
         ei_widget_t *root = ei_get_root();
 
         if (root && rect) {
-                ei_cur_draw_rect = rect;
-
-                ei_draw_widget(root);
-
-                // Restore default
-                ei_cur_draw_rect = NULL;
+                ei_draw_widget(root, rect);
         }
 }
 
@@ -340,7 +330,7 @@ void ei_invalidate_rect(ei_rect_t* rect)
                 ei_rect_t temp;
                 temp =  hw_surface_get_rect(ei_get_root_surface());
                 rect = ei_rect_intersection(rect, &temp);
-                if (rect){
+                if (rect) {
                         /* On ajoute le rectangle */
                         ei_rect_t new_rect = *rect;
 
@@ -395,6 +385,7 @@ void ei_invalidate_rect(ei_rect_t* rect)
                                 }
                         }
                 }
+                SAFE_FREE(rect);
         }
 }
 

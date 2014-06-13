@@ -267,9 +267,10 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         }
         // Root
         else{
-                screen_location.top_left = ei_point(0,0);
-                screen_location.size = ei_size(*param->w, *param->h);
+                SAFE_RESET(&screen_location, sizeof(screen_location));
 
+                if (param->w && param->h)
+                        screen_location.size = ei_size(*param->w, *param->h);
         }
 
         // Appel a geomnotify
@@ -282,9 +283,9 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         /* Appels récursifs sur les enfants */
         // Appel récursif sur les enfants pour les replacer
         ei_widget_t *current = widget->children_head;
-        while(current && current->geom_params && current->geom_params &&
+        while(current && current->geom_params &&
                         current->geom_params->manager &&
-                        current->geom_params->manager->runfunc){
+                        current->geom_params->manager->runfunc) {
                 current->geom_params->manager->runfunc(current);
                 current = current->next_sibling;
         }
@@ -328,7 +329,6 @@ void  ei_register_placer_manager()
 
         ei_geometrymanager_register(placer);
 }
-
 
 /**
  * \brief       Configures the geometry of a widget using the "placer" geometry manager.
@@ -396,77 +396,92 @@ void ei_place(ei_widget_t *widget,
                         if (param != NULL) {
                                 widget->geom_params = (ei_geometry_param_t*)param;
                                 widget->geom_params->manager = placer;
-
-                                param->anc = CALLOC_TYPE(ei_anchor_t);
-                                param->x = CALLOC_TYPE(int);
-                                param->y = CALLOC_TYPE(int);
-                                param->rel_x = CALLOC_TYPE(float);
-                                param->rel_y = CALLOC_TYPE(float);
-                                param->w = CALLOC_TYPE(int);
-                                param->h = CALLOC_TYPE(int);
-                                param->rel_w = CALLOC_TYPE(float);
-                                param->rel_h = CALLOC_TYPE(float);
                         }
                 }
 
-                // TODO : if erreur ne rien faire
                 // On verifie qu'on a pas un rel_w, rel_h absurdes
                 // if (!width && rel_width){
                 //         if (*rel_width < 0.)
-                //                 //exit(-1);
+                //                 exit(-1);
                 // }
 
                 // if (!height && rel_height){
                 //         if (*rel_height <  0.)
-                //                 //exit(-1);
+                //                 exit(-1);
                 // }
 
                 // Sauvegarde des paramètres
                 ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
                 assert(param);
 
-                if (anchor){
-                        *param->anc = *anchor;}
+                if (anchor) {
+                        SAFE_ALLOC(param->anc, ei_anchor_t);
+                        *param->anc = *anchor;
+                }
                 else{
                         SAFE_FREE(param->anc)
                 }
+
                 if (x){
+                        SAFE_ALLOC(param->x, int);
                         *param->x = *x;
                 }
                 else if (rel_x){
+                        SAFE_FREE(param->x);
+                        SAFE_ALLOC(param->rel_x, float);
                         *param->rel_x = *rel_x;
                 }
                 else{
+                        SAFE_FREE(param->rel_x);
+                        SAFE_ALLOC(param->x, int);
                         *param->x = 0;
                 }
 
                 if (y){
+                        SAFE_FREE(param->rel_y);
+                        SAFE_ALLOC(param->y, int);
                         *param->y = *y;
                 }
                 else if (rel_y){
+                        SAFE_FREE(param->y);
+                        SAFE_ALLOC(param->rel_y, float);
                         *param->rel_y = *rel_y;
                 }
                 else{
+                        SAFE_FREE(param->rel_y);
+                        SAFE_ALLOC(param->y, int);
                         *param->y = 0;
                 }
 
                 if (width){
+                        SAFE_FREE(param->rel_w);
+                        SAFE_ALLOC(param->w, int);
                         *param->w = *width;
                 }
                 else if (rel_width){
+                        SAFE_FREE(param->w);
+                        SAFE_ALLOC(param->rel_w, float);
                         *param->rel_w = *rel_width;
                 }
                 else{
+                        SAFE_FREE(param->rel_w);
+                        SAFE_ALLOC(param->w, int);
                         *param->w = widget->requested_size.width;
                 }
 
                 if (height){
+                        SAFE_FREE(param->rel_h);
+                        SAFE_ALLOC(param->h, int);
                         *param->h = *height;
                 }
                 else if (rel_height){
+                        SAFE_FREE(param->h);
+                        SAFE_ALLOC(param->rel_h, float);
                         *param->rel_h = *rel_height;
                 }
                 else{
+                        SAFE_FREE(param->rel_h);
+                        SAFE_ALLOC(param->h, int);
                         *param->h = widget->requested_size.height;
                 }
 

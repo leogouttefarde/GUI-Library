@@ -189,31 +189,41 @@ void frame_setdefaults(struct ei_widget_t* widget)
 // PRINCIPE : déduit le content_rect de la screen_location
 void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-        ei_rect_t* content_rect;
-        content_rect = CALLOC_TYPE(ei_rect_t);
-        if (rect.size.width !=0 && rect.size.height != 0){
-                widget->screen_location = rect;
-                // La screen_location est copiée tel quel
-                ei_frame_t *frame = (ei_frame_t*)widget;
-                // Gestion des bordures pour le content_rect
-                int bw = frame->border_width;
-                *content_rect = rect;
-                content_rect->top_left.x =  content_rect->top_left.x +
-                        bw;
+        ei_rect_t* content_rect = NULL;
 
-                content_rect->top_left.y =  content_rect->top_left.y +
-                        bw;
+        if (    widget->content_rect
+                        && (widget->content_rect != &widget->screen_location))
+                content_rect = widget->content_rect;
 
-                content_rect->size.width =  content_rect->size.width +
-                        - 2*bw;
-                content_rect->size.height =  content_rect->size.height +
-                        -2*bw;
+        else
+                content_rect = CALLOC_TYPE(ei_rect_t);
+
+        if (content_rect != NULL) {
+                if (rect.size.width !=0 && rect.size.height != 0){
+                        widget->screen_location = rect;
+                        // La screen_location est copiée tel quel
+                        ei_frame_t *frame = (ei_frame_t*)widget;
+                        // Gestion des bordures pour le content_rect
+                        int bw = frame->border_width;
+                        *content_rect = rect;
+                        content_rect->top_left.x =  content_rect->top_left.x +
+                                bw;
+
+                        content_rect->top_left.y =  content_rect->top_left.y +
+                                bw;
+
+                        content_rect->size.width =  content_rect->size.width +
+                                - 2*bw;
+                        content_rect->size.height =  content_rect->size.height +
+                                -2*bw;
+                }
+                else{
+                        widget->screen_location = ei_rect_zero();
+                        content_rect = &widget->screen_location;
+                }
+
+                widget->content_rect = content_rect;
         }
-        else{
-                widget->screen_location = ei_rect_zero();
-                content_rect = &widget->screen_location;
-        }
-        widget->content_rect = content_rect;
 }
 
 /**
