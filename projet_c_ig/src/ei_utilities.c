@@ -167,7 +167,7 @@ ei_linked_point_t *ei_button_rounded_frame(ei_rect_t rectangle, int rayon,
 /**
  *  @brief free a linked list of points
  *
- *  @param The list to be free
+ *  @param The list to be freed
  *
  */
 void free_lp(ei_linked_point_t * Liste)
@@ -212,7 +212,14 @@ ei_rect_t reduction(ei_rect_t rectangle, int marge)
 
 	return rectangle_reduit;
 }
-
+/**
+ * @brief Brighten a color
+ *
+ * @param couleur The color to be brightened
+ * @param coeff_couleur The ratio of bright added
+ *
+ * @return The new color
+ */
 ei_color_t eclaircir(ei_color_t couleur, float coeff_couleur) {
 		ei_color_t couleur_eclairee;
 		couleur_eclairee.red = MIN(couleur.red + coeff_couleur * 255, 255);
@@ -221,6 +228,14 @@ ei_color_t eclaircir(ei_color_t couleur, float coeff_couleur) {
 		couleur_eclairee.alpha = couleur.alpha;
 		return couleur_eclairee;
 }
+/**
+ * @brief Blacken a color
+ *
+ * @param couleur The color to be blackened
+ * @param coeff_couleur The ratio of black added
+ *
+ * @return The new color
+ */
 ei_color_t obscurcir(ei_color_t couleur, float coeff_couleur) {
 		ei_color_t couleur_assombrie;
 		couleur_assombrie.red = MAX(couleur.red - coeff_couleur * 255, 0);
@@ -229,9 +244,17 @@ ei_color_t obscurcir(ei_color_t couleur, float coeff_couleur) {
 		couleur_assombrie.alpha = couleur.alpha;
 		return couleur_assombrie;
 }
-/*BRIEF
- *trouve l'ancre dans un rectangle à partir de deux contrainte et de l'ancre
-*/
+
+/**
+ * @brief Find the point associate to a rectangle and two constraints from the anchor position
+ *
+ * @param rectangle The rectangle 
+ * @param width The width constraint
+ * @param height The height constraint
+ * @param position The position needed
+ *
+ * @return the coordinates of the anchor
+ */
 ei_point_t find_anchor(ei_rect_t rectangle,int width,int height, ei_anchor_t position) {
 	ei_point_t ancre;
 	ei_point_t top_gauche = rectangle.top_left;
@@ -277,4 +300,31 @@ ei_point_t find_anchor(ei_rect_t rectangle,int width,int height, ei_anchor_t pos
 		}
 
 	return(ancre);
+}
+/**
+ * @brief Called when the size of the text is bigger than the place allocated, so it translates the anchor in order to display the start of the text
+ *
+ * @param anchor The anchor to be translated
+ *
+ */
+void anchor_translation(ei_anchor_t *anchor) {
+	if (anchor) {
+		switch (*anchor) {
+			case ei_anc_none:
+			case ei_anc_center:
+			case ei_anc_east:
+			case ei_anc_west:
+				*anchor =ei_anc_west; 
+				break;
+			case ei_anc_north:
+			case ei_anc_northeast:
+			case ei_anc_northwest:
+				*anchor=ei_anc_northeast;
+				break;
+			case ei_anc_southeast:
+			case ei_anc_south:
+			case ei_anc_southwest:
+				*anchor=ei_anc_southwest;
+			}
+	}
 }
