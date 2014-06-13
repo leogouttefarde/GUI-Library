@@ -28,7 +28,8 @@ ei_color_t obscurcir(ei_color_t couleur, float coeff_couleur);
 
 ei_point_t find_anchor(ei_rect_t rectangle,int width,int height, ei_anchor_t position);
 
-
+void anchor_translation(ei_anchor_t *anchor);
+	
 static inline void make_string_copy(char **dest_ptr, const char *src)
 {
         if (dest_ptr && src) {
