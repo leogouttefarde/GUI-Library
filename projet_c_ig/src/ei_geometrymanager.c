@@ -431,39 +431,53 @@ void ei_place(ei_widget_t *widget,
                         *param->anc = *anchor;
                 else
                         param->anc = NULL;
-                if (x)
+                if (x){
                         *param->x = *x;
-                else
+                }
+                else if (rel_x){
                         param->x = NULL;
-                if (y)
-                        *param->y = *y;
-                else
-                        param->y = NULL;
-                if (rel_x)
                         *param->rel_x = *rel_x;
-                else
+                }
+                else{
                         param->rel_x = NULL;
-                if (rel_y)
-                        *param->rel_y = *rel_y;
-                else
-                        param->rel_y = NULL;
-                if(width)
-                        *param->w = *width;
-                else
-                        param->w = NULL;
-                if(height)
-                        *param->h = *height;
-                else
-                        param->h = NULL;
-                if (rel_width)
-                        *param->rel_w = *rel_width;
-                else
-                        param->rel_w = NULL;
-                if (rel_height)
-                        *param->rel_h = *rel_height;
-                else
-                        param->rel_h = NULL;
+                        *param->x = 0;
+                }
 
+                if (y){
+                        *param->y = *y;
+                }
+                else if (rel_y){
+                        param->y = NULL;
+                        *param->rel_y = *rel_y;
+                }
+                else{
+                        param->rel_y = NULL;
+                        *param->y = 0;
+                }
+
+                if (width){
+                        *param->w = *width;
+                }
+                else if (rel_width){
+                        param->w = NULL;
+                        *param->rel_w = *rel_width;
+                }
+                else{
+                        param->rel_w = NULL;
+                        *param->w = widget->requested_size.width;
+                }
+
+                if (height){
+                        *param->h = *height;
+                }
+                else if (rel_height){
+                        param->h = NULL;
+                        *param->rel_h = *rel_height;
+                }
+                else{
+                        param->rel_h = NULL;
+                        *param->h = widget->requested_size.height;
+                }
                 widget->geom_params->manager->runfunc(widget);
         }
 }
