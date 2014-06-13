@@ -1,3 +1,11 @@
+/**
+ * @file	ei_gridder.h
+ *
+ * @brief 	Functions associated with gridder.
+ *
+ *  Created by Eric BUREL on 13.06.14.
+ *  Copyright 2014 Ensimag. All rights reserved.
+ */
 #ifndef EI_GRIDDER_H
 #define EI_GRIDDER_H
 
@@ -8,7 +16,6 @@
 #include "ei_common.h"
 #include "ei_core.h"
 #include "ei_params.h"
-/***** Gridder *****/
 
 // Gestion des paramètres
 void ei_grid(ei_widget_t *widget, int *col, int *lin, int *w, int *h, int

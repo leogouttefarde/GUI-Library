@@ -1,6 +1,5 @@
 /**
  *  @file       ei_linkedlist.c
- *  @brief      Linked list generic class.
  *
  *  \author 
  *  Created by Léo Gouttefarde on 07.06.14

@@ -1,5 +1,5 @@
 /**
- *  @file	ei_global.h
+ *  @file	ei_core.h
  *  @brief	Contains the root widget address, the root surface and the
  *              picking surface as global variables.
  *              Strangely looks like a Java class.
