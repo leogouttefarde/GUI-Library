@@ -7,6 +7,7 @@
 #include <math.h>
 #include "ei_common.h"
 #include "ei_core.h"
+
 /***** Gridder *****/
 
 typedef struct ei_gridder_param_t {

@@ -12,10 +12,9 @@
 #include "ei_common.h"
 #include "ei_core.h"
 #include "ei_utils.h"
-#include "ei_widgettypes.h"
-#include "ei_application.h"
 #include "ei_linkedlist.h"
-
+// Pour le type placer_param
+#include "ei_placer.h"
 static ei_linkedlist_t ei_geometrymanagers = { NULL, NULL };
 
 /**

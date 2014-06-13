@@ -9,7 +9,6 @@
  */
 
 #include "ei_linkedlist.h"
-#include "ei_application.h"
 #include "ei_common.h"
 
 
