@@ -14,6 +14,8 @@
 #include "ei_shape.h"
 #include "ei_utilities.h"
 #include "ei_geometrymanager.h"
+#include "ei_core.h"
+
 
 /* Frame draw */
 void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
@@ -23,6 +25,7 @@ void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
 			   frame->border_width, clipper);
 
 	ei_rect_t rectangle_red = reduction(rectangle, frame->border_width);
+
 
 	if (frame->text && frame->text_font && frame->text_anchor)
 		ei_insert_text(window, rectangle_red, frame->text,
@@ -214,12 +217,10 @@ void print_image(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 		    || new_img_rect.top_left.y > real_img_rect.size.height)
 			new_img_rect.top_left = ei_point(0, 0);
 
-                /* If img_rect->top_left out of image, relocate to origin */
 		if (new_img_rect.top_left.x + new_img_rect.size.width >
                         real_img_rect.size.width)
 			new_img_rect.size.width = real_img_rect.size.width - new_img_rect.top_left.x;
 
-                /* If img_rect->top_left out of image, relocate to origin */
 		if (new_img_rect.top_left.y + new_img_rect.size.height >
                         real_img_rect.size.height)
 			new_img_rect.size.height = real_img_rect.size.height - new_img_rect.top_left.y;
@@ -259,40 +260,67 @@ void print_image(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 		rec_dst.size = size;
 	}
 
+        ei_bool_t display = EI_TRUE;
 
+        /* Clip image */
 	if (clipper) {
-		if (rec_dst.top_left.x < clipper->top_left.x) {
-			rec_dst.top_left.x = clipper->top_left.x;
-			rec_dst.size.width =
-			    rec_dst.size.width - (clipper->top_left.x -
-						  rec_dst.top_left.x);
-		}
-		if (rec_dst.top_left.y < clipper->top_left.y) {
-			rec_dst.top_left.y = clipper->top_left.y;
-			rec_dst.size.height =
-			    rec_dst.size.height - (clipper->top_left.y -
-						   rec_dst.top_left.y);
-		}
-		if (rec_dst.top_left.x + rec_dst.size.width >
-		    clipper->top_left.x + clipper->size.width) {
-			rec_dst.size.width =
-			    rec_dst.size.width -
-			    ((rec_dst.top_left.x + rec_dst.size.width) -
-			     (clipper->top_left.x + clipper->size.width));
-		}
-		if (rec_dst.top_left.y + rec_dst.size.height >
-		    clipper->top_left.y + clipper->size.height) {
-			rec_dst.size.height =
-			    rec_dst.size.height -
-			    ((rec_dst.top_left.y + rec_dst.size.height) -
-			     (clipper->top_left.y + clipper->size.height));
-		}
+
+                // On réduit les clippeurs de destination
+                // pour ne pas déborder du clippeur brut
+                ei_rect_t vor = rec_dst;
+                ei_rect_t *inter = ei_rect_intersection(&rec_dst, clipper);
+                if (inter) {
+                        rec_dst = *inter;
+                        SAFE_FREE(inter);
+
+                        // On ajoute la réduction réalisée par l'intersection avec le clipper brut
+                        // au clippeur de l'image
+                        // img_part = img_part + (inter - rec_dst)
+                        img_part.top_left.x+= rec_dst.top_left.x - vor.top_left.x;
+                        img_part.top_left.y+= rec_dst.top_left.y - vor.top_left.y;
+                        img_part.size.width+= rec_dst.size.width - vor.size.width;
+                        img_part.size.height+= rec_dst.size.height - vor.size.height;
+                }
+                /* If no intersection, do not display */
+                else
+                        display = EI_FALSE;
+
+
+                // Bug baveux
+		// if (rec_dst.top_left.x < clipper->top_left.x) {
+		// 	rec_dst.top_left.x = clipper->top_left.x;
+		// 	rec_dst.size.width =
+		// 	    rec_dst.size.width - (clipper->top_left.x -
+		// 				  rec_dst.top_left.x);
+		// }
+		// if (rec_dst.top_left.y < clipper->top_left.y) {
+		// 	rec_dst.top_left.y = clipper->top_left.y;
+		// 	rec_dst.size.height =
+		// 	    rec_dst.size.height - (clipper->top_left.y -
+		// 				   rec_dst.top_left.y);
+		// }
+
+                // What
+		// if (rec_dst.top_left.x + rec_dst.size.width >
+		//     clipper->top_left.x + clipper->size.width) {
+		// 	rec_dst.size.width =
+		// 	    rec_dst.size.width -
+		// 	    ((rec_dst.top_left.x + rec_dst.size.width) -
+		// 	     (clipper->top_left.x + clipper->size.width));
+		// }
+		// if (rec_dst.top_left.y + rec_dst.size.height >
+		//     clipper->top_left.y + clipper->size.height) {
+		// 	rec_dst.size.height =
+		// 	    rec_dst.size.height -
+		// 	    ((rec_dst.top_left.y + rec_dst.size.height) -
+		// 	     (clipper->top_left.y + clipper->size.height));
+		// }
 	}
 
 	img_part.size = rec_dst.size;
 
 
-	if (rec_dst.size.width > 0 && rec_dst.size.height > 0) {
+	if (display && (rec_dst.size.width > 0 && rec_dst.size.height > 0)) {
 		hw_surface_lock(img);
 
 
