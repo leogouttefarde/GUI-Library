@@ -419,7 +419,7 @@ void ei_place(ei_widget_t *widget,
                         *param->anc = *anchor;
                 }
                 else{
-                        SAFE_FREE(param->anc)
+                        SAFE_FREE(param->anc);
                 }
 
                 if (x){

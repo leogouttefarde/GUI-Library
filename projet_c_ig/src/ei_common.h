@@ -14,11 +14,11 @@
 #include <math.h>
 #include <assert.h>
 
-#define SAFE_FREE(p) if (p != NULL) { free(p); p = NULL; }
-#define SAFE_RESET(p, size) if (p != NULL) { memset(p, 0, size); }
+#define SAFE_FREE(p) do { if (p != NULL) { free(p), p = NULL; } } while (0)
+#define SAFE_RESET(p, size) do { if (p != NULL) { memset(p, 0, size); } } while (0)
 #define ALLOC_TYPE(type) malloc(sizeof(type))
 #define CALLOC_TYPE(type) calloc(1, sizeof(type))
-#define SAFE_ALLOC(var, type) if (var == NULL) { var = CALLOC_TYPE(type); }
+#define SAFE_ALLOC(var, type) do { if (var == NULL) { var = CALLOC_TYPE(type); } } while (0)
 
 #ifndef M_PI
 #define M_PI (3.141592653589793)

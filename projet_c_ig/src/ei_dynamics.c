@@ -29,16 +29,16 @@ void resize(ei_widget_t *widget, ei_size_t add_size)
                 int w_x = widget->screen_location.top_left.x;
                 int w_y = widget->screen_location.top_left.y;
                 // Nouvelles tailles
-                int* w = malloc(sizeof(int));
-                int* h = malloc(sizeof(int));
-                float* rel_w = malloc(sizeof(float));
-                float* rel_h = malloc(sizeof(float));
+                int* w = CALLOC_TYPE(int);
+                int* h = CALLOC_TYPE(int);
+                float* rel_w = CALLOC_TYPE(float);
+                float* rel_h = CALLOC_TYPE(float);
 
                 // Nouvelles positions
-                int* x = malloc(sizeof(int));
-                int* y = malloc(sizeof(int));
-                float* rel_x = malloc(sizeof(float));
-                float* rel_y = malloc(sizeof(float));
+                int* x = CALLOC_TYPE(int);
+                int* y = CALLOC_TYPE(int);
+                float* rel_x = CALLOC_TYPE(float);
+                float* rel_y = CALLOC_TYPE(float);
 
 
 
@@ -125,26 +125,35 @@ void resize(ei_widget_t *widget, ei_size_t add_size)
 
                 // On distingue le cas ou le widget a une taille absolue et le cas relatif
                 if (param->w)
-                        rel_w = NULL;
+                        SAFE_FREE(rel_w);
                 else
-                        w = NULL;
+                        SAFE_FREE(w);
 
                 if (param->h)
-                        rel_h = NULL;
+                        SAFE_FREE(rel_h);
                 else
-                        h = NULL;
+                        SAFE_FREE(h);
                 if (param->x)
-                        rel_x = NULL;
+                        SAFE_FREE(rel_x);
                 else
-                        x = NULL;
+                        SAFE_FREE(x);
 
                 if (param->y)
-                        rel_y = NULL;
+                        SAFE_FREE(rel_y);
                 else
-                        y = NULL;
+                        SAFE_FREE(y);
 
                 // Placement du widget
                 ei_place(widget, &anc, x, y, w, h, rel_x, rel_y, rel_w, rel_h);
+
+                SAFE_FREE(w);
+                SAFE_FREE(h);
+                SAFE_FREE(rel_w);
+                SAFE_FREE(rel_h);
+                SAFE_FREE(x);
+                SAFE_FREE(y);
+                SAFE_FREE(rel_x);
+                SAFE_FREE(rel_y);
         }
 }
 
@@ -165,10 +174,10 @@ void move_placer(ei_widget_t *widget, ei_point_t where){
                 // Sauvegarde de la nouvelle position de la souris
                 toplevel->move_pos = where;    
                 // Calcul
-                int* x = malloc(sizeof(int));
-                int* y = malloc(sizeof(int));
-                float* rel_x = malloc(sizeof(int));
-                float* rel_y = malloc(sizeof(int));
+                int* x = CALLOC_TYPE(int);
+                int* y = CALLOC_TYPE(int);
+                float* rel_x = CALLOC_TYPE(int);
+                float* rel_y = CALLOC_TYPE(int);
                 int p_x;
                 int p_y;
                 int p_w;
@@ -193,18 +202,18 @@ void move_placer(ei_widget_t *widget, ei_point_t where){
 
                         // Nouveau x relatif
                         if (param->x){
-                                rel_x = NULL;
+                                SAFE_FREE(rel_x);
                         }
                         else{
                                 *rel_x = (float)(*x) / (float)(p_w -1);
-                                x = NULL;
+                                SAFE_FREE(x);
                         }
                         if (param->y){
-                                rel_y = NULL;
+                                SAFE_FREE(rel_y);
                         }
                         else{
                                 *rel_y = (float)(*y) / (float)(p_h -1);
-                                y = NULL;
+                                SAFE_FREE(y);
                         }
 
                         // On deplace le pere
@@ -213,12 +222,13 @@ void move_placer(ei_widget_t *widget, ei_point_t where){
 
                         // Maj position toplevel
                         toplevel->move_pos = where;
-                        //Free
-                        SAFE_FREE(x);
-                        SAFE_FREE(y);
-                        SAFE_FREE(rel_x);
-                        SAFE_FREE(rel_y);
                 }
+
+                //Free
+                SAFE_FREE(x);
+                SAFE_FREE(y);
+                SAFE_FREE(rel_x);
+                SAFE_FREE(rel_y);
         }
 }
 void move_gridder(ei_widget_t *widget, ei_point_t where){
@@ -269,8 +279,8 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
                   y = y / elem_size.height;
                   */
                 // On calcul la nouvelle position
-                int *col = malloc(sizeof(int));
-                int *lin = malloc(sizeof(int));
+                int *col = CALLOC_TYPE(int);
+                int *lin = CALLOC_TYPE(int);
 
                 *col = *param->col + x;
                 *lin = *param->lin + y;
