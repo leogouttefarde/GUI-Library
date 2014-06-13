@@ -393,9 +393,12 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
                 // Maj position toplevel
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
                 toplevel->move_pos = where;
+
                 //Free
                 SAFE_FREE(lin);
                 SAFE_FREE(col);
+                SAFE_FREE(force_w);
+                SAFE_FREE(force_h);
         }
 
 }
