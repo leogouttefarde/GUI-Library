@@ -22,7 +22,7 @@ LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
    ${OBJDIR}/ei_button.o ${OBJDIR}/ei_core.o \
    ${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o \
    ${OBJDIR}/ei_utilities.o ${OBJDIR}/ei_debug.o \
-   ${OBJDIR}/ei_gridder.o
+   ${OBJDIR}/ei_gridder.o ${OBJDIR}/ei_dynamics.o
 
 
 # Platform specific definitions (OS X, Linux, Windows)
@@ -73,7 +73,7 @@ LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a 
 TARGETS		=	${LIBEI} \
 				minimal frame button hello_world_absolute hello_world_relative puzzle
 
-PERSO_TESTS =  ensiskype toplevel test_shape test_placer test_relative \
+PERSO_TESTS =  ensiskype toplevel test_placer test_relative \
 			   test_button2 test_geom ensiskype test_inter \
 			   gridder ensigrid
 
@@ -136,11 +136,7 @@ ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 
 
 # ATTENTION a LINKER LES BIBLIOTHEQUES MATHEMATIQUES
-test_shape : ${OBJDIR}/test_shape.o ${LIBEIBASE} ${LIBEI}
-	${LINK} -o test_shape ${OBJDIR}/test_shape.o ${LIBEI} ${LIBS} ${MATHFLAGS}
 
-${OBJDIR}/test_shape.o : ${TESTS}/test_shape.c
-	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_shape.c -o ${OBJDIR}/test_shape.o ${MATHFLAGS} 
 
 test_placer : ${OBJDIR}/test_placer.o ${LIBEIBASE} ${LIBEI}
 	${LINK} -o test_placer ${OBJDIR}/test_placer.o ${LIBEI} ${LIBS} ${MATHFLAGS}
