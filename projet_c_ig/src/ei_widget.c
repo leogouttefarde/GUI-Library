@@ -488,7 +488,9 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                         toplevel->resizable = *resizable;
                 }
                 if(min_size){
-                        toplevel->min_size = *min_size;
+                        ei_size_t *copy = malloc(sizeof(ei_size_t));
+                        *copy = **min_size;
+                        toplevel->min_size = copy;
                 }
         }
 }

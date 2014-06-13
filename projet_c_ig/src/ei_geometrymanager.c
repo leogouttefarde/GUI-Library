@@ -455,7 +455,7 @@ void ei_place(ei_widget_t *widget,
                 }
                 else if (rel_y){
                         SAFE_FREE(param->y);
-                        if(!param->y)
+                        if(!param->rel_y)
                                 param->rel_y = CALLOC_TYPE(float);
                         *param->rel_y = *rel_y;
                 }
@@ -473,8 +473,8 @@ void ei_place(ei_widget_t *widget,
                 }
                 else if (rel_width){
                         SAFE_FREE(param->w);
-                        if(!param->w)
-                                param->w = CALLOC_TYPE(int);
+                        if(!param->rel_w)
+                                param->rel_w = CALLOC_TYPE(int);
                         *param->rel_w = *rel_width;
                 }
                 else{
