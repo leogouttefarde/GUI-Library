@@ -485,6 +485,8 @@ void ei_place(ei_widget_t *widget,
                 }
 
                 if (height){
+                        if (!param->h)
+                                param->h = CALLOC_TYPE(int);
                         *param->h = *height;
                 }
                 else if (rel_height){
