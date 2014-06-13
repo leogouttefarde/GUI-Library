@@ -18,7 +18,7 @@
 #include "ei_gridder.h"
 #include <stdlib.h>
 #include <assert.h> 
-void resize(ei_widget_t *widget, ei_size_t add_size);
+void resize(ei_widget_t *widget, ei_point_t where);
 void move(ei_widget_t *widget, ei_point_t where);
 
 

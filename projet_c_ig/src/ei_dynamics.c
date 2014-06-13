@@ -1,6 +1,250 @@
 #include "ei_dynamics.h"
 
-/***** Resize et move *****/
+/* Fonction de resize pour le placer*/
+
+void resize_placer(ei_widget_t *widget, ei_point_t where){
+        ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
+        // La fonction resize ne fonctionne que sur le placer
+        if (widget->geom_params && widget->geom_params->manager 
+                        && widget->geom_params->manager == placer
+                        && widget->parent && widget->parent->content_rect) {
+                // Calcul de la taille de redimensionnement
+                if (!strcmp(widget->wclass->name, "toplevel")){
+                        ei_size_t add_size;
+                        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+
+                        if (toplevel) {
+                                int w = 0;
+                                int h = 0;
+
+                                // ancienne position souris
+                                int o_x = toplevel->move_pos.x;
+                                int o_y = toplevel->move_pos.y;
+
+                                // nouvelle position souris
+                                int n_x = where.x;
+                                int n_y = where.y;
+
+                                // distance de deplacement
+                                w = n_x - o_x;
+                                h = n_y - o_y;
+
+
+                                // On verifie sur quels axes le widget est redimensionnable:
+                                switch (toplevel->resizable) {
+                                case ei_axis_both :
+                                        break;
+                                case ei_axis_x:
+                                        w = 0;
+                                        break;
+                                case ei_axis_y:
+                                        h = 0;
+                                        break;
+                                default:
+                                        w = 0;
+                                        h = 0;
+                                }
+
+                                add_size = ei_size(w,h);
+                        }
+
+                        // On recupere les parametres
+                        ei_placer_param_t *param;
+                        param = (ei_placer_param_t*)widget->geom_params;
+
+                        // Taille parent , ancienne taille widget
+                        int p_x = widget->parent->content_rect->top_left.x;
+                        int p_y = widget->parent->content_rect->top_left.y;
+                        int p_w = widget->parent->content_rect->size.width;
+                        int p_h = widget->parent->content_rect->size.height;
+                        int w_w = widget->screen_location.size.width;
+                        int w_h = widget->screen_location.size.height;
+                        int w_x = widget->screen_location.top_left.x;
+                        int w_y = widget->screen_location.top_left.y;
+                        // Nouvelles tailles
+                        int* w = CALLOC_TYPE(int);
+                        int* h = CALLOC_TYPE(int);
+                        float* rel_w = CALLOC_TYPE(float);
+                        float* rel_h = CALLOC_TYPE(float);
+
+                        // Nouvelles positions
+                        int* x = CALLOC_TYPE(int);
+                        int* y = CALLOC_TYPE(int);
+                        float* rel_x = CALLOC_TYPE(float);
+                        float* rel_y = CALLOC_TYPE(float);
+
+
+
+                        // Calcul de la nouvelle taille absolue du widget
+                        *w = w_w + add_size.width;
+                        *h = w_h + add_size.height;
+
+                        /****/
+                        //Gestion du cas ou on atteint la min_size du toplevel
+                        // Plus facile de le placer ici que dans le geomnotify
+                        if (!strcmp(widget->wclass->name, "toplevel")){
+                                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+                                if(toplevel->min_size){       
+                                        *w = MAX(toplevel->min_size->width, *w);
+                                        *h = MAX(toplevel->min_size->height, *h);
+                                }
+                        }
+                        /****/
+
+                        // Calcul des tailles relatives
+                        *rel_w = (float)*w / (float)p_w;
+                        *rel_h = (float)*h / (float)p_h;
+
+
+                        // Nouvelle position top_left, bottom_right du widget
+                        // (le redimensionnement se fait avec ancrage NW)
+                        // DANS LE REPERE DU PARENT
+                        int x1 = w_x - p_x;
+                        int x2 = x1 + *w - 1;
+                        int y1 = w_y - p_y;
+                        int y2 = y1 + *h - 1;
+
+                        // Calcul du nouveau point d'ancrage
+                        ei_anchor_t anc;
+                        if(!param->anc || !*param->anc)
+                                anc = ei_anc_northwest;
+                        else
+                                anc = *param->anc;
+
+                        switch(anc){
+                        case ei_anc_northwest:
+                                *x = x1;
+                                *y = y1;
+                                break;
+                        case ei_anc_north:
+                                *x = (x1 + x2) / 2;
+                                *y = y1;
+                                break;
+                        case ei_anc_northeast:
+                                *x = x1 + *w - 1;
+                                *y = y1;
+                                break;
+                        case ei_anc_east:
+                                *x = x1 + *w - 1;
+                                *y = (y1 +y2) / 2;
+                                break;
+                        case ei_anc_southeast:
+                                *x = x1 + *w - 1;
+                                *y = y1 + *h - 1;
+                                break;
+                        case ei_anc_south:
+                                *x = (x1 + x2) / 2;
+                                *y = y1 + *h -1;
+                                break;
+                        case ei_anc_southwest:
+                                *x = x1;
+                                *y = y1 + *h -1;
+                                break;
+                        case ei_anc_west:
+                                *x = x1;
+                                *y = (y1 +y2) / 2;
+                                break;
+                        case ei_anc_center:
+                                *x = (x1 + x2) / 2;
+                                *y = (y1 + y2) / 2;
+                                break;
+                        default:
+                                break;
+                        }
+
+                        // x y relatifs
+                        *rel_x = (float)(*x) / (float)(p_w -1);
+                        *rel_y = (float)(*y) / (float)(p_h -1);
+
+                        // On distingue le cas ou le widget a une taille absolue et le cas relatif
+                        if (param->w)
+                                SAFE_FREE(rel_w);
+                        else
+                                SAFE_FREE(w);
+
+                        if (param->h)
+                                SAFE_FREE(rel_h);
+                        else
+                                SAFE_FREE(h);
+                        if (param->x)
+                                SAFE_FREE(rel_x);
+                        else
+                                SAFE_FREE(x);
+
+                        if (param->y)
+                                SAFE_FREE(rel_y);
+                        else
+                                SAFE_FREE(y);
+
+                        // Placement du widget
+                        ei_place(widget, &anc, x, y, w, h, rel_x, rel_y, rel_w, rel_h);
+
+                        // On sauvegarde le dernier point
+                        toplevel->move_pos = where;
+
+                        SAFE_FREE(w);
+                        SAFE_FREE(h);
+                        SAFE_FREE(rel_w);
+                        SAFE_FREE(rel_h);
+                        SAFE_FREE(x);
+                        SAFE_FREE(y);
+                        SAFE_FREE(rel_x);
+                        SAFE_FREE(rel_y);
+                }
+        }
+}
+
+/* Fonction de resize pour le gridder*/
+void resize_gridder(ei_widget_t *widget, ei_point_t where){
+
+
+        ei_gridder_param_t *param =
+                (ei_gridder_param_t*)widget->geom_params;
+
+        // Position du curseur relativement au widget
+        ei_point_t pos = where;
+        pos.x = pos.x - widget->screen_location.top_left.x;
+        pos.y = pos.y - widget->screen_location.top_left.y;
+
+        // Calcul du rectangle elementaire
+        ei_size_t elem_size = widget->screen_location.size;
+        elem_size.width = elem_size.width / *param->w;
+        elem_size.height = elem_size.height / *param->h;
+
+        //Calcul de la nouvelle ligne, colonne
+        int *w = CALLOC_TYPE(int);
+        int *h = CALLOC_TYPE(int);
+
+        *w = (pos.x / elem_size.width) + 1;
+        *h = (pos.y / elem_size.height) + 1;
+
+        int *force_w = CALLOC_TYPE(int);
+        int *force_h = CALLOC_TYPE(int);
+
+        // On introduit un forcage
+        *force_w = MAX(*param->col, *w);
+        *force_h = MAX(*param->lin, *h);
+        if (param->force_w)
+                *force_w = MAX(*force_w, *param->force_w);
+        if (param->force_h)
+                *force_h = MAX(*force_h, *param->force_h);
+
+        //Grid
+        ei_grid(widget, param->lin, param->col, w , h,force_w,
+                        force_h);
+
+        // Maj position toplevel
+        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+        toplevel->move_pos = where;
+        //Free
+        SAFE_FREE(w);
+        SAFE_FREE(h);
+        SAFE_FREE(force_w);
+        SAFE_FREE(force_h);
+}
+
+
+
 
 /* Fonction de redimensionnement
  * Conserve les proportions des fils 
@@ -8,152 +252,18 @@
  * Pendant le redimensionnement, on ancre
  * le coin northwest pour plus de confort
  * */
-void resize(ei_widget_t *widget, ei_size_t add_size)
+void resize(ei_widget_t *widget, ei_point_t where)
 {
+        assert(widget);
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
-        // La fonction resize ne fonctionne que sur le placer
+        ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
         if (widget->geom_params && widget->geom_params->manager 
-                        && widget->geom_params->manager == placer
-                        && widget->parent && widget->parent->content_rect) {
-                // On recupere les parametres
-                ei_placer_param_t *param;
-                param = (ei_placer_param_t*)widget->geom_params;
-
-                // Taille parent , ancienne taille widget
-                int p_x = widget->parent->content_rect->top_left.x;
-                int p_y = widget->parent->content_rect->top_left.y;
-                int p_w = widget->parent->content_rect->size.width;
-                int p_h = widget->parent->content_rect->size.height;
-                int w_w = widget->screen_location.size.width;
-                int w_h = widget->screen_location.size.height;
-                int w_x = widget->screen_location.top_left.x;
-                int w_y = widget->screen_location.top_left.y;
-                // Nouvelles tailles
-                int* w = CALLOC_TYPE(int);
-                int* h = CALLOC_TYPE(int);
-                float* rel_w = CALLOC_TYPE(float);
-                float* rel_h = CALLOC_TYPE(float);
-
-                // Nouvelles positions
-                int* x = CALLOC_TYPE(int);
-                int* y = CALLOC_TYPE(int);
-                float* rel_x = CALLOC_TYPE(float);
-                float* rel_y = CALLOC_TYPE(float);
-
-
-
-                // Calcul de la nouvelle taille absolue du widget
-                *w = w_w + add_size.width;
-                *h = w_h + add_size.height;
-
-                /****/
-                //Gestion du cas ou on atteint la min_size du toplevel
-                // Plus facile de le placer ici que dans le geomnotify
-                if (!strcmp(widget->wclass->name, "toplevel")){
-                        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
-                        if(toplevel->min_size){       
-                                *w = MAX(toplevel->min_size->width, *w);
-                                *h = MAX(toplevel->min_size->height, *h);
-                        }
-                }
-                /****/
-
-                // Calcul des tailles relatives
-                *rel_w = (float)*w / (float)p_w;
-                *rel_h = (float)*h / (float)p_h;
-
-
-                // Nouvelle position top_left, bottom_right du widget
-                // (le redimensionnement se fait avec ancrage NW)
-                // DANS LE REPERE DU PARENT
-                int x1 = w_x - p_x;
-                int x2 = x1 + *w - 1;
-                int y1 = w_y - p_y;
-                int y2 = y1 + *h - 1;
-
-                // Calcul du nouveau point d'ancrage
-                ei_anchor_t anc;
-                if(!param->anc || !*param->anc)
-                        anc = ei_anc_northwest;
-                else
-                        anc = *param->anc;
-
-                switch(anc){
-                case ei_anc_northwest:
-                        *x = x1;
-                        *y = y1;
-                        break;
-                case ei_anc_north:
-                        *x = (x1 + x2) / 2;
-                        *y = y1;
-                        break;
-                case ei_anc_northeast:
-                        *x = x1 + *w - 1;
-                        *y = y1;
-                        break;
-                case ei_anc_east:
-                        *x = x1 + *w - 1;
-                        *y = (y1 +y2) / 2;
-                        break;
-                case ei_anc_southeast:
-                        *x = x1 + *w - 1;
-                        *y = y1 + *h - 1;
-                        break;
-                case ei_anc_south:
-                        *x = (x1 + x2) / 2;
-                        *y = y1 + *h -1;
-                        break;
-                case ei_anc_southwest:
-                        *x = x1;
-                        *y = y1 + *h -1;
-                        break;
-                case ei_anc_west:
-                        *x = x1;
-                        *y = (y1 +y2) / 2;
-                        break;
-                case ei_anc_center:
-                        *x = (x1 + x2) / 2;
-                        *y = (y1 + y2) / 2;
-                        break;
-                default:
-                        break;
-                }
-
-                // x y relatifs
-                *rel_x = (float)(*x) / (float)(p_w -1);
-                *rel_y = (float)(*y) / (float)(p_h -1);
-
-                // On distingue le cas ou le widget a une taille absolue et le cas relatif
-                if (param->w)
-                        SAFE_FREE(rel_w);
-                else
-                        SAFE_FREE(w);
-
-                if (param->h)
-                        SAFE_FREE(rel_h);
-                else
-                        SAFE_FREE(h);
-                if (param->x)
-                        SAFE_FREE(rel_x);
-                else
-                        SAFE_FREE(x);
-
-                if (param->y)
-                        SAFE_FREE(rel_y);
-                else
-                        SAFE_FREE(y);
-
-                // Placement du widget
-                ei_place(widget, &anc, x, y, w, h, rel_x, rel_y, rel_w, rel_h);
-
-                SAFE_FREE(w);
-                SAFE_FREE(h);
-                SAFE_FREE(rel_w);
-                SAFE_FREE(rel_h);
-                SAFE_FREE(x);
-                SAFE_FREE(y);
-                SAFE_FREE(rel_x);
-                SAFE_FREE(rel_y);
+                        && widget->geom_params->manager == placer) {
+                resize_placer(widget, where);
+        }
+        else if (widget->geom_params && widget->geom_params->manager 
+                        && widget->geom_params->manager == gridder) {
+                resize_gridder(widget, where);
         }
 }
 
@@ -274,11 +384,7 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
                 else
                         y = 0;
 
-                /*if (y > 0)
-                  y = MAX(y - location.size.width + 1, 0);
-                  y = y / elem_size.height;
-                  */
-                // On calcul la nouvelle position
+                // On calcule la nouvelle position
                 int *col = CALLOC_TYPE(int);
                 int *lin = CALLOC_TYPE(int);
 

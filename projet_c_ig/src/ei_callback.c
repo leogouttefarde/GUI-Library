@@ -22,48 +22,8 @@ ei_bool_t all_callback_move_move(ei_widget_t *widget, struct ei_event_t
 ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param)
 {
-        ei_toplevel_t *toplevel = (ei_toplevel_t*)user_param;
 
-        if (toplevel) {
-                int w = 0;
-                int h = 0;
-
-                // ancienne position souris
-                int o_x = toplevel->move_pos.x;
-                int o_y = toplevel->move_pos.y;
-
-                // nouvelle position souris
-                int n_x = event->param.mouse.where.x;
-                int n_y = event->param.mouse.where.y;
-
-                // distance de deplacement
-                w = n_x - o_x;
-                h = n_y - o_y;
-
-
-                // On verifie sur quels axes le widget est redimensionnable:
-                switch (toplevel->resizable) {
-                case ei_axis_both :
-                        break;
-
-                case ei_axis_x:
-                        w = 0;
-                        break;
-
-                case ei_axis_y:
-                        h = 0;
-                        break;
-
-                default:
-                        w = 0;
-                        h = 0;
-                }
-
-                resize((ei_widget_t*)toplevel, ei_size(w,h));
-
-                // On sauvegarde le dernier point
-                toplevel->move_pos = event->param.mouse.where;
-        }
+        resize((ei_widget_t*)user_param, event->param.mouse.where);
 
         return EI_FALSE;
 }
