@@ -85,9 +85,14 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t * toplevel,
         /* Dessin de la barre */
         ei_rect_t bar = rec;
         bar.size.height = toplevel->bar_height;
+		  /*
         lp = ei_rect_to_points(bar);
         ei_draw_polygon(surface, &lp, toplevel->bar_color, clipper);
         free_lp(lp.next);
+		  Amélioration:
+		  */
+		  ei_fill(surface,&toplevel->bar_color,ei_rect_intersection(clipper,&bar));
+ 
         int marge;
         ei_rect_t btn_c;
 
@@ -132,10 +137,12 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t * toplevel,
                 rec_txt.size.height = toplevel->bar_height;
                 rec_txt.size.width = toplevel->widget.screen_location.size.width -
                         2 * (2 * marge + btn_c.size.width);
-
+					 ei_rect_t rec_clip =rec_txt;
+					 rec_clip.size.width=rec_txt.size.width+marge +btn_c.size.width;
+					
                 ei_insert_text(surface, rec_txt, toplevel->title,
                                 toplevel->title_font, toplevel->title_color, 0,
-                                clipper);
+                                ei_rect_intersection(clipper,&rec_clip));
         }
 }
 
