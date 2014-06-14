@@ -684,14 +684,17 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
 		  ei_color_t bar_color={255,255,255,255};
 		  radiobutton->bar_color=bar_color;
 
-		  ei_size_t btn_size ={15,15};
+		  ei_size_t btn_size ={25,25};
 		  radiobutton->btn_size=btn_size;
-		  radiobutton->btn_bdw=1;
+		  radiobutton->btn_bdw=3;
 		  int border_width=6;
 		  radiobutton->border_width=border_width;
 		  int nb_buttons=7;
 		  radiobutton->nb_buttons=nb_buttons;
 		  char* tab_chaine[radiobutton->nb_buttons];
+		  for (int i=0; i<=radiobutton->nb_buttons-1;i++) {
+			  tab_chaine[i]=NULL;
+		  }
 		  tab_chaine[0]="Breizh libra";
 		  tab_chaine[1]="France Bleu Menhir";
 		  tab_chaine[2]="Carnac blues";
