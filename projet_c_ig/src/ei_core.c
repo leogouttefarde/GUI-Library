@@ -6,9 +6,7 @@
 
 
 
-/**
- * \brief       The list of rectangles that must be updated on screen.
- */
+/* Liste de rectangles à mettre à jour */
 static ei_linkedlist_t ei_update_rects;
 
 #ifdef LEAK_TRACKER
