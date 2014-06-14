@@ -17,7 +17,6 @@
 #include "ei_utilities.h"
 #include "ei_linkedlist.h"
 #include "ei_radiobutton.h"
-#include <math.h>
 #include "ei_core.h"
 #include "ei_tag.h"
 
@@ -40,6 +39,12 @@ void ei_widgetclass_register    (ei_widgetclass_t* widgetclass)
 }
 
 /* Permet aux geom_notify d'invalider la screen_location d'un widget */
+ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name)
+{
+        return (widget && widget->wclass && !strcmp(widget->wclass->name, name));
+}
+
+// Utilisé dans les geom_notify
 void invalidate_widget(ei_widget_t *widget){
 
         if (widget->parent && widget->parent->content_rect) {
@@ -304,7 +309,7 @@ void button_setdefaults(struct ei_widget_t* widget)
 
 
         button->border_width = 2;
-        button->corner_radius = 3;
+        button->corner_radius = k_default_button_corner_radius;
         button->relief = ei_relief_raised;
         button->text = NULL;
         button->text_font = ei_default_font;
@@ -460,32 +465,35 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
         toplevel = (ei_toplevel_t*)widget;
         assert(toplevel);
 
-        ei_size_t s = {100, 100};
-        toplevel->widget.requested_size = s;
+        ei_size_t size = { 320, 240 };
+        toplevel->widget.requested_size = size;
 
-        toplevel->bar_height=25;
-        ei_color_t bar_color={255,255,255,255};
-        toplevel->bar_color=bar_color;
+        toplevel->bar_height = 25;
 
-        toplevel->rel_btn_close=ei_relief_raised;
+        ei_color_t bar_color = { 255, 255, 255, 255 };
+        toplevel->bar_color = bar_color;
 
-        ei_color_t c = {0x00, 0xff, 0x00, 0xFF};
-        toplevel->color = c;
+        toplevel->rel_btn_close = ei_relief_raised;
+
+        toplevel->color = ei_default_background_color;
 
         toplevel->border_width = 4;
 
         make_string_copy(&toplevel->title, "Toplevel");
-        toplevel->title_font=ei_default_font;
-        ei_color_t title_color={0,0,0,255};
-        toplevel->title_color=title_color;
+        toplevel->title_font = ei_default_font;
+
+        ei_color_t title_color = { 0, 0, 0, 255 };
+        toplevel->title_color = title_color;
 
 
-        ei_size_t *ms = CALLOC_TYPE(ei_size_t);
-        assert(ms);
-        ms->width = 50;
-        ms->height = 50;
+        ei_size_t *min_size = CALLOC_TYPE(ei_size_t);
+        assert(min_size);
 
-        toplevel->min_size = ms;
+        min_size->width = 160;
+        min_size->height = 120;
+
+        toplevel->min_size = min_size;
+
 
         // Gestion du move, resize
         toplevel->move_pos = ei_point(0,0);
@@ -641,16 +649,19 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
         ei_color_t bar_color={255,255,255,255};
         radiobutton->bar_color=bar_color;
 
-        ei_size_t btn_size ={15,15};
+        ei_size_t btn_size ={25,25};
         radiobutton->btn_size=btn_size;
-
-        radiobutton->btn_bdw=1;
+        radiobutton->btn_bdw=3;
 
         int border_width=6;
         radiobutton->border_width=border_width;
+
         int nb_buttons=7;
         radiobutton->nb_buttons=nb_buttons;
         char* tab_chaine[radiobutton->nb_buttons];
+        for (int i=0; i<=radiobutton->nb_buttons-1;i++) {
+                tab_chaine[i]=NULL;
+        }
         tab_chaine[0]="Breizh libra";
         tab_chaine[1]="France Bleu Menhir";
         tab_chaine[2]="Carnac blues";

@@ -29,8 +29,7 @@ void free_rdbtn_lrec(ei_linked_rdbtn_rec_t *lrec) {
 void ei_radiobutton_draw(ei_surface_t surface, ei_rect_t location,ei_radiobutton_t *radiobutton, ei_rect_t* clipper) {
 	/* Mise à jour*/
 	radiobutton->lrec=place_rdbtn_rec(radiobutton);
-	printf("place ok\n");
-	aff_liste(radiobutton->lrec);
+	//aff_liste(radiobutton->lrec);
 	ei_rect_t *inter;
 	/* Dessin du fond */
 	ei_rect_t fond=location;
@@ -49,15 +48,17 @@ void ei_radiobutton_draw(ei_surface_t surface, ei_rect_t location,ei_radiobutton
 	while (lrec!=NULL) {
 		ei_button_draw_loc(surface,lrec->rec,radiobutton->btn_color,lrec->rel,0,radiobutton->btn_bdw,clipper);
 		if (lrec->rel==ei_relief_sunken) {
-			if (ltxt&&ltxt->txt) {
-				printf("on va afficher du txt\n");
+			if (ltxt&&ltxt->txt!=NULL) {
+				assert(ltxt->txt);
 				if (inter) ei_insert_text(surface,bar,ltxt->txt,radiobutton->font,radiobutton->txt_color,ei_anc_west,inter);
 			}
-			else 
+			else
 				ei_insert_text(surface,bar,radiobutton->txt_default,radiobutton->font,radiobutton->txt_color,ei_anc_west,inter);
 		}
 		lrec=lrec->next;
-		if (ltxt) ltxt=ltxt->next;
+		if (ltxt) {
+			ltxt=ltxt->next;
+		}
 		else ltxt=NULL;
 	}
 }
@@ -82,8 +83,6 @@ ei_linked_rdbtn_rec_t* rdbtn_rec_create(ei_radiobutton_t *radiobutton) {
 	ei_rect_t position;
 	for (int i=1; i<=radiobutton->nb_buttons; i++) {
 			rdbtn=CALLOC_TYPE(ei_linked_rdbtn_rec_t);
-			//printf("scrnloc:pt/size{%i,%i},{%i,%i}\n",location.top_left.x,location.top_left.y,location.size.width,location.size.height);
-			//printf("postion:pt/size{%i,%i},{%i,%i}\n",position.top_left.x,position.top_left.y,position.size.width,position.size.height);
 			rdbtn->rec=position;
 			rdbtn->rel=ei_relief_raised;
 			rdbtn->next=suivant;

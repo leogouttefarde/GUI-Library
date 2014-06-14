@@ -15,6 +15,7 @@
 #include "hw_interface.h"
 #include "ei_utilities.h"
 #include "ei_tag.h"
+#include "ei_widgetclass_pv.h"
 
 
 /* Contient la couleur de picking courante
@@ -313,54 +314,67 @@ void    ei_button_configure (ei_widget_t*               widget,
                 ei_callback_t*          callback,
                 void**                  user_param)
 {
-        if (widget && widget->wclass
-                        && !strcmp(widget->wclass->name, "button")) {
+        if (ei_has_widgetclass(widget, "button")) {
 
                 ei_button_t *button = (ei_button_t*)widget;
+
 
                 if (requested_size) {
                         button->widget.requested_size = *requested_size;
                 }
+
                 if (color) {
                         if (button->color)
                                 *button->color = *color;
                 }
+
                 if (border_width) {
                         button->border_width = *border_width;
                 }
+
                 if (corner_radius) {
                         button->corner_radius = *corner_radius;
                 }
+
                 if (relief) {
                         button->relief = *relief;
                 }
+
                 if (text) {
                         make_string_copy(&button->text, *text);
                 }
-                if(text_font){
+
+                if (text_font) {
                         button->text_font = *text_font;
                 }
-                if(text_color){
+
+                if (text_color) {
                         button->text_color = *text_color;
                 }
-                if(text_anchor){
+
+                if (text_anchor) {
                         button->text_anchor = *text_anchor;
                 }
-                if(img) {
+
+                if (img) {
                         button->img=*img;
                 }
-                if(img_rect && *img_rect){
+
+                if (img_rect && *img_rect) {
                         SAFE_ALLOC(button->img_rect, ei_rect_t);
                         *button->img_rect = **img_rect;
                 } else {
                         SAFE_FREE(button->img_rect);
                 }
-                if(img_anchor) {
+
+                if (img_anchor) {
                         button->img_anchor = *img_anchor;
                 }
-                if(callback) {
+
+                if (callback) {
                         button->callback = *callback;
                 }
+
                 if (user_param){
                         button->user_param = *user_param;
                 }
@@ -377,33 +391,41 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                 ei_axis_set_t*  resizable,
                 ei_size_t**     min_size)
 {
-        if (widget && widget->wclass
-                        && !strcmp(widget->wclass->name, "toplevel")) {
+        if (ei_has_widgetclass(widget, "toplevel")) {
 
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+
+
                 if (border_width) {
                         toplevel->border_width = *border_width;
                 }
-                if (requested_size){
-                        ei_size_t rqst_s=*requested_size;
-                        rqst_s.height=rqst_s.height+toplevel->bar_height+2*toplevel->border_width;
-                        rqst_s.width=rqst_s.width+2*toplevel->border_width;
-                        toplevel->widget.requested_size = rqst_s;
+
+                if (requested_size) {
+                        ei_size_t requested_size_final = *requested_size;
+
+                        requested_size_final.height = requested_size_final.height + toplevel->bar_height + 2 * toplevel->border_width;
+                        requested_size_final.width = requested_size_final.width + 2 * toplevel->border_width;
+
+                        toplevel->widget.requested_size = requested_size_final;
                 }
-                if (color){
+
+                if (color) {
                         toplevel->color = *color;
                 }
-                if(title){
+
+                if (title) {
                         make_string_copy(&toplevel->title, *title);
                 }
-                if (closable){
+
+                if (closable) {
                         toplevel->closable = *closable;
                 }
-                if(resizable){
+
+                if (resizable) {
                         toplevel->resizable = *resizable;
                 }
-                if(min_size && *min_size){
-                        SAFE_ALLOC(toplevel->min_size, ei_size_t);
+
+                if (min_size && *min_size && toplevel->min_size) {
                         *toplevel->min_size = **min_size;
                 } else {
                         SAFE_FREE(toplevel->min_size);
