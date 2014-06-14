@@ -226,9 +226,10 @@ void resize_gridder(ei_widget_t *widget, ei_point_t where){
         if (param->force_h)
                 *force_h = MAX(*param->lin + *force_h, *param->force_h);
 
-        //Grid
-        ei_grid(widget, param->lin, param->col, w , h,force_w,
-                        force_h);
+        //Grid si changement
+        if (*w != *param->w || *h != *param->h)
+                ei_grid(widget, param->lin, param->col, w , h,force_w,
+                                force_h);
 
         // Maj position toplevel
         ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
@@ -410,9 +411,9 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
                 if (param->force_h)
                         *force_h =  MAX(*force_h + *param->h, *param->force_h);
 
-
-                ei_grid(widget, lin, col ,param->w, param->h, force_w,
-                                force_h);
+                if (*lin != *param->lin || *col != *param->col)
+                        ei_grid(widget, lin, col ,param->w, param->h, force_w,
+                                        force_h);
 
                 // Maj position toplevel
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
