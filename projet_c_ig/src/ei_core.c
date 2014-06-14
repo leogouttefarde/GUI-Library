@@ -263,13 +263,16 @@ ei_rect_t* ei_smaller_fused(const ei_rect_t *rect1, const ei_rect_t *rect2)
         return fuse;
 }
 
-void ei_invalidate_rect(ei_rect_t* rect)
+void ei_invalidate_rect(ei_rect_t* invalid_rect)
 {
-        if (rect) {
-                /* On commence par intersecter le rectangle avec le root_widget */
+        if (invalid_rect) {
+                ei_rect_t *rect = NULL;
                 ei_rect_t temp;
+
+                /* On commence par intersecter le rectangle avec le root_widget */
                 temp =  hw_surface_get_rect(ei_get_root_surface());
-                rect = ei_rect_intersection(rect, &temp);
+                rect = ei_rect_intersection(invalid_rect, &temp);
+
                 if (rect) {
                         /* On ajoute le rectangle */
                         ei_rect_t new_rect = *rect;
@@ -324,9 +327,9 @@ void ei_invalidate_rect(ei_rect_t* rect)
                                         ei_linkedlist_add(&ei_update_rects, new_link);
                                 }
                         }
-                }
 
-                SAFE_FREE(rect);
+                        SAFE_FREE(rect);
+                }
         }
 }
 
