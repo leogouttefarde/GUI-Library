@@ -19,6 +19,10 @@
 #define LEAK_TRACKER
 #endif
 
+// Conversion flottant entier
+#define F2I(x) (int)floor(x)
+#define I2F(x) (float)(x)
+
 #include "ei_memory.h"
 
 
