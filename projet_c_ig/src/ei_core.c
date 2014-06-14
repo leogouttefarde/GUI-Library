@@ -1,45 +1,29 @@
 
-#include "ei_geometrymanager.h"
 #include "ei_core.h"
 #include "ei_linkedlist.h"
 #include "ei_event_pv.h"
+#include "ei_root.h"
 
 
 
-// Liste de rectangles a update
+/**
+ * \brief       The list of rectangles that must be updated on screen.
+ */
 static ei_linkedlist_t ei_update_rects;
 
 #ifdef LEAK_TRACKER
+/**
+ * \brief       The current number of allocated (unfreed) blocks.
+ *              Debugging feature only, non included on release compilation.
+ */
 int ALLOCATION_COUNTER = 0;
 #endif
 
 
-
-/*** Fonctions ***/
 void ei_init()
 {
         ei_event_init();
         ei_linkedlist_init(&ei_update_rects);
-}
-
-ei_bool_t ei_is_widget_child(ei_widget_t *widget, ei_widget_t *child)
-{
-        if (widget) {
-                ei_widget_t *cur = widget->children_head;
-
-                while (cur) {
-                        if (cur == widget)
-                                return EI_TRUE;
-
-
-                        if (cur->next_sibling)
-                                cur = cur->next_sibling;
-                        else
-                                cur = cur->children_head;
-                }
-        }
-
-        return EI_FALSE;
 }
 
 /***** Calculs d'intersections de rectangles *****/

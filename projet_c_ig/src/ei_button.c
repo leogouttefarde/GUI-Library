@@ -3,7 +3,7 @@
  *  @brief      Button functions
  *
  *  \author 
- *  Created by Antoine Delaite on 04.06.14.
+ *  Created by Antoine DELAITE on 04.06.14
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
