@@ -44,7 +44,7 @@ static ei_bool_t quit_request = EI_FALSE;
  */
 void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 {
-        //ei_init();
+        ei_init();
         hw_init();
 
         ei_set_root_surface(hw_create_window(main_window_size, fullscreen));

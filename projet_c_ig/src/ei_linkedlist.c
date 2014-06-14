@@ -102,6 +102,7 @@ void ei_linkedlist_pop_link(ei_linkedlist_t *list, ei_linked_elem_t *link, ei_bo
 
                         // Check
                         if (list->head == link) {
+                                next->prev = prev;
                                 list->head = next;
                         }
                 }
