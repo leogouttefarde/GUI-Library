@@ -97,6 +97,7 @@ typedef struct ei_linked_rdbtn_rec_t {
 	ei_rect_t rec;
 	ei_relief_t rel;
 	struct ei_linked_rdbtn_rec_t *next;
+	struct ei_linked_rdbtn_rec_t *prev;
 } ei_linked_rdbtn_rec_t;
 
 typedef struct ei_radiobutton_t {

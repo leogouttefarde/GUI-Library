@@ -28,7 +28,8 @@ void free_rdbtn_lrec(ei_linked_rdbtn_rec_t *lrec) {
 
 void ei_radiobutton_draw(ei_surface_t surface, ei_rect_t location,ei_radiobutton_t *radiobutton, ei_rect_t* clipper) {
 	/* Mise à jour*/
-	radiobutton->lrec=rdbtn_rec_create(radiobutton);
+	radiobutton->lrec=place_rdbtn_rec(radiobutton);
+	printf("place ok\n");
 	aff_liste(radiobutton->lrec);
 	ei_rect_t *inter;
 	/* Dessin du fond */
@@ -48,8 +49,10 @@ void ei_radiobutton_draw(ei_surface_t surface, ei_rect_t location,ei_radiobutton
 	while (lrec!=NULL) {
 		ei_button_draw_loc(surface,lrec->rec,radiobutton->btn_color,lrec->rel,0,radiobutton->btn_bdw,clipper);
 		if (lrec->rel==ei_relief_sunken) {
-			if (ltxt&&ltxt->txt) 
-				ei_insert_text(surface,bar,ltxt->txt,radiobutton->font,radiobutton->txt_color,ei_anc_west,inter);
+			if (ltxt&&ltxt->txt) {
+				printf("on va afficher du txt\n");
+				if (inter) ei_insert_text(surface,bar,ltxt->txt,radiobutton->font,radiobutton->txt_color,ei_anc_west,inter);
+			}
 			else 
 				ei_insert_text(surface,bar,radiobutton->txt_default,radiobutton->font,radiobutton->txt_color,ei_anc_west,inter);
 		}
@@ -74,49 +77,64 @@ ei_linked_rdbtn_txt_t* rdbtn_txt_create(char* tab[]) {
 }
 
 ei_linked_rdbtn_rec_t* rdbtn_rec_create(ei_radiobutton_t *radiobutton) {
-	ei_rect_t location=radiobutton->widget.screen_location;
 	ei_linked_rdbtn_rec_t* rdbtn;
 	ei_linked_rdbtn_rec_t* suivant=NULL;
-	int indice=0;
 	ei_rect_t position;
-	for (int j=(int)ceil((float)radiobutton->nb_buttons/4.);j>=1; j--) {
-		for (int i=MIN(4,radiobutton->nb_buttons-4*(j-1));i>=1; i--) {
-			//printf("create rec (i,j)=(%i,%i)\n",i,j);
+	for (int i=1; i<=radiobutton->nb_buttons; i++) {
 			rdbtn=CALLOC_TYPE(ei_linked_rdbtn_rec_t);
-			position.top_left.y=location.top_left.y+radiobutton->bar_height+radiobutton->border_width+radiobutton->btn_size.height+(j-1)*2*radiobutton->btn_size.height;
-			position.top_left.x=location.top_left.x+radiobutton->border_width+2*(i-1)*radiobutton->btn_size.width;
-			position.size=radiobutton->btn_size;
 			//printf("scrnloc:pt/size{%i,%i},{%i,%i}\n",location.top_left.x,location.top_left.y,location.size.width,location.size.height);
 			//printf("postion:pt/size{%i,%i},{%i,%i}\n",position.top_left.x,position.top_left.y,position.size.width,position.size.height);
 			rdbtn->rec=position;
 			rdbtn->rel=ei_relief_raised;
 			rdbtn->next=suivant;
+			if (suivant) rdbtn->next->prev=rdbtn;
 			suivant=rdbtn;
-			indice++;
+	}
+	rdbtn->prev=NULL;
+	return(rdbtn);
+}
+
+ei_linked_rdbtn_rec_t* place_rdbtn_rec(ei_radiobutton_t *radiobutton) {
+	ei_rect_t location=radiobutton->widget.screen_location;
+	ei_linked_rdbtn_rec_t* rdbtn=radiobutton->lrec;
+	while (1) {
+		if (rdbtn->next==NULL) break;
+		rdbtn=rdbtn->next;
+	}
+	ei_rect_t position;
+	for (int j=(int)ceil((float)radiobutton->nb_buttons/4.);j>=1; j--) {
+		for (int i=MIN(4,radiobutton->nb_buttons-4*(j-1));i>=1; i--) {
+			position.top_left.y=location.top_left.y+radiobutton->bar_height+radiobutton->border_width+radiobutton->btn_size.height+(j-1)*2*radiobutton->btn_size.height;
+			position.top_left.x=location.top_left.x+radiobutton->border_width+2*(i-1)*radiobutton->btn_size.width;
+			position.size=radiobutton->btn_size;
+			rdbtn->rec=position;
+			if (rdbtn->prev) rdbtn=rdbtn->prev;
 		}
 	}
-	/*
-	for (int i=0; i<=radiobutton->nb_buttons-2;i++) {
-		tab_addr[i]->next=tab_addr[i+1];
-		printf("tab[%i]=%x\n",i,tab_addr[i]);
-		printf("tab addr\n");
-	}
-	*/
 	return(rdbtn);
 }
 
 void aff_liste(ei_linked_rdbtn_rec_t *lrec) {
 	ei_rect_t position;
 	ei_linked_rdbtn_rec_t *lrec2=lrec;
-	printf("Rectangles chainés, top_left:  ");
+	printf("Rectangles chainés next, top_left:  ");
+	while (1) {
+			position=lrec->rec;
+			printf("{%i,%i}->",position.top_left.x,position.top_left.y);
+			//printf("suivant%x\n",lrec->next);
+			if (lrec->next==NULL) break;
+			lrec=lrec->next;
+		}
+	printf("\n");
+	printf("Rectangles chainés prev, top_left:  ");
 	while (lrec!=NULL) {
 			position=lrec->rec;
 			printf("{%i,%i}->",position.top_left.x,position.top_left.y);
 			//printf("suivant%x\n",lrec->next);
-			lrec=lrec->next;
+			lrec=lrec->prev;
 		}
 	printf("\n");
-	printf("Rectangles chainés, relief:  ");
+printf("Rectangles chainés, relief:  ");
 	while (lrec2!=NULL) {
 			position=lrec2->rec;
 			printf("%i->",lrec2->rel);
@@ -128,20 +146,24 @@ void aff_liste(ei_linked_rdbtn_rec_t *lrec) {
 }
 
 void modify_btn_rel(ei_radiobutton_t *radiobutton,int id) {
-	ei_linked_rdbtn_rec_t* tab[radiobutton->nb_buttons];
-	ei_linked_rdbtn_rec_t *suivant=NULL;
 	ei_linked_rdbtn_rec_t *lrec=radiobutton->lrec;
-	for (int i=0; i<=sizeof(tab)-1; i++) {
-		assert(lrec);
-		if (i+1!=id) lrec->rel=ei_relief_raised;
-		else lrec->rel=ei_relief_sunken;
-		tab[i]=lrec;
+	int indice=1;
+	while (1) {
+		if (indice!=id) {
+			lrec->rel=ei_relief_raised;
+			printf(" on raise  %i   ",indice);
+		} else {
+			lrec->rel=ei_relief_sunken;
+			printf(" on sunk  %i   ",indice);
+		}
+		indice ++;
+		if (lrec->next==NULL) break;
 		lrec=lrec->next;
 	}
-	for (int i=sizeof(tab)-1;i>=0; i--) {
-		lrec=tab[i];
-		lrec->next=suivant;
-		suivant=lrec;
+	printf("\n");
+	while (1) {
+		if (lrec->prev==NULL) break;
+		lrec=lrec->prev;
 	}
 	radiobutton->lrec=lrec;
 }
