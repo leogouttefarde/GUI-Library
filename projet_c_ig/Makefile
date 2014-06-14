@@ -76,7 +76,7 @@ TARGETS		=	${LIBEI} \
 
 PERSO_TESTS =  ensiskype toplevel test_placer test_relative \
 			   test_button2 test_geom ensiskype test_inter \
-			   gridder ensigrid
+			   gridder ensigrid test_button3
 
 all : ${TARGETS}
 
