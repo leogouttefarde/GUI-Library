@@ -2,7 +2,7 @@
  *  @file       ei_application.c
  *
  *  \author 
- *  Created by Antoine Delaite, Eric Burel, Léo Gouttefarde on 09.06.14
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 09.06.14
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
@@ -52,7 +52,7 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         ei_frame_register_class();
         ei_button_register_class();
         ei_toplevel_register_class();
-		  ei_radiobutton_register_class();
+        ei_radiobutton_register_class();
 
         // Initialisation du root_widget
         ei_set_root(ei_widget_create ("frame", NULL));
@@ -70,15 +70,12 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         // "button" dans cette fonction avec les callback 1 et 2 définies dans
         // ei_widget_class
         ei_bind(ei_ev_mouse_buttondown, NULL, "button", button_callback_click, NULL);
-        //ei_bind(ei_ev_mouse_buttonup, NULL, "button", button_callback_release, NULL);
 
         ei_bind(ei_ev_mouse_buttondown, NULL, "toplevel", toplevel_callback_click, NULL);
-        //ei_bind(ei_ev_mouse_buttonup, NULL, "toplevel", toplevel_callback_release, NULL);
 
         ei_bind(ei_ev_mouse_buttondown, NULL, "radiobutton", radiobutton_callback_click, NULL);
 
         ei_bind(ei_ev_mouse_buttonup, NULL, "all", all_callback_release, NULL);
-
 }
 
 /**

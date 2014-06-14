@@ -142,10 +142,6 @@ void frame_release(struct ei_widget_t* widget)
                 ei_frame_t *frame = (ei_frame_t*)widget;
 
                 SAFE_FREE(frame->text);
-
-                if (frame->img)
-                        hw_surface_free(frame->img);
-
                 SAFE_FREE(frame->img_rect);
 
                 SAFE_FREE(frame);
@@ -156,44 +152,30 @@ void frame_setdefaults(struct ei_widget_t* widget)
 {
         assert(widget);
 
-        // on commence par effectuer un recast
-        ei_frame_t *frame;
-        frame = (ei_frame_t*)widget;
+        // On commence par effectuer un recast
+        ei_frame_t *frame = (ei_frame_t*)widget;
+
         frame->border_width = 0;
-        // ei_surface_t represente un pointeur générique
+
         frame->img = NULL;
         frame->img_anchor = ei_anc_center;
         frame->img_rect = NULL;
 
-        if (frame->img_rect) {
-                frame->img_rect->top_left = ei_point_zero();
-                frame->img_rect->size = ei_size(10,10);
-        }
-
         frame->relief = ei_relief_none;
         frame->text = NULL;
         frame->text_anchor = ei_anc_center;
-        // red green blue A
-        ei_color_t tc = {0x00, 0x00, 0xFF, 0xFF};
-        frame->text_color = tc;
+
+        frame->text_color = ei_font_default_color;
         frame->text_font = ei_default_font;
 
-        // On obtient la taille correspondant au text voulu
-        // Exemple ici avec frame mais surtout utile pour button
-        // DONNE SEG_FAULT
-        /*int w;
-          int h;
-          hw_text_compute_size("Frame", frame->text_font, &w, &h);
-          frame->widget.requested_size = (ei_size(w,h));*/
         if (frame->text && frame->text_font)
-                // frame->widget.requested_size = ei_size(20, strlen(frame->text)*10);
                 hw_text_compute_size(frame->text, frame->text_font,
                                 &frame->widget.requested_size.width,
                                 &frame->widget.requested_size.height);
         else
                 frame->widget.requested_size = ei_size(100,100);
-        ei_color_t bg = {0xFF,0x00,0x00,0xFF};
-        frame->bg_color = bg;
+
+        frame->bg_color = ei_default_background_color;
 }
 
 // PRINCIPE : déduit le content_rect de la screen_location
@@ -677,46 +659,51 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
 
         ei_color_t bg_color={0x88,0x88,0x88,255};
         radiobutton->bg_color = bg_color;
-		  ei_color_t btn_color={0,0,0,255};
-		  radiobutton->btn_color=btn_color;
-		  ei_color_t txt_color={0,0,0,255};
-		  radiobutton->txt_color=txt_color;
-		  ei_color_t bar_color={255,255,255,255};
-		  radiobutton->bar_color=bar_color;
 
-		  ei_size_t btn_size ={15,15};
-		  radiobutton->btn_size=btn_size;
-		  radiobutton->btn_bdw=1;
-		  int border_width=6;
-		  radiobutton->border_width=border_width;
-		  int nb_buttons=7;
-		  radiobutton->nb_buttons=nb_buttons;
-		  char* tab_chaine[radiobutton->nb_buttons];
-		  tab_chaine[0]="Breizh libra";
-		  tab_chaine[1]="France Bleu Menhir";
-		  tab_chaine[2]="Carnac blues";
-		  tab_chaine[3]="Chouchen vibes";
-		  char* txt_default="No rfm selected";
-		  radiobutton->txt_default=txt_default;
-		  int nb_radios=4;
-		  radiobutton->nb_radios=nb_radios;
-		  ei_linked_rdbtn_txt_t *ltxt=rdbtn_txt_create(tab_chaine);
-		  radiobutton->ltxt=ltxt;
-		  radiobutton->font=ei_default_font;
-		  radiobutton->lrec=rdbtn_rec_create(radiobutton);
+        ei_color_t btn_color={0,0,0,255};
+        radiobutton->btn_color=btn_color;
 
-			int nb_lignes=(int)ceil((float)radiobutton->nb_buttons/4.);
-			int nb_btn_pc=4;
-			int nb_col=MIN(radiobutton->nb_buttons,nb_btn_pc);
-			ei_size_t s;
-			s.width=(2*nb_col-1)*btn_size.width+2*border_width;
-			int h;
-			hw_text_compute_size(tab_chaine[0],radiobutton->font,NULL,&h);
-			radiobutton->bar_height=h+6;
+        ei_color_t txt_color={0,0,0,255};
+        radiobutton->txt_color=txt_color;
 
-			s.height=radiobutton->bar_height+2*border_width+(2*nb_lignes)*btn_size.height;
-			printf("ceil..%i\n",nb_lignes);
-			radiobutton->widget.requested_size=s;
+        ei_color_t bar_color={255,255,255,255};
+        radiobutton->bar_color=bar_color;
+
+        ei_size_t btn_size ={15,15};
+        radiobutton->btn_size=btn_size;
+
+        radiobutton->btn_bdw=1;
+
+        int border_width=6;
+        radiobutton->border_width=border_width;
+        int nb_buttons=7;
+        radiobutton->nb_buttons=nb_buttons;
+        char* tab_chaine[radiobutton->nb_buttons];
+        tab_chaine[0]="Breizh libra";
+        tab_chaine[1]="France Bleu Menhir";
+        tab_chaine[2]="Carnac blues";
+        tab_chaine[3]="Chouchen vibes";
+        char* txt_default="No rfm selected";
+        radiobutton->txt_default=txt_default;
+        int nb_radios=4;
+        radiobutton->nb_radios=nb_radios;
+        ei_linked_rdbtn_txt_t *ltxt=rdbtn_txt_create(tab_chaine);
+        radiobutton->ltxt=ltxt;
+        radiobutton->font=ei_default_font;
+        radiobutton->lrec=rdbtn_rec_create(radiobutton);
+
+        int nb_lignes=(int)ceil((float)radiobutton->nb_buttons/4.);
+        int nb_btn_pc=4;
+        int nb_col=MIN(radiobutton->nb_buttons,nb_btn_pc);
+        ei_size_t s;
+        s.width=(2*nb_col-1)*btn_size.width+2*border_width;
+        int h;
+        hw_text_compute_size(tab_chaine[0],radiobutton->font,NULL,&h);
+        radiobutton->bar_height=h+6;
+
+        s.height=radiobutton->bar_height+2*border_width+(2*nb_lignes)*btn_size.height;
+        printf("ceil..%i\n",nb_lignes);
+        radiobutton->widget.requested_size=s;
         //toplevel->widget.requested_size = s;
         /*int w;
           int h;
