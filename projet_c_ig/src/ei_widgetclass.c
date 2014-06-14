@@ -16,7 +16,18 @@
 #include "ei_common.h"
 #include "ei_utilities.h"
 #include "ei_linkedlist.h"
+#include "ei_core.h"
 
+// Utilisé dans les geom_notify
+void invalidate_widget(ei_widget_t *widget){
+
+        if (widget->parent && widget->parent->content_rect)
+                ei_invalidate_rect(ei_rect_intersection(&widget->screen_location,
+                                        widget->parent->content_rect));
+        else
+                ei_invalidate_rect(&widget->screen_location);
+
+}
 
 /* widgetclass linked list */
 static ei_linkedlist_t ei_class_list = { NULL, NULL };
@@ -181,12 +192,15 @@ void frame_setdefaults(struct ei_widget_t* widget)
 // PRINCIPE : déduit le content_rect de la screen_location
 void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
+        // On invalide l'ancienne position
+        invalidate_widget(widget);
+
+
         ei_rect_t* content_rect = NULL;
 
-        if (    widget->content_rect
+        if (widget->content_rect
                         && (widget->content_rect != &widget->screen_location))
                 content_rect = widget->content_rect;
-
         else
                 content_rect = CALLOC_TYPE(ei_rect_t);
 
@@ -200,7 +214,6 @@ void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                         *content_rect = rect;
                         content_rect->top_left.x =  content_rect->top_left.x +
                                 bw;
-
                         content_rect->top_left.y =  content_rect->top_left.y +
                                 bw;
 
@@ -213,9 +226,10 @@ void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                         widget->screen_location = ei_rect_zero();
                         content_rect = &widget->screen_location;
                 }
-
                 widget->content_rect = content_rect;
         }
+        // On invalide la nouvelle position
+        invalidate_widget(widget);
 }
 
 /**
@@ -352,6 +366,9 @@ void button_setdefaults(struct ei_widget_t* widget)
 
 void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
+        // On invalide l'ancienne position
+        invalidate_widget(widget);
+
         ei_rect_t* content_rect = NULL;
 
         if (    widget->content_rect
@@ -384,6 +401,8 @@ void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                         content_rect = &widget->screen_location;
                 }
                 widget->content_rect = content_rect;
+                // On invalide la nouvelle position
+                invalidate_widget(widget);
         }
 }
 /**
@@ -508,6 +527,11 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 
 void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
+        // On invalide l'ancienne screen_location
+        invalidate_widget(widget);
+
+
+
         ei_rect_t screen_location = rect;
         //Gestion de la min_size
         ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
@@ -517,7 +541,6 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                 screen_location.size.height = MAX(toplevel->min_size->height,
                                 screen_location.size.height);
         }
-
         ei_rect_t* content_rect = NULL;
 
 
@@ -525,7 +548,6 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
         if (widget->content_rect
                         && (widget->content_rect != &widget->screen_location))
                 content_rect = widget->content_rect;
-
         else
                 content_rect = CALLOC_TYPE(ei_rect_t);
 
@@ -542,12 +564,13 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                         content_rect->size.width =widget->screen_location.size.width-2*bw;
                 }
                 else{
-                        //printf("on est ds else\n");
                         widget->screen_location = ei_rect_zero();
                         content_rect = &widget->screen_location;
                 }
 
                 widget->content_rect = content_rect;
+                // On invalide la nouvelle position
+                invalidate_widget(widget);
         }
 }
 

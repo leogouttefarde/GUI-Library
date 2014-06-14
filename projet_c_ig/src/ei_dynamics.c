@@ -222,9 +222,9 @@ void resize_gridder(ei_widget_t *widget, ei_point_t where){
 
         // On introduit un forcage
         if (param->force_w)
-                *force_w = MAX(*param->col + *force_w, *param->force_w);
+                *force_w = MAX(*param->col + *w, *param->force_w);
         if (param->force_h)
-                *force_h = MAX(*param->lin + *force_h, *param->force_h);
+                *force_h = MAX(*param->lin + *h, *param->force_h);
 
         //Grid si changement
         if (*w != *param->w || *h != *param->h)
@@ -404,12 +404,12 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
                 int *force_w = CALLOC_TYPE(int);
                 int *force_h = CALLOC_TYPE(int);
 
-                *force_w = MAX(*param->col, *col);
-                *force_h = MAX(*param->lin, *lin);
+                *force_w = *param->w + MAX(*param->col, *col);
+                *force_h = *param->h + MAX(*param->lin, *lin);
                 if (param->force_w)
-                        *force_w = MAX(*force_w + *param->w, *param->force_w);
+                        *force_w = MAX(*force_w, *param->force_w);
                 if (param->force_h)
-                        *force_h =  MAX(*force_h + *param->h, *param->force_h);
+                        *force_h =  MAX(*force_h, *param->force_h);
 
                 if (*lin != *param->lin || *col != *param->col)
                         ei_grid(widget, lin, col ,param->w, param->h, force_w,

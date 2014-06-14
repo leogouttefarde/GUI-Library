@@ -91,9 +91,6 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 void ei_place_runfunc(struct ei_widget_t*       widget)
 {
 
-        /* On commence par invalider l'ancien rectangle */
-        ei_invalidate_rect(&widget->screen_location);
-
         /* On calcule la nouvelle screen_location */
 
         // Placement
@@ -277,9 +274,6 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         // Appel a geomnotify
         widget->wclass->geomnotifyfunc(widget, screen_location);
 
-        /* On invalide le nouveau rectangle*/
-        ei_rect_t new_pos = widget->screen_location;
-        ei_invalidate_rect(&new_pos);
 
         /* Appels récursifs sur les enfants */
         // Appel récursif sur les enfants pour les replacer

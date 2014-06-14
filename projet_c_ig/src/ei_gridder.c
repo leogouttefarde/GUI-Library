@@ -95,8 +95,6 @@ void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height){
 // Runfunc du gridder
 void ei_grid_runfunc(ei_widget_t *widget){
 
-        /* On commence par invalider l'ancien rectangle */
-        ei_invalidate_rect(&widget->screen_location);
 
         if(widget->parent){
                 // Lecture des paramètres
@@ -111,9 +109,6 @@ void ei_grid_runfunc(ei_widget_t *widget){
                         // Appel a geomnotify
                         widget->wclass->geomnotifyfunc(widget, screen_location);
 
-                        /* On invalide le nouveau rectangle*/
-                        ei_rect_t new_pos = widget->screen_location;
-                        ei_invalidate_rect(&new_pos);
 
                         /* Appels récursifs sur les enfants */
                         // Appel récursif sur les enfants pour les replacer
