@@ -11,6 +11,7 @@
 #include "ei_geometrymanager_pv.h"
 #include "ei_common.h"
 #include "ei_core.h"
+#include "ei_root.h"
 #include "ei_utils.h"
 #include "ei_linkedlist.h"
 // Pour le type placer_param

@@ -1,7 +1,8 @@
 /**
- * @file	ei_utils.h
+ * @file	ei_common.h
  *
- * @brief	Common header
+ * @brief	Common header. Contains defines for allocation and frequent
+ * operations.
  */
 
 #ifndef EI_COMMON_H

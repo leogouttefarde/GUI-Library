@@ -11,6 +11,7 @@
 #include "ei_widgettypes.h"
 #include "ei_utils.h"
 #include "ei_core.h"
+#include "ei_root.h"
 #include "ei_common.h"
 #include "hw_interface.h"
 #include "ei_utilities.h"

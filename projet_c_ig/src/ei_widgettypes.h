@@ -1,4 +1,12 @@
-
+/**
+ *  @file	ei_widgettypes.h
+ *  @brief	Manages the update rectangles
+ *
+ *  \author 
+ *  Created by Eric BUREL on 05.06.14
+ *  Copyright 2014 Ensimag. All rights reserved.
+ *
+ */
 #ifndef EI_WIDGETTYPES_H
 #define EI_WIDGETTYPES_H
 
@@ -6,7 +14,9 @@
 #include "ei_widget.h"
 
 
-//Definition du type frame
+/**
+ * @brief Parameters describing a frame
+ */
 typedef struct ei_frame_t {
         ei_widget_t widget;
         ei_color_t bg_color;
@@ -30,7 +40,9 @@ typedef struct ei_frame_t {
 } ei_frame_t;
 
 
-//Definition du type button
+/**
+ * @brief Parameters describing a button
+ */
 typedef struct ei_button_t {
         ei_widget_t widget;
         ei_color_t      *color;
@@ -48,6 +60,9 @@ typedef struct ei_button_t {
         void *  user_param;
 } ei_button_t;
 
+/**
+ * @brief Parameters describing a toplevel
+ */
 typedef struct ei_toplevel_t {
         ei_widget_t widget;
         ei_color_t      color;

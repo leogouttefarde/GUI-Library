@@ -1,20 +1,15 @@
-
 #include "ei_callback.h"
 
+// Variable globales pour mémoriser le widget pressé
 static ei_widget_t *pressed = NULL;
 static ei_callback_t callback = NULL;
 
 
-/***** Callbacks *****/
-
-// Gestion du mouvement de la souris pour un toplevel
+// Gestion du move
 ei_bool_t all_callback_move_move(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param)
 {
-        ei_widget_t *current = (ei_widget_t*)user_param;
-        move(current, event->param.mouse.where);
-
-
+        move((ei_widget_t*)user_param , event->param.mouse.where);
         return EI_FALSE;
 }
 
@@ -28,8 +23,6 @@ ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
         return EI_FALSE;
 }
 
-// Callback pour gérer le clic sur un toplevel(deplacement, redimensionnement,
-// fermeture)
 // Si nécessaire effectue les bind avec toplevel en param
 ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
@@ -93,7 +86,6 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, v
 
                 ei_button_t *button = (ei_button_t*)widget;
                 button->relief = ei_relief_sunken;
-
                 ei_invalidate_rect(&widget->screen_location);
 
                 pressed = widget;

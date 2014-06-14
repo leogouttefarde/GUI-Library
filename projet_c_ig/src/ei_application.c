@@ -13,6 +13,7 @@
 #include "ei_widgetclass_pv.h"
 #include "ei_widgettypes.h"
 #include "ei_core.h"
+#include "ei_root.h"
 #include "ei_callback.h"
 #include "ei_utils.h"
 #include "ei_gridder.h"
@@ -100,9 +101,9 @@ void ei_app_free()
 
         hw_quit();
 
-        #ifdef LEAK_TRACKER
+#ifdef LEAK_TRACKER
         printf("\nLeaks : %d\n", ALLOCATION_COUNTER);
-        #endif
+#endif
 }
 
 /**
