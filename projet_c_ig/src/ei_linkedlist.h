@@ -20,7 +20,7 @@
 typedef void* ei_elem_t;
 
 /**
- * @brief	An element and previous next pointers to create a linked doubly linked list.
+ * @brief	An element and previous / next pointers to create a doubly linked list.
  */
 typedef struct ei_linked_elem_t {
         ei_elem_t elem;
@@ -39,7 +39,7 @@ typedef struct ei_linked_list_t {
 
 /**
  * \brief       ei_linkedlist_t callback function.
- *              Useful to automatically call a function on each list elemnent.
+ *              Useful to automatically call a function on each list element.
  *
  * @param       link            Linked list element
  * @param       user_param      User parameters
