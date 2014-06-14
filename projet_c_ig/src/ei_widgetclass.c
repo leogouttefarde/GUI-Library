@@ -38,7 +38,7 @@ void ei_widgetclass_register    (ei_widgetclass_t* widgetclass)
         }
 }
 
-/* Permet aux geom_notify d'invalider la screen_location d'un widget */
+/* Renvoie true si le widget a une classe définie */
 ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name)
 {
         return (widget && widget->wclass && !strcmp(widget->wclass->name, name));
@@ -81,14 +81,13 @@ ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
 
 
 /* Dessin de pick_surface */
-void pick_surface_draw(ei_surface_t pick_surface, ei_widget_t *widget, ei_rect_t *clipper){
+void pick_surface_draw(ei_surface_t pick_surface, ei_widget_t *widget, ei_rect_t *clipper)
+{
         hw_surface_lock(pick_surface);
-        ei_linked_point_t lp;
-        ei_rect_t rect = widget->screen_location;
-        lp = ei_rect_to_points(rect);
 
-        ei_draw_polygon(pick_surface, &lp, *widget->pick_color, clipper);
-        free_lp(lp.next);
+        ei_rect_t *inter = ei_rect_intersection(&widget->screen_location, clipper);
+        ei_fill(pick_surface, widget->pick_color, inter);
+        SAFE_FREE(inter);
 
         hw_surface_unlock(pick_surface);        
 }

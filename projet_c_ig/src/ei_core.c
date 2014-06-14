@@ -166,29 +166,23 @@ void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
 }
 
 // Demande la mise a jour d'un rectangle sur tous les widgets
-void ei_draw_rect(ei_rect_t *rect)
+ei_bool_t ei_draw_rect(ei_linked_elem_t *link, void *user_param)
 {
+        ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
         ei_widget_t *root = ei_get_root();
 
-        if (root && rect) {
-                ei_draw_widget(root, rect);
+        /* If valid linked rectangle, draw it */
+        if (lrect && root) {
+                ei_draw_widget(root, &lrect->rect);
         }
+
+        return EI_FALSE;
 }
 
-// Demande a mise a jour de l'écran sur tous les rectangles invalidate
+// Demande la mise a jour de l'écran sur tous les rectangles invalides
 void ei_draw_rects()
 {
-        ei_linked_elem_t *link = ei_update_rects.head;
-
-        while (link) {
-                ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
-
-                /* If valid linked rectangle, draw it */
-                if (lrect)
-                        ei_draw_rect(&lrect->rect);
-
-                link = link->next;
-        }
+        ei_linkedlist_applyfunc(&ei_update_rects, ei_draw_rect, NULL);
 }
 
 void ei_invalidate_reset()
@@ -269,13 +263,16 @@ ei_rect_t* ei_smaller_fused(const ei_rect_t *rect1, const ei_rect_t *rect2)
         return fuse;
 }
 
-void ei_invalidate_rect(ei_rect_t* rect)
+void ei_invalidate_rect(ei_rect_t* invalid_rect)
 {
-        if (rect) {
-                /* On commence par intersecter le rectangle avec le root_widget */
+        if (invalid_rect) {
+                ei_rect_t *rect = NULL;
                 ei_rect_t temp;
+
+                /* On commence par intersecter le rectangle avec le root_widget */
                 temp =  hw_surface_get_rect(ei_get_root_surface());
-                rect = ei_rect_intersection(rect, &temp);
+                rect = ei_rect_intersection(invalid_rect, &temp);
+
                 if (rect) {
                         /* On ajoute le rectangle */
                         ei_rect_t new_rect = *rect;
@@ -330,8 +327,9 @@ void ei_invalidate_rect(ei_rect_t* rect)
                                         ei_linkedlist_add(&ei_update_rects, new_link);
                                 }
                         }
+
+                        SAFE_FREE(rect);
                 }
-                SAFE_FREE(rect);
         }
 }
 
