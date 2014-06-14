@@ -1,4 +1,5 @@
 #include "ei_dynamics.h"
+
 /* Calcule le point d'ancrage a partir du top_left et du bottom_right*/
 ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc){
         int x1 = tl.x;
@@ -55,7 +56,6 @@ ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc){
 }
 
 /* Fonction de resize pour le placer*/
-
 void resize_placer(ei_widget_t *widget, ei_point_t where){
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
         // La fonction resize ne fonctionne que sur le placer
@@ -257,14 +257,13 @@ void resize(ei_widget_t *widget, ei_point_t where)
         if (widget->geom_params && widget->geom_params->manager 
                         && widget->geom_params->manager == placer) {
                 resize_placer(widget, where);
-        }
-        else if (widget->geom_params && widget->geom_params->manager 
+        } else if (widget->geom_params && widget->geom_params->manager 
                         && widget->geom_params->manager == gridder) {
                 resize_gridder(widget, where);
         }
 }
 
-
+/* Fonction de déplacement du placer */
 void move_placer(ei_widget_t *widget, ei_point_t where){
 
         ei_placer_param_t *param =
@@ -322,15 +321,13 @@ void move_placer(ei_widget_t *widget, ei_point_t where){
                         // Nouveau x relatif
                         if (param->x){
                                 SAFE_FREE(rel_x);
-                        }
-                        else{
+                        } else{
                                 *rel_x = (float)(*x) / (float)(p_w -1);
                                 SAFE_FREE(x);
                         }
                         if (param->y){
                                 SAFE_FREE(rel_y);
-                        }
-                        else{
+                        } else{
                                 *rel_y = (float)(*y) / (float)(p_h -1);
                                 SAFE_FREE(y);
                         }
@@ -350,19 +347,9 @@ void move_placer(ei_widget_t *widget, ei_point_t where){
                 SAFE_FREE(rel_y);
         }
 }
+
+/* Deplacement pour le gridder */
 void move_gridder(ei_widget_t *widget, ei_point_t where){
-        /* PRINCIPE
-         *
-         *  On calcule ecart = where - topleft
-         *  On divise  ecart.x par width elementaire 
-         *  (width elem = width widget / param->w)
-         *  On divise ecart.y par height elementaire
-         *  On obtient le nombre de cases a décaler
-         *  On decale
-         *
-         *  Version naive, on aura des problemes aux bords
-         *  mais pas si mal normalement
-         */
 
         ei_gridder_param_t *param =
                 (ei_gridder_param_t*)widget->geom_params;
@@ -428,8 +415,7 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
 
 }
 
-/* Fonction de mouvement
- * Deplacement brut */
+/* Selectionne la fonction de déplacement selon la géométrie du widget */
 void move(ei_widget_t *widget, ei_point_t where)
 {
         assert(widget);
