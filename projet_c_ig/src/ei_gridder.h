@@ -22,15 +22,24 @@ void ei_grid(ei_widget_t *widget, int *col, int *lin, int *w, int *h, int
                 *force_w, int *force_h);
 
 
-// Runfunc du gridder
+/**
+ * @brief   Gridder runfunc, calculate the screen_location
+ *                  
+ * @param   widget        Widget to grid
+ */
 void ei_grid_runfunc(ei_widget_t *widget);
 
 
+/**
+ * @brief   Gridder releasefunc, release the geometrical parameters
+ *                  
+ * @param   widget        Widget whose geometry is to destroy
+ */
 void ei_grid_releasefunc(struct ei_widget_t* widget);
-// Register
+
 /**
  * \brief       Registers the "gridder" geometry manager in the program. This must be called only
- *              once before the \ref ei_place function can be called.
+ *              once before the \ref ei_grid function can be called.
  */
 void  ei_register_gridder_manager();
 

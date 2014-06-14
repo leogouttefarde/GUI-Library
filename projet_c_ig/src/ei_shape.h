@@ -3,8 +3,8 @@
 /**
  * @file	ei_shape.h
  *
- * @brief 	Basic geometrical transformations and shape generating for
- *              classes
+ * @brief       At first designed to contain basical geometrical operations, now
+ *              only contains a rectangle/point_list converter.
  *
  *  Created by Eric BUREL on 04.06.14
  *  Copyright 2014 Ensimag. All rights reserved.
@@ -12,7 +12,6 @@
  */
 #include "ei_types.h"
 #include "ei_utils.h"
-//**************** Basic functions ****************/
 
 
 /**

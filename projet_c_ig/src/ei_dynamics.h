@@ -18,7 +18,23 @@
 #include "ei_gridder.h"
 #include <stdlib.h>
 #include <assert.h> 
+
+/**
+ * @brief   Select the resizing function depending on the widget geometry
+ *          manager and applies it
+ *                  
+ * @param   widget        Widget to resize
+ * @param   where         Last position of the cursor
+ */
 void resize(ei_widget_t *widget, ei_point_t where);
+
+/**
+ * @brief   Select the movement function depending on the widget geometry
+ *          manager and applies it
+ *                  
+ * @param   widget        Widget to move
+ * @param   where         Last position of the cursor
+ */
 void move(ei_widget_t *widget, ei_point_t where);
 
 

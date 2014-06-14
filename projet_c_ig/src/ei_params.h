@@ -13,10 +13,10 @@
 // Cet include aurait pu etre supprimé en déclarant ici le type
 // ei_geometry_param_t
 #include "ei_geometrymanager.h"
-
 #include "ei_types.h"
+
 /**
- * \brief       Placer geometry manager
+ * @brief       Placer geometry manager
  */
 typedef struct ei_placer_param_t {
         ei_geometry_param_t geom;       /* ei_geometry_param_t child */
@@ -32,10 +32,15 @@ typedef struct ei_placer_param_t {
 } ei_placer_param_t;
 
 
+/**
+ * @brief       Gridder geometry manager
+ */
 typedef struct ei_gridder_param_t {
         ei_geometry_param_t geom;
+        // Position
         int* lin;
         int* col;
+        // Taille
         int* w;
         int* h;
         // Pour forcer la taille de la grille
