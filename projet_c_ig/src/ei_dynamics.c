@@ -379,17 +379,17 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
                 int x = where.x - location.top_left.x;
                 int y = where.y - location.top_left.y;
                 if (x<0) //<< Souris a gauche du widget
-                        x = F2I(I2F(x) / elem_w) - 1;
+                        x = F2I(I2F(x) / elem_w);
                 else if (x - location.size.width + 1 > 0)
                         x = F2I(I2F(x - location.size.width + 1) / elem_w) + 1;
                 else
                         x = 0;
 
                 if (y<0) //<< Souris a droite du widget
-                        y = F2I(I2F(y) / elem_h) - 1 ;
+                        y = F2I(I2F(y) / elem_h);
                 else if (y - location.size.height + 1 > 0)
                         y = F2I(I2F(y - location.size.height + 1) / elem_h ) + 1;
-                else
+                else 
                         y = 0;
 
                 // On calcule la nouvelle position
