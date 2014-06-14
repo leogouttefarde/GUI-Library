@@ -233,12 +233,6 @@ ei_widget_t* ei_widget_pick (ei_point_t* where)
         return selection;
 }
 
-/* Renvoie true si le widget a une classe définie */
-ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name)
-{
-        return (widget && widget->wclass && !strcmp(widget->wclass->name, name));
-}
-
 /* Permet de configurer une frame */
 void    ei_frame_configure (ei_widget_t* widget,
                 ei_size_t*              requested_size,

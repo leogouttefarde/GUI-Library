@@ -166,29 +166,23 @@ void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
 }
 
 // Demande la mise a jour d'un rectangle sur tous les widgets
-void ei_draw_rect(ei_rect_t *rect)
+ei_bool_t ei_draw_rect(ei_linked_elem_t *link, void *user_param)
 {
+        ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
         ei_widget_t *root = ei_get_root();
 
-        if (root && rect) {
-                ei_draw_widget(root, rect);
+        /* If valid linked rectangle, draw it */
+        if (lrect && root) {
+                ei_draw_widget(root, &lrect->rect);
         }
+
+        return EI_FALSE;
 }
 
-// Demande a mise a jour de l'écran sur tous les rectangles invalidate
+// Demande la mise a jour de l'écran sur tous les rectangles invalides
 void ei_draw_rects()
 {
-        ei_linked_elem_t *link = ei_update_rects.head;
-
-        while (link) {
-                ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
-
-                /* If valid linked rectangle, draw it */
-                if (lrect)
-                        ei_draw_rect(&lrect->rect);
-
-                link = link->next;
-        }
+        ei_linkedlist_applyfunc(&ei_update_rects, ei_draw_rect, NULL);
 }
 
 void ei_invalidate_reset()
@@ -331,6 +325,7 @@ void ei_invalidate_rect(ei_rect_t* rect)
                                 }
                         }
                 }
+
                 SAFE_FREE(rect);
         }
 }
