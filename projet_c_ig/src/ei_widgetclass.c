@@ -17,7 +17,6 @@
 #include "ei_utilities.h"
 #include "ei_linkedlist.h"
 #include "ei_radiobutton.h"
-#include <math.h>
 #include "ei_core.h"
 #include "ei_tag.h"
 
@@ -37,6 +36,11 @@ void ei_widgetclass_register    (ei_widgetclass_t* widgetclass)
                 ei_tag_create(widgetclass->name);
                 ei_linkedlist_add(&ei_class_list, widgetclass);
         }
+}
+
+ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name)
+{
+        return (widget && widget->wclass && !strcmp(widget->wclass->name, name));
 }
 
 // Utilisé dans les geom_notify
@@ -324,7 +328,7 @@ void button_setdefaults(struct ei_widget_t* widget)
 
 
         button->border_width = 2;
-        button->corner_radius = 3;
+        button->corner_radius = k_default_button_corner_radius;
         button->relief = ei_relief_raised;
         button->text = NULL;
         button->text_font = ei_default_font;
@@ -482,32 +486,35 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
         toplevel = (ei_toplevel_t*)widget;
         assert(toplevel);
 
-        ei_size_t s = {100, 100};
-        toplevel->widget.requested_size = s;
+        ei_size_t size = { 320, 240 };
+        toplevel->widget.requested_size = size;
 
-        toplevel->bar_height=25;
-        ei_color_t bar_color={255,255,255,255};
-        toplevel->bar_color=bar_color;
+        toplevel->bar_height = 25;
 
-        toplevel->rel_btn_close=ei_relief_raised;
+        ei_color_t bar_color = { 255, 255, 255, 255 };
+        toplevel->bar_color = bar_color;
 
-        ei_color_t c = {0x00, 0xff, 0x00, 0xFF};
-        toplevel->color = c;
+        toplevel->rel_btn_close = ei_relief_raised;
+
+        toplevel->color = ei_default_background_color;
 
         toplevel->border_width = 4;
 
         make_string_copy(&toplevel->title, "Toplevel");
-        toplevel->title_font=ei_default_font;
-        ei_color_t title_color={0,0,0,255};
-        toplevel->title_color=title_color;
+        toplevel->title_font = ei_default_font;
+
+        ei_color_t title_color = { 0, 0, 0, 255 };
+        toplevel->title_color = title_color;
 
 
-        ei_size_t *ms = CALLOC_TYPE(ei_size_t);
-        assert(ms);
-        ms->width = 50;
-        ms->height = 50;
+        ei_size_t *min_size = CALLOC_TYPE(ei_size_t);
+        assert(min_size);
 
-        toplevel->min_size = ms;
+        min_size->width = 160;
+        min_size->height = 120;
+
+        toplevel->min_size = min_size;
+
 
         // Gestion du move, resize
         toplevel->move_pos = ei_point(0,0);
