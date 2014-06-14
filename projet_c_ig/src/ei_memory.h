@@ -10,7 +10,7 @@
 
 #ifdef LEAK_TRACKER
 
-#define SAFE_FREE(p) do {if (p != NULL) { ALLOCATION_COUNTER--; free(p); p = NULL; } } while(0)
+#define SAFE_FREE(p) do { if (p != NULL) { ALLOCATION_COUNTER--; free(p); p = NULL; } } while(0)
 #define CALLOC(num, size) ((void*)((long long)calloc(num, size) & (long long)(0xFFFFFFFFFFFFFFFF | (++ALLOCATION_COUNTER))))
 #define CALLOC_TYPE(type) (CALLOC(1, sizeof(type)))
 #define MALLOC(size) (CALLOC(1, size))

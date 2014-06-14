@@ -23,7 +23,7 @@ LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
    ${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o \
    ${OBJDIR}/ei_utilities.o ${OBJDIR}/ei_debug.o \
    ${OBJDIR}/ei_gridder.o ${OBJDIR}/ei_dynamics.o \
-   ${OBJDIR}/ei_root.o
+   ${OBJDIR}/ei_root.o ${OBJDIR}/ei_tag.o
 
 
 # Platform specific definitions (OS X, Linux, Windows)

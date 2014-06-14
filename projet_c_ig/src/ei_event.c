@@ -3,7 +3,7 @@
  *  @brief      Allows the binding and unbinding of callbacks to events.
  *
  *  \author 
- *  Created by Léo Gouttefarde on 04.06.14.
+ *  Created by Léo GOUTTEFARDE on 04.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
@@ -12,6 +12,7 @@
 #include "ei_core.h"
 #include "ei_utilities.h"
 #include "ei_linkedlist.h"
+#include "ei_tag.h"
 
 
 /* Event binding table */
@@ -131,9 +132,11 @@ void ei_event_process(ei_event_t *event)
                 call = EI_FALSE;
 
                 if (binding && binding->callback) {
+                        ei_tag_t tag = binding->tag;
+
                         // Si le tag est "all", on appelle le callback
                         // dans tous les cas
-                        if (binding->tag && !strcmp(binding->tag, "all"))
+                        if (tag && !strcmp(tag, "all"))
                                 call = EI_TRUE;
 
                         else {
@@ -164,10 +167,8 @@ void ei_event_process(ei_event_t *event)
                                                         call = EI_TRUE, widget = selection;
 
                                                 /* If selection widget is tagged */
-                                                else if (binding->tag && selection->wclass) {
-                                                        if (!strcmp(selection->wclass->name, binding->tag)) {
-                                                                call = EI_TRUE, widget = selection;
-                                                        }
+                                                else if (tag && ei_has_tag(selection, tag)) {
+                                                        call = EI_TRUE, widget = selection;
                                                 }
                                         }
 

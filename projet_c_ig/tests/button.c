@@ -6,6 +6,7 @@
 #include "hw_interface.h"
 #include "ei_widget.h"
 #include "ei_geometrymanager.h"
+#include "ei_tag.h"
 
 
 /*
@@ -59,14 +60,36 @@ int ei_main(int argc, char** argv)
 
 	/* Create the application and change the color of the background. */
 	ei_app_create(&screen_size, EI_FALSE);
-	ei_frame_configure(ei_app_root_widget(), NULL, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
 
-	/* Create, configure and place the button on screen. */
-	button = ei_widget_create("button", ei_app_root_widget());
-	ei_button_configure	(button, &button_size, &button_color,
-				 &button_border_width, &button_corner_radius, &button_relief, &button_title, NULL, &button_text_color, NULL,
-				 NULL, NULL, NULL, &button_callback, NULL);
-	ei_place(button, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
+        ei_frame_configure(ei_app_root_widget(), NULL, &root_bgcol, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL, NULL);
+
+        /* Create, configure and place the button on screen. */
+        button = ei_widget_create("button", ei_app_root_widget());
+        ei_button_configure     (button, &button_size, &button_color,
+                                 &button_border_width, &button_corner_radius, &button_relief, &button_title, NULL, &button_text_color, NULL,
+                                 NULL, NULL, NULL, &button_callback, NULL);
+        ei_place(button, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
+
+
+
+        printf("ei_has_tag(button, \"Fun\") : %d\n", ei_has_tag(button, "Fun"));
+
+        ei_tag(button, "Fun");
+
+
+        ei_tag_create("Ensimag");
+        ei_tag_create("Fun");
+        ei_tag_create("C");
+
+        ei_untag(button, "button");
+
+        printf("ei_has_tag(button, \"Fun\") : %d\n", ei_has_tag(button, "Fun"));
+
+        ei_tag(button, "Fun");
+
+        printf("ei_has_tag(button, \"Fun\") : %d\n", ei_has_tag(button, "Fun"));
+
+
 
 	/* Hook the keypress callback to the event. */
 	ei_bind(ei_ev_keydown,		NULL, "all", process_key, NULL);
@@ -76,6 +99,12 @@ int ei_main(int argc, char** argv)
 
         /* We just exited from the main loop. Terminate the application (cleanup). */
         ei_unbind(ei_ev_keydown,	NULL, "all", process_key, NULL);
+
+
+        ei_tag_destroy("Ensimag");
+        ei_tag_destroy("Fun");
+        ei_tag_destroy("C");
+
         ei_app_free();
 
         return (EXIT_SUCCESS);

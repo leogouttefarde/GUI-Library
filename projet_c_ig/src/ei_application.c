@@ -18,6 +18,7 @@
 #include "ei_utils.h"
 #include "ei_gridder.h"
 #include "ei_geometrymanager_pv.h"
+#include "ei_tag.h"
 
 
 static ei_bool_t quit_request = EI_FALSE;
@@ -98,6 +99,8 @@ void ei_app_free()
         ei_geometrymanager_free();
 
         ei_invalidate_reset();
+
+        ei_tag_free();
 
         hw_quit();
 

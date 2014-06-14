@@ -15,6 +15,7 @@
 #include "ei_common.h"
 #include "hw_interface.h"
 #include "ei_utilities.h"
+#include "ei_tag.h"
 
 
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
@@ -50,8 +51,8 @@ void increase_color(ei_color_t *color)
  */
 
 // Quels paramètres faut-il initialiser ici ?
-ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name, 
-                ei_widget_t* parent){
+ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name, ei_widget_t* parent)
+{
         ei_widget_t *widget = NULL;
         ei_widgetclass_t *wclass;
 
@@ -110,6 +111,10 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
                 // texte
                 if (wclass->setdefaultsfunc)
                         wclass->setdefaultsfunc(widget);
+
+
+                ei_tag(widget, class_name);
+
 
                 return widget;
         }
