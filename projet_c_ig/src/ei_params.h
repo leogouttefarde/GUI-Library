@@ -46,6 +46,9 @@ typedef struct ei_gridder_param_t {
         // Pour forcer la taille de la grille
         int* force_w;
         int* force_h;
+        // Pour retenir la taille du rectangle elementaire
+        float elem_w;
+        float elem_h;
 } ei_gridder_param_t;
 
 #endif

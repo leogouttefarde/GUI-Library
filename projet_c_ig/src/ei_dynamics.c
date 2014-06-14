@@ -1,5 +1,4 @@
 #include "ei_dynamics.h"
-
 /* Calcule le point d'ancrage a partir du top_left et du bottom_right*/
 ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc){
         int x1 = tl.x;
@@ -208,23 +207,20 @@ void resize_gridder(ei_widget_t *widget, ei_point_t where){
         pos.y = pos.y - widget->screen_location.top_left.y;
 
         // Calcul du rectangle elementaire
-        ei_size_t elem_size = widget->screen_location.size;
-        elem_size.width = MAX(elem_size.width / *param->w, 1);
-        elem_size.height = MAX(elem_size.height / *param->h, 1);
+        float elem_w = param->elem_w;
+        float elem_h = param->elem_h;
 
         //Calcul de la nouvelle ligne, colonne
         int *w = CALLOC_TYPE(int);
         int *h = CALLOC_TYPE(int);
 
-        *w = (pos.x / elem_size.width) + 1;
-        *h = (pos.y / elem_size.height) + 1;
+        *w = F2I(I2F(pos.x) / elem_w) + 1;
+        *h = F2I(I2F(pos.y) / elem_h) + 1;
 
         int *force_w = CALLOC_TYPE(int);
         int *force_h = CALLOC_TYPE(int);
 
         // On introduit un forcage
-        *force_w = MAX(*param->w, *w);
-        *force_h = MAX(*param->h, *h);
         if (param->force_w)
                 *force_w = MAX(*param->col + *force_w, *param->force_w);
         if (param->force_h)
@@ -372,27 +368,27 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
 
         if (!strcmp(widget->wclass->name, "toplevel")){
                 ei_rect_t location = widget->screen_location;
-                // On calcule la taille du carré élémentaire
-                ei_size_t elem_size = widget->screen_location.size;
-                elem_size.width = MAX(elem_size.width / *param->w, 1);
-                elem_size.height = MAX(elem_size.height / *param->h, 1);
+                // Calcul du rectangle elementaire
+                float elem_w = param->elem_w;
+                float elem_h = param->elem_h;
+
 
                 // On trouve x,y tel que la souris soit a x, y blocs du widget
                 // En theorie x,y valent 0 ou 1 sauf deplacement rapide de la
                 // souris
                 int x = where.x - location.top_left.x;
                 int y = where.y - location.top_left.y;
-                if (x<=0) //<< Souris a droite du widget
-                        x = (x - elem_size.width) / elem_size.width;
+                if (x<0) //<< Souris a gauche du widget
+                        x = F2I(I2F(x) / elem_w) - 1;
                 else if (x - location.size.width + 1 > 0)
-                        x = (x - location.size.width + 1 + elem_size.width) / elem_size.width;
+                        x = F2I(I2F(x - location.size.width + 1) / elem_w) + 1;
                 else
                         x = 0;
 
-                if (y<=0) //<< Souris a droite du widget
-                        y = (y - elem_size.height) / elem_size.height;
-                else if (y - location.size.height + 1> 0)
-                        y = (y + -location.size.height + 1 + elem_size.height) / elem_size.height;
+                if (y<0) //<< Souris a droite du widget
+                        y = F2I(I2F(y) / elem_h) - 1 ;
+                else if (y - location.size.height + 1 > 0)
+                        y = F2I(I2F(y - location.size.height + 1) / elem_h ) + 1;
                 else
                         y = 0;
 

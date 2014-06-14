@@ -1,16 +1,14 @@
 #include "ei_gridder.h"
 
-// Conversion flottant entier
-#define F2I(x) (int)floor(x)
-#define I2F(x) (float)(x)
 
 /***** Gridder *****/
 
 /* Renvoie le screen_location en partant du rectangle elementaire flottant
  * et des paramètres */
-ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_point_t tl, float elem_width, float
-                elem_height){
+ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_point_t tl){
         ei_rect_t screen_location;
+        float elem_width = param->elem_w;
+        float elem_height = param->elem_h;
         if(param->col) 
                 screen_location.top_left.x = F2I(I2F(*param->col) * elem_width + I2F(tl.x)); 
         else
@@ -18,7 +16,7 @@ ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_point_t tl, float el
         if(param->lin) 
                 screen_location.top_left.y = F2I(I2F(*param->lin) * elem_height + I2F(tl.y)); 
         else
-                screen_location.top_left.y = 0 + tl.y;
+                screen_location.top_left.y = tl.y;
         if(param->w)
                 screen_location.size.width = F2I(I2F(*param->w) * elem_width);
         else
@@ -77,10 +75,10 @@ void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height){
 
                                         l_max = I2F(MAX(l_max, l_curr));
                                         if (param->force_h)
-                                                l_max = I2F(MAX(l_max, *param->force_h));
+                                                l_max = I2F(MAX(l_max, *param->force_h - 1));
                                         c_max = I2F(MAX(c_max, c_curr));
                                         if (param->force_w)
-                                                c_max = I2F(MAX(c_max, *param->force_w));
+                                                c_max = I2F(MAX(c_max, *param->force_w - 1));
                                 }
                         }
                         current = current->next_sibling;
@@ -96,17 +94,6 @@ void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height){
 
 // Runfunc du gridder
 void ei_grid_runfunc(ei_widget_t *widget){
-        /* Principe
-         * 
-         * On remonte au père
-         * On parcourt tous les fils du pere
-         *    Pour chaque frere on regarde si gridder
-         * On en deduit la taille max,  la taille min
-         * On divise l'écran en carré elementaires
-         * On utilise ei_place avec des params bien choisis
-         *    ei_place appelle la runfunc
-         * On reappelle ei_grid pour bien remettre les params
-         */
 
         /* On commence par invalider l'ancien rectangle */
         ei_invalidate_rect(&widget->screen_location);
@@ -117,15 +104,10 @@ void ei_grid_runfunc(ei_widget_t *widget){
                         (ei_gridder_param_t*)widget->geom_params;
                 if (param){
                         // On calcule le rectangle élementaire
-                        float* elem_width = CALLOC_TYPE(float);
-                        float* elem_height = CALLOC_TYPE(float);
-                        get_elem_rect(widget->parent, elem_width, elem_height);
+                        get_elem_rect(widget->parent, &param->elem_w, &param->elem_h);
                         // On en déduit la screen_location 
                         ei_rect_t screen_location = get_screen_location(param,
-                                        widget->parent->content_rect->top_left,
-                                        *elem_width, *elem_height);
-                        SAFE_FREE(elem_width);
-                        SAFE_FREE(elem_height);
+                                        widget->parent->content_rect->top_left);
                         // Appel a geomnotify
                         widget->wclass->geomnotifyfunc(widget, screen_location);
 
@@ -238,6 +220,9 @@ void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h, int
         else{
                 SAFE_FREE(param->force_h);
         }
+
+        param->elem_w = 1.0;
+        param->elem_h = 1.0;
 
         /* Appels de la runfunc sur tous les sur les freres pour bien les
          * replacer */
