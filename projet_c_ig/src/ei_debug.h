@@ -12,7 +12,7 @@
 
 #include "ei_types.h"
 #include "ei_draw.h"
-
+#include "ei_root.h"
 
 void ei_print_color(const ei_color_t *color);
 void ei_print_rect(const ei_rect_t *rect);

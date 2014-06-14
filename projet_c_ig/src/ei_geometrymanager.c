@@ -10,11 +10,12 @@
 
 #include "ei_geometrymanager_pv.h"
 #include "ei_common.h"
-#include "ei_core.h"
+#include "ei_root.h"
 #include "ei_utils.h"
 #include "ei_linkedlist.h"
 // Pour le type placer_param
 #include "ei_params.h"
+#include <stdio.h>
 static ei_linkedlist_t ei_geometrymanagers = { NULL, NULL };
 
 /**
@@ -88,9 +89,6 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 /*  Gere le clipping */
 void ei_place_runfunc(struct ei_widget_t*       widget)
 {
-
-        /* On commence par invalider l'ancien rectangle */
-        ei_invalidate_rect(&widget->screen_location);
 
         /* On calcule la nouvelle screen_location */
 
@@ -266,24 +264,22 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         }
         // Root
         else{
-                screen_location.top_left = ei_point(0,0);
-                screen_location.size = ei_size(*param->w, *param->h);
+                memset(&screen_location, 0, sizeof(screen_location));
 
+                if (param->w && param->h)
+                        screen_location.size = ei_size(*param->w, *param->h);
         }
 
         // Appel a geomnotify
         widget->wclass->geomnotifyfunc(widget, screen_location);
 
-        /* On invalide le nouveau rectangle*/
-        ei_rect_t new_pos = widget->screen_location;
-        ei_invalidate_rect(&new_pos);
 
         /* Appels récursifs sur les enfants */
         // Appel récursif sur les enfants pour les replacer
         ei_widget_t *current = widget->children_head;
-        while(current && current->geom_params && current->geom_params &&
+        while(current && current->geom_params &&
                         current->geom_params->manager &&
-                        current->geom_params->manager->runfunc){
+                        current->geom_params->manager->runfunc) {
                 current->geom_params->manager->runfunc(current);
                 current = current->next_sibling;
         }
@@ -306,6 +302,7 @@ void ei_place_releasefunc(struct ei_widget_t* widget)
                 SAFE_FREE(param->rel_h);
 
                 SAFE_FREE(param);
+                widget->geom_params = NULL;
         }
 }
 
@@ -326,7 +323,6 @@ void  ei_register_placer_manager()
 
         ei_geometrymanager_register(placer);
 }
-
 
 /**
  * \brief       Configures the geometry of a widget using the "placer" geometry manager.
@@ -371,7 +367,7 @@ void ei_place(ei_widget_t *widget,
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
         assert(placer);
 
-        ei_bool_t gp_alloc;
+        ei_bool_t gp_alloc = EI_FALSE;
 
         if (placer && widget) {
                 /* Display widget */
@@ -379,17 +375,13 @@ void ei_place(ei_widget_t *widget,
 
                 // On verifie que le widget est bien géré par le placeur,
                 // sinon on le modifie pour qu'il le soit
-                if (widget) {
-                        gp_alloc = EI_TRUE;
-                        if (widget->geom_params) {
-                                if (widget->geom_params->manager) {
-                                        if (widget->geom_params->manager != placer) {
-                                                widget->geom_params->manager->releasefunc(widget);
-                                        }
-                                }
-                                else
-                                        gp_alloc = EI_FALSE;
+                gp_alloc = EI_TRUE;
+                if (widget->geom_params && widget->geom_params->manager) {
+                        if (widget->geom_params->manager != placer) {
+                                widget->geom_params->manager->releasefunc(widget);
                         }
+                        else
+                                gp_alloc = EI_FALSE;
                 }
 
                 if (gp_alloc) {
@@ -398,85 +390,95 @@ void ei_place(ei_widget_t *widget,
                         if (param != NULL) {
                                 widget->geom_params = (ei_geometry_param_t*)param;
                                 widget->geom_params->manager = placer;
-
-                                param->anc = CALLOC_TYPE(ei_anchor_t);
-                                param->x = CALLOC_TYPE(int);
-                                param->y = CALLOC_TYPE(int);
-                                param->rel_x = CALLOC_TYPE(float);
-                                param->rel_y = CALLOC_TYPE(float);
-                                param->w = CALLOC_TYPE(int);
-                                param->h = CALLOC_TYPE(int);
-                                param->rel_w = CALLOC_TYPE(float);
-                                param->rel_h = CALLOC_TYPE(float);
                         }
                 }
 
                 // On verifie qu'on a pas un rel_w, rel_h absurdes
-                if (!width && rel_width){
-                        if (*rel_width < 0.)
-                                exit(-1);
-                }
+                // if (!width && rel_width){
+                //         if (*rel_width < 0.)
+                //                 exit(-1);
+                // }
 
-                if (!height && rel_height){
-                        if (*rel_height <  0.)
-                                exit(-1);
-                }
+                // if (!height && rel_height){
+                //         if (*rel_height <  0.)
+                //                 exit(-1);
+                // }
 
                 // Sauvegarde des paramètres
                 ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
                 assert(param);
 
-                if (anchor)
+                if (anchor) {
+                        SAFE_ALLOC(param->anc, ei_anchor_t);
                         *param->anc = *anchor;
-                else
-                        param->anc = NULL;
+                }
+                else{
+                        SAFE_FREE(param->anc);
+                }
+
                 if (x){
+                        SAFE_ALLOC(param->x, int);
                         *param->x = *x;
                 }
                 else if (rel_x){
-                        param->x = NULL;
+                        SAFE_FREE(param->x);
+                        SAFE_ALLOC(param->rel_x, float);
                         *param->rel_x = *rel_x;
                 }
                 else{
-                        param->rel_x = NULL;
+                        SAFE_FREE(param->rel_x);
+                        SAFE_ALLOC(param->x, int);
                         *param->x = 0;
                 }
 
                 if (y){
+                        SAFE_FREE(param->rel_y);
+                        SAFE_ALLOC(param->y, int);
                         *param->y = *y;
                 }
                 else if (rel_y){
-                        param->y = NULL;
+                        SAFE_FREE(param->y);
+                        SAFE_ALLOC(param->rel_y, float);
                         *param->rel_y = *rel_y;
                 }
                 else{
-                        param->rel_y = NULL;
+                        SAFE_FREE(param->rel_y);
+                        SAFE_ALLOC(param->y, int);
                         *param->y = 0;
                 }
 
                 if (width){
+                        SAFE_FREE(param->rel_w);
+                        SAFE_ALLOC(param->w, int);
                         *param->w = *width;
                 }
                 else if (rel_width){
-                        param->w = NULL;
+                        SAFE_FREE(param->w);
+                        SAFE_ALLOC(param->rel_w, float);
                         *param->rel_w = *rel_width;
                 }
                 else{
-                        param->rel_w = NULL;
+                        SAFE_FREE(param->rel_w);
+                        SAFE_ALLOC(param->w, int);
                         *param->w = widget->requested_size.width;
                 }
 
                 if (height){
+                        SAFE_FREE(param->rel_h);
+                        SAFE_ALLOC(param->h, int);
                         *param->h = *height;
                 }
                 else if (rel_height){
-                        param->h = NULL;
+                        SAFE_FREE(param->h);
+                        SAFE_ALLOC(param->rel_h, float);
                         *param->rel_h = *rel_height;
                 }
                 else{
-                        param->rel_h = NULL;
+                        SAFE_FREE(param->rel_h);
+                        SAFE_ALLOC(param->h, int);
                         *param->h = widget->requested_size.height;
                 }
+
                 widget->geom_params->manager->runfunc(widget);
         }
 }

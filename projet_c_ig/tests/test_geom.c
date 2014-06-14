@@ -90,13 +90,12 @@ int ei_main(int argc, char** argv)
 
 
         ei_widget_t*	frame;
-        ei_size_t	frame_size		= {300,300};
+        ei_size_t	frame_size		= {400,400};
         float           frame_rel_width         = 0.80;
         float           frame_rel_height        = 0.80;
-        float		frame_rel_x		= 0.05;
-        float		frame_rel_y		= 0.05;
-        int		frame_x			= 100;
-        int		frame_y			= 100;
+        float		frame_rel_x		= 0.5;
+        float		frame_rel_y		= 0.5;
+        int		frame_y			= 300;
         ei_color_t	frame_color		= {0x88, 0x88, 0x88, 0xff};
         ei_relief_t	frame_relief		= ei_relief_raised;
         int		frame_border_width	= 6;
@@ -160,7 +159,7 @@ int ei_main(int argc, char** argv)
                         &button_title_w, NULL, &button_text_color, NULL,
                         NULL, NULL, NULL, &button_callback, NULL);
 
-        ei_place(frame, &c, &frame_x, &frame_y, NULL, NULL, &frame_rel_x, &frame_rel_y, &frame_rel_width, &frame_rel_height);
+        ei_place(frame, &c, NULL, &frame_y, NULL, NULL, &frame_rel_x, &frame_rel_y, &frame_rel_width, &frame_rel_height);
 
         ei_place(button_nw, &nw, NULL, NULL, NULL, NULL, &button_rel_x, &button_rel_y, &button_rel_width, &button_rel_height);
         ei_place(button_n, &n, NULL, NULL, NULL, NULL, &button_rel_x_2, &button_rel_y_2, &button_rel_width, &button_rel_height);

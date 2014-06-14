@@ -5,52 +5,15 @@
 #include "ei_event_pv.h"
 
 
-static ei_widget_t *ei_root = NULL;
-static ei_surface_t ei_root_surface = NULL;
-static ei_surface_t ei_picking_surface = NULL;
 
 // Liste de rectangles a update
 static ei_linkedlist_t ei_update_rects;
-static ei_rect_t *ei_cur_draw_rect = NULL;
+
+#ifdef LEAK_TRACKER
+int ALLOCATION_COUNTER = 0;
+#endif
 
 
-// Setters
-// Au premier appel les 3 pointeurs sont alloués
-void ei_set_root(ei_widget_t *root){
-        ei_root = root;
-}
-
-void ei_set_root_surface(ei_surface_t root_surface){
-        ei_root_surface = root_surface;
-}
-
-void ei_set_picking_surface(ei_surface_t picking_surface){
-        ei_picking_surface = picking_surface;
-}
-
-
-/**
- * \brief       Returns the "root widget" of the application: a "frame" widget that encapsulate the
- *              root window.
- *
- * @return                      The root widget.
- */
-ei_widget_t* ei_get_root(){
-        return ei_root;
-}
-
-/**
- * \brief       Returns the surface of the root window.
- *
- * @return                      The surface of the root window.
- */
-ei_surface_t ei_get_root_surface(){
-        return ei_root_surface;
-}
-
-ei_surface_t ei_get_picking_surface(){
-        return ei_picking_surface;
-}
 
 /*** Fonctions ***/
 void ei_init()
@@ -174,18 +137,14 @@ ei_rect_t* ei_rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2)
 
         return inter;
 }
-ei_rect_t* ei_get_draw_rect()
-{
-        return ei_cur_draw_rect;
-}
 
 /***** Dessin de widgets *****/
 // Draw récursif selon la hiérarchie des widgets
-void ei_draw_widget(ei_widget_t *widget){
+void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
+{
         if (widget){
                 /* On calcule le real_clipper du widget */
 
-                ei_rect_t *draw_rect = ei_get_draw_rect();
                 if (draw_rect) {
                         ei_rect_t *clipper = NULL;
                         ei_rect_t *real_clipper = NULL;
@@ -217,10 +176,10 @@ void ei_draw_widget(ei_widget_t *widget){
                 }
 
                 // Ses enfants seront devant lui et derriere ses freres
-                ei_draw_widget(widget->children_head);
+                ei_draw_widget(widget->children_head, draw_rect);
 
                 // Les freres du widget courant sont enfin dessinés
-                ei_draw_widget(widget->next_sibling);
+                ei_draw_widget(widget->next_sibling, draw_rect);
         }
 }
 
@@ -230,12 +189,7 @@ void ei_draw_rect(ei_rect_t *rect)
         ei_widget_t *root = ei_get_root();
 
         if (root && rect) {
-                ei_cur_draw_rect = rect;
-
-                ei_draw_widget(root);
-
-                // Restore default
-                ei_cur_draw_rect = NULL;
+                ei_draw_widget(root, rect);
         }
 }
 
@@ -340,7 +294,7 @@ void ei_invalidate_rect(ei_rect_t* rect)
                 ei_rect_t temp;
                 temp =  hw_surface_get_rect(ei_get_root_surface());
                 rect = ei_rect_intersection(rect, &temp);
-                if (rect){
+                if (rect) {
                         /* On ajoute le rectangle */
                         ei_rect_t new_rect = *rect;
 
@@ -395,6 +349,7 @@ void ei_invalidate_rect(ei_rect_t* rect)
                                 }
                         }
                 }
+                SAFE_FREE(rect);
         }
 }
 

@@ -1,6 +1,5 @@
 /**
  *  @file       ei_linkedlist.c
- *  @brief      Linked list generic class.
  *
  *  \author 
  *  Created by Léo Gouttefarde on 07.06.14
@@ -60,6 +59,31 @@ void ei_linkedlist_add_unique(ei_linkedlist_t *list, ei_elem_t elem)
                 ei_linkedlist_add(list, elem);
 }
 
+typedef struct ei_linkedlist_pop_elem_t {
+        ei_linkedlist_t *list;
+        ei_elem_t elem;
+        ei_bool_t free_elem;
+} ei_linkedlist_pop_elem_t;
+
+ei_bool_t ei_linkedlist_pop_elem_link(ei_linked_elem_t *link, void *user_param)
+{
+        ei_bool_t done = EI_FALSE;
+
+        ei_linkedlist_pop_elem_t *params = (ei_linkedlist_pop_elem_t*)user_param;
+        if (link->elem == params->elem) {
+                ei_linkedlist_pop_link(params->list, link, params->free_elem);
+                done = EI_TRUE;
+        }
+
+        return done;
+}
+
+void ei_linkedlist_pop_elem(ei_linkedlist_t *list, ei_elem_t elem, ei_bool_t free_elem)
+{
+        ei_linkedlist_pop_elem_t params = { list, elem, free_elem };
+        ei_linkedlist_applyfunc(list, ei_linkedlist_pop_elem_link, (void*)&params);
+}
+
 void ei_linkedlist_pop_link(ei_linkedlist_t *list, ei_linked_elem_t *link, ei_bool_t free_elem)
 {
         if (list && link) {
@@ -78,6 +102,7 @@ void ei_linkedlist_pop_link(ei_linkedlist_t *list, ei_linked_elem_t *link, ei_bo
 
                         // Check
                         if (list->head == link) {
+                                next->prev = prev;
                                 list->head = next;
                         }
                 }
@@ -129,4 +154,21 @@ void ei_linkedlist_empty(ei_linkedlist_t *list, ei_bool_t free_elem)
                 list->tail = NULL;
         }
 }
+
+void ei_linkedlist_applyfunc(ei_linkedlist_t *list, ei_function_t function, void *user_param)
+{
+        if (list) {
+                ei_bool_t done = EI_FALSE;
+                ei_linked_elem_t *link = list->head, *next = NULL;
+
+                while (link && !done) {
+                        next = link->next;
+
+                        done = function(link, user_param);
+
+                        link = next;
+                }
+        }
+}
+
 

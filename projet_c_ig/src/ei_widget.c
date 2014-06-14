@@ -10,10 +10,11 @@
 #include "ei_widget.h"
 #include "ei_widgettypes.h"
 #include "ei_utils.h"
-#include "ei_core.h"
+#include "ei_root.h"
 #include "ei_common.h"
 #include "hw_interface.h"
 #include "ei_utilities.h"
+#include "ei_tag.h"
 
 
 // Couleur de picking courante, qu'on incrémente a chaque creation de widget
@@ -49,8 +50,8 @@ void increase_color(ei_color_t *color)
  */
 
 // Quels paramètres faut-il initialiser ici ?
-ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name, 
-                ei_widget_t* parent){
+ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name, ei_widget_t* parent)
+{
         ei_widget_t *widget = NULL;
         ei_widgetclass_t *wclass;
 
@@ -109,6 +110,10 @@ ei_widget_t* ei_widget_create (ei_widgetclass_name_t class_name,
                 // texte
                 if (wclass->setdefaultsfunc)
                         wclass->setdefaultsfunc(widget);
+
+
+                ei_tag(widget, class_name);
+
 
                 return widget;
         }
@@ -344,8 +349,12 @@ void    ei_frame_configure (ei_widget_t* widget,
                            */
                         frame->img=*img;
                 }
-                if (img_rect){
+                if (img_rect && *img_rect){
+                        SAFE_ALLOC(frame->img_rect, ei_rect_t);
                         frame->img_rect = *img_rect;
+                }
+                else{
+                        SAFE_FREE(frame->img_rect);
                 }
                 if (img_anchor){
                         frame->img_anchor = *img_anchor;
@@ -419,8 +428,12 @@ void    ei_button_configure (ei_widget_t*               widget,
                 if(img) {
                         button->img=*img;
                 }
-                if(img_rect && *img_rect && button->img_rect){
+                if(img_rect && *img_rect){
+                        SAFE_ALLOC(button->img_rect, ei_rect_t);
                         *button->img_rect = **img_rect;
+                }
+                else{
+                        SAFE_FREE(button->img_rect);
                 }
                 if(img_anchor) {
                         button->img_anchor = *img_anchor;
@@ -487,8 +500,12 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                 if(resizable){
                         toplevel->resizable = *resizable;
                 }
-                if(min_size){
-                        toplevel->min_size = *min_size;
+                if(min_size && *min_size){
+                        SAFE_ALLOC(toplevel->min_size, ei_size_t);
+                        *toplevel->min_size = **min_size;
+                }
+                else{
+                        SAFE_FREE(toplevel->min_size);
                 }
         }
 }

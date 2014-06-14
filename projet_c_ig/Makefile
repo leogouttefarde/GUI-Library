@@ -23,6 +23,7 @@ LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
    ${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o \
    ${OBJDIR}/ei_utilities.o ${OBJDIR}/ei_debug.o \
    ${OBJDIR}/ei_gridder.o ${OBJDIR}/ei_dynamics.o \
+   ${OBJDIR}/ei_root.o ${OBJDIR}/ei_tag.o \
 	${OBJDIR}/ei_radiobutton.o
 
 
@@ -72,11 +73,11 @@ LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a 
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-				minimal frame button hello_world_absolute hello_world_relative puzzle
+				minimal frame button hello_world_absolute hello_world_relative puzzle tag
 
 PERSO_TESTS =  ensiskype toplevel test_placer test_relative \
 			   test_button2 test_geom ensiskype test_inter \
-			   gridder ensigrid radiobutton
+			   gridder ensigrid test_button3 radiobutton
 
 all : ${TARGETS}
 
@@ -131,6 +132,14 @@ puzzle : ${OBJDIR}/puzzle.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/puzzle.o : ${TESTS}/puzzle.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/puzzle.c -o ${OBJDIR}/puzzle.o
+
+# tag
+
+tag : ${OBJDIR}/tag.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o tag ${OBJDIR}/tag.o ${LIBEI} ${LIBS}
+
+${OBJDIR}/tag.o : ${TESTS}/tag.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/tag.c -o ${OBJDIR}/tag.o
 
 
 ########## Tests personnels

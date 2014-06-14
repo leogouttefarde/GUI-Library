@@ -18,7 +18,8 @@
 #include "ei_linkedlist.h"
 #include "ei_radiobutton.h"
 #include <math.h>
-
+#include "ei_core.h"
+#include "ei_tag.h"
 
 /* widgetclass linked list */
 static ei_linkedlist_t ei_class_list = { NULL, NULL };
@@ -32,9 +33,24 @@ static ei_linkedlist_t ei_class_list = { NULL, NULL };
  */
 void ei_widgetclass_register    (ei_widgetclass_t* widgetclass)
 {
-        ei_linkedlist_add(&ei_class_list, widgetclass);
+        if (widgetclass) {
+                ei_tag_create(widgetclass->name);
+                ei_linkedlist_add(&ei_class_list, widgetclass);
+        }
 }
 
+// Utilisé dans les geom_notify
+void invalidate_widget(ei_widget_t *widget){
+
+        if (widget->parent && widget->parent->content_rect) {
+                ei_rect_t *inter = ei_rect_intersection(&widget->screen_location,
+                                                      widget->parent->content_rect);
+                ei_invalidate_rect(inter);
+                SAFE_FREE(inter);
+        }
+        else
+                ei_invalidate_rect(&widget->screen_location);
+}
 
 /**
  * @brief       Returns the structure describing a class, from its name.
@@ -73,6 +89,8 @@ void pick_surface_draw(ei_surface_t pick_surface, ei_widget_t *widget, ei_rect_t
         lp = ei_rect_to_points(rect);
 
         ei_draw_polygon(pick_surface, &lp, *widget->pick_color, clipper);
+        free_lp(lp.next);
+
         hw_surface_unlock(pick_surface);        
 }
 
@@ -104,18 +122,8 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 hw_surface_lock(surface);
 
 
-                ei_rect_t rec; // What's this for ?
-
-                //if (widget->parent)
+                ei_rect_t rec;
                 rec = frame->widget.screen_location;
-
-                /* TODO  Le probleme vient du fait que le content_rect du
-                 * root_widget est modifié */
-                // Random fix, apprently not completely fixing though
-                //else
-                //      rec = *frame->widget.content_rect;
-
-                //rec.size = frame->widget.requested_size;
 
                 ei_frame_draw(surface,rec,frame,clipper);
 
@@ -155,7 +163,7 @@ void frame_setdefaults(struct ei_widget_t* widget)
         // ei_surface_t represente un pointeur générique
         frame->img = NULL;
         frame->img_anchor = ei_anc_center;
-        frame->img_rect = CALLOC_TYPE(ei_rect_t);
+        frame->img_rect = NULL;
 
         if (frame->img_rect) {
                 frame->img_rect->top_left = ei_point_zero();
@@ -191,9 +199,19 @@ void frame_setdefaults(struct ei_widget_t* widget)
 // PRINCIPE : déduit le content_rect de la screen_location
 void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-        ei_rect_t* content_rect;
-        content_rect = CALLOC_TYPE(ei_rect_t);
+        // On invalide l'ancienne position
+        invalidate_widget(widget);
+
+
+        ei_rect_t* content_rect = widget->content_rect;
+
         if (rect.size.width !=0 && rect.size.height != 0){
+
+                if (    (content_rect == &widget->screen_location)
+                        || (content_rect == NULL))
+                        content_rect = CALLOC_TYPE(ei_rect_t);
+
+
                 widget->screen_location = rect;
                 // La screen_location est copiée tel quel
                 ei_frame_t *frame = (ei_frame_t*)widget;
@@ -202,7 +220,6 @@ void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                 *content_rect = rect;
                 content_rect->top_left.x =  content_rect->top_left.x +
                         bw;
-
                 content_rect->top_left.y =  content_rect->top_left.y +
                         bw;
 
@@ -212,10 +229,17 @@ void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                         -2*bw;
         }
         else{
+                if (content_rect != &widget->screen_location)
+                        SAFE_FREE(widget->content_rect);
+
                 widget->screen_location = ei_rect_zero();
                 content_rect = &widget->screen_location;
         }
+
         widget->content_rect = content_rect;
+
+        // On invalide la nouvelle position
+        invalidate_widget(widget);
 }
 
 /**
@@ -307,10 +331,12 @@ void button_setdefaults(struct ei_widget_t* widget)
         ei_color_t *color = CALLOC_TYPE(ei_color_t);
         assert(color);
 
-        color->red = 0xFF;
-        color->green = 0xFF;
-        color->blue = 0x00;
-        color->alpha = 0xFF;
+        if (color != NULL) {
+                color->red = 0xFF;
+                color->green = 0xFF;
+                color->blue = 0x00;
+                color->alpha = 0xFF;
+        }
 
         button->color = color;
 
@@ -323,20 +349,17 @@ void button_setdefaults(struct ei_widget_t* widget)
         ei_color_t tc = {0xFF, 0xFF, 0xFF, 0xFF};
         button->text_color = tc;
         button->text_anchor = ei_anc_center;
-        /*int w;
-          int h;
-          hw_text_compute_size(button->text, button->text_font, &w, &h);
-          button->widget.requested_size = (ei_size(w,h));
-          */
+
         if (button->text && button->text_font)
                 hw_text_compute_size(button->text, button->text_font,
                                 &button->widget.requested_size.width,
                                 &button->widget.requested_size.height);
         else
                 button->widget.requested_size = ei_size(100,20);
+
+
         button->img = NULL;
-        button->img_rect = CALLOC_TYPE(ei_rect_t);
-        assert(button->img_rect);
+        button->img_rect = NULL;
 
         if (button->img_rect) {
                 ei_point_t p = {10,10};
@@ -353,39 +376,46 @@ void button_setdefaults(struct ei_widget_t* widget)
 
 void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-        ei_rect_t* content_rect = NULL;
+        invalidate_widget(widget);
 
-        if (    widget->content_rect
-                        && (widget->content_rect != &widget->screen_location))
-                content_rect = widget->content_rect;
+        ei_rect_t* content_rect = widget->content_rect;
 
-        else
-                content_rect = CALLOC_TYPE(ei_rect_t);
 
-        if (content_rect != NULL) {
-                if (rect.size.width !=0 && rect.size.height != 0){
-                        widget->screen_location = rect;
-                        ei_button_t *button = (ei_button_t*)widget;
-                        // Gestion des bordures pour le content_rect
-                        int bw = button->border_width;
-                        *content_rect = rect;
-                        content_rect->top_left.x =  content_rect->top_left.x +
-                                bw;
+        if (rect.size.width !=0 && rect.size.height != 0) {
 
-                        content_rect->top_left.y =  content_rect->top_left.y +
-                                bw;
+                if (    (content_rect == &widget->screen_location)
+                        || (content_rect == NULL))
+                        content_rect = CALLOC_TYPE(ei_rect_t);
 
-                        content_rect->size.width =  content_rect->size.width +
-                                - 2*bw;
-                        content_rect->size.height =  content_rect->size.height +
-                                -2*bw;
-                }
-                else{
-                        widget->screen_location = ei_rect_zero();
-                        content_rect = &widget->screen_location;
-                }
-                widget->content_rect = content_rect;
+
+                widget->screen_location = rect;
+                ei_button_t *button = (ei_button_t*)widget;
+                // Gestion des bordures pour le content_rect
+                int bw = button->border_width;
+                *content_rect = rect;
+                content_rect->top_left.x =  content_rect->top_left.x +
+                        bw;
+
+                content_rect->top_left.y =  content_rect->top_left.y +
+                        bw;
+
+                content_rect->size.width =  content_rect->size.width +
+                        - 2*bw;
+                content_rect->size.height =  content_rect->size.height +
+                        -2*bw;
         }
+        else{
+                if (content_rect != &widget->screen_location)
+                        SAFE_FREE(content_rect);
+
+                widget->screen_location = ei_rect_zero();
+                content_rect = &widget->screen_location;
+        }
+
+        widget->content_rect = content_rect;
+
+        // On invalide la nouvelle position
+        invalidate_widget(widget);
 }
 /**
  * \brief       Registers the "button" widget class in the program. This must be called only
@@ -448,7 +478,9 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
+
                 ei_toplevel_draw(surface,toplevel,clipper);
+
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
@@ -482,7 +514,7 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 
         toplevel->border_width = 4;
 
-        toplevel->title = "Toplevel";
+        make_string_copy(&toplevel->title, "Toplevel");
         toplevel->title_font=ei_default_font;
         ei_color_t title_color={0,0,0,255};
         toplevel->title_color=title_color;
@@ -507,47 +539,63 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 
 void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-        ei_rect_t* content_rect = NULL;
+        // On invalide l'ancienne screen_location
+        invalidate_widget(widget);
 
-        if (    widget->content_rect
-                        && (widget->content_rect != &widget->screen_location))
-                content_rect = widget->content_rect;
 
-        else
-                content_rect = CALLOC_TYPE(ei_rect_t);
 
-        if (content_rect != NULL) {
+        ei_rect_t screen_location = rect;
 
-                //printf("width rect:%i\n",rect.size.width);
-                //printf("height rect:%i\n",rect.size.height);
-                if (rect.size.width != 0 && rect.size.height !=0){
-                        //printf("CAS IF \n");
-                        widget->screen_location = rect;
-                        // La screen_location est copiée tel quel
-                        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
-                        // Gestion des bordures pour le content_rect
-                        int bw = toplevel->border_width;
-                        *content_rect = rect;
-                        content_rect->top_left =plus(rect.top_left,bw,bw+toplevel->bar_height);
-                        content_rect->size.height=widget->screen_location
-                                .size.height - toplevel->bar_height-2*bw;
-                        content_rect->size.width =widget->screen_location.size.width-2*bw;
-                }
-                else{
-                        //printf("on est ds else\n");
-                        widget->screen_location = ei_rect_zero();
-                        content_rect = &widget->screen_location;
-                }
-
-                widget->content_rect = content_rect;
+        //Gestion de la min_size
+        ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+        if(toplevel->min_size){
+                screen_location.size.width = MAX(toplevel->min_size->width,
+                                screen_location.size.width);
+                screen_location.size.height = MAX(toplevel->min_size->height,
+                                screen_location.size.height);
         }
+
+
+        ei_rect_t* content_rect = widget->content_rect;
+
+        // Calcul du content_rect en prenant en compte les bordures
+        if (screen_location.size.width != 0 && screen_location.size.height !=0) {
+
+                if (    (content_rect == &widget->screen_location)
+                        || (content_rect == NULL))
+                        content_rect = CALLOC_TYPE(ei_rect_t);
+
+
+                widget->screen_location = screen_location;
+
+                // Gestion des bordures pour le content_rect
+                int bw = toplevel->border_width;
+                *content_rect = screen_location;
+                content_rect->top_left = plus(screen_location.top_left, bw , bw + toplevel->bar_height);
+                content_rect->size.height = widget->screen_location.size.height - toplevel->bar_height-2*bw;
+                content_rect->size.width =widget->screen_location.size.width-2*bw;
+        }
+        else {
+                if (content_rect != &widget->screen_location)
+                        SAFE_FREE(content_rect);
+
+                widget->screen_location = ei_rect_zero();
+                content_rect = &widget->screen_location;
+        }
+
+        widget->content_rect = content_rect;
+
+        // On invalide la nouvelle position
+        invalidate_widget(widget);
+
+        widget->content_rect = content_rect;
 }
 
-/**
- * \brief       Registers the "toplevel" widget class in the program. This must be called only
- *              once before widgets of the class "toplevel" can be created and configured with
- *              \ref ei_toplevel_configure.
- */
+        /**
+         * \brief       Registers the "toplevel" widget class in the program. This must be called only
+         *              once before widgets of the class "toplevel" can be created and configured with
+         *              \ref ei_toplevel_configure.
+         */
 void    ei_toplevel_register_class()
 {
         ei_widgetclass_t *toplevel_class = NULL;

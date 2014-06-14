@@ -1,7 +1,8 @@
 /**
- * @file	ei_utils.h
+ * @file	ei_common.h
  *
- * @brief	Common header
+ * @brief	Common header. Contains defines for allocation and frequent
+ * operations.
  */
 
 #ifndef EI_COMMON_H
@@ -14,10 +15,20 @@
 #include <math.h>
 #include <assert.h>
 
-#define SAFE_FREE(p) if (p != NULL) { free(p); p = NULL; }
-#define SAFE_RESET(p, size) if (p != NULL) { memset(p, 0, size); }
+#ifndef NDEBUG
+#define LEAK_TRACKER
+#endif
+
+// Conversion flottant entier
+#define F2I(x) (int)floor(x)
+#define I2F(x) (float)(x)
+
+#include "ei_memory.h"
+
+
+#define SAFE_RESET(p, size) do { if (p != NULL) { memset(p, 0, size); } } while (0)
 #define ALLOC_TYPE(type) malloc(sizeof(type))
-#define CALLOC_TYPE(type) calloc(1, sizeof(type))
+#define SAFE_ALLOC(var, type) do { if (var == NULL) { var = CALLOC_TYPE(type); } } while (0)
 
 #ifndef M_PI
 #define M_PI (3.141592653589793)

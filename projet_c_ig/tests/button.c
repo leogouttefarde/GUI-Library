@@ -46,15 +46,15 @@ int ei_main(int argc, char** argv)
 	ei_color_t	root_bgcol		= {0x52, 0x7f, 0xb4, 0xff};
 
 	ei_widget_t*	button;
-	ei_size_t	button_size		= {137,486};
-	int		button_x		= 50;
-	int		button_y		= 50;
+	ei_size_t	button_size		= {300,200};
+	int		button_x		= 150;
+	int		button_y		= 200;
 	ei_color_t	button_color		= {0x88, 0x88, 0x88, 0xff};
 	char*		button_title		= "Mon premier Bouton !";
 	ei_color_t	button_text_color	= {0x00, 0x00, 0x00, 0xff};
 	int		button_corner_radius	= 20;
 	ei_relief_t	button_relief		= ei_relief_raised;
-	int		button_border_width	= 20;
+	int		button_border_width	= 6;
 	ei_callback_t	button_callback 	= button_press;
 
 	/* Create the application and change the color of the background. */
@@ -74,9 +74,9 @@ int ei_main(int argc, char** argv)
 	/* Run the application's main loop. */
 	ei_app_run();
 
-        /* We just exited from the main loop. Terminate the application (cleanup). */
-        ei_unbind(ei_ev_keydown,	NULL, "all", process_key, NULL);
-        ei_app_free();
+	/* We just exited from the main loop. Terminate the application (cleanup). */
+	ei_unbind(ei_ev_keydown,	NULL, "all", process_key, NULL);
+	ei_app_free();
 
-        return (EXIT_SUCCESS);
+	return (EXIT_SUCCESS);
 }

@@ -49,12 +49,15 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle,
                 ei_rect_t rectangle_reduit = reduction(rectangle, marge);
 
                 if (button->text) {
-						 		ei_rect_t* inter=ei_rect_intersection(&rectangle_reduit,clipper);
-								if (inter)
-									ei_insert_text(window, rectangle_reduit, button->text,
-                                        button->text_font, button->text_color,
-                                        button->text_anchor, inter);
-					 }
+                        ei_rect_t* inter = ei_rect_intersection(&rectangle_reduit,clipper);
+
+                        if (inter)
+                                ei_insert_text(window, rectangle_reduit, button->text,
+                                                button->text_font, button->text_color,
+                                                button->text_anchor, inter);
+
+                        SAFE_FREE(inter);
+                }
 
                 else if (button->img && button->img_rect)
                         print_image(window, rectangle_reduit, button->img,
@@ -68,43 +71,33 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t * toplevel,
         /* Requiert : screenlocation.size = { 2*bw+content_rect largeur, bar + 2*bw +content_rect hauteur } */
 
         ei_rect_t rec = toplevel->widget.screen_location;
-		  ei_rect_t* inter;
+        ei_rect_t* inter;
 
         /* Dessin de la bordure */
         ei_rect_t bord = rec;
         bord.top_left = plus(rec.top_left, 0, toplevel->bar_height);
         bord.size.height = bord.size.height - toplevel->bar_height;
-        //lp = ei_rect_to_points(bord);
 
         ei_color_t bord_color = obscurcir(toplevel->color, 0.3);
-        //ei_draw_polygon(surface, &lp, bord_color, clipper);
-		  inter=ei_rect_intersection(clipper,&bord);
-		  if (inter) ei_fill(surface,&bord_color,inter);
-        //free_lp(lp.next);
+        inter=ei_rect_intersection(clipper,&bord);
+        if (inter) ei_fill(surface,&bord_color,inter);
+        SAFE_FREE(inter);
 
         /* Dessin du content_rect */
-		  inter=ei_rect_intersection(clipper,toplevel->widget.content_rect);
-		  if (inter) ei_fill(surface,&toplevel->color,inter);
-		  /*
-        lp = ei_rect_to_points(*toplevel->widget.content_rect);
-        ei_draw_polygon(surface, &lp, toplevel->color, clipper);
-        free_lp(lp.next);*/
+        inter=ei_rect_intersection(clipper,toplevel->widget.content_rect);
+        if (inter) ei_fill(surface,&toplevel->color,inter);
+        SAFE_FREE(inter);
 
         /* Dessin de la barre */
-		  
         ei_rect_t bar = rec;
         bar.size.height = toplevel->bar_height;
-		  /*
-        lp = ei_rect_to_points(bar);
-        ei_draw_polygon(surface, &lp, toplevel->bar_color, clipper);
-        free_lp(lp.next);
-		  */
-		  //Amélioration:
-		  inter=ei_rect_intersection(clipper,&bar);
-		  if (inter) ei_fill(surface,&toplevel->bar_color,inter);
-		  
 
- 
+        //Amélioration
+        inter=ei_rect_intersection(clipper,&bar);
+        if (inter) ei_fill(surface,&toplevel->bar_color,inter);
+        SAFE_FREE(inter);
+
+
         int marge;
         ei_rect_t btn_c;
 
@@ -115,8 +108,6 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t * toplevel,
                 btn_c.top_left = plus(rec.top_left, marge, marge);
                 btn_c.size.width = toplevel->bar_height - 2 * marge;
                 btn_c.size.height = toplevel->bar_height - 2 * marge;
-					 int border;
-                border = 0.2 * btn_c.size.height;
                 ei_button_draw_loc(surface, btn_c, btn_c_color,
                                 toplevel->rel_btn_close, 0, marge, clipper);
         } else {
@@ -146,18 +137,19 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t * toplevel,
         if (toplevel->title) {
                 /* Affichage du titre */
                 ei_rect_t rec_txt;
-					 int marge_txt=marge + btn_c.size.width+5;
+                int marge_txt=marge + btn_c.size.width+5;
                 rec_txt.top_left = plus(rec.top_left,marge_txt, 0);
                 rec_txt.size.height = toplevel->bar_height;
                 rec_txt.size.width = toplevel->widget.screen_location.size.width -
                         marge_txt;
-					 ei_rect_t rec_clip =rec_txt;
-					 rec_clip.size.width=rec_txt.size.width+marge +btn_c.size.width;
-					 inter =ei_rect_intersection(clipper,&rec_clip);
-					 if (inter) 
-                ei_insert_text(surface, rec_txt, toplevel->title,
-                                toplevel->title_font, toplevel->title_color, 1,
-                                inter);
+                ei_rect_t rec_clip =rec_txt;
+                rec_clip.size.width=rec_txt.size.width+marge +btn_c.size.width;
+                inter =ei_rect_intersection(clipper,&rec_clip);
+                if (inter) 
+                        ei_insert_text(surface, rec_txt, toplevel->title,
+                                        toplevel->title_font, toplevel->title_color, 1,
+                                        inter);
+                SAFE_FREE(inter);
         }
 }
 
@@ -217,9 +209,9 @@ void ei_insert_text(ei_surface_t window, ei_rect_t rectangle, char *text,
         int width, height;
 
         hw_text_compute_size(text, font, &width, &height);
-		  if (clipper && anchor==ei_anc_center && width>rectangle.size.width)
-			  anchor_translation(&anchor);
-		  
+        if (clipper && anchor==ei_anc_center && width>rectangle.size.width)
+                anchor_translation(&anchor);
+
 
         ancre = find_anchor(rectangle, width, height, anchor);
 
@@ -305,40 +297,10 @@ void print_image(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
                         img_part.size.width+= rec_dst.size.width - vor.size.width;
                         img_part.size.height+= rec_dst.size.height - vor.size.height;
                 }
+
                 /* If no intersection, do not display */
                 else
                         display = EI_FALSE;
-
-
-                // Bug baveux
-                // if (rec_dst.top_left.x < clipper->top_left.x) {
-                // 	rec_dst.top_left.x = clipper->top_left.x;
-                // 	rec_dst.size.width =
-                // 	    rec_dst.size.width - (clipper->top_left.x -
-                // 				  rec_dst.top_left.x);
-                // }
-                // if (rec_dst.top_left.y < clipper->top_left.y) {
-                // 	rec_dst.top_left.y = clipper->top_left.y;
-                // 	rec_dst.size.height =
-                // 	    rec_dst.size.height - (clipper->top_left.y -
-                // 				   rec_dst.top_left.y);
-                // }
-
-                // What
-                // if (rec_dst.top_left.x + rec_dst.size.width >
-                //     clipper->top_left.x + clipper->size.width) {
-                // 	rec_dst.size.width =
-                // 	    rec_dst.size.width -
-                // 	    ((rec_dst.top_left.x + rec_dst.size.width) -
-                // 	     (clipper->top_left.x + clipper->size.width));
-                // }
-                // if (rec_dst.top_left.y + rec_dst.size.height >
-                //     clipper->top_left.y + clipper->size.height) {
-                // 	rec_dst.size.height =
-                // 	    rec_dst.size.height -
-                // 	    ((rec_dst.top_left.y + rec_dst.size.height) -
-                // 	     (clipper->top_left.y + clipper->size.height));
-                // }
         }
 
         img_part.size = rec_dst.size;
@@ -349,7 +311,7 @@ void print_image(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
 
 
 #ifndef NDEBUG
-                int result = 
+                int result =
 #endif
 
                         ei_copy_surface(window, &rec_dst, img, &img_part, 1);

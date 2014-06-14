@@ -1,7 +1,5 @@
 /**
  *  @file       ei_application.c
- *  @brief      Manages the main steps of a graphical application: initialization, main window,
- *              main loop, quitting, resource freeing.
  *
  *  \author 
  *  Created by Antoine Delaite, Eric Burel, Léo Gouttefarde on 09.06.14
@@ -14,11 +12,12 @@
 #include "ei_event_pv.h"
 #include "ei_widgetclass_pv.h"
 #include "ei_widgettypes.h"
-#include "ei_core.h"
+#include "ei_root.h"
 #include "ei_callback.h"
 #include "ei_utils.h"
 #include "ei_gridder.h"
 #include "ei_geometrymanager_pv.h"
+#include "ei_tag.h"
 
 
 static ei_bool_t quit_request = EI_FALSE;
@@ -93,16 +92,23 @@ void ei_app_free()
         if (picking)
                 hw_surface_free(picking);
 
+        ei_unbind_all();
 
         ei_widget_destroy(ei_get_root());
 
-        ei_unbind_all();
+        ei_widgetclass_free();
 
         ei_geometrymanager_free();
 
-        ei_widgetclass_free();
+        ei_invalidate_reset();
+
+        ei_tag_free();
 
         hw_quit();
+
+#ifdef LEAK_TRACKER
+        printf("\nLeaks : %d\n", ALLOCATION_COUNTER);
+#endif
 }
 
 /**
