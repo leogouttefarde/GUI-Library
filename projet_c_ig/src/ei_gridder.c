@@ -234,7 +234,6 @@ void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h, int
 
         /* Appels de la runfunc sur tous les sur les freres pour bien les
          * replacer */
-        // On marque le widget courant comme vu
         ei_widget_t *current = widget->parent->children_head;
         while(current &&
                         current->geom_params &&

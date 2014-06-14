@@ -1,5 +1,60 @@
 #include "ei_dynamics.h"
 
+/* Calcule le point d'ancrage a partir du top_left et du bottom_right*/
+ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc){
+        int x1 = tl.x;
+        int y1 = tl.y;
+        int x2 = br.x;
+        int y2 = br.y;
+
+        int x;
+        int y;
+
+        switch(anc){
+        case ei_anc_northwest:
+                x = x1;
+                y = y1;
+                break;
+        case ei_anc_north:
+                x = (x1 + x2) / 2;
+                y = y1;
+                break;
+        case ei_anc_northeast:
+                x = x2;
+                y = y1;
+                break;
+        case ei_anc_east:
+                x = x2;
+                y = (y1 +y2) / 2;
+                break;
+        case ei_anc_southeast:
+                x = x2;
+                y = y2;
+                break;
+        case ei_anc_south:
+                x = (x1 + x2) / 2;
+                y = y2;
+                break;
+        case ei_anc_southwest:
+                x = x1;
+                y = y2;
+                break;
+        case ei_anc_west:
+                x = x1;
+                y = (y1 +y2) / 2;
+                break;
+        case ei_anc_center:
+                x = (x1 + x2) / 2;
+                y = (y1 + y2) / 2;
+                break;
+        default:
+                break;
+        }
+
+        return ei_point(x,y);
+
+}
+
 /* Fonction de resize pour le placer*/
 
 void resize_placer(ei_widget_t *widget, ei_point_t where){
@@ -84,10 +139,8 @@ void resize_placer(ei_widget_t *widget, ei_point_t where){
                         // Nouvelle position top_left, bottom_right du widget
                         // (le redimensionnement se fait avec ancrage NW)
                         // DANS LE REPERE DU PARENT
-                        int x1 = w_x - p_x;
-                        int x2 = x1 + *w - 1;
-                        int y1 = w_y - p_y;
-                        int y2 = y1 + *h - 1;
+                        ei_point_t tl = ei_point(w_x - p_x, w_y - p_y);
+                        ei_point_t br = ei_point_add(tl, ei_point(*w - 1, *h - 1));
 
                         // Calcul du nouveau point d'ancrage
                         ei_anchor_t anc;
@@ -96,46 +149,9 @@ void resize_placer(ei_widget_t *widget, ei_point_t where){
                         else
                                 anc = *param->anc;
 
-                        switch(anc){
-                        case ei_anc_northwest:
-                                *x = x1;
-                                *y = y1;
-                                break;
-                        case ei_anc_north:
-                                *x = (x1 + x2) / 2;
-                                *y = y1;
-                                break;
-                        case ei_anc_northeast:
-                                *x = x1 + *w - 1;
-                                *y = y1;
-                                break;
-                        case ei_anc_east:
-                                *x = x1 + *w - 1;
-                                *y = (y1 +y2) / 2;
-                                break;
-                        case ei_anc_southeast:
-                                *x = x1 + *w - 1;
-                                *y = y1 + *h - 1;
-                                break;
-                        case ei_anc_south:
-                                *x = (x1 + x2) / 2;
-                                *y = y1 + *h -1;
-                                break;
-                        case ei_anc_southwest:
-                                *x = x1;
-                                *y = y1 + *h -1;
-                                break;
-                        case ei_anc_west:
-                                *x = x1;
-                                *y = (y1 +y2) / 2;
-                                break;
-                        case ei_anc_center:
-                                *x = (x1 + x2) / 2;
-                                *y = (y1 + y2) / 2;
-                                break;
-                        default:
-                                break;
-                        }
+                        ei_point_t anc_point = top_left_to_anchor(tl, br, anc);
+                        *x = anc_point.x;
+                        *y = anc_point.y;
 
                         // x y relatifs
                         *rel_x = (float)(*x) / (float)(p_w -1);
@@ -256,7 +272,6 @@ void move_placer(ei_widget_t *widget, ei_point_t where){
 
         ei_placer_param_t *param =
                 (ei_placer_param_t*)widget->geom_params;
-        ei_anchor_t anc = ei_anc_northwest;
 
         if (!strcmp(widget->wclass->name, "toplevel")){
                 // On ne deplace que les toplevels en pratique
@@ -279,7 +294,8 @@ void move_placer(ei_widget_t *widget, ei_point_t where){
                 // Position top_left et taille du widget
                 int w_x = widget->screen_location.top_left.x;
                 int w_y = widget->screen_location.top_left.y;
-
+                int w_w = widget->screen_location.size.width;
+                int w_h = widget->screen_location.size.height;
 
 
                 // Idem parent
@@ -290,9 +306,21 @@ void move_placer(ei_widget_t *widget, ei_point_t where){
                         p_w = p_rect.size.width;
                         p_h = p_rect.size.height;
 
-                        // Nouveau x absolu (dans le repere du parent)
-                        *x = w_x + dist.width - p_x;
-                        *y = w_y + dist.height - p_y;
+                        // Topleft et br du widget dans le repere du parent
+                        // APRES deplacement
+                        ei_point_t tl = ei_point(w_x + dist.width - p_x, w_y + dist.height- p_y);
+                        ei_point_t br = ei_point_add(tl, ei_point(w_w - 1, w_h - 1));
+
+                        // Calcul du nouveau point d'ancrage
+                        ei_anchor_t anc;
+                        if(!param->anc || !*param->anc)
+                                anc = ei_anc_northwest;
+                        else
+                                anc = *param->anc;
+
+                        ei_point_t anc_point = top_left_to_anchor(tl, br, anc);
+                        *x = anc_point.x;
+                        *y = anc_point.y;
 
                         // Nouveau x relatif
                         if (param->x){
