@@ -140,6 +140,7 @@ void			ei_button_register_class 	();
  */
 void			ei_toplevel_register_class 	();
 
+void			ei_radiobutton_register_class ();
 
 /* Inline function definitions. */
 

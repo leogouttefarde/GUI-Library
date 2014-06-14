@@ -11,7 +11,7 @@ INCLUDES	= ./include
 INCFLAGS	:= -I${INCLUDES} -I${SRCDIR}
 #OPTFLAGS	:= -O3 -DNDEBUG -Werror
 OPTFLAGS	:= -g
-CCFLAGS		:= -c ${OPTFLAGS} -Werror -Wall -std=c99
+CCFLAGS		:= -c ${OPTFLAGS} -Wextra -Wall -std=c99
 MATHFLAGS 	:= -lm
 
 # The list of objects to include in the library
@@ -22,7 +22,8 @@ LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
    ${OBJDIR}/ei_button.o ${OBJDIR}/ei_core.o \
    ${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o \
    ${OBJDIR}/ei_utilities.o ${OBJDIR}/ei_debug.o \
-   ${OBJDIR}/ei_gridder.o ${OBJDIR}/ei_dynamics.o
+   ${OBJDIR}/ei_gridder.o ${OBJDIR}/ei_dynamics.o \
+	${OBJDIR}/ei_radiobutton.o
 
 
 # Platform specific definitions (OS X, Linux, Windows)
@@ -75,7 +76,7 @@ TARGETS		=	${LIBEI} \
 
 PERSO_TESTS =  ensiskype toplevel test_placer test_relative \
 			   test_button2 test_geom ensiskype test_inter \
-			   gridder ensigrid
+			   gridder ensigrid radiobutton
 
 all : ${TARGETS}
 
@@ -168,6 +169,11 @@ test_button3 : ${OBJDIR}/test_button3.o ${LIBEIBASE} ${LIBEI}
 ${OBJDIR}/test_button3.o : ${TESTS}/test_button3.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/test_button3.c -o ${OBJDIR}/test_button3.o ${MATHFLAGS} 
 
+radiobutton : ${OBJDIR}/radiobutton.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o radiobutton ${OBJDIR}/radiobutton.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/radiobutton.o : ${TESTS}/radiobutton.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/radiobutton.c -o ${OBJDIR}/radiobutton.o ${MATHFLAGS} 
 
 test_frame_2 : ${OBJDIR}/test_frame_2.o ${LIBEIBASE} ${LIBEI}
 	${LINK} -o test_frame_2 ${OBJDIR}/test_frame_2.o ${LIBEI} ${LIBS} ${MATHFLAGS}

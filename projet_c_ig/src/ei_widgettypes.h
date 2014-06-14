@@ -76,6 +76,34 @@ typedef struct ei_toplevel_t {
         // bool             resize;
 } ei_toplevel_t;
 
+typedef struct ei_linked_rdbtn_txt_t {
+	char* txt;
+	struct ei_linked_rdbtn_txt_t *next;
+} ei_linked_rdbtn_txt_t;
+
+typedef struct ei_linked_rdbtn_rec_t {
+	ei_rect_t rec;
+	ei_relief_t rel;
+	struct ei_linked_rdbtn_rec_t *next;
+} ei_linked_rdbtn_rec_t;
+
+typedef struct ei_radiobutton_t {
+			ei_widget_t widget;
+			int nb_buttons;
+			ei_color_t bg_color;
+			ei_color_t btn_color;
+			ei_font_t font;
+			ei_color_t txt_color;
+			char* txt_default;
+			int bar_height;
+			ei_color_t bar_color;
+			ei_size_t btn_size;
+			int border_width;
+			int btn_bdw;
+			ei_linked_rdbtn_txt_t *ltxt;
+			int nb_radios;
+			ei_linked_rdbtn_rec_t *lrec;
+} ei_radiobutton_t;
 
 
 #endif

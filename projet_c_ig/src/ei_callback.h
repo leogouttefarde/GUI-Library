@@ -28,6 +28,8 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param);
 
 
+ei_bool_t radiobutton_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param);
+
 ei_bool_t toplevel_callback_release(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param);
 

@@ -16,6 +16,8 @@
 #include "ei_common.h"
 #include "ei_utilities.h"
 #include "ei_linkedlist.h"
+#include "ei_radiobutton.h"
+#include <math.h>
 
 
 /* widgetclass linked list */
@@ -572,3 +574,186 @@ void ei_widgetclass_free()
 }
 
 
+
+/******************Radiobutton**********************/
+void *radiobutton_alloc()
+{
+        ei_radiobutton_t *radiobutton = CALLOC_TYPE(ei_radiobutton_t);
+        assert(radiobutton);
+
+        return radiobutton;
+}
+
+void radiobutton_release(struct ei_widget_t* widget)
+{
+        if (widget) {
+                ei_radiobutton_t *radiobutton = (ei_radiobutton_t*)widget;
+					 free_rdbtn_ltxt(radiobutton->ltxt);
+					 free_rdbtn_lrec(radiobutton->lrec);
+        }
+}
+
+void radiobutton_draw(struct ei_widget_t* widget, ei_surface_t surface,
+                ei_surface_t pick_surface, ei_rect_t* clipper)
+{
+        ei_radiobutton_t *radiobutton = (ei_radiobutton_t*)widget;
+        assert(radiobutton);
+        assert(clipper);
+        assert(pick_surface);
+        assert(surface);
+
+        if (surface){
+                // lock de la surface
+                hw_surface_lock(surface);
+					 printf("début du draw\n");
+                ei_radiobutton_draw(surface,radiobutton->widget.screen_location,radiobutton, clipper);
+                //unlock de la surface
+                hw_surface_unlock(surface);
+        }
+
+        if (pick_surface){
+                /* Dessin de la surface de picking */
+                pick_surface_draw(pick_surface, widget, clipper);
+        }
+}
+
+void radiobutton_setdefaults(struct ei_widget_t* widget)
+{
+        assert(widget);
+
+        // on commence par effectuer un recast
+        ei_radiobutton_t *radiobutton;
+        radiobutton = (ei_radiobutton_t*)widget;
+
+
+
+        ei_color_t bg_color={0x88,0x88,0x88,255};
+        radiobutton->bg_color = bg_color;
+		  ei_color_t btn_color={0,0,0,255};
+		  radiobutton->btn_color=btn_color;
+		  ei_color_t txt_color={0,0,0,255};
+		  radiobutton->txt_color=txt_color;
+		  ei_color_t bar_color={255,255,255,255};
+		  radiobutton->bar_color=bar_color;
+
+		  ei_size_t btn_size ={15,15};
+		  radiobutton->btn_size=btn_size;
+		  radiobutton->btn_bdw=1;
+		  int border_width=6;
+		  radiobutton->border_width=border_width;
+		  int nb_buttons=7;
+		  radiobutton->nb_buttons=nb_buttons;
+		  char* tab_chaine[radiobutton->nb_buttons];
+		  tab_chaine[0]="Breizh libra";
+		  tab_chaine[1]="France Bleu Menhir";
+		  tab_chaine[2]="Carnac blues";
+		  tab_chaine[3]="Chouchen vibes";
+		  char* txt_default="No rfm selected";
+		  radiobutton->txt_default=txt_default;
+		  int nb_radios=4;
+		  radiobutton->nb_radios=nb_radios;
+		  ei_linked_rdbtn_txt_t *ltxt=rdbtn_txt_create(tab_chaine);
+		  radiobutton->ltxt=ltxt;
+		  radiobutton->font=ei_default_font;
+		  radiobutton->lrec=rdbtn_rec_create(radiobutton);
+
+			int nb_lignes=(int)ceil((float)radiobutton->nb_buttons/4.);
+			int nb_btn_pc=4;
+			int nb_col=MIN(radiobutton->nb_buttons,nb_btn_pc);
+			ei_size_t s;
+			s.width=(2*nb_col-1)*btn_size.width+2*border_width;
+			int h;
+			hw_text_compute_size(tab_chaine[0],radiobutton->font,NULL,&h);
+			radiobutton->bar_height=h+6;
+
+			s.height=radiobutton->bar_height+2*border_width+(2*nb_lignes)*btn_size.height;
+			printf("ceil..%i\n",nb_lignes);
+			radiobutton->widget.requested_size=s;
+        //toplevel->widget.requested_size = s;
+        /*int w;
+          int h;
+          hw_text_compute_size(button->text, button->text_font, &w, &h);
+          button->widget.requested_size = (ei_size(w,h));
+          */
+		  /*
+        if (button->text && button->text_font)
+                hw_text_compute_size(button->text, button->text_font,
+                                &button->widget.requested_size.width,
+                                &button->widget.requested_size.height);
+        else
+                button->widget.requested_size = ei_size(100,20);
+        button->img = NULL;
+        button->img_rect = CALLOC_TYPE(ei_rect_t);
+        assert(button->img_rect);
+
+        if (button->img_rect) {
+                ei_point_t p = {10,10};
+                button->img_rect->top_left = p;
+
+                ei_size_t s = {10,10};
+                button->img_rect->size = s;
+        }
+
+        button->img_anchor = ei_anc_center;
+        button->callback = NULL;
+        button->user_param = NULL;
+		  */
+}
+
+void radiobutton_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
+{
+        ei_rect_t* content_rect = NULL;
+
+        if (    widget->content_rect
+                        && (widget->content_rect != &widget->screen_location))
+                content_rect = widget->content_rect;
+
+        else
+                content_rect = CALLOC_TYPE(ei_rect_t);
+
+        if (content_rect != NULL) {
+                if (rect.size.width !=0 && rect.size.height != 0){
+                        widget->screen_location = rect;
+                        ei_radiobutton_t *radiobutton = (ei_radiobutton_t*)widget;
+                        // Gestion des bordures pour le content_rect
+								
+                        int bw = radiobutton->border_width;
+                        *content_rect = rect;
+                        content_rect->top_left.x =  content_rect->top_left.x +
+                                bw;
+
+                        content_rect->top_left.y =  content_rect->top_left.y +
+                                bw;
+
+                        content_rect->size.width =  content_rect->size.width +
+                                - 2*bw;
+                        content_rect->size.height =  content_rect->size.height +
+                                -2*bw;
+								
+                }
+                else{
+                        widget->screen_location = ei_rect_zero();
+                        content_rect = &widget->screen_location;
+                }
+                widget->content_rect = content_rect;
+        }
+}
+
+void    ei_radiobutton_register_class()
+{
+        ei_widgetclass_t *radiobutton_class = NULL;
+
+        // Allocation
+        radiobutton_class = CALLOC_TYPE(ei_widgetclass_t);
+        assert(radiobutton_class);
+
+        radiobutton_class->allocfunc= radiobutton_alloc;
+        radiobutton_class->drawfunc = radiobutton_draw;
+        radiobutton_class->releasefunc = radiobutton_release;
+        radiobutton_class->setdefaultsfunc = radiobutton_setdefaults;
+        radiobutton_class->geomnotifyfunc = radiobutton_geomnotify;
+        strcpy(radiobutton_class->name, "radiobutton");
+        radiobutton_class->next = NULL;
+
+        ei_widgetclass_register(radiobutton_class);
+}

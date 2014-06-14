@@ -1,5 +1,7 @@
 
 #include "ei_callback.h"
+#include "ei_radiobutton.h"
+#include <assert.h>
 
 static ei_widget_t *pressed = NULL;
 static ei_callback_t callback = NULL;
@@ -211,4 +213,39 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
         callback = NULL;
 
         return done;
+}
+
+/***************Radiobuttons ***/
+/* Enfonce le boutons radio et relève les autres */
+ei_bool_t radiobutton_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
+{
+			printf("callback radiobutton !\n");
+        if (widget && !strcmp(widget->wclass->name, "radiobutton")) {
+
+                ei_radiobutton_t *radiobutton = (ei_radiobutton_t*)widget;
+					 ei_linked_rdbtn_rec_t* lrec=radiobutton->lrec;
+					 int indice=0;
+					 ei_bool_t appui=0;
+					 int m_x = event->param.mouse.where.x;
+					 int m_y = event->param.mouse.where.y;
+					 while (lrec !=NULL&&appui==0) {
+
+						 	if (m_x>=lrec->rec.top_left.x&&m_x<=(lrec->rec.top_left.x+lrec->rec.size.width)&&m_y>=lrec->rec.top_left.y&&m_y<=(lrec->rec.top_left.y+lrec->rec.size.height)) {
+								//lrec->rel=ei_relief_sunken;
+								printf("appui sur un btn détecté\n");
+								appui=1;
+							}
+							
+						lrec=lrec->next;
+						indice++;
+					}
+					if (appui) {
+						assert(radiobutton->lrec);
+						modify_btn_rel(radiobutton,indice);
+					}
+                ei_invalidate_rect(&widget->screen_location);
+
+                pressed = widget;
+        }
+        return EI_FALSE;
 }
