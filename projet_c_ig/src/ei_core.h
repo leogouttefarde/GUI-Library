@@ -2,10 +2,9 @@
  *  @file	ei_core.h
  *  @brief	Manages the update rectangles
  *
- *  \author 
+ *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 05.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
- *
  */
 
 #ifndef EI_CORE_H

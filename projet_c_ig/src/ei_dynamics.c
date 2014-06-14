@@ -1,4 +1,6 @@
+
 #include "ei_dynamics.h"
+
 /* Calcule le point d'ancrage a partir du top_left et du bottom_right*/
 ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc){
         int x1 = tl.x;

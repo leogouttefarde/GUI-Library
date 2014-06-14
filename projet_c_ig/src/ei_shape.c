@@ -1,3 +1,15 @@
+/**
+ * @file        ei_shape.c
+ *
+ * @brief       At first designed to contain basical geometrical operations, now
+ *              only contains a rectangle/point_list converter.
+ *
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 04.06.14.
+ *  Copyright 2014 Ensimag. All rights reserved.
+ *
+ */
+
 #include "ei_shape.h"
 #include "ei_common.h"
 

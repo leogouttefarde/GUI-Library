@@ -1,10 +1,11 @@
 /**
  *  @file       ei_linkedlist.c
  *
- *  \author 
+ *  @brief      Doubly linked lists.
+ *
+ *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 07.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
- *
  */
 
 #include "ei_linkedlist.h"

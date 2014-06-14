@@ -3,9 +3,8 @@
  *  @brief      Manages the positionning and sizing of widgets on the screen.
  *
  *  \author
- *  Created by François Bérard on 18.12.11.
- *  Copyright 2011 Ensimag. All rights reserved.
- *
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 02.06.14.
+ *  Copyright 2014 Ensimag. All rights reserved.
  */
 
 #include "ei_geometrymanager_pv.h"

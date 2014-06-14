@@ -1,7 +1,11 @@
 /**
- * @file        ei_memory.h
+ *  @file        ei_memory.h
  *
- * @brief       Memory header
+ *  @brief       Memory header
+ *
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 07.06.14.
+ *  Copyright 2014 Ensimag. All rights reserved.
  */
 
 #ifndef EI_MEMORY_H

@@ -1,9 +1,10 @@
 /**
- * @file        ei_widget.c
+ *  @file        ei_widget.c
  *
- * @brief       API for widgets management: creation, configuration, hierarchy, redisplay.
- * 
- *  Created by Eric BUREL on 02.06.14.
+ *  @brief       API for widgets management: creation, configuration, hierarchy, redisplay.
+ *
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 02.03.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  */
 

@@ -1,12 +1,13 @@
 /**
- *  @file	ei_widgettypes.h
+ *  @file	ei_widgettypes.c
  *  @brief	Manages the update rectangles
  *
- *  \author 
- *  Created by Eric BUREL on 05.06.14
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 05.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
+
 #ifndef EI_WIDGETTYPES_H
 #define EI_WIDGETTYPES_H
 

@@ -1,8 +1,11 @@
 /**
- * @file	ei_common.h
+ *  @file	ei_common.h
  *
- * @brief	Common header. Contains defines for allocation and frequent
- * operations.
+ *  @brief	Common header. Contains defines for allocations and frequent operations.
+ *
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 05.06.14.
+ *  Copyright 2014 Ensimag. All rights reserved.
  */
 
 #ifndef EI_COMMON_H

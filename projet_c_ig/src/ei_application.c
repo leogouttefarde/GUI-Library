@@ -2,7 +2,7 @@
  *  @file       ei_application.c
  *
  *  \author 
- *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 09.06.14.
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 02.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */

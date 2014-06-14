@@ -1,14 +1,16 @@
 /**
- * @file	ei_dynamics.h
+ *  @file	ei_dynamics.h
  *
- * @brief       Dynamic functions for moving and resizing either gridder managed widget or placer managed widgets.
- * 
- *  Created by Eric BUREL on 13.06.14.
+ *  @brief       Dynamic functions for moving and resizing either gridder managed widget or placer managed widgets.
+ *
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 13.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  */
 
 #ifndef EI_DYNAMICS_H
 #define EI_DYNAMICS_H
+
 #include "ei_types.h"
 #include "ei_widget.h"
 #include "ei_widgettypes.h"

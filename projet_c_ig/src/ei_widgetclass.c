@@ -1,10 +1,10 @@
 /**
- *  @file       widgetclass.h
+ *  @file       widgetclass.c
  *  @brief      Definition and registration of widget classes.
  *
- *  \author 
- *  Created by François Bérard on 02.12.11.
- *  Copyright 2011 Ensimag. All rights reserved.
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 02.06.14.
+ *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
 
