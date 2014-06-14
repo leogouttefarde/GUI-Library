@@ -3,7 +3,7 @@
  *  @brief	Manages the update rectangles
  *
  *  \author 
- *  Created by Leo GOUTTEFARDE on 05.06.14
+ *  Created by Léo GOUTTEFARDE on 05.06.14
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */

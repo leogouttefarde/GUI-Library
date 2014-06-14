@@ -36,12 +36,14 @@ typedef struct ei_linked_list_t {
         ei_linked_elem_t *tail;
 } ei_linkedlist_t;
 
+typedef ei_bool_t       (*ei_function_t) (ei_linked_elem_t *link, void *user_param);
+
 
 void ei_linkedlist_init(ei_linkedlist_t *list);
 
 void ei_linkedlist_add(ei_linkedlist_t *list, ei_elem_t elem);
 
-// void ei_linkedlist_pop_elem(ei_linkedlist_t *list, ei_elem_t elem);
+void ei_linkedlist_pop_elem(ei_linkedlist_t *list, ei_elem_t elem, ei_bool_t free_elem);
 
 void ei_linkedlist_pop_link(ei_linkedlist_t *list, ei_linked_elem_t *link, ei_bool_t free_elem);
 
@@ -53,5 +55,6 @@ ei_bool_t ei_linkedlist_has(ei_linkedlist_t *list, ei_elem_t elem);
 
 void ei_linkedlist_add_unique(ei_linkedlist_t *list, ei_elem_t elem);
 
+void ei_linkedlist_applyfunc(ei_linkedlist_t *list, ei_function_t function, void *user_param);
 
 #endif
