@@ -2,12 +2,12 @@
 #include "ei_radiobutton.h"
 #include <assert.h>
 
-// Variable globales pour mémoriser le widget pressé
+/* Variables globales pour mémoriser le widget pressé et la callback a utiliser */
 static ei_widget_t *pressed = NULL;
 static ei_callback_t callback = NULL;
 
 
-// Gestion du move
+/* Gestion du move */
 ei_bool_t all_callback_move_move(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param)
 {
@@ -15,7 +15,7 @@ ei_bool_t all_callback_move_move(ei_widget_t *widget, struct ei_event_t
         return EI_FALSE;
 }
 
-// Gestion du resize
+/* Gestion du resize */
 ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param)
 {
@@ -25,7 +25,7 @@ ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
         return EI_FALSE;
 }
 
-// Si nécessaire effectue les bind avec toplevel en param
+/* Si nécessaire effectue les bind avec toplevel en param */
 ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
         assert(widget);
@@ -81,7 +81,7 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
 
 
 
-// Enfonce les boutons
+/* Enfonce les boutons */
 ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
         if (widget && !strcmp(widget->wclass->name, "button")) {
@@ -96,7 +96,7 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, v
 }
 
 
-// Gere le relachement de la souris
+/* Gere le relachement de la sourisc*/
 ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
         ei_bool_t done = EI_FALSE;
@@ -160,8 +160,9 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
         return done;
 }
 
-/***************Radiobuttons ***/
-/* Enfonce le boutons radio et relève les autres */
+/***** Radiobuttons ****/
+
+/* Enfonce le bouton radio cliqué et relève les autres */
 ei_bool_t radiobutton_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
 			printf("callback radiobutton !\n");
@@ -174,23 +175,22 @@ ei_bool_t radiobutton_callback_click(ei_widget_t *widget, struct ei_event_t *eve
 					 int m_x = event->param.mouse.where.x;
 					 int m_y = event->param.mouse.where.y;
 					 while (lrec !=NULL&&appui==0) {
+                                                 if (m_x>=lrec->rec.top_left.x&&m_x <= (lrec->rec.top_left.x+lrec->rec.size.width)&&m_y>=lrec->rec.top_left.y&&m_y<=(lrec->rec.top_left.y+lrec->rec.size.height)) {
+                                                         //lrec->rel=ei_relief_sunken;
+                                                         printf("appui sur un btn détecté\n");
+                                                         appui=1;
+                                                 }
 
-						 	if (m_x>=lrec->rec.top_left.x&&m_x<=(lrec->rec.top_left.x+lrec->rec.size.width)&&m_y>=lrec->rec.top_left.y&&m_y<=(lrec->rec.top_left.y+lrec->rec.size.height)) {
-								//lrec->rel=ei_relief_sunken;
-								printf("appui sur un btn détecté\n");
-								appui=1;
-							}
-							
-						lrec=lrec->next;
-						indice++;
-					}
-					if (appui) {
-						assert(radiobutton->lrec);
-						modify_btn_rel(radiobutton,indice);
-					}
-                ei_invalidate_rect(&widget->screen_location);
+                                                 lrec=lrec->next;
+                                                 indice++;
+                                         }
+                                         if (appui) {
+                                                 assert(radiobutton->lrec);
+                                                 modify_btn_rel(radiobutton,indice);
+                                         }
+                                         ei_invalidate_rect(&widget->screen_location);
 
-                pressed = widget;
+                                         pressed = widget;
         }
         return EI_FALSE;
 }

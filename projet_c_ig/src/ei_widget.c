@@ -18,14 +18,11 @@
 #include "ei_widgetclass_pv.h"
 
 
-/**
- *
- * \brief       Next widget's picking color, increased after each widget's creation.
- *
- */
+/* Contient la couleur de picking courante
+ * le champ alpha doit toujours être a 0xFF*/
 static ei_color_t ei_next_picking_color = { 0x00, 0x00, 0x00, 0xFF };
 
-
+/* Incrémente la couleur de picking actuelle */
 void ei_color_increase(ei_color_t *color)
 {
         if (color != NULL) {
@@ -41,6 +38,7 @@ void ei_color_increase(ei_color_t *color)
         }
 }
 
+/* Creation d'un widget selon sa classe */
 ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name, ei_widget_t* parent)
 {
         ei_widget_t *widget = NULL;
@@ -68,9 +66,8 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name, ei_widget_t* par
                                 parent->children_head = widget;
                                 parent->children_tail = widget;
                         }
-                }
-                // on initialise correctement le root_widget
-                else {
+                }  else {
+                        // on initialise correctement le root_widget
                         widget->next_sibling = NULL;
                         widget->children_head = NULL;
                         widget->children_tail = NULL;
@@ -87,7 +84,6 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name, ei_widget_t* par
 
                 if (parent)
                         widget->pick_id = ei_map_rgba(ei_get_picking_surface(), widget->pick_color);
-
                 else
                         widget->pick_id = 0x0;
 
@@ -112,6 +108,7 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name, ei_widget_t* par
                 return NULL;
 }
 
+/* Detruit un widget */
 void ei_widget_destroy(ei_widget_t* widget)
 {
         if (widget) {
@@ -179,15 +176,7 @@ void ei_widget_destroy(ei_widget_t* widget)
         }
 }
 
-/**
- * @brief       Searches for the widget corresponding to the given pick_id
- *              in the given widget's descendants and the widget itself.
- *
- * @param       pick_id         The picking identifier.
- * @param       widget          The widget to search from.
- *
- * @return                      The widget corresponding to the given pick_id, or NULL if none.
- */
+/* Selectionne un widget en connaissant son pick_id */
 ei_widget_t* ei_widget_find_by_pick_id(uint32_t pick_id, ei_widget_t *widget)
 {
         ei_widget_t* result;
@@ -205,13 +194,14 @@ ei_widget_t* ei_widget_find_by_pick_id(uint32_t pick_id, ei_widget_t *widget)
                         }
                 }
                 return ei_widget_find_by_pick_id(pick_id, widget->children_head);
-        }
-        else {
+        } else {
                 return NULL;
         }
 }
 
-ei_widget_t* ei_widget_pick(ei_point_t* where)
+/* Calcule la couleur correspondant au point du clic et cherche le widget
+ * correspondant*/
+ei_widget_t* ei_widget_pick (ei_point_t* where)
 {
         ei_widget_t *selection = NULL;
         ei_size_t size;
@@ -243,6 +233,13 @@ ei_widget_t* ei_widget_pick(ei_point_t* where)
         return selection;
 }
 
+/* Renvoie true si le widget a une classe définie */
+ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name)
+{
+        return (widget && widget->wclass && !strcmp(widget->wclass->name, name));
+}
+
+/* Permet de configurer une frame */
 void    ei_frame_configure (ei_widget_t* widget,
                 ei_size_t*              requested_size,
                 const ei_color_t*       color,
@@ -291,8 +288,7 @@ void    ei_frame_configure (ei_widget_t* widget,
                 if (img_rect && *img_rect) {
                         SAFE_ALLOC(frame->img_rect, ei_rect_t);
                         frame->img_rect = *img_rect;
-                }
-                else {
+                } else {
                         SAFE_FREE(frame->img_rect);
                 }
                 if (img_anchor) {
@@ -301,6 +297,7 @@ void    ei_frame_configure (ei_widget_t* widget,
         }
 }
 
+/* Permet de configurer un bouton */
 void    ei_button_configure (ei_widget_t*               widget,
                 ei_size_t*              requested_size,
                 const ei_color_t*       color,
@@ -366,8 +363,7 @@ void    ei_button_configure (ei_widget_t*               widget,
                 if (img_rect && *img_rect) {
                         SAFE_ALLOC(button->img_rect, ei_rect_t);
                         *button->img_rect = **img_rect;
-                }
-                else{
+                } else {
                         SAFE_FREE(button->img_rect);
                 }
 
@@ -385,6 +381,7 @@ void    ei_button_configure (ei_widget_t*               widget,
         }
 }
 
+/* Permet de configurer un toplevel */
 void    ei_toplevel_configure   (ei_widget_t*   widget,
                 ei_size_t*      requested_size,
                 ei_color_t*     color,
@@ -430,29 +427,20 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
 
                 if (min_size && *min_size && toplevel->min_size) {
                         *toplevel->min_size = **min_size;
+                } else {
+                        SAFE_FREE(toplevel->min_size);
                 }
         }
 }
 
-/**
- * @brief       Indicates if a widget is another's child.
- *
- * @param       widget          The widget to configure.
- *
- * @return                      Boolean result.
- *
- * @unused
- */
+/* Renvoie true si child est un fils de widget */
 ei_bool_t ei_is_widget_child(ei_widget_t *widget, ei_widget_t *child)
 {
         if (widget) {
                 ei_widget_t *cur = widget->children_head;
-
                 while (cur) {
                         if (cur == widget)
                                 return EI_TRUE;
-
-
                         if (cur->next_sibling)
                                 cur = cur->next_sibling;
                         else
