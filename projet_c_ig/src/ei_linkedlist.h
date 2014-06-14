@@ -1,12 +1,13 @@
 /**
  *  @file	ei_linkedlist.h
- *  @brief	Linked list generic class.
+ *  @brief	Doubly linked list generic class.
  *
  *  \author 
- *  Created by Léo Gouttefarde on 07.07.14
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 07.07.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
+
 #ifndef EI_LINKEDLIST_H
 #define EI_LINKEDLIST_H
 
@@ -20,7 +21,7 @@
 typedef void* ei_elem_t;
 
 /**
- * @brief	An element and a pointer to create a linked list.
+ * @brief	An element and previous next pointers to create a linked doubly linked list.
  */
 typedef struct ei_linked_elem_t {
         ei_elem_t elem;
@@ -36,6 +37,17 @@ typedef struct ei_linked_list_t {
         ei_linked_elem_t *tail;
 } ei_linkedlist_t;
 
+
+/**
+ * \brief       ei_linkedlist_t callback function.
+ *              Useful to automatically call a function on each list elemnent.
+ *
+ * @param       link            Linked list element
+ * @param       user_param      User parameters
+ *
+ * @return                      A boolean telling if this callback must stop being called on other list elements.
+ *                              If EI_TRUE, the callback will not be called on them, if EI_FALSE it will.
+ */
 typedef ei_bool_t       (*ei_function_t) (ei_linked_elem_t *link, void *user_param);
 
 

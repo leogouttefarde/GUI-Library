@@ -3,7 +3,7 @@
  *  @brief	Manages the update rectangles
  *
  *  \author 
- *  Created by Léo GOUTTEFARDE on 05.06.14.
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 05.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
@@ -14,6 +14,7 @@
 #include "ei_common.h"
 #include "ei_types.h"
 #include "ei_widget.h"
+#include "ei_linkedlist.h"
 
 
 /**
@@ -40,12 +41,24 @@ ei_linked_rect_t* ei_get_update_rects();
  * @param       rect            The rectangle to add, expressed in the root window coordinates.
  *                              A copy is made, so it is safe to release the rectangle on return.
  */
-void ei_invalidate_rect(ei_rect_t* rect);
+void ei_invalidate_rect(ei_rect_t* invalid_rect);
 
 /**
  * \brief       Updates the list of invalid rectangles on the root surface.
  */
 void ei_draw_rects();
+
+/**
+ * \brief       ei_linkedlist_t callback function.
+ *              Used by ei_draw_rects to draw a rectangle on screen. 
+ *
+ * @param       link            Linked list element
+ * @param       user_param      User parameters
+ *
+ * @return                      A boolean telling if this callback must stop being called on other list elements.
+ *                              If EI_TRUE, the callback will not be called on them, if EI_FALSE it will.
+ */
+ei_bool_t ei_draw_rect(ei_linked_elem_t *link, void *user_param);
 
 /**
  * \brief       Draws a widget on the root surface for the given draw_rect rectangle to update.
@@ -56,7 +69,7 @@ void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect);
  * \brief       Indicates if there is an intersection between two rectangles.
  *
  * @param       rect1   First rectangle
- * @param       rect1   Second rectangle
+ * @param       rect2   Second rectangle
  *
  * @return      Intersection boolean.
  */
@@ -66,11 +79,22 @@ ei_bool_t ei_is_rect_inter(const ei_rect_t *rect1, const ei_rect_t *rect2);
  * \brief       Calculates the intersection between two rectangles, if any.
  *
  * @param       rect1   First rectangle
- * @param       rect1   Second rectangle
+ * @param       rect2   Second rectangle
  *
  * @return      The resulting intersection rectangle, or NULL if none.
  */
 ei_rect_t* ei_rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2);
+
+/**
+ * \brief       Calculates the fusion between two rectangles if
+ *              it is a smaller or equal area than both rectangle areas added.
+ *
+ * @param       rect1   First rectangle
+ * @param       rect2   Second rectangle
+ *
+ * @return      The resulting fusion rectangle, or NULL if bigger.
+ */
+ei_rect_t* ei_smaller_fused(const ei_rect_t *rect1, const ei_rect_t *rect2);
 
 
 #endif

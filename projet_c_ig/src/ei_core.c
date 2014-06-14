@@ -6,13 +6,13 @@
 
 
 
-/* Liste de rectangles à mettre à jour */
 static ei_linkedlist_t ei_update_rects;
+
 
 #ifdef LEAK_TRACKER
 /**
- * \brief       The current number of allocated (unfreed) blocks.
- *              Debugging feature only, non included on release compilation.
+ * \brief       The current number of allocated (unfreed) blocks : the leak counter.
+ *              Debugging feature only, leak tracker non included on release compilation mode.
  */
 int ALLOCATION_COUNTER = 0;
 #endif
@@ -24,7 +24,6 @@ void ei_init()
         ei_linkedlist_init(&ei_update_rects);
 }
 
-/***** Calculs d'intersections de rectangles *****/
 ei_bool_t ei_is_rect_inter(const ei_rect_t *rect1, const ei_rect_t *rect2)
 {
         ei_bool_t is_intersection = EI_FALSE;
@@ -120,8 +119,6 @@ ei_rect_t* ei_rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2)
         return inter;
 }
 
-/***** Dessin de widgets *****/
-// Draw récursif selon la hiérarchie des widgets
 void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
 {
         if (widget){
@@ -165,7 +162,6 @@ void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
         }
 }
 
-// Demande la mise a jour d'un rectangle sur tous les widgets
 ei_bool_t ei_draw_rect(ei_linked_elem_t *link, void *user_param)
 {
         ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
@@ -179,7 +175,6 @@ ei_bool_t ei_draw_rect(ei_linked_elem_t *link, void *user_param)
         return EI_FALSE;
 }
 
-// Demande la mise a jour de l'écran sur tous les rectangles invalides
 void ei_draw_rects()
 {
         ei_linkedlist_applyfunc(&ei_update_rects, ei_draw_rect, NULL);
@@ -226,7 +221,7 @@ ei_rect_t* ei_smaller_fused(const ei_rect_t *rect1, const ei_rect_t *rect2)
 
                 int r1_left = x1;
                 int r1_top = y1;
-                // ATTENTION AU -1
+
                 int r1_right = x1 + w1 - 1;
                 int r1_bottom = y1 + h1 - 1;
 
@@ -247,7 +242,7 @@ ei_rect_t* ei_smaller_fused(const ei_rect_t *rect1, const ei_rect_t *rect2)
 
                 long long fused_area = width * height;
 
-                if (fused_area < current_area) {
+                if (fused_area <= current_area) {
                         fuse = CALLOC_TYPE(ei_rect_t);
                         assert(fuse);
 
