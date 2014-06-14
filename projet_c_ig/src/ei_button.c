@@ -71,7 +71,7 @@ void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t * toplevel,
         /* Requiert : screenlocation.size = { 2*bw+content_rect largeur, bar + 2*bw +content_rect hauteur } */
 
         ei_rect_t rec = toplevel->widget.screen_location;
-		  ei_rect_t* inter;
+        ei_rect_t* inter;
 
         /* Dessin de la bordure */
         ei_rect_t bord = rec;
@@ -310,15 +310,15 @@ void print_image(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
                 hw_surface_lock(img);
 
 
-                #ifndef NDEBUG
+#ifndef NDEBUG
                 int result =
-                #endif
+#endif
 
                         ei_copy_surface(window, &rec_dst, img, &img_part, 1);
 
-                #ifndef NDEBUG
+#ifndef NDEBUG
                 assert(result == 0);
-                #endif
+#endif
 
 
                 hw_surface_unlock(img);

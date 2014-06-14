@@ -12,7 +12,6 @@
 #include "ei_event_pv.h"
 #include "ei_widgetclass_pv.h"
 #include "ei_widgettypes.h"
-#include "ei_core.h"
 #include "ei_root.h"
 #include "ei_callback.h"
 #include "ei_utils.h"

@@ -10,7 +10,6 @@
 
 #include "ei_geometrymanager_pv.h"
 #include "ei_common.h"
-#include "ei_core.h"
 #include "ei_root.h"
 #include "ei_utils.h"
 #include "ei_linkedlist.h"
@@ -90,9 +89,6 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 /*  Gere le clipping */
 void ei_place_runfunc(struct ei_widget_t*       widget)
 {
-
-        /* On commence par invalider l'ancien rectangle */
-        ei_invalidate_rect(&widget->screen_location);
 
         /* On calcule la nouvelle screen_location */
 
@@ -277,9 +273,6 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         // Appel a geomnotify
         widget->wclass->geomnotifyfunc(widget, screen_location);
 
-        /* On invalide le nouveau rectangle*/
-        ei_rect_t new_pos = widget->screen_location;
-        ei_invalidate_rect(&new_pos);
 
         /* Appels récursifs sur les enfants */
         // Appel récursif sur les enfants pour les replacer

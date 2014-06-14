@@ -10,7 +10,6 @@
 #include "ei_widget.h"
 #include "ei_widgettypes.h"
 #include "ei_utils.h"
-#include "ei_core.h"
 #include "ei_root.h"
 #include "ei_common.h"
 #include "hw_interface.h"

@@ -9,7 +9,6 @@
  */
 
 #include "ei_event_pv.h"
-#include "ei_core.h"
 #include "ei_utilities.h"
 #include "ei_linkedlist.h"
 #include "ei_tag.h"
@@ -98,10 +97,10 @@ void ei_unbind(ei_eventtype_t eventtype,
                         next = link->next;
 
                         if (    binding
-                                && (widget == binding->widget)
-                                && ((tag == NULL) || !strcmp(tag, binding->tag))
-                                && (callback == binding->callback)
-                                && (user_param == binding->user_param) )
+                                        && (widget == binding->widget)
+                                        && ((tag == NULL) || !strcmp(tag, binding->tag))
+                                        && (callback == binding->callback)
+                                        && (user_param == binding->user_param) )
                                 ei_unbind_link(list, link);
 
                         link = next;
