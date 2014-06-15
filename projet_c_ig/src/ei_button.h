@@ -1,3 +1,12 @@
+/**
+ *  @file       ei_button.h
+ *  @brief      Button API
+ *
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 14.06.14.
+ *  Copyright 2014 Ensimag. All rights reserved.
+ *
+ */
 
 #ifndef EI_BUTTON_H
 #define EI_BUTTON_H

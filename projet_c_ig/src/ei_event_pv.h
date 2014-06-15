@@ -2,11 +2,11 @@
  *  @file       ei_event_pv.h
  *  @brief      Private event declarations
  *
- *  \author 
- *  Created by Léo Gouttefarde on 12.06.14
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 12.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
- *
  */
+
 #ifndef EI_EVENT_PV_H
 #define EI_EVENT_PV_H
 

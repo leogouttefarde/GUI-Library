@@ -1,12 +1,3 @@
-/**
- *  @file       ei_debug.h
- *  @brief      Debug
- *
- *  \author 
- *  Created by Léo Gouttefarde on 11.06.14
- *  Copyright 2014 Ensimag. All rights reserved.
- *
- */
 
 #include "ei_debug.h"
 #include "ei_common.h"

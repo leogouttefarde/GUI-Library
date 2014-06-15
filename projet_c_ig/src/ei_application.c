@@ -2,7 +2,7 @@
  *  @file       ei_application.c
  *
  *  \author 
- *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 09.06.14
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 02.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
@@ -22,25 +22,7 @@
 
 static ei_bool_t quit_request = EI_FALSE;
 
-
-/**
- * \brief       Creates an application.
- *              <ul>
- *                      <li> initializes the hardware (calls \ref hw_init), </li>
- *                      <li> registers all classes of widget and all geometry managers, </li>
- *                      <li> creates the root window (either in a system window, or the entire
- *                              screen), </li>
- *                      <li> creates the root widget to accress the root window. </li>
- *              </ul>
- *
- * @param       main_window_size        If "fullscreen is false, the size of the root window of the
- *                                      application.
- *                                      If "fullscreen" is true, the current monitor resolution is
- *                                      used as the size of the root window, this size is returned
- *                                      in this parameter.
- * @param       fullScreen              If true, the root window is the entire screen. Otherwise, it
- *                                      is a system window.
- */
+/* Cree l'application */
 void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
 {
         ei_init();
@@ -70,18 +52,12 @@ void ei_app_create(ei_size_t* main_window_size, ei_bool_t fullscreen)
         // "button" dans cette fonction avec les callback 1 et 2 définies dans
         // ei_widget_class
         ei_bind(ei_ev_mouse_buttondown, NULL, "button", button_callback_click, NULL);
-
         ei_bind(ei_ev_mouse_buttondown, NULL, "toplevel", toplevel_callback_click, NULL);
-
         ei_bind(ei_ev_mouse_buttondown, NULL, "radiobutton", radiobutton_callback_click, NULL);
-
         ei_bind(ei_ev_mouse_buttonup, NULL, "all", all_callback_release, NULL);
 }
 
-/**
- * \brief       Releases all the resources of the application, and releases the hardware
- *              (ie. calls \ref hw_quit).
- */
+/* Libere les ressources graphiques allouées à l'application */
 void ei_app_free()
 {
         ei_surface_t picking = ei_get_picking_surface();
@@ -108,10 +84,7 @@ void ei_app_free()
 #endif
 }
 
-/**
- * \brief       Runs the application: enters the main event loop. Exits when
- *              \ref ei_app_quit_request is called.
- */
+/* Boucle infinie, coeur de l'application */
 void ei_app_run()
 {
         ei_event_t event;
@@ -145,45 +118,27 @@ void ei_app_run()
         };
 }
 
-/**
- * \brief       Adds a rectangle to the list of rectangles that must be updated on screen. The real
- *              update on the screen will be done at the right moment in the main loop.
- *
- * @param       rect            The rectangle to add, expressed in the root window coordinates.
- *                              A copy is made, so it is safe to release the rectangle on return.
- */
+/* Permet à l'utilisateur d'invalider manuellement une partie de l'écran pour la
+ * mettre à jour */
 void ei_app_invalidate_rect(ei_rect_t* rect)
 {
         ei_invalidate_rect(rect);
 }
 
-/**
- * \brief       Tells the application to quite. Is usually called by an event handler (for example
- *              when pressing the "Escape" key).
- */
+/* Demande la fin de l'exécution */
 void ei_app_quit_request()
 {
         quit_request = EI_TRUE;
 }
 
 
-/**
- * \brief       Returns the "root widget" of the application: a "frame" widget that encapsulate the
- *              root window.
- *
- * @return                      The root widget.
- */
+/* Renvoie l'adresse du root_widget */
 ei_widget_t* ei_app_root_widget(){
 
         return ei_get_root();
 }
 
-/**
- * \brief       Returns the surface of the root window. Used to create surfaces with similar r, g, b
- *              channels.
- *
- * @return                      The surface of the root window.
- */
+/* Renvoie la surface de dessin */
 ei_surface_t ei_app_root_surface(){
 
         return ei_get_root_surface();

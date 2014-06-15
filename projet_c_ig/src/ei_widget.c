@@ -1,9 +1,10 @@
 /**
- * @file        ei_widget.c
+ *  @file        ei_widget.c
  *
- * @brief       API for widgets management: creation, configuration, hierarchy, redisplay.
- * 
- *  Created by Eric BUREL on 02.06.14.
+ *  @brief       API for widgets management: creation, configuration, hierarchy, redisplay.
+ *
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 02.03.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  */
 
@@ -15,16 +16,14 @@
 #include "hw_interface.h"
 #include "ei_utilities.h"
 #include "ei_tag.h"
+#include "ei_widgetclass_pv.h"
 
 
-/**
- *
- * \brief       Next widget's picking color, increased after each widget's creation.
- *
- */
+/* Contient la couleur de picking courante
+ * le champ alpha doit toujours être a 0xFF*/
 static ei_color_t ei_next_picking_color = { 0x00, 0x00, 0x00, 0xFF };
 
-
+/* Incrémente la couleur de picking actuelle */
 void ei_color_increase(ei_color_t *color)
 {
         if (color != NULL) {
@@ -40,18 +39,7 @@ void ei_color_increase(ei_color_t *color)
         }
 }
 
-/**
- * @brief       Creates a new instance of a widget of some particular class, as a descendant of
- *              an existing widget.
- *
- *              The widget is not displayed on screen until it is managed by a geometry manager.
- *              The widget should be released by calling \ref ei_widget_destroy when no more needed.
- *
- * @param       class_name      The name of the class of the widget that is to be created.
- * @param       parent          A pointer to the parent widget. Can not be NULL.
- *
- * @return                      The newly created widget, or NULL if there was an error.
- */
+/* Creation d'un widget selon sa classe */
 ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name, ei_widget_t* parent)
 {
         ei_widget_t *widget = NULL;
@@ -79,9 +67,8 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name, ei_widget_t* par
                                 parent->children_head = widget;
                                 parent->children_tail = widget;
                         }
-                }
-                // on initialise correctement le root_widget
-                else {
+                }  else {
+                        // on initialise correctement le root_widget
                         widget->next_sibling = NULL;
                         widget->children_head = NULL;
                         widget->children_tail = NULL;
@@ -98,7 +85,6 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name, ei_widget_t* par
 
                 if (parent)
                         widget->pick_id = ei_map_rgba(ei_get_picking_surface(), widget->pick_color);
-
                 else
                         widget->pick_id = 0x0;
 
@@ -123,12 +109,7 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name, ei_widget_t* par
                 return NULL;
 }
 
-/**
- * @brief       Destroys a widget. Removes it from screen if it is managed by a geometry manager.
- *              Destroys all its descendants.
- *
- * @param       widget          The widget that is to be destroyed.
- */
+/* Detruit un widget */
 void ei_widget_destroy(ei_widget_t* widget)
 {
         if (widget) {
@@ -196,15 +177,7 @@ void ei_widget_destroy(ei_widget_t* widget)
         }
 }
 
-/**
- * @brief       Searches for the widget corresponding to the given pick_id
- *              in the given widget's descendants and the widget itself.
- *
- * @param       pick_id         The picking identifier.
- * @param       widget          The widget to search from.
- *
- * @return                      The widget corresponding to the given pick_id, or NULL if none.
- */
+/* Selectionne un widget en connaissant son pick_id */
 ei_widget_t* ei_widget_find_by_pick_id(uint32_t pick_id, ei_widget_t *widget)
 {
         ei_widget_t* result;
@@ -222,20 +195,13 @@ ei_widget_t* ei_widget_find_by_pick_id(uint32_t pick_id, ei_widget_t *widget)
                         }
                 }
                 return ei_widget_find_by_pick_id(pick_id, widget->children_head);
-        }
-        else {
+        } else {
                 return NULL;
         }
 }
 
-/**
- * @brief       Returns the widget that is at a given location on screen.
- *
- * @param       where           The location on screen, expressed in the root window coordinates.
- *
- * @return                      The top-most widget at this location, or NULL if there is no widget
- *                              at this location (other than the root widget).
- */
+/* Calcule la couleur correspondant au point du clic et cherche le widget
+ * correspondant*/
 ei_widget_t* ei_widget_pick (ei_point_t* where)
 {
         ei_widget_t *selection = NULL;
@@ -268,50 +234,7 @@ ei_widget_t* ei_widget_pick (ei_point_t* where)
         return selection;
 }
 
-ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name)
-{
-        return (widget && widget->wclass && !strcmp(widget->wclass->name, name));
-}
-
-/**
- * @brief       Configures the attributes of widgets of the class "frame".
- *
- *              Parameters obey the "default" protocol: if a parameter is "NULL" and it has never
- *              been defined before, then a default value should be used (default values are
- *              specified for each parameter). If the parameter is "NULL" but was defined on a
- *              previous call, then its value must not be changed.
- *
- * @param       widget          The widget to configure.
- * @param       requested_size  The size requested for this widget. The geometry manager may
- *                              override this size due to other constraints.
- *                              Defaults to the "natural size" of the widget, ie. big enough to
- *                              display the text or the image, or (0, 0) if the widget has no text
- *                              and no image.
- * @param       color           The color of the background of the widget. Defaults to
- *                              \ref ei_default_background_color.
- * @param       border_width    The width in pixel of the border decoration of the widget. The final
- *                              appearance depends on the "relief" parameter. Defaults to 0.
- * @param       relief          Appearance of the border of the widget. Defaults to
- *                              \ref ei_relief_none.
- * @param       text            The text to display in the widget, or NULL. Only one of the
- *                              parameter "text" and "img" should be used (i.e. non-NULL). Defaults
- *                              to NULL.
- * @param       text_font       The font used to display the text. Defaults to \ref ei_default_font.
- * @param       text_color      The color used to display the text. Defaults to 
- *                              \ref ei_font_default_color.
- * @param       text_anchor     The anchor of the text, i.e. where it is placed whithin the widget
- *                              when the size of the widget is bigger than the size of the text.
- *                              Defaults to \ref ei_anc_center.
- * @param       img             The image to display in the widget, or NULL. Any surface can be
- *                              used, but usually a surface returned by \ref hw_image_load. Only one
- *                              of the parameter "text" and "img" should be used (i.e. non-NULL).
-                                Defaults to NULL.
- * @param       img_rect        If not NULL, this rectangle defines a subpart of "img" to use as the
- *                              image displayed in the widget. Defaults to NULL.
- * @param       img_anchor      The anchor of the image, i.e. where it is placed whithin the widget
- *                              when the size of the widget is bigger than the size of the image.
- *                              Defaults to \ref ei_anc_center.
- */
+/* Permet de configurer une frame */
 void    ei_frame_configure (ei_widget_t* widget,
                 ei_size_t*              requested_size,
                 const ei_color_t*       color,
@@ -360,8 +283,7 @@ void    ei_frame_configure (ei_widget_t* widget,
                 if (img_rect && *img_rect) {
                         SAFE_ALLOC(frame->img_rect, ei_rect_t);
                         frame->img_rect = *img_rect;
-                }
-                else {
+                } else {
                         SAFE_FREE(frame->img_rect);
                 }
                 if (img_anchor) {
@@ -370,20 +292,7 @@ void    ei_frame_configure (ei_widget_t* widget,
         }
 }
 
-/**
- * @brief       Configures the attributes of widgets of the class "button".
- *
- * @param       widget, requested_size, color, border_width, relief,
- *              text, text_font, text_color, text_anchor,
- *              img, img_rect, img_anchor
- *                              See the parameter definition of \ref ei_frame_configure.
- * @param       corner_radius   The radius (in pixels) of the rounded corners of the button.
- *                              0 means straight corners. Defaults to k_default_button_corner_radius.
- * @param       callback        The callback function to call when the user clicks on the button.
- *                              Defaults to NULL (no callback).
- * @param       user_param      A programmer supplied parameter that will be passed to the callback
- *                              when called. Defaults to NULL.
- */
+/* Permet de configurer un bouton */
 void    ei_button_configure (ei_widget_t*               widget,
                 ei_size_t*              requested_size,
                 const ei_color_t*       color,
@@ -400,80 +309,74 @@ void    ei_button_configure (ei_widget_t*               widget,
                 ei_callback_t*          callback,
                 void**                  user_param)
 {
-        if (widget && widget->wclass
-                        && !strcmp(widget->wclass->name, "button")) {
+        if (ei_has_widgetclass(widget, "button")) {
 
                 ei_button_t *button = (ei_button_t*)widget;
+
 
                 if (requested_size) {
                         button->widget.requested_size = *requested_size;
                 }
+
                 if (color) {
                         if (button->color)
                                 *button->color = *color;
                 }
+
                 if (border_width) {
                         button->border_width = *border_width;
                 }
+
                 if (corner_radius) {
                         button->corner_radius = *corner_radius;
                 }
+
                 if (relief) {
                         button->relief = *relief;
                 }
+
                 if (text) {
                         make_string_copy(&button->text, *text);
                 }
-                if(text_font){
+
+                if (text_font) {
                         button->text_font = *text_font;
                 }
-                if(text_color){
+
+                if (text_color) {
                         button->text_color = *text_color;
                 }
-                if(text_anchor){
+
+                if (text_anchor) {
                         button->text_anchor = *text_anchor;
                 }
-                if(img) {
+
+                if (img) {
                         button->img=*img;
                 }
-                if(img_rect && *img_rect){
+
+                if (img_rect && *img_rect) {
                         SAFE_ALLOC(button->img_rect, ei_rect_t);
                         *button->img_rect = **img_rect;
-                }
-                else{
+                } else {
                         SAFE_FREE(button->img_rect);
                 }
-                if(img_anchor) {
+
+                if (img_anchor) {
                         button->img_anchor = *img_anchor;
                 }
-                if(callback) {
+
+                if (callback) {
                         button->callback = *callback;
                 }
+
                 if (user_param){
                         button->user_param = *user_param;
                 }
         }
 }
 
-/**
- * @brief       Configures the attributes of widgets of the class "toplevel".
- *
- * @param       widget          The widget to configure.
- * @param       requested_size  The content size requested for this widget, this does not include
- *                              the decorations (border, title bar). The geometry manager may
- *                              override this size due to other constraints.
- *                              Defaults to (320x240).
- * @param       color           The color of the background of the content of the widget. Defaults
- *                              to \ref ei_default_background_color.
- * @param       border_width    The width in pixel of the border of the widget. Defaults to 4.
- * @param       title           The string title diplayed in the title bar. Defaults to "Toplevel".
- * @param       closable        If true, the toplevel is closable by the user, the toplevel must
- *                              show a close button in its title bar. Defaults to \ref EI_TRUE.
- * @param       resizable       Defines if the widget can be resized horizontally and/or vertically
- *                              by the user. Defaults to \ref ei_axis_both.
- * @param       min_size        For resizable widgets, defines the minimum size. Defaults to
- *                              (160, 120).
- */
+/* Permet de configurer un toplevel */
 void    ei_toplevel_configure   (ei_widget_t*   widget,
                 ei_size_t*      requested_size,
                 ei_color_t*     color,
@@ -483,51 +386,56 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                 ei_axis_set_t*  resizable,
                 ei_size_t**     min_size)
 {
-        if (widget && widget->wclass
-                        && !strcmp(widget->wclass->name, "toplevel")) {
+        if (ei_has_widgetclass(widget, "toplevel")) {
 
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+
+
                 if (border_width) {
                         toplevel->border_width = *border_width;
                 }
-                if (requested_size){
-                        ei_size_t rqst_s=*requested_size;
-                        rqst_s.height=rqst_s.height+toplevel->bar_height+2*toplevel->border_width;
-                        rqst_s.width=rqst_s.width+2*toplevel->border_width;
-                        toplevel->widget.requested_size = rqst_s;
+
+                if (requested_size) {
+                        ei_size_t requested_size_final = *requested_size;
+
+                        requested_size_final.height = requested_size_final.height + toplevel->bar_height + 2 * toplevel->border_width;
+                        requested_size_final.width = requested_size_final.width + 2 * toplevel->border_width;
+
+                        toplevel->widget.requested_size = requested_size_final;
                 }
-                if (color){
+
+                if (color) {
                         toplevel->color = *color;
                 }
-                if(title){
+
+                if (title) {
                         make_string_copy(&toplevel->title, *title);
                 }
-                if (closable){
+
+                if (closable) {
                         toplevel->closable = *closable;
                 }
-                if(resizable){
+
+                if (resizable) {
                         toplevel->resizable = *resizable;
                 }
-                if(min_size && *min_size){
-                        SAFE_ALLOC(toplevel->min_size, ei_size_t);
+
+                if (min_size && *min_size && toplevel->min_size) {
                         *toplevel->min_size = **min_size;
-                }
-                else{
+                } else {
                         SAFE_FREE(toplevel->min_size);
                 }
         }
 }
 
+/* Renvoie true si child est un fils de widget */
 ei_bool_t ei_is_widget_child(ei_widget_t *widget, ei_widget_t *child)
 {
         if (widget) {
                 ei_widget_t *cur = widget->children_head;
-
                 while (cur) {
                         if (cur == widget)
                                 return EI_TRUE;
-
-
                         if (cur->next_sibling)
                                 cur = cur->next_sibling;
                         else

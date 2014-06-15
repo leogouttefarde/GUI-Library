@@ -1,12 +1,3 @@
-/**
- *  @file       ei_event.c
- *  @brief      Allows the binding and unbinding of callbacks to events.
- *
- *  \author 
- *  Created by Léo GOUTTEFARDE on 04.06.14.
- *  Copyright 2014 Ensimag. All rights reserved.
- *
- */
 
 #include "ei_event_pv.h"
 #include "ei_utilities.h"

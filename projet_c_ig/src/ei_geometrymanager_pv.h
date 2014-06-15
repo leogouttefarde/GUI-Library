@@ -3,9 +3,8 @@
  *  @brief	Private geometry manager declarations
  *
  *  \author
- *  Created by Léo Gouttefarde on 12.06.14
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 12.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
- *
  */
 
 #ifndef EI_GEOMETRYMANAGER_PV_H

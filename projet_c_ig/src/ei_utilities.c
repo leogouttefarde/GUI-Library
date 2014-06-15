@@ -1,5 +1,16 @@
+/**
+ *  @file       ei_utilities.h
+ *  @brief      Utility functions.
+ *
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 04.06.14.
+ *  Copyright 2014 Ensimag. All rights reserved.
+ *
+ */
+
 #include "ei_utilities.h"
 #include "ei_common.h"
+
 /**
  * @brief Converts a part of a circle, given by cenre, radius, and two angles in a list of linked points. Use: The second angle given needs to be greater than the first.
  *

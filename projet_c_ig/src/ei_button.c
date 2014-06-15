@@ -3,9 +3,8 @@
  *  @brief      Button functions
  *
  *  \author 
- *  Created by Antoine DELAITE on 04.06.14
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 04.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
- *
  */
 
 #include "ei_button.h"

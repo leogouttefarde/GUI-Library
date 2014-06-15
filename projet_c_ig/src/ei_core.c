@@ -6,15 +6,13 @@
 
 
 
-/**
- * \brief       The list of rectangles that must be updated on screen.
- */
 static ei_linkedlist_t ei_update_rects;
+
 
 #ifdef LEAK_TRACKER
 /**
- * \brief       The current number of allocated (unfreed) blocks.
- *              Debugging feature only, non included on release compilation.
+ * \brief       The current number of allocated (unfreed) blocks : the leak counter.
+ *              Debugging feature only, leak tracker non included on release compilation mode.
  */
 int ALLOCATION_COUNTER = 0;
 #endif
@@ -26,7 +24,6 @@ void ei_init()
         ei_linkedlist_init(&ei_update_rects);
 }
 
-/***** Calculs d'intersections de rectangles *****/
 ei_bool_t ei_is_rect_inter(const ei_rect_t *rect1, const ei_rect_t *rect2)
 {
         ei_bool_t is_intersection = EI_FALSE;
@@ -122,8 +119,6 @@ ei_rect_t* ei_rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2)
         return inter;
 }
 
-/***** Dessin de widgets *****/
-// Draw récursif selon la hiérarchie des widgets
 void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
 {
         if (widget){
@@ -167,30 +162,22 @@ void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
         }
 }
 
-// Demande la mise a jour d'un rectangle sur tous les widgets
-void ei_draw_rect(ei_rect_t *rect)
+ei_bool_t ei_draw_rect(ei_linked_elem_t *link, void *user_param)
 {
+        ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
         ei_widget_t *root = ei_get_root();
 
-        if (root && rect) {
-                ei_draw_widget(root, rect);
+        /* If valid linked rectangle, draw it */
+        if (lrect && root) {
+                ei_draw_widget(root, &lrect->rect);
         }
+
+        return EI_FALSE;
 }
 
-// Demande a mise a jour de l'écran sur tous les rectangles invalidate
 void ei_draw_rects()
 {
-        ei_linked_elem_t *link = ei_update_rects.head;
-
-        while (link) {
-                ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
-
-                /* If valid linked rectangle, draw it */
-                if (lrect)
-                        ei_draw_rect(&lrect->rect);
-
-                link = link->next;
-        }
+        ei_linkedlist_applyfunc(&ei_update_rects, ei_draw_rect, NULL);
 }
 
 void ei_invalidate_reset()
@@ -234,7 +221,7 @@ ei_rect_t* ei_smaller_fused(const ei_rect_t *rect1, const ei_rect_t *rect2)
 
                 int r1_left = x1;
                 int r1_top = y1;
-                // ATTENTION AU -1
+
                 int r1_right = x1 + w1 - 1;
                 int r1_bottom = y1 + h1 - 1;
 
@@ -255,7 +242,7 @@ ei_rect_t* ei_smaller_fused(const ei_rect_t *rect1, const ei_rect_t *rect2)
 
                 long long fused_area = width * height;
 
-                if (fused_area < current_area) {
+                if (fused_area <= current_area) {
                         fuse = CALLOC_TYPE(ei_rect_t);
                         assert(fuse);
 
@@ -271,13 +258,16 @@ ei_rect_t* ei_smaller_fused(const ei_rect_t *rect1, const ei_rect_t *rect2)
         return fuse;
 }
 
-void ei_invalidate_rect(ei_rect_t* rect)
+void ei_invalidate_rect(ei_rect_t* invalid_rect)
 {
-        if (rect) {
-                /* On commence par intersecter le rectangle avec le root_widget */
+        if (invalid_rect) {
+                ei_rect_t *rect = NULL;
                 ei_rect_t temp;
+
+                /* On commence par intersecter le rectangle avec le root_widget */
                 temp =  hw_surface_get_rect(ei_get_root_surface());
-                rect = ei_rect_intersection(rect, &temp);
+                rect = ei_rect_intersection(invalid_rect, &temp);
+
                 if (rect) {
                         /* On ajoute le rectangle */
                         ei_rect_t new_rect = *rect;
@@ -332,8 +322,9 @@ void ei_invalidate_rect(ei_rect_t* rect)
                                         ei_linkedlist_add(&ei_update_rects, new_link);
                                 }
                         }
+
+                        SAFE_FREE(rect);
                 }
-                SAFE_FREE(rect);
         }
 }
 

@@ -2,8 +2,8 @@
  *  @file	ei_tag.c
  *  @brief	Tag API
  *
- *  \author 
- *  Created by Léo GOUTTEFARDE on 14.06.14
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 14.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */

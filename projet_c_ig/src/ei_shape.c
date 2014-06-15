@@ -1,17 +1,19 @@
 /**
- * @file        ei_shape.h
+ * @file        ei_shape.c
  *
- * @brief       Basical geometric transformation and shape generating
+ * @brief       At first designed to contain basical geometrical operations, now
+ *              only contains a rectangle/point_list converter.
  *
- *  Created by Eric BUREL on 04.06.14
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 04.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
+
 #include "ei_shape.h"
 #include "ei_common.h"
 
-//**************** Basic functions ****************/
-
+/* Ajout d'un point au début d'une liste */
 void ei_direct_append(ei_linked_point_t *lp, ei_point_t point)
 {
         lp->next = CALLOC_TYPE(ei_linked_point_t);
@@ -21,11 +23,10 @@ void ei_direct_append(ei_linked_point_t *lp, ei_point_t point)
         lp->next->next = NULL;
 }
 
-// Transforme un rectangle en une liste de point
-// premier point = top left, puis sens horaire
+/* Transforme un rectangle en une liste de point
+ * premier point = top left, puis sens horaire */
 ei_linked_point_t ei_rect_to_points(ei_rect_t rect)
 {
-        // cf minimal.c pour un exemple d'utilisation des tableaux
         int w = rect.size.width;
         int h = rect.size.height;
         ei_linked_point_t res;

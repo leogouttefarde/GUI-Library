@@ -1,12 +1,22 @@
+/**
+ *  @file       ei_gridder.c
+ *
+ *  @brief      Functions associated with gridder.
+ *
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 13.06.14.
+ *  Copyright 2014 Ensimag. All rights reserved.
+ */
+
 #include "ei_gridder.h"
 
 
-/***** Gridder *****/
 
-/* Renvoie le screen_location en partant du rectangle elementaire flottant
- * et des paramètres */
-ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_point_t tl){
+/* Renvoie le screen_location en partant des paramètres géométriques du widget */
+ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_point_t tl)
+{
         ei_rect_t screen_location;
+        //Rectangle élémentaire flottant
         float elem_width = param->elem_w;
         float elem_height = param->elem_h;
         if(param->col) 
@@ -25,14 +35,13 @@ ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_point_t tl){
                 screen_location.size.height = F2I(I2F(*param->h) * elem_height);
         else
                 screen_location.size.height = F2I(elem_height);
-
         return screen_location;
 }
 
-// Affecte elem_width et elem_height de la taille du rectangle elementaire
-// flottant
-void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height){
-
+/* Affecte elem_width et elem_height de la taille du rectangle elementaire
+ * flottant */
+void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height)
+{
         ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
         if (gridder && elem_width && elem_height && parent &&
                         parent->content_rect &&parent->children_head){
@@ -43,8 +52,9 @@ void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height){
                 int c_curr;
                 ei_widget_t *current = parent->children_head;
                 ei_gridder_param_t *param;
+                // On parcourt tous les fils du père (= freres du widget à
+                // placer)
                 while(current){
-                        // On regarde si le fils courant est géré par le gridder
                         if (current->geom_params && current->geom_params->manager &&
                                         current->geom_params->manager == gridder){
                                 // Lecture des paramètres
@@ -56,8 +66,8 @@ void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height){
                                         if(param->lin){
                                                 if(param->h)
                                                         l_curr =
-                                                                *param->lin + *param->h 
-                                                                - 1;
+                                                                *param->lin +
+                                                                *param->h - 1;
                                                 else
                                                         l_curr =
                                                                 *param->lin;
@@ -65,8 +75,8 @@ void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height){
                                         if(param->col){
                                                 if(param->w)
                                                         c_curr =
-                                                                *param->col + *param->w
-                                                                - 1;
+                                                                *param->col
+                                                                + *param->w - 1;
                                                 else
                                                         c_curr =
                                                                 *param->col;
@@ -92,10 +102,9 @@ void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height){
         }
 }
 
-// Runfunc du gridder
+
+/* Runfunc du gridder */
 void ei_grid_runfunc(ei_widget_t *widget){
-
-
         if(widget->parent){
                 // Lecture des paramètres
                 ei_gridder_param_t *param =
@@ -123,7 +132,7 @@ void ei_grid_runfunc(ei_widget_t *widget){
         }
 }
 
-// Gestion des paramètres
+/* Gestion des paramètres */
 void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h, int
                 *force_w, int *force_h){
 
@@ -141,8 +150,7 @@ void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h, int
                                 if (widget->geom_params->manager) {
                                         if (widget->geom_params->manager != gridder) {
                                                 widget->geom_params->manager->releasefunc(widget);
-                                        }
-                                        else{
+                                        } else {
                                                 gp_alloc = EI_FALSE;
                                         }
                                 }
@@ -232,7 +240,7 @@ void ei_grid(ei_widget_t *widget, int *lin, int *col, int *w, int *h, int
 }
 
 
-
+/* Release */
 void ei_grid_releasefunc(struct ei_widget_t* widget)
 {
         ei_gridder_param_t *param = (ei_gridder_param_t*)widget->geom_params;
@@ -249,7 +257,8 @@ void ei_grid_releasefunc(struct ei_widget_t* widget)
                 widget->geom_params = NULL;
         }
 }
-// Register
+
+
 /**
  * \brief       Registers the "gridder" geometry manager in the program. This must be called only
  *              once before the \ref ei_place function can be called.
