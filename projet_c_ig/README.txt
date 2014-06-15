@@ -1,3 +1,5 @@
+Note aux correcteurs : il est possible de générer la documentation de nos fonctions avec make doc 
+
 Test_inter
 Valide les fonctions d'intersections de rectangle et de verification d'existence d'une intersection
 
@@ -29,4 +31,4 @@ Ensigrid
 Test complet pour le gridder inspiré de ensiskype, possibilité de déplacer, redimensionner
 
 Extension
-Ensiskype étendu, un niveau d'imbrication supplémentaire et ajout des extensions
+Ensiskype étendu, un niveau d'imbrication supplémentaire et ajout des extensions gridder, tag et radiobutton

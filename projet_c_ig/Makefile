@@ -72,14 +72,14 @@ LIBS		= -lmingw32 ${LIBEIBASE} /usr/lib/SDL_ttf.lib /usr/local/lib/libSDL_gfx.a 
 # Main target of the makefile. To build specific targets, call "make <target_name>"
 
 TARGETS		=	${LIBEI} \
-				minimal frame button hello_world_absolute hello_world_relative puzzle tag
+				minimal frame button hello_world_absolute hello_world_relative puzzle 
 
 PERSO_TESTS =  ensiskype toplevel test_placer test_relative \
 			   test_button2 test_geom ensiskype test_inter \
 			   gridder ensigrid test_button3 radiobutton \
-			   extension
+			   extension tag
 
-all : ${TARGETS}
+all : ${TARGETS} ${PERSO_TESTS}
 
 tests : ${PERSO_TESTS}
 
