@@ -151,14 +151,8 @@ void ei_widget_destroy(ei_widget_t* widget)
                         }
                 }
 
-                /* Update geometry manager if any, then release parameters */
-                if (widget->geom_params
-                                && widget->geom_params->manager
-                                && widget->geom_params->manager->runfunc) {
-
-                        widget->geom_params->manager->runfunc(widget);
-                        widget->geom_params->manager->releasefunc(widget);
-                }
+                /* Unmap geomatry manager */
+                ei_geometrymanager_unmap(widget);
 
 
                 /* Destroy all childs */
