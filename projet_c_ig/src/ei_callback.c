@@ -47,28 +47,25 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
 
 
                 pressed = widget;
-                // Gestion du close
-                if (toplevel->closable && (m_y >= y + c_s && m_y <= y +
+                toplevel->move_pos = event->param.mouse.where;
+
+                // PRIORITE : resize > close > move
+                if (toplevel->resizable && (m_y >= (y + h -1 - r_s)) && (m_x >= (x + w - 1 - r_s))){
+                        // Si resize, on bind ce widget et la fonction de resize
+                        callback = all_callback_move_resize;
+                        if (pressed)
+                                ei_bind(ei_ev_mouse_move, NULL, "all", callback,
+                                                (void*)toplevel);
+                } else if (toplevel->closable && (m_y >= y + c_s && m_y <= y +
                                         3 * c_s && m_x >= x + c_s && m_x <= x +
                                         3 * c_s)){
                         // On note simplement la demande de fermeture avec un
                         // booleen (pas de callback a appeler)
                         toplevel->close = EI_TRUE;
                 }
-                else{
-                        // On sauvegarde le dernier point
-                        toplevel->move_pos = event->param.mouse.where;
-
-                        // On verifie que le toplevel est redimensionnable
-                        if (toplevel->resizable && (m_y >= (y + h -1 - r_s)) && (m_x >= (x + w - 1 - r_s))){
-                                // Si resize, on bind ce widget et la fonction de resize
-                                callback = all_callback_move_resize;
-                        } else if(m_y < y + t_h) {
-                                // Si titre, on bind CE WIDGET et la fonction de deplacement
-                                callback = all_callback_move_move;
-                        } else {
-                                pressed = NULL;
-                        }
+                else if(m_y < y + t_h){
+                        // Si titre, on bind CE WIDGET et la fonction de deplacement
+                        callback = all_callback_move_move;
                         if (pressed)
                                 ei_bind(ei_ev_mouse_move, NULL, "all", callback,
                                                 (void*)toplevel);
