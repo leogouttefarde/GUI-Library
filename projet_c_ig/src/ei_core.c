@@ -138,15 +138,25 @@ void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
 
                                 /* Optimized clipper = rectangle to update */
                                 ei_widget_t *current = widget->parent;
-                                while(current){
-                                        if(current->content_rect)
-                                                clipper = ei_rect_intersection(clipper,
-                                                                current->content_rect);
-                                        else
-                                                clipper = ei_rect_intersection(clipper,
-                                                                &current->screen_location);
+                                ei_rect_t *prev_clipper = clipper;
+                                ei_rect_t *second_rect = NULL;
+
+                                while(current) {
+                                        if(current->content_rect) {
+                                                second_rect = current->content_rect;
+                                        }
+                                        else {
+                                                second_rect = &current->screen_location;
+                                        }
+
+                                        clipper = ei_rect_intersection(clipper, second_rect);
+
+                                        SAFE_FREE(prev_clipper);
+                                        prev_clipper = clipper;
+
                                         current = current->parent;
                                 }
+
                                 /* Clipper / Widget intersection */
                                 real_clipper = ei_rect_intersection(clipper, draw_rect);
                                 SAFE_FREE(clipper);
