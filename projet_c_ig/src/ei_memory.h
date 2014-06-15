@@ -1,7 +1,9 @@
 /**
- *  @file        ei_memory.h
+ *  @file       ei_memory.h
  *
- *  @brief       Memory header
+ *  @brief      Memory header.
+ *              Implements a memory leak tracking system on demand,
+ *              thanks to memory handling defines.
  *
  *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 07.06.14.

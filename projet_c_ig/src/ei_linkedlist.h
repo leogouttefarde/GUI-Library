@@ -49,13 +49,37 @@ typedef struct ei_linked_list_t {
  */
 typedef ei_bool_t       (*ei_function_t) (ei_linked_elem_t *link, void *user_param);
 
-
+/**
+ * \brief       Initializes a list.
+ *
+ * @param       list            List to initialize
+ */
 void ei_linkedlist_init(ei_linkedlist_t *list);
 
+/**
+ * \brief       Adds an element to a list.
+ *
+ * @param       list            The list
+ * @param       elem            The element to add
+ */
 void ei_linkedlist_add(ei_linkedlist_t *list, ei_elem_t elem);
 
+/**
+ * \brief       Removes an element from a list.
+ *
+ * @param       list            The list
+ * @param       elem            The element to remove
+ * @param       free_elem       Free the contained element ?
+ */
 void ei_linkedlist_pop_elem(ei_linkedlist_t *list, ei_elem_t elem, ei_bool_t free_elem);
 
+/**
+ * \brief       Removes a linked element from a list.
+ *
+ * @param       list            The list
+ * @param       elem            The linked element to remove
+ * @param       free_elem       Free the contained element ?
+ */
 void ei_linkedlist_pop_link(ei_linkedlist_t *list, ei_linked_elem_t *link, ei_bool_t free_elem);
 
 // ei_elem_t ei_linkedlist_pop(ei_linkedlist_t *list);

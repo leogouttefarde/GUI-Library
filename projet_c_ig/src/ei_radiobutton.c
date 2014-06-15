@@ -146,6 +146,7 @@ void aff_liste(ei_linked_rdbtn_rec_t *lrec)
 		position = lrec->rec;
 		printf("{%i,%i}->",position.top_left.x,position.top_left.y);
 
+                if (lrec->next==NULL) break;
 		lrec = lrec->next;
 	}
 	printf("\n");
@@ -179,11 +180,14 @@ void modify_btn_rel(ei_radiobutton_t *radiobutton, int id)
 
                 indice ++;
 
+                if (lrec->next == NULL) break;
 		lrec = lrec->next;
 	}
 
-	while (lrec)
+	while (lrec) {
+                if (lrec->prev == NULL) break;
 		lrec = lrec->prev;
+        }
 
 	radiobutton->lrec = lrec;
 }
