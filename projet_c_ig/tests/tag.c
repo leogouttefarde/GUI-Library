@@ -16,6 +16,8 @@
  */
 ei_bool_t button_press(ei_widget_t* widget, ei_event_t* event, void* user_param)
 {
+        ei_untag(widget, "button");
+
 	printf("Click !\n");
 	return EI_TRUE;
 }
@@ -80,8 +82,6 @@ int ei_main(int argc, char** argv)
         ei_tag_create("Ensimag");
         ei_tag_create("Fun");
         ei_tag_create("C");
-
-        ei_untag(button, "button");
 
         printf("ei_has_tag(button, \"Fun\") : %d\n", ei_has_tag(button, "Fun"));
 

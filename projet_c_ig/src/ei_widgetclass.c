@@ -10,7 +10,6 @@
 
 #include "ei_widgetclass_pv.h"
 #include "ei_widgettypes.h"
-#include "ei_shape.h"
 #include "ei_utils.h"
 #include "ei_button.h"
 #include "ei_common.h"
@@ -49,7 +48,7 @@ void invalidate_widget(ei_widget_t *widget){
 
         if (widget->parent && widget->parent->content_rect) {
                 ei_rect_t *inter = ei_rect_intersection(&widget->screen_location,
-                                widget->parent->content_rect);
+                                                        widget->parent->content_rect);
                 ei_invalidate_rect(inter);
                 SAFE_FREE(inter);
         }

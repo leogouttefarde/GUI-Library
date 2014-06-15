@@ -10,9 +10,9 @@
 #include "ei_button.h"
 #include "ei_draw.h"
 #include "ei_common.h"
-#include "ei_shape.h"
 #include "ei_utilities.h"
 #include "ei_core.h"
+#include "ei_utils.h"
 
 
 /* Frame draw */
