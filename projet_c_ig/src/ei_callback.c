@@ -61,9 +61,9 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
                                         3 * c_s)){
                         // On note simplement la demande de fermeture avec un
                         // booleen (pas de callback a appeler)
-								toplevel->rel_btn_close=ei_relief_sunken;
+			toplevel->rel_btn_close = ei_relief_sunken;
                         toplevel->close = EI_TRUE;
-                			ei_invalidate_rect(&widget->screen_location);
+                        ei_invalidate_rect(&widget->screen_location);
                 }
                 else if(m_y < y + t_h){
                         // Si titre, on bind CE WIDGET et la fonction de deplacement
@@ -124,24 +124,24 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
                                 ei_unbind(ei_ev_mouse_move, NULL, "all", *callback, pressed);
 
                         if (toplevel->close) {
+
                                 // On verifie que l'on a relaché sur le bouton
                                 int y = pressed->screen_location.top_left.y;
                                 int x = pressed->screen_location.top_left.x;
                                 int m_x = event->param.mouse.where.x;
                                 int m_y = event->param.mouse.where.y;
                                 int t_h = toplevel->bar_height;
+
                                 // le bouton close est a top_left + 1/4 * bar_height
                                 int c_s =   (int)floor((float)t_h * 1. / 4.);
+
                                 if (toplevel->closable && m_y >= y + c_s && m_y <= y +
                                                 3 * c_s && m_x >= x + c_s && m_x <= x +
-                                                3 * c_s){
-                                        // RECHERCHE ET UNBIND
-                                        // DESTRUCTION
-                                        printf("Toplevel detruit");
-                                        ei_widget_destroy(pressed);
-                                        pressed = NULL;
-                                }
-										  else toplevel->rel_btn_close=ei_relief_raised;
+                                                3 * c_s)
+                                        ei_widget_destroy(pressed), pressed = NULL;
+
+				else
+                                        toplevel->rel_btn_close = ei_relief_raised;
                         }
 
                         if (pressed)

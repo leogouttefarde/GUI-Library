@@ -1,5 +1,9 @@
 
-#include "ei_dynamics.h"
+#include "ei_gridder.h"
+#include "ei_common.h"
+#include "ei_widgettypes.h"
+#include "ei_widgetclass_pv.h"
+
 
 /* Calcule le point d'ancrage a partir du top_left et du bottom_right*/
 ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc){
@@ -57,14 +61,17 @@ ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc){
 }
 
 /* Fonction de resize pour le placer*/
-void resize_placer(ei_widget_t *widget, ei_point_t where){
+void resize_placer(ei_widget_t *widget, ei_point_t where)
+{
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
+
         // La fonction resize ne fonctionne que sur le placer
         if (widget->geom_params && widget->geom_params->manager 
                         && widget->geom_params->manager == placer
                         && widget->parent && widget->parent->content_rect) {
+
                 // Calcul de la taille de redimensionnement
-                if (!strcmp(widget->wclass->name, "toplevel")){
+                if (ei_has_widgetclass(widget, "toplevel")) {
                         ei_size_t add_size;
                         ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
 
@@ -116,6 +123,7 @@ void resize_placer(ei_widget_t *widget, ei_point_t where){
                         int w_h = widget->screen_location.size.height;
                         int w_x = widget->screen_location.top_left.x;
                         int w_y = widget->screen_location.top_left.y;
+
                         // Nouvelles tailles
                         int* w = CALLOC_TYPE(int);
                         int* h = CALLOC_TYPE(int);
@@ -167,6 +175,7 @@ void resize_placer(ei_widget_t *widget, ei_point_t where){
                                 SAFE_FREE(rel_h);
                         else
                                 SAFE_FREE(h);
+
                         if (param->x)
                                 SAFE_FREE(rel_x);
                         else
@@ -199,19 +208,18 @@ void resize_placer(ei_widget_t *widget, ei_point_t where){
 void resize_gridder(ei_widget_t *widget, ei_point_t where){
 
 
-        ei_gridder_param_t *param =
-                (ei_gridder_param_t*)widget->geom_params;
+        ei_gridder_param_t *param = (ei_gridder_param_t*)widget->geom_params;
 
-        // Position du curseur relativement au widget
+        /* Position du curseur relativement au widget */
         ei_point_t pos = where;
         pos.x = pos.x - widget->screen_location.top_left.x;
         pos.y = pos.y - widget->screen_location.top_left.y;
 
-        // Calcul du rectangle elementaire
+        /* Calcul du rectangle elementaire */
         float elem_w = param->elem_w;
         float elem_h = param->elem_h;
 
-        //Calcul de la nouvelle ligne, colonne
+        /* Calcul de la nouvelle ligne, colonne */
         int *w = CALLOC_TYPE(int);
         int *h = CALLOC_TYPE(int);
 
@@ -221,21 +229,22 @@ void resize_gridder(ei_widget_t *widget, ei_point_t where){
         int *force_w = CALLOC_TYPE(int);
         int *force_h = CALLOC_TYPE(int);
 
-        // On introduit un forcage
+        /* On introduit un forcage */
         if (param->force_w)
                 *force_w = MAX(*param->col + *w, *param->force_w);
         if (param->force_h)
                 *force_h = MAX(*param->lin + *h, *param->force_h);
 
-        //Grid si changement
+        /* Grid si changement */
         if (*w != *param->w || *h != *param->h)
                 ei_grid(widget, param->lin, param->col, w , h,force_w,
                                 force_h);
 
-        // Maj position toplevel
+        /* Maj position toplevel */
         ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
         toplevel->move_pos = where;
-        //Free
+
+        /* Free */
         SAFE_FREE(w);
         SAFE_FREE(h);
         SAFE_FREE(force_w);
@@ -255,30 +264,35 @@ void resize(ei_widget_t *widget, ei_point_t where)
         assert(widget);
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
         ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
-        if (widget->geom_params && widget->geom_params->manager 
-                        && widget->geom_params->manager == placer) {
+
+        if (widget->geom_params
+            && widget->geom_params->manager 
+            && widget->geom_params->manager == placer)
                 resize_placer(widget, where);
-        } else if (widget->geom_params && widget->geom_params->manager 
-                        && widget->geom_params->manager == gridder) {
+
+        else if (widget->geom_params && widget->geom_params->manager 
+                 && widget->geom_params->manager == gridder)
                 resize_gridder(widget, where);
-        }
 }
 
 /* Fonction de déplacement du placer */
-void move_placer(ei_widget_t *widget, ei_point_t where){
+void move_placer(ei_widget_t *widget, ei_point_t where)
+{
+        ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
 
-        ei_placer_param_t *param =
-                (ei_placer_param_t*)widget->geom_params;
+        if (ei_has_widgetclass(widget, "toplevel")) {
 
-        if (!strcmp(widget->wclass->name, "toplevel")){
                 // On ne deplace que les toplevels en pratique
-                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;    
+                ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
+
                 // Calcul de la distance de deplacement
                 ei_size_t dist;
                 dist.width = where.x - toplevel->move_pos.x;
                 dist.height = where.y - toplevel->move_pos.y;
+
                 // Sauvegarde de la nouvelle position de la souris
-                toplevel->move_pos = where;    
+                toplevel->move_pos = where;
+
                 // Calcul
                 int* x = CALLOC_TYPE(int);
                 int* y = CALLOC_TYPE(int);
@@ -288,6 +302,7 @@ void move_placer(ei_widget_t *widget, ei_point_t where){
                 int p_y;
                 int p_w;
                 int p_h;
+
                 // Position top_left et taille du widget
                 int w_x = widget->screen_location.top_left.x;
                 int w_y = widget->screen_location.top_left.y;
@@ -320,13 +335,13 @@ void move_placer(ei_widget_t *widget, ei_point_t where){
                         *y = anc_point.y;
 
                         // Nouveau x relatif
-                        if (param->x){
+                        if (param->x) {
                                 SAFE_FREE(rel_x);
-                        } else{
+                        } else {
                                 *rel_x = (float)(*x) / (float)(p_w -1);
                                 SAFE_FREE(x);
                         }
-                        if (param->y){
+                        if (param->y) {
                                 SAFE_FREE(rel_y);
                         } else{
                                 *rel_y = (float)(*y) / (float)(p_h -1);
@@ -335,7 +350,7 @@ void move_placer(ei_widget_t *widget, ei_point_t where){
 
                         // On deplace le pere
                         ei_place(widget, &anc, x, y, param->w, param->h, rel_x,
-                                        rel_y, param->rel_w, param->rel_h);
+                                 rel_y, param->rel_w, param->rel_h);
 
                         // Maj position toplevel
                         toplevel->move_pos = where;
@@ -355,8 +370,10 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
         ei_gridder_param_t *param =
                 (ei_gridder_param_t*)widget->geom_params;
 
-        if (!strcmp(widget->wclass->name, "toplevel")){
+        if (ei_has_widgetclass(widget, "toplevel")) {
+
                 ei_rect_t location = widget->screen_location;
+
                 // Calcul du rectangle elementaire
                 float elem_w = param->elem_w;
                 float elem_h = param->elem_h;
@@ -367,6 +384,7 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
                 // souris
                 int x = where.x - location.top_left.x;
                 int y = where.y - location.top_left.y;
+
                 if (x<0) //<< Souris a gauche du widget
                         x = F2I(I2F(x) / elem_w);
                 else if (x - location.size.width + 1 > 0)
@@ -422,13 +440,16 @@ void move(ei_widget_t *widget, ei_point_t where)
         assert(widget);
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
         ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
+
         // La fonction resize ne fonctionne que sur le placer
-        if (widget->geom_params && widget->geom_params->manager 
-                        && widget->geom_params->manager == placer) {
+        if (widget->geom_params
+            && widget->geom_params->manager 
+            && widget->geom_params->manager == placer)
                 move_placer(widget, where);
-        }
-        else if (widget->geom_params && widget->geom_params->manager 
-                        && widget->geom_params->manager == gridder) {
+
+        else if (widget->geom_params
+                 && widget->geom_params->manager 
+                 && widget->geom_params->manager == gridder)
                 move_gridder(widget, where);
-        }
+
 }
