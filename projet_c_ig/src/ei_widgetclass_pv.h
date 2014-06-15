@@ -19,5 +19,5 @@
 void ei_widgetclass_free();
 ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name);
 
-
+void			ei_radiobutton_register_class ();
 #endif

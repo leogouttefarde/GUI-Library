@@ -38,6 +38,8 @@ int ei_main(int argc, char** argv)
 	ei_widget_t*	radiobutton;
 	int		button_x		= 50;
 	int		button_y		= 50;
+	int nb_buttons=9;
+	int nb_btn_pl=4;
 
 	/* Create the application and change the color of the background. */
 	ei_app_create(&screen_size, EI_FALSE);
@@ -45,6 +47,7 @@ int ei_main(int argc, char** argv)
 
 	/* Create, configure and place the button on screen. */
 	radiobutton = ei_widget_create("radiobutton", ei_app_root_widget());
+	ei_radiobutton_configure(radiobutton,&nb_buttons,&nb_btn_pl,NULL,NULL,NULL,NULL,NULL,NULL);
 	ei_place(radiobutton, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
 
 	/* Hook the keypress callback to the event. */

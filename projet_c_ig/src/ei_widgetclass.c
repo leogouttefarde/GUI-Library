@@ -617,7 +617,7 @@ void radiobutton_draw(struct ei_widget_t* widget, ei_surface_t surface,
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
-                printf("début du draw\n");
+                //printf("début du draw\n");
                 ei_radiobutton_draw(surface,radiobutton->widget.screen_location,radiobutton, clipper);
                 //unlock de la surface
                 hw_surface_unlock(surface);
@@ -637,87 +637,59 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
         ei_radiobutton_t *radiobutton;
         radiobutton = (ei_radiobutton_t*)widget;
 
-
-
         ei_color_t bg_color={0x88,0x88,0x88,255};
         radiobutton->bg_color = bg_color;
 
-        ei_color_t btn_color={0,0,0,255};
-        radiobutton->btn_color=btn_color;
+		  ei_color_t btn_color={0,0,0,255};
+		  radiobutton->btn_color=btn_color;
 
-        ei_color_t txt_color={0,0,0,255};
-        radiobutton->txt_color=txt_color;
+		  ei_color_t txt_color={0,0,0,255};
+		  radiobutton->txt_color=txt_color;
 
-        ei_color_t bar_color={255,255,255,255};
-        radiobutton->bar_color=bar_color;
+		  ei_color_t bar_color={255,255,255,255};
+		  radiobutton->bar_color=bar_color;
 
-        ei_size_t btn_size ={25,25};
-        radiobutton->btn_size=btn_size;
-        radiobutton->btn_bdw=3;
+		  ei_size_t btn_size ={25,25};
+		  radiobutton->btn_size=btn_size;
+		  radiobutton->btn_bdw=3;
 
-        int border_width=6;
-        radiobutton->border_width=border_width;
+		  int border_width=6;
+		  radiobutton->border_width=border_width;
 
-        int nb_buttons=7;
-        radiobutton->nb_buttons=nb_buttons;
-        char* tab_chaine[radiobutton->nb_buttons];
-        for (int i=0; i<=radiobutton->nb_buttons-1;i++) {
-                tab_chaine[i]=NULL;
-        }
-        tab_chaine[0]="Breizh libra";
-        tab_chaine[1]="France Bleu Menhir";
-        tab_chaine[2]="Carnac blues";
-        tab_chaine[3]="Chouchen vibes";
-        char* txt_default="No rfm selected";
-        radiobutton->txt_default=txt_default;
-        int nb_radios=4;
-        radiobutton->nb_radios=nb_radios;
-        ei_linked_rdbtn_txt_t *ltxt=rdbtn_txt_create(tab_chaine);
-        radiobutton->ltxt=ltxt;
-        radiobutton->font=ei_default_font;
-        radiobutton->lrec=rdbtn_rec_create(radiobutton);
+		  int nb_buttons=7;
+		  radiobutton->nb_buttons=nb_buttons;
+		  char* tab_chaine[radiobutton->nb_buttons];
+		  for (int i=0; i<=radiobutton->nb_buttons-1;i++) {
+			  tab_chaine[i]=NULL;
+		  }
+		  tab_chaine[0]="Breizh libra";
+		  tab_chaine[1]="France Bleu Menhir";
+		  tab_chaine[2]="Carnac blues";
+		  tab_chaine[3]="Chouchen vibes";
+		  char* txt_default="No rfm selected";
+		  radiobutton->txt_default=txt_default;
+		  int nb_radios=4;
+		  radiobutton->nb_radios=nb_radios;
+		  ei_linked_rdbtn_txt_t *ltxt=rdbtn_txt_create(tab_chaine);
+		  radiobutton->ltxt=ltxt;
+		  radiobutton->font=ei_default_font;
+		  radiobutton->lrec=rdbtn_rec_create(radiobutton);
 
-        int nb_lignes=(int)ceil((float)radiobutton->nb_buttons/4.);
-        int nb_btn_pc=4;
-        int nb_col=MIN(radiobutton->nb_buttons,nb_btn_pc);
-        ei_size_t s;
-        s.width=(2*nb_col-1)*btn_size.width+2*border_width;
-        int h;
-        hw_text_compute_size(tab_chaine[0],radiobutton->font,NULL,&h);
-        radiobutton->bar_height=h+6;
+			int nb_btn_pl=5;
+			radiobutton->nb_btn_pl=nb_btn_pl;
 
-        s.height=radiobutton->bar_height+2*border_width+(2*nb_lignes)*btn_size.height;
-        printf("ceil..%i\n",nb_lignes);
-        radiobutton->widget.requested_size=s;
-        //toplevel->widget.requested_size = s;
-        /*int w;
-          int h;
-          hw_text_compute_size(button->text, button->text_font, &w, &h);
-          button->widget.requested_size = (ei_size(w,h));
-          */
-        /*
-           if (button->text && button->text_font)
-           hw_text_compute_size(button->text, button->text_font,
-           &button->widget.requested_size.width,
-           &button->widget.requested_size.height);
-           else
-           button->widget.requested_size = ei_size(100,20);
-           button->img = NULL;
-           button->img_rect = CALLOC_TYPE(ei_rect_t);
-           assert(button->img_rect);
-
-           if (button->img_rect) {
-           ei_point_t p = {10,10};
-           button->img_rect->top_left = p;
-
-           ei_size_t s = {10,10};
-           button->img_rect->size = s;
-           }
-
-           button->img_anchor = ei_anc_center;
-           button->callback = NULL;
-           button->user_param = NULL;
-           */
+			int nb_lignes=(int)ceil((float)radiobutton->nb_buttons/(float)nb_btn_pl);
+			int nb_col=MIN(radiobutton->nb_buttons,nb_btn_pl);
+			ei_size_t s;
+			int h;
+			int w;
+			hw_text_compute_size("motdevingtcinqlettresssss",radiobutton->font,&w,&h);
+			radiobutton->bar_height=h+6;
+			s.width=MAX((2*nb_col-1)*btn_size.width+2*border_width,w);
+			s.height=radiobutton->bar_height+(nb_lignes+2)*radiobutton->border_width+nb_lignes*radiobutton->btn_size.height;
+			//printf("ceil..%i\n",nb_lignes);
+			radiobutton->widget.requested_size=s;
+         //button->user_param = NULL;
 }
 
 void radiobutton_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
