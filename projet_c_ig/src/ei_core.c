@@ -153,14 +153,15 @@ void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
                                 /* Widget drawing for this real_clipper */
                                 widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
                                 SAFE_FREE(real_clipper);
+
                         }
+
+                        /* Children are above the widget and behind their next siblings */
+                        ei_draw_widget(widget->children_head, draw_rect);
+
+                        /* The widget's siblings are finally drawn */
+                        ei_draw_widget(widget->next_sibling, draw_rect);
                 }
-
-                /* Children are above the widget and behind their next siblings */
-                ei_draw_widget(widget->children_head, draw_rect);
-
-                /* The widget's siblings are finally drawn */
-                ei_draw_widget(widget->next_sibling, draw_rect);
         }
 }
 
