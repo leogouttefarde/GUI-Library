@@ -24,6 +24,17 @@ ei_bool_t process_key(ei_widget_t* widget, ei_event_t* event, void* user_param)
         return EI_FALSE;
 }
 
+ei_bool_t print_green(ei_widget_t* widget, ei_event_t* event, void* user_para)
+{
+        printf("VERT\n");
+        return EI_FALSE;
+}
+
+ei_bool_t print_red(ei_widget_t* widget, ei_event_t* event, void* user_para)
+{
+        printf("ROUGE\n");
+        return EI_FALSE;
+}
 /*
  * button_press --
  *
@@ -173,6 +184,7 @@ int ei_main(int argc, char** argv)
         int             button_green_h           = 3;
         int             button_green_force_w     = 4;
         int             button_green_force_h     = 10;
+        ei_color_t	button_green_color       = {0x00, 0xFF, 0x00, 0xFF};
 
         // Bouton rouge
         ei_widget_t     *button_red;
@@ -182,7 +194,7 @@ int ei_main(int argc, char** argv)
         int             button_red_h           = 3;
         int             button_red_force_w     = 4;
         int             button_red_force_h     = 10;
-
+        ei_color_t	button_red_color       = {0xFF, 0x00, 0x00, 0xFF};
 
         /* Create, configure and place the toplevel on screen. */
         toplevel = ei_widget_create("toplevel", ei_app_root_widget());
@@ -232,8 +244,20 @@ int ei_main(int argc, char** argv)
                         &contact_1_relief, &contact_1_title, NULL,
                         &contact_1_text_color, NULL, NULL, NULL, NULL,
                         &contact_1_callback, NULL);
+
+        // Button green
+        ei_button_configure (button_green, NULL, &button_green_color,
+                        NULL , NULL, NULL, NULL, NULL,
+                        NULL, NULL, NULL, NULL, NULL,
+                        &contact_1_callback, NULL);
+
+        // Button red
+        ei_button_configure (button_red, NULL, &button_red_color,
+                        NULL , NULL, NULL, NULL, NULL,
+                        NULL, NULL, NULL, NULL, NULL,
+                        &contact_1_callback, NULL);
         //contacts
-        ei_frame_configure(logo_frame, &logo_frame_size, 
+        ei_frame_configure(logo_frame, &logo_frame_size,
                         &logo_frame_color, &logo_frame_border_width, 
                         &logo_frame_relief, NULL,
                         NULL, NULL, NULL, &logo_frame_img,
@@ -252,6 +276,16 @@ int ei_main(int argc, char** argv)
         ei_grid(button_red, &button_red_lin, &button_red_col, &button_red_w, NULL, NULL, 
                         NULL);
         ei_place(radiobutton, NULL, &radiobutton_x, &radiobutton_y, NULL, NULL, NULL, NULL, NULL, NULL );
+
+
+        /* Tags */
+        ei_tag(button_green, "green");
+        ei_tag(button_red, "red");
+        ei_tag_create("red");
+        ei_tag_create("green");
+
+        ei_bind(ei_ev_mouse_buttondown, NULL, "green", print_green, NULL);
+        ei_bind(ei_ev_mouse_buttondown, NULL, "red", print_red, NULL);
 
         /* Hook the keypress callback to the event. */
         ei_bind(ei_ev_keydown,		NULL, "all", process_key, NULL);
