@@ -22,15 +22,14 @@ ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_point_t tl)
         //Rectangle élémentaire flottant
         float elem_width = param->elem_w;
         float elem_height = param->elem_h;
-
-
-        if(param->col) 
-                screen_location.top_left.x = F2I(I2F(*param->col) * elem_width + I2F(tl.x)); 
+        if(param->col)
+                screen_location.top_left.x = F2I(I2F(*param->col) * elem_width
+                                + I2F(tl.x));
         else
                 screen_location.top_left.x = tl.x;
-
-        if(param->lin) 
-                screen_location.top_left.y = F2I(I2F(*param->lin) * elem_height + I2F(tl.y)); 
+        if(param->lin)
+                screen_location.top_left.y = F2I(I2F(*param->lin) * elem_height
+                                + I2F(tl.y));
         else
                 screen_location.top_left.y = tl.y;
 
@@ -55,7 +54,7 @@ void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height)
         ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
 
         if (gridder && elem_width && elem_height && parent
-            && parent->content_rect &&parent->children_head) {
+                        && parent->content_rect &&parent->children_head) {
 
                 /* Calcul de la partition de la grille */
                 float l_max = 0.;
@@ -69,7 +68,7 @@ void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height)
                 while (current) {
 
                         if (current->geom_params && current->geom_params->manager &&
-                            current->geom_params->manager == gridder) {
+                                        current->geom_params->manager == gridder) {
 
                                 // Lecture des paramètres
                                 param = (ei_gridder_param_t*)current->geom_params;
@@ -114,8 +113,10 @@ void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height)
 
                 // On divise le père pour obtenir la taille d'un
                 // rectangle elementaire
-                *elem_width = I2F(parent->content_rect->size.width) / (c_max + 1);
-                *elem_height = I2F(parent->content_rect->size.height) / (l_max + 1);
+                *elem_width = I2F(parent->content_rect->size.width)
+                        / (c_max + 1);
+                *elem_height = I2F(parent->content_rect->size.height)
+                        / (l_max + 1);
         }
 }
 
@@ -145,8 +146,8 @@ void ei_grid_runfunc(ei_widget_t *widget)
                         ei_widget_t *current = widget->children_head;
 
                         while(current && current->geom_params
-                                && current->geom_params->manager
-                                && current->geom_params->manager->runfunc) {
+                                        && current->geom_params->manager
+                                        && current->geom_params->manager->runfunc) {
 
                                 current->geom_params->manager->runfunc(current);
                                 current = current->next_sibling;
@@ -157,7 +158,7 @@ void ei_grid_runfunc(ei_widget_t *widget)
 
 /* Gestion des paramètres */
 void ei_grid(ei_widget_t *widget, int *lin, int *col,
-             int *w, int *h, int*force_w, int *force_h)
+                int *w, int *h, int*force_w, int *force_h)
 {
 
         ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");

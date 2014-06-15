@@ -9,6 +9,7 @@
 #include "ei_utils.h"
 #include "ei_radiobutton.h"
 #include "ei_tag.h"
+#include "ei_gridder.c"
 /*
  * process_key --
  *
@@ -182,9 +183,6 @@ int ei_main(int argc, char** argv)
         int             button_green_lin         = 3;
         int             button_green_col         = 2;
         int             button_green_w           = 2;
-        int             button_green_h           = 3;
-        int             button_green_force_w     = 4;
-        int             button_green_force_h     = 10;
         ei_color_t	button_green_color       = {0x00, 0xFF, 0x00, 0xFF};
 
         // Bouton rouge
@@ -192,9 +190,6 @@ int ei_main(int argc, char** argv)
         int             button_red_lin         = 3;
         int             button_red_col         = 0;
         int             button_red_w           = 2;
-        int             button_red_h           = 3;
-        int             button_red_force_w     = 4;
-        int             button_red_force_h     = 10;
         ei_color_t	button_red_color       = {0xFF, 0x00, 0x00, 0xFF};
 
         /* Create, configure and place the toplevel on screen. */

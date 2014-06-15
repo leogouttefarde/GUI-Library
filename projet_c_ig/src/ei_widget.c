@@ -40,7 +40,8 @@ void ei_color_increase(ei_color_t *color)
 }
 
 /* Creation d'un widget selon sa classe */
-ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name, ei_widget_t* parent)
+ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name,
+                ei_widget_t* parent)
 {
         ei_widget_t *widget = NULL;
         ei_widgetclass_t *wclass;
@@ -84,14 +85,16 @@ ei_widget_t* ei_widget_create(ei_widgetclass_name_t class_name, ei_widget_t* par
 
 
                 if (parent)
-                        widget->pick_id = ei_map_rgba(ei_get_picking_surface(), widget->pick_color);
+                        widget->pick_id = ei_map_rgba(ei_get_picking_surface(),
+                                        widget->pick_color);
                 else
                         widget->pick_id = 0x0;
 
 
                 widget->requested_size = ei_size(100,100);
 
-                widget->screen_location = ei_rect(ei_point_zero(), widget->requested_size);
+                widget->screen_location = ei_rect(ei_point_zero(),
+                                widget->requested_size);
                 widget->content_rect = &(widget->screen_location);
 
                 // Initialisation des attributs uniques + requested_size si
@@ -133,7 +136,8 @@ void ei_widget_destroy(ei_widget_t* widget)
                                 next = current->next_sibling;
 
                                 if (next == widget) {
-                                        current->next_sibling = widget->next_sibling;
+                                        current->next_sibling =
+                                                widget->next_sibling;
                                         found = EI_TRUE;
                                 }
 
@@ -191,7 +195,8 @@ ei_widget_t* ei_widget_find_by_pick_id(uint32_t pick_id, ei_widget_t *widget)
                                 return widget;
                         }
 
-                        result = ei_widget_find_by_pick_id(pick_id, widget->next_sibling);
+                        result = ei_widget_find_by_pick_id(pick_id,
+                                        widget->next_sibling);
 
                         if (result) {
                                 return result;
@@ -401,8 +406,10 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                 if (requested_size) {
                         ei_size_t requested_size_final = *requested_size;
 
-                        requested_size_final.height = requested_size_final.height + toplevel->bar_height + 2 * toplevel->border_width;
-                        requested_size_final.width = requested_size_final.width + 2 * toplevel->border_width;
+                        requested_size_final.height = requested_size_final.height
+                                + toplevel->bar_height + 2 * toplevel->border_width;
+                        requested_size_final.width = requested_size_final.width 
+                                + 2 * toplevel->border_width;
 
                         toplevel->widget.requested_size = requested_size_final;
                 }
