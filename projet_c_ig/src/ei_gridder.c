@@ -163,27 +163,20 @@ void ei_grid(ei_widget_t *widget, int *lin, int *col,
         ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
         assert(gridder);
 
-        ei_bool_t gp_alloc = EI_FALSE;
+        ei_bool_t gp_alloc = EI_TRUE;
 
         if (gridder && widget) {
 
                 // On verifie que le widget est bien géré par le gridder,
                 // sinon on le modifie pour qu'il le soit
-                if (widget) {
-                        gp_alloc = EI_TRUE;
-
-                        if (widget->geom_params) {
-                                if (widget->geom_params->manager) {
-
-                                        if (widget->geom_params->manager != gridder)
-                                                widget->geom_params->manager->releasefunc(widget);
-                                        else
-                                                gp_alloc = EI_FALSE;
-                                }
-                        }
-                }
+                if (widget->geom_params
+                    && widget->geom_params->manager
+                    && widget->geom_params->manager == gridder)
+                        gp_alloc = EI_FALSE;
 
                 if (gp_alloc) {
+                        ei_geometrymanager_unmap(widget);
+
                         ei_gridder_param_t *param = CALLOC_TYPE(ei_gridder_param_t);
 
                         if (param) {
@@ -191,63 +184,63 @@ void ei_grid(ei_widget_t *widget, int *lin, int *col,
                                 widget->geom_params->manager = gridder;
                         }
                 }
-        }
 
-        // Sauvegarde des paramètres
-        ei_gridder_param_t *param = (ei_gridder_param_t*)widget->geom_params;
-        assert(param);
+                // Sauvegarde des paramètres
+                ei_gridder_param_t *param = (ei_gridder_param_t*)widget->geom_params;
+                assert(param);
 
-        SAFE_ALLOC(param->lin, int);
-        if (lin)
-                *param->lin = *lin;
-        else
-                *param->lin = 0;
+                SAFE_ALLOC(param->lin, int);
+                if (lin)
+                        *param->lin = *lin;
+                else
+                        *param->lin = 0;
 
-        SAFE_ALLOC(param->col, int);
-        if (col)
-                *param->col = *col;
-        else
-                *param->col = 0;
+                SAFE_ALLOC(param->col, int);
+                if (col)
+                        *param->col = *col;
+                else
+                        *param->col = 0;
 
 
-        SAFE_ALLOC(param->w, int);
-        if (w)
-                *param->w = *w;
-        else
-                *param->w = 1;
+                SAFE_ALLOC(param->w, int);
+                if (w)
+                        *param->w = *w;
+                else
+                        *param->w = 1;
 
-        SAFE_ALLOC(param->h, int);
-        if (h)
-                *param->h = *h;
-        else
-                *param->h = 1;
+                SAFE_ALLOC(param->h, int);
+                if (h)
+                        *param->h = *h;
+                else
+                        *param->h = 1;
 
-        if (force_w) {
-                SAFE_ALLOC(param->force_w, int);
-                *param->force_w = *force_w;
-        }
-        else
-                SAFE_FREE(param->force_w);
+                if (force_w) {
+                        SAFE_ALLOC(param->force_w, int);
+                        *param->force_w = *force_w;
+                }
+                else
+                        SAFE_FREE(param->force_w);
 
-        if (force_h) {
-                SAFE_ALLOC(param->force_h, int);
-                *param->force_h = *force_h;
-        }
-        else
-                SAFE_FREE(param->force_h);
+                if (force_h) {
+                        SAFE_ALLOC(param->force_h, int);
+                        *param->force_h = *force_h;
+                }
+                else
+                        SAFE_FREE(param->force_h);
 
-        param->elem_w = 1.0;
-        param->elem_h = 1.0;
+                param->elem_w = 1.0;
+                param->elem_h = 1.0;
 
-        /* Appels de la runfunc sur tous les sur les freres pour bien les replacer */
-        ei_widget_t *current = widget->parent->children_head;
+                /* Appels de la runfunc sur tous les sur les freres pour bien les replacer */
+                ei_widget_t *current = widget->parent->children_head;
 
-        while(current && current->geom_params
-              && current->geom_params->manager
-              && current->geom_params->manager->runfunc) {
+                while(current && current->geom_params
+                      && current->geom_params->manager
+                      && current->geom_params->manager->runfunc) {
 
-                current->geom_params->manager->runfunc(current);
-                current = current->next_sibling;
+                        current->geom_params->manager->runfunc(current);
+                        current = current->next_sibling;
+                }
         }
 }
 
@@ -263,9 +256,6 @@ void ei_grid_releasefunc(struct ei_widget_t* widget)
                 SAFE_FREE(param->h);
                 SAFE_FREE(param->force_w);
                 SAFE_FREE(param->force_h);
-
-                SAFE_FREE(param);
-                widget->geom_params = NULL;
         }
 }
 

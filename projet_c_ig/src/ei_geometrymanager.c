@@ -80,12 +80,18 @@ ei_geometrymanager_t*   ei_geometrymanager_from_name    (ei_geometrymanager_name
  */
 void ei_geometrymanager_unmap(ei_widget_t* widget)
 {
-        widget->geom_params->manager->releasefunc(widget);
-        SAFE_FREE(widget->geom_params);
+        if (widget) {
+                if (widget->geom_params
+                    && widget->geom_params->manager
+                    && widget->geom_params->manager->releasefunc)
+                        widget->geom_params->manager->releasefunc(widget);
 
-        ei_invalidate_rect(&widget->screen_location);
+                SAFE_FREE(widget->geom_params);
 
-        memset(&widget->screen_location, 0, sizeof(widget->screen_location));
+                ei_invalidate_rect(&widget->screen_location);
+
+                memset(&widget->screen_location, 0, sizeof(widget->screen_location));
+        }
 }
 
 /*  Gere le clipping */
@@ -302,9 +308,6 @@ void ei_place_releasefunc(struct ei_widget_t* widget)
                 SAFE_FREE(param->h);
                 SAFE_FREE(param->rel_w);
                 SAFE_FREE(param->rel_h);
-
-                SAFE_FREE(param);
-                widget->geom_params = NULL;
         }
 }
 
@@ -376,19 +379,13 @@ void ei_place(ei_widget_t *widget,
 
                 // On verifie que le widget est bien géré par le placeur,
                 // sinon on le modifie pour qu'il le soit
-                if (widget->geom_params) {
-                        if (widget->geom_params->manager) {
-                                if (widget->geom_params->manager == placer)
-                                        gp_alloc = EI_FALSE;
-                        }
-
-                        if (!gp_alloc) {
-                                widget->geom_params->manager->releasefunc(widget);
-                                ei_geometrymanager_unmap(widget);
-                        }
-                }
+                if (widget->geom_params
+                    && widget->geom_params->manager
+                    && widget->geom_params->manager == placer)
+                        gp_alloc = EI_FALSE;
 
                 if (gp_alloc) {
+                        ei_geometrymanager_unmap(widget);
                         ei_placer_param_t *param = CALLOC_TYPE(ei_placer_param_t);
 
                         if (param != NULL) {

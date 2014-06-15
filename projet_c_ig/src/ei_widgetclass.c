@@ -125,8 +125,6 @@ void frame_release(struct ei_widget_t* widget)
 
                 SAFE_FREE(frame->text);
                 SAFE_FREE(frame->img_rect);
-
-                SAFE_FREE(frame);
         }
 }
 
@@ -242,8 +240,6 @@ void button_release(struct ei_widget_t* widget)
                 SAFE_FREE(button->color);
                 SAFE_FREE(button->text);
                 SAFE_FREE(button->img_rect);
-
-                SAFE_FREE(button);
         }
 }
 
@@ -409,8 +405,6 @@ void toplevel_release(ei_widget_t *widget)
 
                 SAFE_FREE(toplevel->title);
                 SAFE_FREE(toplevel->min_size);
-
-                SAFE_FREE(toplevel);
         }
 }
 
