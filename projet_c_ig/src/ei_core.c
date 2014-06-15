@@ -121,43 +121,45 @@ ei_rect_t* ei_rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2)
 
 void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
 {
-        if (widget){
-                /* On calcule le real_clipper du widget */
+        if (widget) {
 
+                /* First calculate the widget's real drawing clipper */
                 if (draw_rect) {
+
                         ei_rect_t *clipper = NULL;
                         ei_rect_t *real_clipper = NULL;
-                        if (widget->parent){
-                                // Clipper lié au widget = content_rect parent
-                                // INTER screen_location widget
-                                clipper = ei_rect_intersection(widget->parent->content_rect, 
-                                                &widget->screen_location);
 
-                                // Clipper optimisé = rectangle a mettre a jour
-                                // INTER clipper widget
-                                //if (widget->parent->content_rect != root->content_rect)
+                        if (widget->parent) {
+
+                                /* Widget's clipper = parent's content_rect */
+                                /* Widget's screen_location / clipper intersection */
+                                clipper = ei_rect_intersection(widget->parent->content_rect, 
+                                                               &widget->screen_location);
+
+                                /* Optimized clipper = rectangle to update */
+                                /* Clipper / Widget intersection */
                                 real_clipper = ei_rect_intersection(clipper, draw_rect);
                                 SAFE_FREE(clipper);
                         }
-                        // Pour le root
-                        else{
-                                clipper = &widget->screen_location;
-                                if (clipper) {
-                                        real_clipper = ei_rect_intersection(clipper, draw_rect);
-                                }
+
+                        /* For root */
+                        else {
+                                real_clipper = ei_rect_intersection(&widget->screen_location, draw_rect);
                         }
-                        // Si le real_clipper est non vide
+
+                        /* If the real_clipper intersection exists */
                         if (real_clipper) {
-                                // Dessin du widget dans le real_clipper
+
+                                /* Widget drawing for this real_clipper */
                                 widget->wclass->drawfunc(widget, ei_get_root_surface(), ei_get_picking_surface(), real_clipper);
                                 SAFE_FREE(real_clipper);
                         }
                 }
 
-                // Ses enfants seront devant lui et derriere ses freres
+                /* Children are above the widget and behind their next siblings */
                 ei_draw_widget(widget->children_head, draw_rect);
 
-                // Les freres du widget courant sont enfin dessinés
+                /* The widget's siblings are finally drawn */
                 ei_draw_widget(widget->next_sibling, draw_rect);
         }
 }
@@ -264,12 +266,12 @@ void ei_invalidate_rect(ei_rect_t* invalid_rect)
                 ei_rect_t *rect = NULL;
                 ei_rect_t temp;
 
-                /* On commence par intersecter le rectangle avec le root_widget */
+                /* First calculate the intersection with the root widget's rectangle */
                 temp =  hw_surface_get_rect(ei_get_root_surface());
                 rect = ei_rect_intersection(invalid_rect, &temp);
 
                 if (rect) {
-                        /* On ajoute le rectangle */
+                        /* We add the invalid rectangle to the list */
                         ei_rect_t new_rect = *rect;
                         SAFE_FREE(rect);
 

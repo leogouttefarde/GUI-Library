@@ -44,7 +44,9 @@ ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name)
 }
 
 // Utilisé dans les geom_notify
-void invalidate_widget(ei_widget_t *widget){
+void invalidate_widget(ei_widget_t *widget)
+{
+        /*
         // On intersecte la screen_location et tout les ccontent_rect des ancetres
         ei_widget_t *current = widget->parent;
         ei_rect_t *clipper = &widget->screen_location;
@@ -68,7 +70,22 @@ void invalidate_widget(ei_widget_t *widget){
         }
 
         ei_invalidate_rect(clipper);
-        SAFE_FREE(prev_clipper);
+        SAFE_FREE(prev_clipper);*/
+
+        // On intersecte la screen_location et tout les ccontent_rect des ancetres
+        ei_widget_t *current = widget->parent;
+        ei_rect_t *clipper = &widget->screen_location;
+        while(current){
+                if(current->content_rect)
+                        clipper = ei_rect_intersection(clipper,
+                                        current->content_rect);
+                else
+                        clipper = ei_rect_intersection(clipper,
+                                        &current->screen_location);
+                current = current->parent;
+        }
+
+        ei_invalidate_rect(clipper);
 }
 
 /* Renvoie la structure décrivant une classe en fonction du nom */
