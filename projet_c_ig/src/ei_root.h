@@ -4,11 +4,12 @@
  *              picking surface as global variables.
  *              Strangely looks like a Java class.
  *
- *  \author 
- *  Created by Eric BUREL on 05.06.14
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 05.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  *
  */
+
 #ifndef EI_ROOT_H
 #define EI_ROOT_H
 

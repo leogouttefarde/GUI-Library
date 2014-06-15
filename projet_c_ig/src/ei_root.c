@@ -1,4 +1,17 @@
+/**
+ *  @file       ei_root.c
+ *  @brief      Contains the root widget address, the root surface and the
+ *              picking surface as global variables.
+ *              Strangely looks like a Java class.
+ *
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 05.06.14.
+ *  Copyright 2014 Ensimag. All rights reserved.
+ *
+ */
+
 #include "ei_root.h"
+
 
 /* Variables globales */
 static ei_widget_t *ei_root = NULL;

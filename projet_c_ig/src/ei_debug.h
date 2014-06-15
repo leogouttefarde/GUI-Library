@@ -1,12 +1,12 @@
 /**
  *  @file	ei_debug.h
- *  @brief	Debug
+ *  @brief      Debugging functions.
  *
- *  \author 
- *  Created by Léo Gouttefarde on 11.06.14
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 11.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
- *
  */
+
 #ifndef EI_DEBUG_H
 #define EI_DEBUG_H
 

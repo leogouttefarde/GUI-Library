@@ -1,15 +1,16 @@
 /**
- * @file	ei_callback.h
+ *  @file	ei_callback.h
  *
- * @brief 	Defines the callbacks needed to resize and move toplevels, to click buttons 
- * and handle mouse release.
+ *  @brief 	Defines the callbacks needed to resize and move toplevels, to click buttons and handle mouse release.
  * 
- *  Created by Eric BUREL on 13.06.14.
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 13.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  */
 
 #ifndef     EI_CALLBACK_H
 #define     EI_CALLBACK_H
+
 #include "ei_core.h"
 #include "ei_widget.h"
 #include "ei_widgettypes.h"

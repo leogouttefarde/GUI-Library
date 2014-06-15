@@ -1,11 +1,13 @@
 /**
- * @file	ei_gridder.h
+ *  @file       ei_gridder.h
  *
- * @brief 	Functions associated with gridder.
+ *  @brief      Functions associated with gridder.
  *
- *  Created by Eric BUREL on 13.06.14.
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 13.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  */
+
 #ifndef EI_GRIDDER_H
 #define EI_GRIDDER_H
 

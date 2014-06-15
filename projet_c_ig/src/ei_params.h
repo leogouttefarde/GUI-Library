@@ -1,12 +1,14 @@
 /**
- * @file	ei_params.h
+ *  @file	ei_params.h
  *
- * @brief 	Defines the different parameter structures, one for each
+ *  @brief 	Defines the different parameter structures, one for each
  *              geometry manager, depending on their needs
  *
- *  Created by Eric BUREL on 13.06.14.
+ *  \author
+ *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 13.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
  */
+
 #ifndef EI_PARAMS_H
 #define EI_PARAMS_H
 

@@ -1,3 +1,4 @@
+
 #include "ei_dynamics.h"
 
 /* Calcule le point d'ancrage a partir du top_left et du bottom_right*/
