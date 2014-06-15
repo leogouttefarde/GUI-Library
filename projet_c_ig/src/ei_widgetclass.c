@@ -72,9 +72,7 @@ void pick_surface_draw(ei_surface_t pick_surface, ei_widget_t *widget, ei_rect_t
 {
         hw_surface_lock(pick_surface);
 
-        ei_rect_t *inter = ei_rect_intersection(&widget->screen_location, clipper);
-        ei_fill(pick_surface, widget->pick_color, inter);
-        SAFE_FREE(inter);
+        ei_draw_rectangle(pick_surface, widget->pick_color, &widget->screen_location, clipper);
 
         hw_surface_unlock(pick_surface);        
 }

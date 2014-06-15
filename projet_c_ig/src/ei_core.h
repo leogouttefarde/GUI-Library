@@ -48,6 +48,18 @@ void ei_invalidate_rect(ei_rect_t* invalid_rect);
 void ei_draw_rects();
 
 /**
+ * \brief       Draws a rectangle using ei_fill inside the given clipper.
+ *
+ * @param       surface         The surface to be filled. The surface must be *locked* by
+ *                              \ref hw_surface_lock.
+ * @param       color           The color used to fill the surface. If NULL, it means that the
+ *                              caller want it painted black (opaque).
+ * @param       rect            The rectangle to draw.
+ * @param       clipper         If not NULL, the drawing is restricted within this rectangle.
+ */
+void ei_draw_rectangle(ei_surface_t surface, ei_color_t *color, ei_rect_t *rect, ei_rect_t *clipper);
+
+/**
  * \brief       ei_linkedlist_t callback function.
  *              Used by ei_draw_rects to draw a rectangle on screen. 
  *

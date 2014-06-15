@@ -119,6 +119,16 @@ ei_rect_t* ei_rect_intersection(const ei_rect_t *rect1, const ei_rect_t *rect2)
         return inter;
 }
 
+void ei_draw_rectangle(ei_surface_t surface, ei_color_t *color, ei_rect_t *rect, ei_rect_t *clipper)
+{
+        ei_rect_t *inter = ei_rect_intersection(rect, clipper);
+
+        if (inter) {
+                ei_fill(surface, color, inter);
+                SAFE_FREE(inter);
+        }
+}
+
 void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
 {
         if (widget) {
