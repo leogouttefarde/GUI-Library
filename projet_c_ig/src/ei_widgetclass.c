@@ -662,19 +662,20 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
 
         int nb_buttons=7;
         radiobutton->nb_buttons=nb_buttons;
-        char* tab_chaine[radiobutton->nb_buttons];
-        for (int i=0; i<=radiobutton->nb_buttons-1;i++) {
+        int nb_radios=5;
+        radiobutton->nb_radios=nb_radios;
+        char* tab_chaine[radiobutton->nb_radios];
+        for (int i=0; i<=nb_radios-1;i++) {
                 tab_chaine[i]=NULL;
         }
         tab_chaine[0]="Breizh libra";
         tab_chaine[1]="France Bleu Menhir";
         tab_chaine[2]="Carnac blues";
         tab_chaine[3]="Chouchen vibes";
-        char* txt_default="No rfm selected";
+        char* txt_default="No FM selected";
         radiobutton->txt_default=txt_default;
-        int nb_radios=4;
-        radiobutton->nb_radios=nb_radios;
-        ei_linked_rdbtn_txt_t *ltxt=rdbtn_txt_create(tab_chaine);
+        ei_linked_rdbtn_txt_t *ltxt=rdbtn_txt_create(tab_chaine,nb_radios);
+
         radiobutton->ltxt=ltxt;
         radiobutton->font=ei_default_font;
         radiobutton->lrec=rdbtn_rec_create(radiobutton);
