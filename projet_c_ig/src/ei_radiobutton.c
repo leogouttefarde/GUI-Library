@@ -1,19 +1,10 @@
+
 #include "ei_radiobutton.h"
-#include <assert.h>
 #include "ei_common.h"
-#include <math.h>
 #include "ei_core.h"
-#include "ei_draw.h"
-#include "ei_button.h"
 #include "ei_utilities.h"
 #include "ei_widgetclass_pv.h"
 
-/**
- *  @brief free a linked list of char*
- *
- *  @param The list to be freed
- *
- */
 void free_rdbtn_ltxt(ei_linked_rdbtn_txt_t *ltxt) {
 	ei_linked_rdbtn_txt_t* Suivant;
 	while (ltxt != NULL) {
@@ -23,12 +14,6 @@ void free_rdbtn_ltxt(ei_linked_rdbtn_txt_t *ltxt) {
 	}
 }
 
-/**
- *  @brief free a linked list of the buttons of the radiobutton
- *
- *  @param The list to be freed
- *
- */
 void free_rdbtn_lrec(ei_linked_rdbtn_rec_t *lrec) {
 	ei_linked_rdbtn_rec_t* Suivant;
 	while (lrec != NULL) {
@@ -38,9 +23,6 @@ void free_rdbtn_lrec(ei_linked_rdbtn_rec_t *lrec) {
 	}
 }
 
-/**
- *  @brief draw a radiobutton
- */
 void ei_radiobutton_draw(ei_surface_t surface, ei_rect_t location,ei_radiobutton_t *radiobutton, ei_rect_t* clipper)
 {
         /* Mise à jour*/
@@ -83,16 +65,8 @@ void ei_radiobutton_draw(ei_surface_t surface, ei_rect_t location,ei_radiobutton
         SAFE_FREE(inter);
 }
 
-/**
- *  @brief Creates the linked list of text used by radiobutton
- *
- *  @param tab The array which contains the string name of the radios
- *  @param taille The size of the array
- *
- *  @return the head of the linked list
- */
-ei_linked_rdbtn_txt_t* rdbtn_txt_create(char* tab[],int taille) {
-	//printf("taille : %i\n",taille);
+ei_linked_rdbtn_txt_t* rdbtn_txt_create(char* tab[],int taille)
+{
 	ei_linked_rdbtn_txt_t *suivant = NULL;
 	ei_linked_rdbtn_txt_t* ltxt = NULL;
 	for (int i=taille-1; i>=0; i--) {
@@ -104,14 +78,8 @@ ei_linked_rdbtn_txt_t* rdbtn_txt_create(char* tab[],int taille) {
 	return ltxt;	
 }
 
-/**
- *  @brief Updates the linked list of text of a radiobutton
- *
- *  @param tab The tab which contains the new names of radio
- *  @param radiobutton The principal widget
- *
- */
-void rdbtn_txt_maj(char** tab[],ei_radiobutton_t *radiobutton) {
+static void rdbtn_txt_maj(char** tab[],ei_radiobutton_t *radiobutton)
+{
 	ei_linked_rdbtn_txt_t* ltxt = radiobutton->ltxt;
 	char* nv_txt[radiobutton->nb_radios];
 	for (int i=0; i<=radiobutton->nb_radios-1; i++) {
@@ -127,14 +95,8 @@ void rdbtn_txt_maj(char** tab[],ei_radiobutton_t *radiobutton) {
 	radiobutton->ltxt = rdbtn_txt_create(nv_txt,radiobutton->nb_radios);
 }	
 
-/**
- *  @brief Creates an empty linked list of radiobutton rectangle, relief is put to raised
- *
- *  @param radiobutton The principal widget
- *
- *  @return The head of the linked list of rectangles
- */
-ei_linked_rdbtn_rec_t* rdbtn_rec_create(ei_radiobutton_t *radiobutton) {
+ei_linked_rdbtn_rec_t* rdbtn_rec_create(ei_radiobutton_t *radiobutton)
+{
 	ei_linked_rdbtn_rec_t* rdbtn = NULL;
 	ei_linked_rdbtn_rec_t* suivant = NULL;
 	for (int i=1; i<=radiobutton->nb_buttons; i++) {
@@ -148,21 +110,17 @@ ei_linked_rdbtn_rec_t* rdbtn_rec_create(ei_radiobutton_t *radiobutton) {
 	return rdbtn;
 }
 
-/**
- *  @brief Modify the position of the button of the widget radiobutton according to its screen location and the buttons' size
- *
- *  @param radiobutton The principal widget
- *
- *  @return The head of the linked list of the modified rectangles
- */
-ei_linked_rdbtn_rec_t* place_rdbtn_rec(ei_radiobutton_t *radiobutton) {
+ei_linked_rdbtn_rec_t* place_rdbtn_rec(ei_radiobutton_t *radiobutton)
+{
 	ei_rect_t location = radiobutton->widget.screen_location;
 	ei_linked_rdbtn_rec_t* rdbtn = radiobutton->lrec;
 	int nb_btn_pl = radiobutton->nb_btn_pl;
-	while (1) {
-		if (rdbtn->next == NULL) break;
-		rdbtn = rdbtn->next;
-	}
+
+        while (rdbtn) {
+                if (rdbtn->next == NULL) break;
+                rdbtn = rdbtn->next;
+        }
+
 	ei_rect_t position;
 	int n = MIN(radiobutton->nb_buttons,nb_btn_pl);
 	int ecart;
@@ -179,90 +137,66 @@ ei_linked_rdbtn_rec_t* place_rdbtn_rec(ei_radiobutton_t *radiobutton) {
 	return rdbtn;
 }
 
-/**
- *  @brief Display the content of a linked list of rect
- *
- *  @param lrec The list to be displayed
- *
- */
-void aff_liste(ei_linked_rdbtn_rec_t *lrec) {
+void aff_liste(ei_linked_rdbtn_rec_t *lrec)
+{
 	ei_rect_t position;
 	ei_linked_rdbtn_rec_t *lrec2 = lrec;
 	printf("Rectangles chainés next, top_left:  ");
-	while (1) {
+	while (lrec) {
 		position = lrec->rec;
 		printf("{%i,%i}->",position.top_left.x,position.top_left.y);
-		//printf("suivant%x\n",lrec->next);
-		if (lrec->next==NULL) break;
-		lrec=lrec->next;
+
+		lrec = lrec->next;
 	}
 	printf("\n");
 	printf("Rectangles chainés prev, top_left:  ");
-	while (lrec!=NULL) {
+	while (lrec) {
 		position = lrec->rec;
 		printf("{%i,%i}->",position.top_left.x,position.top_left.y);
-		//printf("suivant%x\n",lrec->next);
 		lrec = lrec->prev;
 	}
 	printf("\n");
 	printf("Rectangles chainés, relief:  ");
-	while (lrec2!=NULL) {
+	while (lrec2) {
 		position = lrec2->rec;
 		printf("%i->",lrec2->rel);
-		//printf("suivant%x\n",lrec->next);
 		lrec2 = lrec2->next;
 	}
 	printf("\n");
 
 }
-/**
- * @brief Called in radiobuttion callback, it changes the id buttons relief to sunk and put the others to raised
- *
- * @param radiobutton The radiobutton to be modified
- * @param id The place in the list of the element to sunk
- *
- */
-void modify_btn_rel(ei_radiobutton_t *radiobutton,int id) {
+
+void modify_btn_rel(ei_radiobutton_t *radiobutton, int id)
+{
 	ei_linked_rdbtn_rec_t *lrec = radiobutton->lrec;
 	int indice = 1;
-	while (1) {
-		if (indice != id) {
+
+	while (lrec) {
+		if (indice != id)
 			lrec->rel = ei_relief_raised;
-		} else {
+		else
 			lrec->rel = ei_relief_sunken;
-		}
-		indice ++;
-		if (lrec->next == NULL) break;
+
+                indice ++;
+
 		lrec = lrec->next;
 	}
-	while (1) {
-		if (lrec->prev == NULL) break;
+
+	while (lrec)
 		lrec = lrec->prev;
-	}
+
 	radiobutton->lrec = lrec;
 }
-/**
- * @brief Configure a radiobutton, the size is based on the size of the buttons, and the size of the text, it will always be able to display 25 characters, to reduce the radio, reduce the font and the size of the buttons
- *
- * @param nb_buttons The number of buttons
- * @param nb_btn_pl The number of buttons per line
- * @param btn_size The size of the buttons
- * @param bg_color The color of the background of the radio
- * @param txt_color The color in which the name of the radios will be displayed
- * @param btn_color The color of the buttons
- * @param nb_radios The number of the radios, which have to be equal to the size of the folowing array
- * @param tab An array which contains the names of the radios, its size can be lower or greater than nb_buttons
- * @param font The font to display the text
- */
-void ei_radiobutton_configure (ei_widget_t* widget,
+
+void ei_radiobutton_configure (ei_widget_t *widget,
 		int *nb_buttons,
 		int *nb_btn_pl,
 		ei_size_t *btn_size,
-		const ei_color_t* bg_color,
-		const ei_color_t* txt_color,
-		const ei_color_t* btn_color,
+		const ei_color_t *bg_color,
+		const ei_color_t *txt_color,
+		const ei_color_t *btn_color,
 		int *nb_radios,
-		char** tab[],
+		char **tab[],
 		ei_font_t *font)
 {
 	if (ei_has_widgetclass(widget,"radiobutton")) {
