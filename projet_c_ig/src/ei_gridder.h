@@ -11,18 +11,36 @@
 #ifndef EI_GRIDDER_H
 #define EI_GRIDDER_H
 
-#include "ei_geometrymanager.h"
-#include "ei_utils.h"
-#include <string.h>
-#include <math.h>
-#include "ei_common.h"
-#include "ei_core.h"
-#include "ei_params.h"
+#include "ei_widget.h"
 
-// Gestion des paramètres
-void ei_grid(ei_widget_t *widget, int *col, int *lin, int *w, int *h, int
-                *force_w, int *force_h);
 
+/**
+ * \brief       Configures the geometry of a widget using the "gridder" geometry manager.
+ *              If the widget was already managed by another geometry manager, then it is first
+ *              removed from the previous geometry manager.
+ *              If the widget was already managed by the "gridder", then this calls simply updates
+ *              the gridder parameters: arguments that are not NULL replace previous values.
+ *              When the arguments are passed as NULL, the gridder uses default values.
+ *              If no size is provided (either absolute or relative), then the requested size
+ *              of the widget is used, i.e. the minimal size required to display its content.
+ *
+ * @param   widget        Widget to grid
+ *
+ * @param   col           Column
+ *
+ * @param   lin           Line
+ *
+ * @param   w             Width
+ *
+ * @param   h             Height
+ *
+ * @param   force_w       Forces the width
+ *
+ * @param   force_h       Forces the height
+ *
+ */
+void ei_grid(ei_widget_t *widget, int *col, int *lin,
+             int *w, int *h, int *force_w, int *force_h);
 
 /**
  * @brief   Gridder runfunc, calculate the screen_location
@@ -44,5 +62,6 @@ void ei_grid_releasefunc(struct ei_widget_t* widget);
  *              once before the \ref ei_grid function can be called.
  */
 void  ei_register_gridder_manager();
+
 
 #endif

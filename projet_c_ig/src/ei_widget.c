@@ -434,7 +434,7 @@ ei_bool_t ei_is_widget_child(ei_widget_t *widget, ei_widget_t *child)
         if (widget) {
                 ei_widget_t *cur = widget->children_head;
                 while (cur) {
-                        if (cur == widget)
+                        if (cur == child)
                                 return EI_TRUE;
                         if (cur->next_sibling)
                                 cur = cur->next_sibling;

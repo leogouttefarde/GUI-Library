@@ -19,6 +19,7 @@ ei_linked_point_t* ei_button_arc(ei_point_t center, int radius, int head_angle,
         float theta_rad;
 
         for (float theta = tail_angle; theta >= head_angle; theta-= 0.5) {
+
                 point = CALLOC_TYPE(ei_linked_point_t);
                 assert(point != NULL);
 
@@ -50,6 +51,7 @@ ei_linked_point_t* trait(ei_point_t queue, ei_point_t tete, ei_linked_point_t *s
                 coeffy = (diffy) / abs(diffy);
 
         for (int i = 0; i <= nb_iterations; i++) {
+
                 point = CALLOC_TYPE(ei_linked_point_t);
                 assert(point != NULL);
 

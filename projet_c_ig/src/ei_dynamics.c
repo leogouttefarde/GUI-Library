@@ -3,6 +3,8 @@
 #include "ei_common.h"
 #include "ei_widgettypes.h"
 #include "ei_widgetclass_pv.h"
+#include "ei_utils.h"
+#include "ei_params.h"
 
 
 /* Calcule le point d'ancrage a partir du top_left et du bottom_right*/

@@ -1,6 +1,8 @@
+
 #include "ei_callback.h"
 #include "ei_radiobutton.h"
-#include <assert.h>
+#include "ei_common.h"
+#include "ei_widgetclass_pv.h"
 
 
 /*
@@ -18,6 +20,8 @@ static ei_callback_t callback = NULL;
 ei_bool_t all_callback_move_move(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param)
 {
+        UNUSED(widget);
+
         move((ei_widget_t*)user_param , event->param.mouse.where);
 
         return EI_FALSE;
@@ -27,6 +31,8 @@ ei_bool_t all_callback_move_move(ei_widget_t *widget, struct ei_event_t
 ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param)
 {
+        UNUSED(widget);
+
         resize((ei_widget_t*)user_param, event->param.mouse.where);
 
         return EI_FALSE;
@@ -35,6 +41,9 @@ ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
 /* Si nécessaire effectue les bind avec toplevel en param */
 ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
+        UNUSED(user_param);
+
+
         assert(widget);
 
         if (ei_has_widgetclass(widget, "toplevel")) {
@@ -98,6 +107,9 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
 /* Enfonce les boutons */
 ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
+        UNUSED(event);
+        UNUSED(user_param);
+
         if (ei_has_widgetclass(widget, "button")) {
 
                 ei_button_t *button = (ei_button_t*)widget;
@@ -112,6 +124,9 @@ ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, v
 /* Gere le relachement de la souris */
 ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
+        UNUSED(widget);
+        UNUSED(user_param);
+
         ei_bool_t done = EI_FALSE;
 
         /* Find all button widgets and release if pressed */
@@ -178,6 +193,8 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
 /* Enfonce le bouton radio cliqué et relève les autres */
 ei_bool_t radiobutton_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
+        UNUSED(user_param);
+
         if (widget && !strcmp(widget->wclass->name, "radiobutton")) {
 
                 ei_radiobutton_t *radiobutton = (ei_radiobutton_t*)widget;
