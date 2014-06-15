@@ -29,7 +29,7 @@ void ei_widgetclass_free()
 }
 
 /* Enregistre une classe quelconque */
-void ei_widgetclass_register    (ei_widgetclass_t* widgetclass)
+void ei_widgetclass_register(ei_widgetclass_t* widgetclass)
 {
         if (widgetclass) {
                 ei_tag_create(widgetclass->name);

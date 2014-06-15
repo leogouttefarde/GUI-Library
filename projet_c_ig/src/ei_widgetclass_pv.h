@@ -1,6 +1,6 @@
 /**
- *  @file	widgetclass_pv.h
- *  @brief	Private widgetclass declarations
+ *  @file       widgetclass_pv.h
+ *  @brief      Private widgetclass declarations
  *
  *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 12.06.14.
@@ -18,6 +18,6 @@
 
 void ei_widgetclass_free();
 ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name);
+void ei_radiobutton_register_class ();
 
-void			ei_radiobutton_register_class ();
 #endif

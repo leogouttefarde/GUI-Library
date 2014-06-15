@@ -16,9 +16,9 @@
 
 
 typedef enum {
-	complet = 0,
-	haute = 1,
-	basse = -1
+        complet = 0,
+        haute = 1,
+        basse = -1
 } part_rect_t;
 
 /**

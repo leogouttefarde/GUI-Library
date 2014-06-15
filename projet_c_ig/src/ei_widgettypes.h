@@ -1,6 +1,6 @@
 /**
- *  @file	ei_widgettypes.c
- *  @brief	Manages the update rectangles
+ *  @file       ei_widgettypes.c
+ *  @brief      Manages the update rectangles
  *
  *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 05.06.14.
@@ -13,6 +13,7 @@
 
 #include "ei_geometrymanager.h"
 #include "ei_widget.h"
+
 
 
 /**
@@ -30,14 +31,6 @@ typedef struct ei_frame_t {
         ei_surface_t img;
         ei_rect_t* img_rect;
         ei_anchor_t img_anchor;
-        /*struct {bool is_txt; 
-          union{ char* txt;
-          uint32_t* img;
-          } type;
-          } foreground;*/
-
-        // POSITIONNEMENT
-        // SOUS RECTANGLE page 19
 } ei_frame_t;
 
 
@@ -67,60 +60,68 @@ typedef struct ei_button_t {
 typedef struct ei_toplevel_t {
         ei_widget_t widget;
         ei_color_t      color;
+
         //Barre de titre
         int bar_height;
         int             border_width;
         ei_color_t bar_color;
+
         //titre
         char*           title;
         ei_font_t       title_font;
         ei_color_t title_color;
+
         //bouton close
         ei_bool_t       closable;
         ei_relief_t rel_btn_close;
+
         //bouton resize
         ei_axis_set_t   resizable;
         int             resize_size;
         //
         ei_size_t*      min_size;
+
         // Pour le calcul du deplacement
         ei_point_t move_pos;
+
         // Pour detecter une demande de fermeture
         ei_bool_t   close;
 } ei_toplevel_t;
 
+
 typedef struct ei_linked_rdbtn_txt_t {
-	char* txt;
-	struct ei_linked_rdbtn_txt_t *next;
+        char* txt;
+        struct ei_linked_rdbtn_txt_t *next;
 } ei_linked_rdbtn_txt_t;
 
+
 typedef struct ei_linked_rdbtn_rec_t {
-	ei_rect_t rec;
-	ei_relief_t rel;
-	struct ei_linked_rdbtn_rec_t *next;
-	struct ei_linked_rdbtn_rec_t *prev;
+        ei_rect_t rec;
+        ei_relief_t rel;
+        struct ei_linked_rdbtn_rec_t *next;
+        struct ei_linked_rdbtn_rec_t *prev;
 } ei_linked_rdbtn_rec_t;
 
+
 typedef struct ei_radiobutton_t {
-			ei_widget_t widget;
-			int nb_buttons;
-			int nb_btn_pl;
-			ei_color_t bg_color;
-			ei_color_t btn_color;
-			ei_font_t font;
-			ei_color_t txt_color;
-			char* txt_default;
-			int bar_height;
-			ei_color_t bar_color;
-			ei_size_t btn_size;
-			int border_width;
-			int btn_bdw;
-			ei_linked_rdbtn_txt_t *ltxt;
-			int nb_radios;
-			ei_linked_rdbtn_rec_t *lrec;
-         void *  user_param;
+        ei_widget_t widget;
+        int nb_buttons;
+        int nb_btn_pl;
+        ei_color_t bg_color;
+        ei_color_t btn_color;
+        ei_font_t font;
+        ei_color_t txt_color;
+        char* txt_default;
+        int bar_height;
+        ei_color_t bar_color;
+        ei_size_t btn_size;
+        int border_width;
+        int btn_bdw;
+        ei_linked_rdbtn_txt_t *ltxt;
+        int nb_radios;
+        ei_linked_rdbtn_rec_t *lrec;
+        void *  user_param;
 } ei_radiobutton_t;
 
 
 #endif
-

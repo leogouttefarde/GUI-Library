@@ -1,6 +1,6 @@
 /**
- *  @file	ei_tag.h
- *  @brief	Tag API
+ *  @file       ei_tag.h
+ *  @brief      Tag API
  *
  *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 14.06.14.

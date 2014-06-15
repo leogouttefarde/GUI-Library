@@ -102,13 +102,13 @@ void modify_btn_rel(ei_radiobutton_t *radiobutton,int id);
  * @param font The font to display the text
  */
 void ei_radiobutton_configure (ei_widget_t* widget,
-		int *nb_buttons,
-		int *nb_btn_pl,
-		ei_size_t *btn_size,
-		const ei_color_t* bg_color,
-		const ei_color_t* txt_color,
-		const ei_color_t* btn_color,
-		int *nb_radios,
-		char** tab[],
-		ei_font_t *font);
+                int *nb_buttons,
+                int *nb_btn_pl,
+                ei_size_t *btn_size,
+                const ei_color_t* bg_color,
+                const ei_color_t* txt_color,
+                const ei_color_t* btn_color,
+                int *nb_radios,
+                char** tab[],
+                ei_font_t *font);
 #endif

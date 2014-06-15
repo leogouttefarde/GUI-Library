@@ -1,6 +1,6 @@
 /**
- *  @file	ei_linkedlist.h
- *  @brief	Doubly linked list generic class.
+ *  @file       ei_linkedlist.h
+ *  @brief      Doubly linked list generic class.
  *
  *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 07.06.14.
@@ -15,12 +15,12 @@
 
 
 /**
- * @brief	The stored element's pointer.
+ * @brief       The stored element's pointer.
  */
 typedef void* ei_elem_t;
 
 /**
- * @brief	An element and previous / next pointers to create a doubly linked list.
+ * @brief       An element and previous / next pointers to create a doubly linked list.
  */
 typedef struct ei_linked_elem_t {
         ei_elem_t elem;
@@ -65,6 +65,14 @@ void ei_linkedlist_init(ei_linkedlist_t *list);
 void ei_linkedlist_add(ei_linkedlist_t *list, ei_elem_t elem);
 
 /**
+ * \brief       Adds an element to a list, but only if it is not already in it.
+ *
+ * @param       list            The list
+ * @param       elem            The element to add
+ */
+void ei_linkedlist_add_unique(ei_linkedlist_t *list, ei_elem_t elem);
+
+/**
  * \brief       Removes an element from a list.
  *
  * @param       list            The list
@@ -82,14 +90,31 @@ void ei_linkedlist_pop_elem(ei_linkedlist_t *list, ei_elem_t elem, ei_bool_t fre
  */
 void ei_linkedlist_pop_link(ei_linkedlist_t *list, ei_linked_elem_t *link, ei_bool_t free_elem);
 
-// ei_elem_t ei_linkedlist_pop(ei_linkedlist_t *list);
-
+/**
+ * \brief       Empties a list.
+ *
+ * @param       list            The list.
+ * @param       free_elem       Free the contained element ?
+ */
 void ei_linkedlist_empty(ei_linkedlist_t *list, ei_bool_t free_elem);
 
+/**
+ * \brief       Indicates if a list contains a given element.
+ *
+ * @param       list            The list.
+ * @param       elem            The element.
+ */
 ei_bool_t ei_linkedlist_has(ei_linkedlist_t *list, ei_elem_t elem);
 
-void ei_linkedlist_add_unique(ei_linkedlist_t *list, ei_elem_t elem);
-
+/**
+ * \brief       Applies a function to each element of a list, stops if the function returns EI_TRUE.
+ *              Continues as long as it returns EI_FALSE.
+ *
+ * @param       list            The list.
+ * @param       function        The element.
+ * @param       user_param      User parameters
+ */
 void ei_linkedlist_applyfunc(ei_linkedlist_t *list, ei_function_t function, void *user_param);
+
 
 #endif
