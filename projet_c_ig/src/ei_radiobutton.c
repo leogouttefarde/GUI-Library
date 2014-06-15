@@ -41,24 +41,25 @@ void free_rdbtn_lrec(ei_linked_rdbtn_rec_t *lrec) {
 /**
  *  @brief draw a radiobutton
  */
-void ei_radiobutton_draw(ei_surface_t surface, ei_rect_t location,ei_radiobutton_t *radiobutton, ei_rect_t* clipper) {
-	/* Mise à jour*/
+void ei_radiobutton_draw(ei_surface_t surface, ei_rect_t location,ei_radiobutton_t *radiobutton, ei_rect_t* clipper)
+{
+        /* Mise à jour*/
 	radiobutton->lrec = place_rdbtn_rec(radiobutton);
-	//aff_liste(radiobutton->lrec);
-	ei_rect_t *inter;
+	ei_rect_t *inter = NULL;
+
 	/* Dessin du fond */
 	ei_rect_t fond = location;
-	//inter=ei_rect_intersection(clipper,&fond);
-	//if (inter) ei_fill(surface,&radiobutton->bg_color,inter);
 	int rel = radiobutton->border_width*0.5;
 	ei_button_draw_loc(surface,fond,radiobutton->bg_color,ei_relief_raised,0,rel,clipper);
-	/*Champ de texte*/
+
+        /*Champ de texte*/
 	ei_rect_t bar;
 	bar.size.height = radiobutton->bar_height;
 	bar.size.width = location.size.width-2*radiobutton->border_width;
 	bar.top_left = plus(location.top_left,radiobutton->border_width,radiobutton->border_width);
 	inter = ei_rect_intersection(clipper,&bar);
 	if (inter) ei_fill(surface,&radiobutton->bar_color,inter);
+
 	/*Dessin des boutons*/
 	ei_linked_rdbtn_rec_t* lrec = radiobutton->lrec;
 	ei_linked_rdbtn_txt_t* ltxt = radiobutton->ltxt;
@@ -78,6 +79,8 @@ void ei_radiobutton_draw(ei_surface_t surface, ei_rect_t location,ei_radiobutton
 		}
 		else ltxt = NULL;
 	}
+
+        SAFE_FREE(inter);
 }
 
 /**
