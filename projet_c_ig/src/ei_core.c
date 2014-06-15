@@ -271,6 +271,7 @@ void ei_invalidate_rect(ei_rect_t* invalid_rect)
                 if (rect) {
                         /* On ajoute le rectangle */
                         ei_rect_t new_rect = *rect;
+                        SAFE_FREE(rect);
 
                         ei_linked_elem_t *link = ei_update_rects.head, *next = NULL;
                         ei_bool_t add = EI_TRUE;
@@ -284,14 +285,14 @@ void ei_invalidate_rect(ei_rect_t* invalid_rect)
                                 if (lrect) {
 
                                         /* If duplicate found, do not add */
-                                        if (lrect->rect.top_left.x == rect->top_left.x
-                                                        && lrect->rect.top_left.y == rect->top_left.y
-                                                        && lrect->rect.size.width == rect->size.width
-                                                        && lrect->rect.size.height == rect->size.height)
+                                        if (lrect->rect.top_left.x == new_rect.top_left.x
+                                                        && lrect->rect.top_left.y == new_rect.top_left.y
+                                                        && lrect->rect.size.width == new_rect.size.width
+                                                        && lrect->rect.size.height == new_rect.size.height)
                                                 add = EI_FALSE;
 
                                         /* Fuse with another if better */
-                                        else if ( (fusion = ei_smaller_fused(&lrect->rect, rect)) ) {
+                                        else if ( (fusion = ei_smaller_fused(&lrect->rect, &new_rect)) ) {
                                                 ei_linkedlist_pop_link(&ei_update_rects, link, EI_TRUE);
                                                 new_rect = *fusion;
                                                 SAFE_FREE(fusion);
@@ -322,8 +323,6 @@ void ei_invalidate_rect(ei_rect_t* invalid_rect)
                                         ei_linkedlist_add(&ei_update_rects, new_link);
                                 }
                         }
-
-                        SAFE_FREE(rect);
                 }
         }
 }
