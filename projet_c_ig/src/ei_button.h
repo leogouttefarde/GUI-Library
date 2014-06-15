@@ -16,8 +16,7 @@
 #include "ei_widgettypes.h"
 
 
-void ei_frame_draw(ei_surface_t window,ei_rect_t rectangle,ei_frame_t* frame,
-                ei_rect_t *clipper);
+void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t *frame, ei_rect_t *clipper);
 
 void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_button_t *button, ei_rect_t *clipper);
 

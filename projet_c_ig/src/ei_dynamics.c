@@ -20,38 +20,47 @@ ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc){
                 x = x1;
                 y = y1;
                 break;
+
         case ei_anc_north:
                 x = (x1 + x2) / 2;
                 y = y1;
                 break;
+
         case ei_anc_northeast:
                 x = x2;
                 y = y1;
                 break;
+
         case ei_anc_east:
                 x = x2;
                 y = (y1 +y2) / 2;
                 break;
+
         case ei_anc_southeast:
                 x = x2;
                 y = y2;
                 break;
+
         case ei_anc_south:
                 x = (x1 + x2) / 2;
                 y = y2;
                 break;
+
         case ei_anc_southwest:
                 x = x1;
                 y = y2;
                 break;
+
         case ei_anc_west:
                 x = x1;
                 y = (y1 +y2) / 2;
                 break;
+
         case ei_anc_center:
                 x = (x1 + x2) / 2;
                 y = (y1 + y2) / 2;
                 break;
+
         default:
                 break;
         }
@@ -96,12 +105,15 @@ void resize_placer(ei_widget_t *widget, ei_point_t where)
                                 switch (toplevel->resizable) {
                                 case ei_axis_both :
                                         break;
+
                                 case ei_axis_x:
                                         w = 0;
                                         break;
+
                                 case ei_axis_y:
                                         h = 0;
                                         break;
+
                                 default:
                                         w = 0;
                                         h = 0;
@@ -341,6 +353,7 @@ void move_placer(ei_widget_t *widget, ei_point_t where)
                                 *rel_x = (float)(*x) / (float)(p_w -1);
                                 SAFE_FREE(x);
                         }
+
                         if (param->y) {
                                 SAFE_FREE(rel_y);
                         } else{
@@ -387,15 +400,19 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
 
                 if (x<0) //<< Souris a gauche du widget
                         x = F2I(I2F(x) / elem_w);
+
                 else if (x - location.size.width + 1 > 0)
                         x = F2I(I2F(x - location.size.width + 1) / elem_w) + 1;
+
                 else
                         x = 0;
 
                 if (y<0) //<< Souris a droite du widget
                         y = F2I(I2F(y) / elem_h);
+
                 else if (y - location.size.height + 1 > 0)
                         y = F2I(I2F(y - location.size.height + 1) / elem_h ) + 1;
+
                 else 
                         y = 0;
 

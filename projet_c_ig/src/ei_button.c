@@ -16,11 +16,10 @@
 
 
 /* Frame draw */
-void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t * frame,
-                ei_rect_t * clipper)
+void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t *frame, ei_rect_t *clipper)
 {
         ei_button_draw_loc(window, rectangle, frame->bg_color, frame->relief, 0,
-                        frame->border_width, clipper);
+                           frame->border_width, clipper);
 
         ei_rect_t rectangle_red = reduction(rectangle, frame->border_width);
 
@@ -207,7 +206,7 @@ void ei_insert_text(ei_surface_t window, ei_rect_t rectangle, char *text,
         hw_text_compute_size(text, font, &width, &height);
 
         if (clipper && anchor == ei_anc_center && width > rectangle.size.width)
-                anchor_translation(&anchor);
+                anchor = anchor_translation(anchor);
 
 
         ancre = find_anchor(rectangle, width, height, anchor);

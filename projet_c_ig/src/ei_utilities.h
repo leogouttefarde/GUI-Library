@@ -34,7 +34,8 @@ typedef enum {
  *
  *  @return             The head of the list
  */
-ei_linked_point_t* ei_button_arc(ei_point_t centre,int rayon,int angle_debut,int angle_fin,ei_linked_point_t* suivant);
+ei_linked_point_t* ei_button_arc(ei_point_t center, int radius, int head_angle,
+                                 int tail_angle, ei_linked_point_t *next);
 
 /**
  *@brief Algorithm inspired by bresenham but much lighter. It creates a list of points which are between two points. Works well with vertical, horizontal or diagonal segment.
@@ -45,7 +46,7 @@ ei_linked_point_t* ei_button_arc(ei_point_t centre,int rayon,int angle_debut,int
  *
  * @return a linked list of points which represents a segment
  */
-ei_linked_point_t* trait(ei_point_t queue, ei_point_t tete, ei_linked_point_t* suivant);
+ei_linked_point_t* trait(ei_point_t queue, ei_point_t tete, ei_linked_point_t *suivant);
 
 /**
  * @brief Converts a rectangle in a list of linked point, which represent the rounded countours of the rectangle, or you can choose to get only the top or bottom part of this rectangle
@@ -74,7 +75,7 @@ ei_point_t plus(ei_point_t p, int x, int y);
  *
  *  @param The list to free.
  */
-void free_lp(ei_linked_point_t* Liste);
+void free_lp(ei_linked_point_t *Liste);
 
 /**
  * @brief Reduces a rectangle.
@@ -117,15 +118,17 @@ ei_color_t obscurcir(ei_color_t couleur, float coeff_couleur);
  *
  * @return                      The anchor's coordinates.
  */
-ei_point_t find_anchor(ei_rect_t rectangle,int width,int height, ei_anchor_t position);
+ei_point_t find_anchor(ei_rect_t rectangle, int width, int height, ei_anchor_t position);
 
 /**
  * @brief       Called when the size of the text is bigger than the place allocated,
  *              so it translates the anchor in order to display the start of the text.
  *
  * @param       anchor  The anchor to translate.
+ *
+ * @return              The resulting anchor.
  */
-void anchor_translation(ei_anchor_t *anchor);
+ei_anchor_t anchor_translation(ei_anchor_t anchor);
 
 /**
  * @brief       Reallocates a string on a string pointer.
