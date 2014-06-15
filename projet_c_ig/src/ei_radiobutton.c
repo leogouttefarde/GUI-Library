@@ -7,7 +7,7 @@
 #include "ei_shape.h"
 #include "ei_button.h"
 #include "ei_utilities.h"
-#include "ei_widget.c"
+#include "ei_widgetclass_pv.h"
 
 void free_rdbtn_ltxt(ei_linked_rdbtn_txt_t *ltxt) {
 	ei_linked_rdbtn_txt_t* Suivant;
@@ -168,16 +168,16 @@ void modify_btn_rel(ei_radiobutton_t *radiobutton,int id) {
 	while (1) {
 		if (indice!=id) {
 			lrec->rel=ei_relief_raised;
-			printf(" on raise  %i   ",indice);
+			//printf(" on raise  %i   ",indice);
 		} else {
 			lrec->rel=ei_relief_sunken;
-			printf(" on sunk  %i   ",indice);
+			//printf(" on sunk  %i   ",indice);
 		}
 		indice ++;
 		if (lrec->next==NULL) break;
 		lrec=lrec->next;
 	}
-	printf("\n");
+	//printf("\n");
 	while (1) {
 		if (lrec->prev==NULL) break;
 		lrec=lrec->prev;

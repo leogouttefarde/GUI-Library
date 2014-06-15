@@ -614,7 +614,7 @@ void radiobutton_draw(struct ei_widget_t* widget, ei_surface_t surface,
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
-                printf("début du draw\n");
+                //printf("début du draw\n");
                 ei_radiobutton_draw(surface,radiobutton->widget.screen_location,radiobutton, clipper);
                 //unlock de la surface
                 hw_surface_unlock(surface);
@@ -682,7 +682,7 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
 			radiobutton->bar_height=h+6;
 
 			s.height=radiobutton->bar_height+2*border_width+(2*nb_lignes)*btn_size.height;
-			printf("ceil..%i\n",nb_lignes);
+			//printf("ceil..%i\n",nb_lignes);
 			radiobutton->widget.requested_size=s;
          //button->user_param = NULL;
 }

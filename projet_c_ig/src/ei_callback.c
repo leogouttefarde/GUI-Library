@@ -165,7 +165,7 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
 /* Enfonce le bouton radio cliqué et relève les autres */
 ei_bool_t radiobutton_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
-			printf("callback radiobutton !\n");
+		//printf("callback radiobutton !\n");
         if (widget && !strcmp(widget->wclass->name, "radiobutton")) {
 
                 ei_radiobutton_t *radiobutton = (ei_radiobutton_t*)widget;
@@ -176,8 +176,7 @@ ei_bool_t radiobutton_callback_click(ei_widget_t *widget, struct ei_event_t *eve
 					 int m_y = event->param.mouse.where.y;
 					 while (lrec !=NULL&&appui==0) {
                                                  if (m_x>=lrec->rec.top_left.x&&m_x <= (lrec->rec.top_left.x+lrec->rec.size.width)&&m_y>=lrec->rec.top_left.y&&m_y<=(lrec->rec.top_left.y+lrec->rec.size.height)) {
-                                                         //lrec->rel=ei_relief_sunken;
-                                                         printf("appui sur un btn détecté\n");
+                                                         //printf("appui sur un btn détecté\n");
                                                          appui=1;
                                                  }
 
