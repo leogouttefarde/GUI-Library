@@ -27,3 +27,6 @@ Test basique du gridder, vérification de l'absence d'erreur dynamiques
 
 Ensigrid
 Test complet pour le gridder inspiré de ensiskype, possibilité de déplacer, redimensionner
+
+Extension
+Ensiskype étendu, un niveau d'imbrication supplémentaire et ajout des extensions
