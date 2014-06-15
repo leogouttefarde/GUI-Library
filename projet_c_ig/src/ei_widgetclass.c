@@ -48,16 +48,27 @@ void invalidate_widget(ei_widget_t *widget){
         // On intersecte la screen_location et tout les ccontent_rect des ancetres
         ei_widget_t *current = widget->parent;
         ei_rect_t *clipper = &widget->screen_location;
-        while(current){
-                if(current->content_rect)
-                        clipper = ei_rect_intersection(clipper,
-                                        current->content_rect);
-                else
-                        clipper = ei_rect_intersection(clipper,
-                                        &current->screen_location);
+        ei_rect_t *prev_clipper = NULL;
+        ei_rect_t *second_rect = NULL;
+
+        while(current) {
+                if(current->content_rect) {
+                        second_rect = current->content_rect;
+                }
+                else {
+                        second_rect = &current->screen_location;
+                }
+
+                clipper = ei_rect_intersection(clipper, second_rect);
+
+                SAFE_FREE(prev_clipper);
+                prev_clipper = clipper;
+
                 current = current->parent;
         }
+
         ei_invalidate_rect(clipper);
+        SAFE_FREE(prev_clipper);
 }
 
 /* Renvoie la structure décrivant une classe en fonction du nom */
