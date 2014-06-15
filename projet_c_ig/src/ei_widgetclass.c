@@ -74,7 +74,7 @@ void pick_surface_draw(ei_surface_t pick_surface, ei_widget_t *widget, ei_rect_t
 
         ei_draw_rectangle(pick_surface, widget->pick_color, &widget->screen_location, clipper);
 
-        hw_surface_unlock(pick_surface);        
+        hw_surface_unlock(pick_surface);
 }
 
 /***** Frame *****/
@@ -260,7 +260,8 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
         if (surface){
                 // lock de la surface
                 hw_surface_lock(surface);
-                ei_button_draw(surface,button->widget.screen_location,button, clipper);
+                ei_button_draw(surface,button->widget.screen_location,button,
+                                clipper);
                 //unlock de la surface
                 hw_surface_unlock(surface);
         }
@@ -508,14 +509,16 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 
         // Le bouton de resize doit rester visible et les toplevel ne pas
         // devenir infiniment petite
-        screen_location.size.width = MAX(toplevel->resize_size, screen_location.size.width);
-        screen_location.size.height = MAX(toplevel->resize_size, screen_location.size.height);
+        screen_location.size.width = MAX(toplevel->resize_size,
+                        screen_location.size.width);
+        screen_location.size.height = MAX(toplevel->resize_size,
+                        screen_location.size.height);
 
 
         ei_rect_t* content_rect = widget->content_rect;
 
         // Calcul du content_rect en prenant en compte les bordures
-        if (screen_location.size.width != 0 && screen_location.size.height !=0) {
+        if (screen_location.size.width != 0 && screen_location.size.height !=0){
 
                 if ((content_rect == &widget->screen_location)
                                 || (content_rect == NULL))

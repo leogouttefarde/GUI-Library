@@ -1,5 +1,5 @@
 /**
- *  @file       ei_geometrymanager.h
+ *  @file       ei_geometrymanager.c
  *  @brief      Manages the positionning and sizing of widgets on the screen.
  *
  *  \author
@@ -12,9 +12,9 @@
 #include "ei_root.h"
 #include "ei_utils.h"
 #include "ei_linkedlist.h"
-// Pour le type placer_param
 #include "ei_params.h"
 #include <stdio.h>
+
 static ei_linkedlist_t ei_geometrymanagers = { NULL, NULL };
 
 /**
@@ -137,7 +137,8 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 if(param->y)
                         y_anc = *param->y + ymin;
                 else if (param->rel_y)
-                        y_anc = ymin + (int)floor(*param->rel_y * ((float)ymax - (float)ymin));
+                        y_anc = ymin + (int)floor(*param->rel_y
+                                        * ((float)ymax - (float)ymin));
                 else
                         y_anc = 0;
 
@@ -152,10 +153,9 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 w= widget->requested_size.width;
                 h = widget->requested_size.height;
 
-                if (param->w) {
+                if (param->w){
                         w = *param->w;
-                }
-                else if(param->rel_w){
+                } else if(param->rel_w){
                         int rw = parent_rect.size.width;
                         rw = (int)floor((float)rw * *param->rel_w);
                         w = rw;
@@ -163,8 +163,7 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
 
                 if(param->h){
                         h = *param->h;
-                }
-                else if(param->rel_h ){
+                } else if(param->rel_h ){
                         int rh = parent_rect.size.height;
                         rh = (int)floor((float)rh * *param->rel_h);
                         h = rh;
@@ -184,9 +183,8 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 if (param->anc && *param->anc)
                         anc = *param->anc;
 
-                switch (anc) {
-                        //      ei_anc_none             = 0,    ///< No anchor defined.
-                case ei_anc_center : 
+                switch (anc){
+                case ei_anc_center :
                         // Le + 1 est important (/2 tronque)
                         // exemple
                         // XXXX avec w = 4, C le centre
@@ -197,7 +195,7 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                         y1 = y_anc - (h / 2) + 1;
                         y2 = y_anc + (h / 2);
                         break;                  ///< Anchor in the center.
-                case ei_anc_north : 
+                case ei_anc_north :
                         x1 = x_anc - (w / 2) - 1;
                         x2 = x_anc + (w / 2);
                         y1 = y_anc;
@@ -227,7 +225,7 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                         y1 = y_anc - h + 1;
                         y2 = y_anc;
                         break;          ///< Anchor on the bottom side, centered horizontally.
-                case ei_anc_southwest:  
+                case ei_anc_southwest:
                         x1 = x_anc;
                         x2 = x_anc + w -1;
                         y1 = y_anc -h +1;
@@ -239,7 +237,7 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                         y1 = y_anc - (h / 2) + 1;
                         y2 = y_anc + (h / 2);
                         break;          ///< Anchor on the left side, centered vertically.
-                case ei_anc_northwest: 
+                case ei_anc_northwest:
                         x1 = x_anc;
                         x2 = x_anc + w -1;
                         y1 = y_anc;
@@ -251,18 +249,11 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 w = x2 - x1 + 1;
                 h = y2 - y1 + 1;
                 // on assigne enfin les valeurs calculées
-                screen_location.top_left.x
-                        = x1;
-                screen_location.top_left.y
-                        = y1;
-                screen_location.size.width 
-                        = w;
-                screen_location.size.height
-                        = h;
-
-        }
-        // Root
-        else{
+                screen_location.top_left.x = x1;
+                screen_location.top_left.y = y1;
+                screen_location.size.width = w;
+                screen_location.size.height = h;
+        } else {
                 memset(&screen_location, 0, sizeof(screen_location));
 
                 if (param->w && param->h)
@@ -410,21 +401,18 @@ void ei_place(ei_widget_t *widget,
                 if (anchor) {
                         SAFE_ALLOC(param->anc, ei_anchor_t);
                         *param->anc = *anchor;
-                }
-                else{
+                } else{
                         SAFE_FREE(param->anc);
                 }
 
                 if (x){
                         SAFE_ALLOC(param->x, int);
                         *param->x = *x;
-                }
-                else if (rel_x){
+                } else if (rel_x){
                         SAFE_FREE(param->x);
                         SAFE_ALLOC(param->rel_x, float);
                         *param->rel_x = *rel_x;
-                }
-                else{
+                } else{
                         SAFE_FREE(param->rel_x);
                         SAFE_ALLOC(param->x, int);
                         *param->x = 0;
@@ -434,13 +422,11 @@ void ei_place(ei_widget_t *widget,
                         SAFE_FREE(param->rel_y);
                         SAFE_ALLOC(param->y, int);
                         *param->y = *y;
-                }
-                else if (rel_y){
+                } else if (rel_y){
                         SAFE_FREE(param->y);
                         SAFE_ALLOC(param->rel_y, float);
                         *param->rel_y = *rel_y;
-                }
-                else{
+                } else{
                         SAFE_FREE(param->rel_y);
                         SAFE_ALLOC(param->y, int);
                         *param->y = 0;
@@ -450,13 +436,11 @@ void ei_place(ei_widget_t *widget,
                         SAFE_FREE(param->rel_w);
                         SAFE_ALLOC(param->w, int);
                         *param->w = *width;
-                }
-                else if (rel_width){
+                } else if (rel_width){
                         SAFE_FREE(param->w);
                         SAFE_ALLOC(param->rel_w, float);
                         *param->rel_w = *rel_width;
-                }
-                else{
+                } else{
                         SAFE_FREE(param->rel_w);
                         SAFE_ALLOC(param->w, int);
                         *param->w = widget->requested_size.width;
@@ -466,13 +450,11 @@ void ei_place(ei_widget_t *widget,
                         SAFE_FREE(param->rel_h);
                         SAFE_ALLOC(param->h, int);
                         *param->h = *height;
-                }
-                else if (rel_height){
+                } else if (rel_height){
                         SAFE_FREE(param->h);
                         SAFE_ALLOC(param->rel_h, float);
                         *param->rel_h = *rel_height;
-                }
-                else{
+                } else{
                         SAFE_FREE(param->rel_h);
                         SAFE_ALLOC(param->h, int);
                         *param->h = widget->requested_size.height;

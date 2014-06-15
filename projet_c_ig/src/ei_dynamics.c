@@ -1,5 +1,3 @@
-
-#include "ei_gridder.h"
 #include "ei_common.h"
 #include "ei_widgettypes.h"
 #include "ei_widgetclass_pv.h"
@@ -75,7 +73,7 @@ void resize_placer(ei_widget_t *widget, ei_point_t where)
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
 
         // La fonction resize ne fonctionne que sur le placer
-        if (widget->geom_params && widget->geom_params->manager 
+        if (widget->geom_params && widget->geom_params->manager
                         && widget->geom_params->manager == placer
                         && widget->parent && widget->parent->content_rect) {
 
@@ -199,7 +197,8 @@ void resize_placer(ei_widget_t *widget, ei_point_t where)
                                 SAFE_FREE(y);
 
                         // Placement du widget
-                        ei_place(widget, &anc, x, y, w, h, rel_x, rel_y, rel_w, rel_h);
+                        ei_place(widget, &anc, x, y, w, h, rel_x, rel_y, rel_w,
+                                        rel_h);
 
                         // On sauvegarde le dernier point
                         toplevel->move_pos = where;
@@ -278,12 +277,12 @@ void resize(ei_widget_t *widget, ei_point_t where)
         ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
 
         if (widget->geom_params
-            && widget->geom_params->manager 
-            && widget->geom_params->manager == placer)
+                        && widget->geom_params->manager
+                        && widget->geom_params->manager == placer)
                 resize_placer(widget, where);
 
-        else if (widget->geom_params && widget->geom_params->manager 
-                 && widget->geom_params->manager == gridder)
+        else if (widget->geom_params && widget->geom_params->manager
+                        && widget->geom_params->manager == gridder)
                 resize_gridder(widget, where);
 }
 
@@ -332,8 +331,10 @@ void move_placer(ei_widget_t *widget, ei_point_t where)
 
                         // Topleft et br du widget dans le repere du parent
                         // APRES deplacement
-                        ei_point_t tl = ei_point(w_x + dist.width - p_x, w_y + dist.height- p_y);
-                        ei_point_t br = ei_point_add(tl, ei_point(w_w - 1, w_h - 1));
+                        ei_point_t tl = ei_point(w_x + dist.width - p_x, w_y
+                                        + dist.height- p_y);
+                        ei_point_t br = ei_point_add(tl,
+                                        ei_point(w_w - 1, w_h - 1));
 
                         // Calcul du nouveau point d'ancrage
                         ei_anchor_t anc;
@@ -363,7 +364,7 @@ void move_placer(ei_widget_t *widget, ei_point_t where)
 
                         // On deplace le pere
                         ei_place(widget, &anc, x, y, param->w, param->h, rel_x,
-                                 rel_y, param->rel_w, param->rel_h);
+                                        rel_y, param->rel_w, param->rel_h);
 
                         // Maj position toplevel
                         toplevel->move_pos = where;
@@ -413,7 +414,7 @@ void move_gridder(ei_widget_t *widget, ei_point_t where){
                 else if (y - location.size.height + 1 > 0)
                         y = F2I(I2F(y - location.size.height + 1) / elem_h ) + 1;
 
-                else 
+                else
                         y = 0;
 
                 // On calcule la nouvelle position
@@ -460,13 +461,12 @@ void move(ei_widget_t *widget, ei_point_t where)
 
         // La fonction resize ne fonctionne que sur le placer
         if (widget->geom_params
-            && widget->geom_params->manager 
-            && widget->geom_params->manager == placer)
+                        && widget->geom_params->manager
+                        && widget->geom_params->manager == placer)
                 move_placer(widget, where);
-
         else if (widget->geom_params
-                 && widget->geom_params->manager 
-                 && widget->geom_params->manager == gridder)
+                        && widget->geom_params->manager
+                        && widget->geom_params->manager == gridder)
                 move_gridder(widget, where);
 
 }

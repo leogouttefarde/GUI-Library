@@ -19,12 +19,14 @@ ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_point_t tl)
         //Rectangle élémentaire flottant
         float elem_width = param->elem_w;
         float elem_height = param->elem_h;
-        if(param->col) 
-                screen_location.top_left.x = F2I(I2F(*param->col) * elem_width + I2F(tl.x)); 
+        if(param->col)
+                screen_location.top_left.x = F2I(I2F(*param->col) * elem_width
+                                + I2F(tl.x));
         else
                 screen_location.top_left.x = tl.x;
-        if(param->lin) 
-                screen_location.top_left.y = F2I(I2F(*param->lin) * elem_height + I2F(tl.y)); 
+        if(param->lin)
+                screen_location.top_left.y = F2I(I2F(*param->lin) * elem_height
+                                + I2F(tl.y));
         else
                 screen_location.top_left.y = tl.y;
         if(param->w)
@@ -95,7 +97,7 @@ void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height)
                 }
                 // On divise le père pour obtenir la taille d'un
                 // rectangle elementaire
-                *elem_width = I2F(parent->content_rect->size.width) 
+                *elem_width = I2F(parent->content_rect->size.width)
                         / (c_max + 1);
                 *elem_height = I2F(parent->content_rect->size.height)
                         / (l_max + 1);
