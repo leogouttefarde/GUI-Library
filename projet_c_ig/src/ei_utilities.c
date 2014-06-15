@@ -109,19 +109,13 @@ ei_linked_point_t *ei_button_rounded_frame(ei_rect_t rectangle, int rayon,
 		ei_point_t pt_int_td;
 		if (longueur>hauteur) {
 			h=hauteur/2;
-			//pt_int_bg = { xrec + hauteur/2, yrec + hauteur/2};
 			pt_int_bg=plus(tl,h,h);
-			//pt_int_td = { xrec + longueur - hauteur/2, yrec + hauteur/2 };
 			pt_int_td=plus(tl,longueur-h,h);
 		} else {
 			h=longueur/2;
-			//pt_int_bg = { xrec + longueur/2, yrec + hauteur - longueur/2};
 			pt_int_bg=plus(tl,h,hauteur-h);
-			//pt_int_td = { xrec + longueur/2, yrec + longueur/2 };
 			pt_int_td=plus(tl,h,h);
 		}
-		//printf("pt_int_bg {%i,%i}\n",pt_int_bg.x,pt_int_bg.y);
-		//printf("pt_int_td {%i,%i}\n",pt_int_td.x,pt_int_td.y);
 
 		if (partie == haute) {
 			Liste = ei_button_arc(centre_bg, rayon, 180, 225, Liste);
@@ -146,6 +140,12 @@ ei_linked_point_t *ei_button_rounded_frame(ei_rect_t rectangle, int rayon,
 	return Liste;
 }
 
+/**
+ *  @brief free a linked list of points
+ *
+ *  @param Liste The list to be freed
+ *
+ */
 void free_lp(ei_linked_point_t * Liste)
 {
 	ei_linked_point_t *Suivant;

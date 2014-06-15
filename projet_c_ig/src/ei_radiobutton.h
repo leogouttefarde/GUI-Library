@@ -7,7 +7,7 @@
 void free_rdbtn_lrec(ei_linked_rdbtn_rec_t *lrec);
 void free_rdbtn_ltxt(ei_linked_rdbtn_txt_t *ltxt);
 void ei_radiobutton_draw(ei_surface_t surface, ei_rect_t location,ei_radiobutton_t *radiobutton, ei_rect_t* clipper);
-ei_linked_rdbtn_txt_t* rdbtn_txt_create(char* tab[]);
+ei_linked_rdbtn_txt_t* rdbtn_txt_create(char* tab[],int taille);
 ei_linked_rdbtn_rec_t* rdbtn_rec_create(ei_radiobutton_t *radiobutton);
 
 ei_linked_rdbtn_rec_t* place_rdbtn_rec(ei_radiobutton_t *radiobutton);
@@ -20,6 +20,7 @@ void ei_radiobutton_configure (ei_widget_t* widget,
 		const ei_color_t* bg_color,
 		const ei_color_t* txt_color,
 		const ei_color_t* btn_color,
+		int *nb_radios,
 		char** tab[],
 		ei_font_t *font);
 #endif
