@@ -43,50 +43,6 @@ ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name)
         return (widget && widget->wclass && !strcmp(widget->wclass->name, name));
 }
 
-// Utilisé dans les geom_notify
-void invalidate_widget(ei_widget_t *widget)
-{
-        /*
-        // On intersecte la screen_location et tout les ccontent_rect des ancetres
-        ei_widget_t *current = widget->parent;
-        ei_rect_t *clipper = &widget->screen_location;
-        ei_rect_t *prev_clipper = NULL;
-        ei_rect_t *second_rect = NULL;
-
-        while(current) {
-                if(current->content_rect) {
-                        second_rect = current->content_rect;
-                }
-                else {
-                        second_rect = &current->screen_location;
-                }
-
-                clipper = ei_rect_intersection(clipper, second_rect);
-
-                SAFE_FREE(prev_clipper);
-                prev_clipper = clipper;
-
-                current = current->parent;
-        }
-
-        ei_invalidate_rect(clipper);
-        SAFE_FREE(prev_clipper);*/
-
-        // On intersecte la screen_location et tout les ccontent_rect des ancetres
-        ei_widget_t *current = widget->parent;
-        ei_rect_t *clipper = &widget->screen_location;
-        while(current){
-                if(current->content_rect)
-                        clipper = ei_rect_intersection(clipper,
-                                        current->content_rect);
-                else
-                        clipper = ei_rect_intersection(clipper,
-                                        &current->screen_location);
-                current = current->parent;
-        }
-
-        ei_invalidate_rect(clipper);
-}
 
 /* Renvoie la structure décrivant une classe en fonction du nom */
 ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
@@ -206,7 +162,7 @@ void frame_setdefaults(struct ei_widget_t* widget)
 void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
         // On invalide l'ancienne position
-        invalidate_widget(widget);
+        ei_invalidate_rect(&widget->screen_location);
 
 
         ei_rect_t* content_rect = widget->content_rect;
@@ -244,7 +200,7 @@ void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
         widget->content_rect = content_rect;
 
         // On invalide la nouvelle position
-        invalidate_widget(widget);
+        ei_invalidate_rect(&widget->screen_location);
 }
 
 /* Enregistre la classe frame */
@@ -374,7 +330,7 @@ void button_setdefaults(struct ei_widget_t* widget)
 /* Calcul screen_location, content_rect */
 void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-        invalidate_widget(widget);
+        ei_invalidate_rect(&widget->screen_location);
 
         ei_rect_t* content_rect = widget->content_rect;
 
@@ -412,7 +368,7 @@ void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
         widget->content_rect = content_rect;
 
         // On invalide la nouvelle position
-        invalidate_widget(widget);
+        ei_invalidate_rect(&widget->screen_location);
 }
 
 /* Enregistre la classe bouton */
@@ -539,7 +495,7 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
         // On invalide l'ancienne screen_location
-        invalidate_widget(widget);
+        ei_invalidate_rect(&widget->screen_location);
 
         ei_rect_t screen_location = rect;
 
@@ -590,7 +546,7 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
         widget->content_rect = content_rect;
 
         // On invalide la nouvelle position
-        invalidate_widget(widget);
+        ei_invalidate_rect(&widget->screen_location);
 
         widget->content_rect = content_rect;
 }
@@ -731,7 +687,7 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
 
 void radiobutton_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
-        invalidate_widget(widget);
+        ei_invalidate_rect(&widget->screen_location);
         ei_rect_t* content_rect = NULL;
 
         if (    widget->content_rect
@@ -767,7 +723,7 @@ void radiobutton_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                 }
                 widget->content_rect = content_rect;
         }
-        invalidate_widget(widget);
+        ei_invalidate_rect(&widget->screen_location);
 }
 
 void    ei_radiobutton_register_class()
