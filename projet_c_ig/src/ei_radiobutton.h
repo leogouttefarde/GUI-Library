@@ -13,4 +13,12 @@ ei_linked_rdbtn_rec_t* rdbtn_rec_create(ei_radiobutton_t *radiobutton);
 ei_linked_rdbtn_rec_t* place_rdbtn_rec(ei_radiobutton_t *radiobutton);
 void aff_liste(ei_linked_rdbtn_rec_t *rec);
 void modify_btn_rel(ei_radiobutton_t *radiobutton,int id);
+void ei_radiobutton_configure (ei_widget_t* widget,
+		int *nb_buttons,
+		ei_size_t *btn_size,
+		const ei_color_t* bg_color,
+		const ei_color_t* txt_color,
+		const ei_color_t* btn_color,
+		char** tab[],
+		ei_font_t *font)_configure (ei_widget_t* widget,
 #endif
