@@ -696,8 +696,8 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
 		  radiobutton->lrec=rdbtn_rec_create(radiobutton);
 
 			int nb_lignes=(int)ceil((float)radiobutton->nb_buttons/4.);
-			int nb_btn_pc=4;
-			int nb_col=MIN(radiobutton->nb_buttons,nb_btn_pc);
+			int nb_btn_pl=4;
+			int nb_col=MIN(radiobutton->nb_buttons,nb_btn_pl);
 			ei_size_t s;
 			s.width=(2*nb_col-1)*btn_size.width+2*border_width;
 			int h;

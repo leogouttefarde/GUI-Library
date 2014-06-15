@@ -7,6 +7,7 @@
 #include "ei_shape.h"
 #include "ei_button.h"
 #include "ei_utilities.h"
+#include "ei_widget.c"
 
 void free_rdbtn_ltxt(ei_linked_rdbtn_txt_t *ltxt) {
 	ei_linked_rdbtn_txt_t* Suivant;
@@ -65,6 +66,7 @@ void ei_radiobutton_draw(ei_surface_t surface, ei_rect_t location,ei_radiobutton
 
 ei_linked_rdbtn_txt_t* rdbtn_txt_create(char* tab[]) {
 	int taille=sizeof(tab);
+	printf("taille : %i\n",taille);
 	assert(taille);
 	ei_linked_rdbtn_txt_t *suivant=NULL;
 	ei_linked_rdbtn_txt_t* ltxt;
@@ -77,17 +79,33 @@ ei_linked_rdbtn_txt_t* rdbtn_txt_create(char* tab[]) {
 	return(ltxt);	
 }
 
+void rdbtn_txt_maj(char** tab[],ei_radiobutton_t *radiobutton) {
+	int taille=sizeof(tab);
+	printf(" majtxt taille :%i \n",taille);
+	assert(taille);
+	ei_linked_rdbtn_txt_t* ltxt=radiobutton->ltxt;
+	char* nv_txt[taille];
+	for (int i=0; i<=taille-1; i++) {
+		if (tab[i]) nv_txt[i]=*tab[i];
+		else if (ltxt) nv_txt[i]=ltxt->txt;
+		if (ltxt) ltxt=ltxt->next;
+		else ltxt=NULL;
+	}
+	free_rdbtn_ltxt(radiobutton->ltxt);
+	radiobutton->ltxt=rdbtn_txt_create(nv_txt);
+}	
+
 ei_linked_rdbtn_rec_t* rdbtn_rec_create(ei_radiobutton_t *radiobutton) {
 	ei_linked_rdbtn_rec_t* rdbtn;
 	ei_linked_rdbtn_rec_t* suivant=NULL;
 	ei_rect_t position;
 	for (int i=1; i<=radiobutton->nb_buttons; i++) {
-			rdbtn=CALLOC_TYPE(ei_linked_rdbtn_rec_t);
-			rdbtn->rec=position;
-			rdbtn->rel=ei_relief_raised;
-			rdbtn->next=suivant;
-			if (suivant) rdbtn->next->prev=rdbtn;
-			suivant=rdbtn;
+		rdbtn=CALLOC_TYPE(ei_linked_rdbtn_rec_t);
+		rdbtn->rec=position;
+		rdbtn->rel=ei_relief_raised;
+		rdbtn->next=suivant;
+		if (suivant) rdbtn->next->prev=rdbtn;
+		suivant=rdbtn;
 	}
 	rdbtn->prev=NULL;
 	return(rdbtn);
@@ -118,28 +136,28 @@ void aff_liste(ei_linked_rdbtn_rec_t *lrec) {
 	ei_linked_rdbtn_rec_t *lrec2=lrec;
 	printf("Rectangles chainés next, top_left:  ");
 	while (1) {
-			position=lrec->rec;
-			printf("{%i,%i}->",position.top_left.x,position.top_left.y);
-			//printf("suivant%x\n",lrec->next);
-			if (lrec->next==NULL) break;
-			lrec=lrec->next;
-		}
+		position=lrec->rec;
+		printf("{%i,%i}->",position.top_left.x,position.top_left.y);
+		//printf("suivant%x\n",lrec->next);
+		if (lrec->next==NULL) break;
+		lrec=lrec->next;
+	}
 	printf("\n");
 	printf("Rectangles chainés prev, top_left:  ");
 	while (lrec!=NULL) {
-			position=lrec->rec;
-			printf("{%i,%i}->",position.top_left.x,position.top_left.y);
-			//printf("suivant%x\n",lrec->next);
-			lrec=lrec->prev;
-		}
+		position=lrec->rec;
+		printf("{%i,%i}->",position.top_left.x,position.top_left.y);
+		//printf("suivant%x\n",lrec->next);
+		lrec=lrec->prev;
+	}
 	printf("\n");
-printf("Rectangles chainés, relief:  ");
+	printf("Rectangles chainés, relief:  ");
 	while (lrec2!=NULL) {
-			position=lrec2->rec;
-			printf("%i->",lrec2->rel);
-			//printf("suivant%x\n",lrec->next);
-			lrec2=lrec2->next;
-		}
+		position=lrec2->rec;
+		printf("%i->",lrec2->rel);
+		//printf("suivant%x\n",lrec->next);
+		lrec2=lrec2->next;
+	}
 	printf("\n");
 
 }
@@ -167,4 +185,37 @@ void modify_btn_rel(ei_radiobutton_t *radiobutton,int id) {
 	radiobutton->lrec=lrec;
 }
 
+void ei_radiobutton_configure (ei_widget_t* widget,
+		int *nb_buttons,
+		ei_size_t *btn_size,
+		const ei_color_t* bg_color,
+		const ei_color_t* txt_color,
+		const ei_color_t* btn_color,
+		char** tab[],
+		ei_font_t *font)
+{
+	if (ei_has_widgetclass(widget,"radiobutton")) {
+		ei_radiobutton_t *radiobutton = (ei_radiobutton_t*)widget;
+		ei_size_t s=radiobutton->widget.requested_size;
+		if (tab) rdbtn_txt_maj(tab,radiobutton);
+		if (nb_buttons) radiobutton->nb_buttons=*nb_buttons;
+		if (bg_color) radiobutton->bg_color=*bg_color;
+		if (txt_color) radiobutton->txt_color=*txt_color;
+		if (btn_color) radiobutton->btn_color=*btn_color;
+		if (btn_size) radiobutton->btn_size=*btn_size;
+		if (font) {
+			radiobutton->font=*font;
+			int h;
+			hw_text_compute_size("OK",radiobutton->font,NULL,&h);
+			radiobutton->bar_height=h+6;
+		}
+		int nb_lignes=(int)ceil((float)radiobutton->nb_buttons/4.);
+		int nb_btn_pl=4;
+		int nb_col=MIN(radiobutton->nb_buttons,nb_btn_pl);
+		s.width=(2*nb_col-1)*radiobutton->btn_size.width+2*radiobutton->border_width;
+		s.height=radiobutton->bar_height+2*radiobutton->border_width+(2*nb_lignes)*radiobutton->btn_size.height;
+		radiobutton->widget.requested_size=s;
+
+	}
+}	
 
