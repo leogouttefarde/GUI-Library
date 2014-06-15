@@ -32,3 +32,6 @@ Test complet pour le gridder inspiré de ensiskype, possibilité de déplacer, r
 
 Extension
 Ensiskype étendu, un niveau d'imbrication supplémentaire et ajout des extensions gridder, tag et radiobutton
+
+Tag
+Verification rapide du fonctionnement des tag et du untag
