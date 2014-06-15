@@ -61,7 +61,9 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
                                         3 * c_s)){
                         // On note simplement la demande de fermeture avec un
                         // booleen (pas de callback a appeler)
+								toplevel->rel_btn_close=ei_relief_sunken;
                         toplevel->close = EI_TRUE;
+                			ei_invalidate_rect(&widget->screen_location);
                 }
                 else if(m_y < y + t_h){
                         // Si titre, on bind CE WIDGET et la fonction de deplacement
@@ -139,6 +141,7 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
                                         ei_widget_destroy(pressed);
                                         pressed = NULL;
                                 }
+										  else toplevel->rel_btn_close=ei_relief_raised;
                         }
 
                         if (pressed)
