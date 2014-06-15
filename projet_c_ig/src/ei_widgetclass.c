@@ -151,6 +151,7 @@ void frame_setdefaults(struct ei_widget_t* widget)
                                 &frame->widget.requested_size.height);
         else
                 frame->widget.requested_size = ei_size(100,100);
+
         frame->bg_color = ei_default_background_color;
 }
 
