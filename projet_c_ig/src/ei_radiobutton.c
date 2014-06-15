@@ -91,7 +91,7 @@ void ei_radiobutton_draw(ei_surface_t surface, ei_rect_t location,ei_radiobutton
 ei_linked_rdbtn_txt_t* rdbtn_txt_create(char* tab[],int taille) {
 	//printf("taille : %i\n",taille);
 	ei_linked_rdbtn_txt_t *suivant = NULL;
-	ei_linked_rdbtn_txt_t* ltxt;
+	ei_linked_rdbtn_txt_t* ltxt = NULL;
 	for (int i=taille-1; i>=0; i--) {
 		ltxt = CALLOC_TYPE(ei_linked_rdbtn_txt_t);
 		ltxt->txt = tab[i];
@@ -132,7 +132,7 @@ void rdbtn_txt_maj(char** tab[],ei_radiobutton_t *radiobutton) {
  *  @return The head of the linked list of rectangles
  */
 ei_linked_rdbtn_rec_t* rdbtn_rec_create(ei_radiobutton_t *radiobutton) {
-	ei_linked_rdbtn_rec_t* rdbtn;
+	ei_linked_rdbtn_rec_t* rdbtn = NULL;
 	ei_linked_rdbtn_rec_t* suivant = NULL;
 	for (int i=1; i<=radiobutton->nb_buttons; i++) {
 		rdbtn = CALLOC_TYPE(ei_linked_rdbtn_rec_t);

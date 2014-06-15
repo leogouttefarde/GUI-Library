@@ -6,14 +6,16 @@
 #include "ei_gridder.h"
 
 /* Calcule le point d'ancrage a partir du top_left et du bottom_right*/
-ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc){
+ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc)
+{
+        int x = 0;
+        int y = 0;
+
         int x1 = tl.x;
         int y1 = tl.y;
         int x2 = br.x;
         int y2 = br.y;
 
-        int x;
-        int y;
 
         switch(anc){
         case ei_anc_northwest:
