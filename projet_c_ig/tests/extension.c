@@ -279,11 +279,13 @@ int ei_main(int argc, char** argv)
         ei_place(radiobutton, NULL, &radiobutton_x, &radiobutton_y, NULL, NULL, NULL, NULL, NULL, NULL );
 
 
+        ei_tag_create("red");
+        ei_tag_create("green");
+
         /* Tags */
         ei_tag(button_green, "green");
         ei_tag(button_red, "red");
-        ei_tag_create("red");
-        ei_tag_create("green");
+
 
         ei_bind(ei_ev_mouse_buttondown, NULL, "green", print_green, NULL);
         ei_bind(ei_ev_mouse_buttondown, NULL, "red", print_red, NULL);
