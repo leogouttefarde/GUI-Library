@@ -76,7 +76,8 @@ TARGETS		=	${LIBEI} \
 
 PERSO_TESTS =  ensiskype toplevel test_placer test_relative \
 			   test_button2 test_geom ensiskype test_inter \
-			   gridder ensigrid test_button3 radiobutton
+			   gridder ensigrid test_button3 radiobutton \
+			   extension
 
 all : ${TARGETS}
 
@@ -218,6 +219,12 @@ ensigrid : ${OBJDIR}/ensigrid.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/ensigrid.o : ${TESTS}/ensigrid.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/ensigrid.c -o ${OBJDIR}/ensigrid.o ${MATHFLAGS} 
+
+extension : ${OBJDIR}/extension.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o extension ${OBJDIR}/extension.o ${LIBEI} ${LIBS} ${MATHFLAGS}
+
+${OBJDIR}/extension.o : ${TESTS}/extension.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/extension.c -o ${OBJDIR}/extension.o ${MATHFLAGS} 
 
 ########## Compilation séparée des sources
 

@@ -45,15 +45,19 @@ ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name)
 
 // Utilisé dans les geom_notify
 void invalidate_widget(ei_widget_t *widget){
-
-        if (widget->parent && widget->parent->content_rect) {
-                ei_rect_t *inter = ei_rect_intersection(&widget->screen_location,
-                                                        widget->parent->content_rect);
-                ei_invalidate_rect(inter);
-                SAFE_FREE(inter);
+        // On intersecte la screen_location et tout les ccontent_rect des ancetres
+        ei_widget_t *current = widget->parent;
+        ei_rect_t *clipper = &widget->screen_location;
+        while(current){
+                if(current->content_rect)
+                        clipper = ei_rect_intersection(clipper,
+                                        current->content_rect);
+                else
+                        clipper = ei_rect_intersection(clipper,
+                                        &current->screen_location);
+                current = current->parent;
         }
-        else
-                ei_invalidate_rect(&widget->screen_location);
+        ei_invalidate_rect(clipper);
 }
 
 /* Renvoie la structure décrivant une classe en fonction du nom */
@@ -639,60 +643,61 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
         ei_color_t bg_color={0x88,0x88,0x88,255};
         radiobutton->bg_color = bg_color;
 
-		  ei_color_t btn_color={0,0,0,255};
-		  radiobutton->btn_color=btn_color;
+        ei_color_t btn_color={0,0,0,255};
+        radiobutton->btn_color=btn_color;
 
-		  ei_color_t txt_color={0,0,0,255};
-		  radiobutton->txt_color=txt_color;
+        ei_color_t txt_color={0,0,0,255};
+        radiobutton->txt_color=txt_color;
 
-		  ei_color_t bar_color={255,255,255,255};
-		  radiobutton->bar_color=bar_color;
+        ei_color_t bar_color={255,255,255,255};
+        radiobutton->bar_color=bar_color;
 
-		  ei_size_t btn_size ={25,25};
-		  radiobutton->btn_size=btn_size;
-		  radiobutton->btn_bdw=3;
+        ei_size_t btn_size ={25,25};
+        radiobutton->btn_size=btn_size;
+        radiobutton->btn_bdw=3;
 
-		  int border_width=6;
-		  radiobutton->border_width=border_width;
+        int border_width=6;
+        radiobutton->border_width=border_width;
 
-		  int nb_buttons=7;
-		  radiobutton->nb_buttons=nb_buttons;
-		  char* tab_chaine[radiobutton->nb_buttons];
-		  for (int i=0; i<=radiobutton->nb_buttons-1;i++) {
-			  tab_chaine[i]=NULL;
-		  }
-		  tab_chaine[0]="Breizh libra";
-		  tab_chaine[1]="France Bleu Menhir";
-		  tab_chaine[2]="Carnac blues";
-		  tab_chaine[3]="Chouchen vibes";
-		  char* txt_default="No rfm selected";
-		  radiobutton->txt_default=txt_default;
-		  int nb_radios=4;
-		  radiobutton->nb_radios=nb_radios;
-		  ei_linked_rdbtn_txt_t *ltxt=rdbtn_txt_create(tab_chaine);
-		  radiobutton->ltxt=ltxt;
-		  radiobutton->font=ei_default_font;
-		  radiobutton->lrec=rdbtn_rec_create(radiobutton);
+        int nb_buttons=7;
+        radiobutton->nb_buttons=nb_buttons;
+        char* tab_chaine[radiobutton->nb_buttons];
+        for (int i=0; i<=radiobutton->nb_buttons-1;i++) {
+                tab_chaine[i]=NULL;
+        }
+        tab_chaine[0]="Breizh libra";
+        tab_chaine[1]="France Bleu Menhir";
+        tab_chaine[2]="Carnac blues";
+        tab_chaine[3]="Chouchen vibes";
+        char* txt_default="No rfm selected";
+        radiobutton->txt_default=txt_default;
+        int nb_radios=4;
+        radiobutton->nb_radios=nb_radios;
+        ei_linked_rdbtn_txt_t *ltxt=rdbtn_txt_create(tab_chaine);
+        radiobutton->ltxt=ltxt;
+        radiobutton->font=ei_default_font;
+        radiobutton->lrec=rdbtn_rec_create(radiobutton);
 
-			int nb_btn_pl=5;
-			radiobutton->nb_btn_pl=nb_btn_pl;
+        int nb_btn_pl=5;
+        radiobutton->nb_btn_pl=nb_btn_pl;
 
-			int nb_lignes=(int)ceil((float)radiobutton->nb_buttons/(float)nb_btn_pl);
-			int nb_col=MIN(radiobutton->nb_buttons,nb_btn_pl);
-			ei_size_t s;
-			int h;
-			int w;
-			hw_text_compute_size("motdevingtcinqlettresssss",radiobutton->font,&w,&h);
-			radiobutton->bar_height=h+6;
-			s.width=MAX((2*nb_col-1)*btn_size.width+2*border_width,w);
-			s.height=radiobutton->bar_height+(nb_lignes+2)*radiobutton->border_width+nb_lignes*radiobutton->btn_size.height;
-			//printf("ceil..%i\n",nb_lignes);
-			radiobutton->widget.requested_size=s;
-         //button->user_param = NULL;
+        int nb_lignes=(int)ceil((float)radiobutton->nb_buttons/(float)nb_btn_pl);
+        int nb_col=MIN(radiobutton->nb_buttons,nb_btn_pl);
+        ei_size_t s;
+        int h;
+        int w;
+        hw_text_compute_size("motdevingtcinqlettresssss",radiobutton->font,&w,&h);
+        radiobutton->bar_height=h+6;
+        s.width=MAX((2*nb_col-1)*btn_size.width+2*border_width,w);
+        s.height=radiobutton->bar_height+(nb_lignes+2)*radiobutton->border_width+nb_lignes*radiobutton->btn_size.height;
+        //printf("ceil..%i\n",nb_lignes);
+        radiobutton->widget.requested_size=s;
+        //button->user_param = NULL;
 }
 
 void radiobutton_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
+        invalidate_widget(widget);
         ei_rect_t* content_rect = NULL;
 
         if (    widget->content_rect
@@ -728,6 +733,7 @@ void radiobutton_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                 }
                 widget->content_rect = content_rect;
         }
+        invalidate_widget(widget);
 }
 
 void    ei_radiobutton_register_class()
