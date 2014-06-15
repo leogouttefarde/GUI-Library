@@ -76,7 +76,7 @@ ei_bool_t ei_tag_link(ei_linked_elem_t *link, void *user_param)
 
 void ei_tag(ei_widget_t *widget, ei_tag_t tag_name)
 {
-        ei_tag_params_t params = { widget, tag_name };
+        ei_tag_params_t params = { widget, tag_name, EI_FALSE };
         ei_linkedlist_applyfunc(&tags, ei_tag_link, (void*)&params);
 }
 
@@ -98,7 +98,7 @@ ei_bool_t ei_untag_link(ei_linked_elem_t *link, void *user_param)
 
 void ei_untag(ei_widget_t *widget, ei_tag_t tag_name)
 {
-        ei_tag_params_t params = { widget, tag_name };
+        ei_tag_params_t params = { widget, tag_name, EI_FALSE };
         ei_linkedlist_applyfunc(&tags, ei_untag_link, (void*)&params);
 }
 

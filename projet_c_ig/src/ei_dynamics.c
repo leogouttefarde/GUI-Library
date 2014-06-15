@@ -1,7 +1,9 @@
 #include "ei_common.h"
 #include "ei_widgettypes.h"
 #include "ei_widgetclass_pv.h"
-
+#include "ei_utils.h"
+#include "ei_params.h"
+#include "ei_gridder.h"
 
 /* Calcule le point d'ancrage a partir du top_left et du bottom_right*/
 ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc){

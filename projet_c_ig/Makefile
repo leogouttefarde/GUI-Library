@@ -11,7 +11,7 @@ INCLUDES	= ./include
 INCFLAGS	:= -I${INCLUDES} -I${SRCDIR}
 #OPTFLAGS	:= -O3 -DNDEBUG -Werror
 OPTFLAGS	:= -g
-CCFLAGS		:= -c ${OPTFLAGS} -Wextra -Wall -std=c99
+CCFLAGS		:= -c ${OPTFLAGS} -Werror -Wall -std=c99
 MATHFLAGS 	:= -lm
 
 # The list of objects to include in the library
@@ -21,9 +21,9 @@ LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
    ${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_radiobutton.o \
    ${OBJDIR}/ei_button.o ${OBJDIR}/ei_core.o \
    ${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o \
-   ${OBJDIR}/ei_utilities.o ${OBJDIR}/ei_debug.o \
+   ${OBJDIR}/ei_utilities.o ${OBJDIR}/ei_tag.o \
    ${OBJDIR}/ei_gridder.o ${OBJDIR}/ei_dynamics.o \
-   ${OBJDIR}/ei_root.o ${OBJDIR}/ei_tag.o
+   ${OBJDIR}/ei_root.o
 
 
 # Platform specific definitions (OS X, Linux, Windows)

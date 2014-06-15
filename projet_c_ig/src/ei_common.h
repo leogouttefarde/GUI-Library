@@ -32,6 +32,7 @@
 #define SAFE_RESET(p, size) do { if (p != NULL) { memset(p, 0, size); } } while (0)
 #define ALLOC_TYPE(type) malloc(sizeof(type))
 #define SAFE_ALLOC(var, type) do { if (var == NULL) { var = CALLOC_TYPE(type); } } while (0)
+#define UNUSED(arg) ((void)(arg))
 
 #ifndef M_PI
 #define M_PI (3.141592653589793)

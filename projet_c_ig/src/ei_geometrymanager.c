@@ -8,14 +8,19 @@
  */
 
 #include "ei_geometrymanager_pv.h"
-#include "ei_common.h"
 #include "ei_root.h"
 #include "ei_utils.h"
 #include "ei_linkedlist.h"
 #include "ei_params.h"
-#include <stdio.h>
+#include "ei_core.h"
 
+
+
+/**
+ * \brief       Geometry managers' list
+ */
 static ei_linkedlist_t ei_geometrymanagers = { NULL, NULL };
+
 
 /**
  * \brief       Registers a geometry manager to the program so that it can be called to manager
@@ -27,8 +32,6 @@ void ei_geometrymanager_register(ei_geometrymanager_t* geometrymanager)
 {
         ei_linkedlist_add(&ei_geometrymanagers, geometrymanager);
 }
-
-
 
 /**
  * \brief       Returns a geometry manager structure from its name.
@@ -59,8 +62,6 @@ ei_geometrymanager_t*   ei_geometrymanager_from_name    (ei_geometrymanager_name
         return geometrymanager;
 }
 
-
-
 /**
  * \brief       Tell the geometry manager in charge of a widget to forget it. This removes the
  *              widget from the screen. If the widget is not currently managed, this function
@@ -79,11 +80,13 @@ ei_geometrymanager_t*   ei_geometrymanager_from_name    (ei_geometrymanager_name
  */
 void ei_geometrymanager_unmap(ei_widget_t* widget)
 {
+        widget->geom_params->manager->releasefunc(widget);
+        SAFE_FREE(widget->geom_params);
 
+        ei_invalidate_rect(&widget->screen_location);
+
+        memset(&widget->screen_location, 0, sizeof(widget->screen_location));
 }
-
-
-/***** Placer *****/
 
 /*  Gere le clipping */
 void ei_place_runfunc(struct ei_widget_t*       widget)
@@ -357,21 +360,23 @@ void ei_place(ei_widget_t *widget,
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
         assert(placer);
 
-        ei_bool_t gp_alloc = EI_FALSE;
 
         if (placer && widget) {
                 /* Display widget */
-
+                ei_bool_t gp_alloc = EI_TRUE;
 
                 // On verifie que le widget est bien géré par le placeur,
                 // sinon on le modifie pour qu'il le soit
-                gp_alloc = EI_TRUE;
-                if (widget->geom_params && widget->geom_params->manager) {
-                        if (widget->geom_params->manager != placer) {
-                                widget->geom_params->manager->releasefunc(widget);
+                if (widget->geom_params) {
+                        if (widget->geom_params->manager) {
+                                if (widget->geom_params->manager == placer)
+                                        gp_alloc = EI_FALSE;
                         }
-                        else
-                                gp_alloc = EI_FALSE;
+
+                        if (!gp_alloc) {
+                                widget->geom_params->manager->releasefunc(widget);
+                                ei_geometrymanager_unmap(widget);
+                        }
                 }
 
                 if (gp_alloc) {
@@ -382,17 +387,6 @@ void ei_place(ei_widget_t *widget,
                                 widget->geom_params->manager = placer;
                         }
                 }
-
-                // On verifie qu'on a pas un rel_w, rel_h absurdes
-                // if (!width && rel_width){
-                //         if (*rel_width < 0.)
-                //                 exit(-1);
-                // }
-
-                // if (!height && rel_height){
-                //         if (*rel_height <  0.)
-                //                 exit(-1);
-                // }
 
                 // Sauvegarde des paramètres
                 ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
@@ -405,7 +399,7 @@ void ei_place(ei_widget_t *widget,
                         SAFE_FREE(param->anc);
                 }
 
-                if (x){
+                if (x) {
                         SAFE_ALLOC(param->x, int);
                         *param->x = *x;
                 } else if (rel_x){
@@ -418,7 +412,7 @@ void ei_place(ei_widget_t *widget,
                         *param->x = 0;
                 }
 
-                if (y){
+                if (y) {
                         SAFE_FREE(param->rel_y);
                         SAFE_ALLOC(param->y, int);
                         *param->y = *y;
@@ -432,7 +426,7 @@ void ei_place(ei_widget_t *widget,
                         *param->y = 0;
                 }
 
-                if (width){
+                if (width) {
                         SAFE_FREE(param->rel_w);
                         SAFE_ALLOC(param->w, int);
                         *param->w = *width;
@@ -446,7 +440,7 @@ void ei_place(ei_widget_t *widget,
                         *param->w = widget->requested_size.width;
                 }
 
-                if (height){
+                if (height) {
                         SAFE_FREE(param->rel_h);
                         SAFE_ALLOC(param->h, int);
                         *param->h = *height;

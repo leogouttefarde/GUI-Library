@@ -197,6 +197,8 @@ void ei_draw_widget(ei_widget_t *widget, ei_rect_t *draw_rect)
 
 ei_bool_t ei_draw_rect(ei_linked_elem_t *link, void *user_param)
 {
+        UNUSED(user_param);
+
         ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
         ei_widget_t *root = ei_get_root();
 
