@@ -8,6 +8,7 @@
 #include "ei_geometrymanager.h"
 #include "ei_utils.h"
 #include "ei_radiobutton.h"
+#include "ei_tag.h"
 /*
  * process_key --
  *
