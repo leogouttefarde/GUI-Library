@@ -1,0 +1,38 @@
+// red = 5 est la petite toplevel
+// red = 6 est la frame a l'interieur avec le logo
+// A l'écran, trois frame supperposées non maj...
+
+
+Breakpoint 1, invalidate_widget (widget=0x67b6a0) at src/ei_widgetclass.c:50
+50	        ei_widget_t *current = widget->parent;
+2: *widget->pick_color = {red = 5 '\005', green = 0 '\000', blue = 0 '\000', alpha = 255 '\377'}
+1: widget->screen_location = {top_left = {x = 54, y = 58}, size = {width = 80, height = 105}}
+(gdb) 
+   Continuing.
+
+   Breakpoint 1, invalidate_widget (widget=0x67b6a0) at src/ei_widgetclass.c:50
+   50	        ei_widget_t *current = widget->parent;
+2: *widget->pick_color = {red = 5 '\005', green = 0 '\000', blue = 0 '\000', alpha = 255 '\377'}
+1: widget->screen_location = {top_left = {x = 98, y = 98}, size = {width = 80, height = 105}}
+(gdb) 
+   Continuing.
+
+   Breakpoint 1, invalidate_widget (widget=0x67b7e0) at src/ei_widgetclass.c:50
+   50	        ei_widget_t *current = widget->parent;
+2: *widget->pick_color = {red = 6 '\006', green = 0 '\000', blue = 0 '\000', alpha = 255 '\377'}
+1: widget->screen_location = {top_left = {x = 54, y = 83}, size = {width = 60, height = 60}}
+(gdb) 
+   Continuing.
+
+   Breakpoint 1, invalidate_widget (widget=0x67b7e0) at src/ei_widgetclass.c:50
+   50	        ei_widget_t *current = widget->parent;
+2: *widget->pick_color = {red = 6 '\006', green = 0 '\000', blue = 0 '\000', alpha = 255 '\377'}
+1: widget->screen_location = {top_left = {x = 98, y = 123}, size = {width = 60, height = 60}}
+(gdb) 
+   Continuing.
+
+   Breakpoint 1, invalidate_widget (widget=0x67b6a0) at src/ei_widgetclass.c:50
+   50	        ei_widget_t *current = widget->parent;
+2: *widget->pick_color = {red = 5 '\005', green = 0 '\000', blue = 0 '\000', alpha = 255 '\377'}
+1: widget->screen_location = {top_left = {x = 98, y = 98}, size = {width = 80, height = 105}}
+

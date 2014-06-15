@@ -47,30 +47,25 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
 
 
                 pressed = widget;
-                // Gestion du close
-                if (toplevel->closable && (m_y >= y + c_s && m_y <= y +
+                toplevel->move_pos = event->param.mouse.where;
+
+                // PRIORITE : resize > close > move
+                if (toplevel->resizable && (m_y >= (y + h -1 - r_s)) && (m_x >= (x + w - 1 - r_s))){
+                        // Si resize, on bind ce widget et la fonction de resize
+                        callback = all_callback_move_resize;
+                        if (pressed)
+                                ei_bind(ei_ev_mouse_move, NULL, "all", callback,
+                                                (void*)toplevel);
+                } else if (toplevel->closable && (m_y >= y + c_s && m_y <= y +
                                         3 * c_s && m_x >= x + c_s && m_x <= x +
                                         3 * c_s)){
                         // On note simplement la demande de fermeture avec un
                         // booleen (pas de callback a appeler)
                         toplevel->close = EI_TRUE;
                 }
-                else{
-                        // On sauvegarde le dernier point
-                        toplevel->move_pos = event->param.mouse.where;
-
-                        // On verifie que le toplevel est redimensionnable
-                        if(m_y < y + t_h){
-                                // Si titre, on bind CE WIDGET et la fonction de deplacement
-                                callback = all_callback_move_move;
-                        }
-                        else if (toplevel->resizable && (m_y >= (y + h -1 - r_s)) && (m_x >= (x + w - 1 - r_s))){
-                                // Si resize, on bind ce widget et la fonction de resize
-                                callback = all_callback_move_resize;
-                        }
-                        else{
-                                pressed = NULL;
-                        }
+                else if(m_y < y + t_h){
+                        // Si titre, on bind CE WIDGET et la fonction de deplacement
+                        callback = all_callback_move_move;
                         if (pressed)
                                 ei_bind(ei_ev_mouse_move, NULL, "all", callback,
                                                 (void*)toplevel);
@@ -165,31 +160,31 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t *event, vo
 /* Enfonce le bouton radio cliqué et relève les autres */
 ei_bool_t radiobutton_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
-		//printf("callback radiobutton !\n");
+        //printf("callback radiobutton !\n");
         if (widget && !strcmp(widget->wclass->name, "radiobutton")) {
 
                 ei_radiobutton_t *radiobutton = (ei_radiobutton_t*)widget;
-					 ei_linked_rdbtn_rec_t* lrec=radiobutton->lrec;
-					 int indice=0;
-					 ei_bool_t appui=0;
-					 int m_x = event->param.mouse.where.x;
-					 int m_y = event->param.mouse.where.y;
-					 while (lrec !=NULL&&appui==0) {
-                                                 if (m_x>=lrec->rec.top_left.x&&m_x <= (lrec->rec.top_left.x+lrec->rec.size.width)&&m_y>=lrec->rec.top_left.y&&m_y<=(lrec->rec.top_left.y+lrec->rec.size.height)) {
-                                                         //printf("appui sur un btn détecté\n");
-                                                         appui=1;
-                                                 }
+                ei_linked_rdbtn_rec_t* lrec=radiobutton->lrec;
+                int indice=0;
+                ei_bool_t appui=0;
+                int m_x = event->param.mouse.where.x;
+                int m_y = event->param.mouse.where.y;
+                while (lrec !=NULL&&appui==0) {
+                        if (m_x>=lrec->rec.top_left.x&&m_x <= (lrec->rec.top_left.x+lrec->rec.size.width)&&m_y>=lrec->rec.top_left.y&&m_y<=(lrec->rec.top_left.y+lrec->rec.size.height)) {
+                                //printf("appui sur un btn détecté\n");
+                                appui=1;
+                        }
 
-                                                 lrec=lrec->next;
-                                                 indice++;
-                                         }
-                                         if (appui) {
-                                                 assert(radiobutton->lrec);
-                                                 modify_btn_rel(radiobutton,indice);
-                                         }
-                                         ei_invalidate_rect(&widget->screen_location);
+                        lrec=lrec->next;
+                        indice++;
+                }
+                if (appui) {
+                        assert(radiobutton->lrec);
+                        modify_btn_rel(radiobutton,indice);
+                }
+                ei_invalidate_rect(&widget->screen_location);
 
-                                         pressed = widget;
+                pressed = widget;
         }
         return EI_FALSE;
 }

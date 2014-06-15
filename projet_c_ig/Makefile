@@ -18,13 +18,12 @@ MATHFLAGS 	:= -lm
 
 LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
    ${OBJDIR}/ei_geometrymanager.o ${OBJDIR}/ei_event.o \
-   ${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_shape.o \
+   ${OBJDIR}/ei_widgetclass.o ${OBJDIR}/ei_radiobutton.o \
    ${OBJDIR}/ei_button.o ${OBJDIR}/ei_core.o \
    ${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o \
    ${OBJDIR}/ei_utilities.o ${OBJDIR}/ei_debug.o \
    ${OBJDIR}/ei_gridder.o ${OBJDIR}/ei_dynamics.o \
-   ${OBJDIR}/ei_root.o ${OBJDIR}/ei_tag.o \
-	${OBJDIR}/ei_radiobutton.o
+   ${OBJDIR}/ei_root.o ${OBJDIR}/ei_tag.o
 
 
 # Platform specific definitions (OS X, Linux, Windows)
