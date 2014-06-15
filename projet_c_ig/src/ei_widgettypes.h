@@ -104,6 +104,7 @@ typedef struct ei_linked_rdbtn_rec_t {
 typedef struct ei_radiobutton_t {
 			ei_widget_t widget;
 			int nb_buttons;
+			int nb_btn_pl;
 			ei_color_t bg_color;
 			ei_color_t btn_color;
 			ei_font_t font;
@@ -117,6 +118,7 @@ typedef struct ei_radiobutton_t {
 			ei_linked_rdbtn_txt_t *ltxt;
 			int nb_radios;
 			ei_linked_rdbtn_rec_t *lrec;
+         void *  user_param;
 } ei_radiobutton_t;
 
 

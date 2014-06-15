@@ -672,16 +672,18 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
 		  radiobutton->font=ei_default_font;
 		  radiobutton->lrec=rdbtn_rec_create(radiobutton);
 
-			int nb_lignes=(int)ceil((float)radiobutton->nb_buttons/4.);
-			int nb_btn_pl=4;
+			int nb_btn_pl=5;
+			radiobutton->nb_btn_pl=nb_btn_pl;
+
+			int nb_lignes=(int)ceil((float)radiobutton->nb_buttons/(float)nb_btn_pl);
 			int nb_col=MIN(radiobutton->nb_buttons,nb_btn_pl);
 			ei_size_t s;
-			s.width=(2*nb_col-1)*btn_size.width+2*border_width;
 			int h;
-			hw_text_compute_size(tab_chaine[0],radiobutton->font,NULL,&h);
+			int w;
+			hw_text_compute_size("motdevingtcinqlettresssss",radiobutton->font,&w,&h);
 			radiobutton->bar_height=h+6;
-
-			s.height=radiobutton->bar_height+2*border_width+(2*nb_lignes)*btn_size.height;
+			s.width=MAX((2*nb_col-1)*btn_size.width+2*border_width,w);
+			s.height=radiobutton->bar_height+(nb_lignes+2)*radiobutton->border_width+nb_lignes*radiobutton->btn_size.height;
 			//printf("ceil..%i\n",nb_lignes);
 			radiobutton->widget.requested_size=s;
          //button->user_param = NULL;
