@@ -5,8 +5,6 @@
 #include "ei_widgetclass_pv.h"
 #include "ei_entry.h"
 #include "ei_application.h"
-#include <stdio.h>
-#include <string.h>
 
 
 /*

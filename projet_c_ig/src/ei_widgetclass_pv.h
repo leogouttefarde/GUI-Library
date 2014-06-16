@@ -37,6 +37,6 @@ void ei_radiobutton_register_class();
  *              once before widgets of the class "entry" can be created and configured with
  *              \ref ei_entry_configure.
  */
-void 			ei_entry_register_class ();
+void ei_entry_register_class ();
 
 #endif

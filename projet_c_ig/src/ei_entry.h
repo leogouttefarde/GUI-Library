@@ -20,4 +20,5 @@ ei_widget_t *find_top_entry(ei_widget_t *widget);
 void ei_entry_draw(ei_surface_t surface, ei_rect_t rectangle, ei_entry_t *entry, ei_rect_t* clipper);
 
 void link_entry( ei_widget_t *tab_entry[], int nb_entry);
+
 #endif
