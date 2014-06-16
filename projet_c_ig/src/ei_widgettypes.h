@@ -1,5 +1,5 @@
 /**
- *  @file       ei_widgettypes.c
+ *  @file       ei_widgettypes.h
  *  @brief      Manages the update rectangles
  *
  *  \author

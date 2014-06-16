@@ -1,5 +1,5 @@
 /**
- *  @file       widgetclass_pv.h
+ *  @file       ei_widgetclass_pv.h
  *  @brief      Private widgetclass declarations
  *
  *  \author

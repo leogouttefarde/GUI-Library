@@ -86,7 +86,7 @@ void ei_linkedlist_pop_elem(ei_linkedlist_t *list, ei_elem_t elem, ei_bool_t fre
  * \brief       Removes a linked element from a list.
  *
  * @param       list            The list
- * @param       elem            The linked element to remove
+ * @param       link            The linked element to remove
  * @param       free_elem       Free the contained element ?
  */
 void ei_linkedlist_pop_link(ei_linkedlist_t *list, ei_linked_elem_t *link, ei_bool_t free_elem);
