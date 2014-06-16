@@ -39,11 +39,17 @@ int ei_main(int argc, char** argv)
 	ei_widget_t* entry;
 	ei_widget_t* entry2;
 	ei_widget_t* entry3;
+	ei_widget_t* entry4;
+	ei_widget_t* entry5;
+	ei_widget_t* entry6;
+
 	int		button_x		= 50;
+	int 		button_x2   = 300;
 	int		button_y		= 50;
 	int      button_y2   = 90;
 	int      button_y3   = 130;
 	ei_widget_t* tab[3];
+	ei_widget_t* tab2[3];
 
 	/* Create the application and change the color of the background. */
 	ei_app_create(&screen_size, EI_FALSE);
@@ -53,11 +59,20 @@ int ei_main(int argc, char** argv)
 	entry = ei_widget_create("entry", ei_app_root_widget());
 	entry2 = ei_widget_create("entry", ei_app_root_widget());
 	entry3 = ei_widget_create("entry", ei_app_root_widget());
+	entry4 = ei_widget_create("entry", ei_app_root_widget());
+	entry5 = ei_widget_create("entry", ei_app_root_widget());
+	entry6 = ei_widget_create("entry", ei_app_root_widget());
+
 	tab[0]=entry;tab[1]=entry2;tab[2]=entry3;
 	link_entry(tab,3);
+	tab2[0]=entry4;tab2[1]=entry5;tab2[2]=entry6;
+	link_entry(tab2,3);
 	ei_place(entry, NULL, &button_x, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
 	ei_place(entry2, NULL, &button_x, &button_y2, NULL, NULL, NULL, NULL, NULL, NULL );
 	ei_place(entry3, NULL, &button_x, &button_y3, NULL, NULL, NULL, NULL, NULL, NULL );
+	ei_place(entry4, NULL, &button_x2, &button_y, NULL, NULL, NULL, NULL, NULL, NULL );
+	ei_place(entry5, NULL, &button_x2, &button_y2, NULL, NULL, NULL, NULL, NULL, NULL );
+	ei_place(entry6, NULL, &button_x2, &button_y3, NULL, NULL, NULL, NULL, NULL, NULL );
 
 	/* Hook the keypress callback to the event. */
 	ei_bind(ei_ev_keydown,		NULL, "all", process_key, NULL);

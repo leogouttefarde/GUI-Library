@@ -63,7 +63,16 @@ ei_bool_t all_callback_move_resize(ei_widget_t *widget, struct ei_event_t
 ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param);
 
-
+/**
+ * @brief       callback to handle clicking on a radiobutton. dectects the position
+ *              of the click : on a radioutton and which one or no one    
+ *
+ * @param   widget      clicked radio
+ * @param   event       mouse click
+ * @param   user_param  can be recasted
+ *
+ * @return  the callback bool
+ */
 ei_bool_t radiobutton_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param);
 
 /**
@@ -91,8 +100,26 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t
  */
 ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param);
 
+/**
+ * @brief       Callback to click entries
+ *
+ * @param   widget      Clicked  entry
+ * @param   event       Mouse click
+ * @param   user_param  NULL
+ *
+ * @return  The callback bool
+ */
 ei_bool_t entry_callback_click(ei_widget_t *widget, struct ei_event_t *event,void *user_param);
 
+/**
+ * @brief       Callback to call to add the key which is pressed to the entry
+ *
+ * @param   widget      None
+ * @param   event       Keyboard key pressed
+ * @param   user_param  NULL
+ *
+ * @return  The callback bool
+ */
 ei_bool_t entry_callback_keyboard(ei_widget_t *widget, struct ei_event_t *event,
                 void *user_param);
 
