@@ -45,12 +45,9 @@ ei_widget_t *find_top_entry(ei_widget_t *widget)
         return res;
 }
 
-        
-
 void ei_entry_draw(ei_surface_t surface, ei_rect_t rectangle, ei_entry_t *entry, ei_rect_t* clipper)
 {
         /* Dessin de la bordure */
-
         ei_color_t red = { 0, 0, 255, 200 };
         ei_color_t black = { 0, 0,0, 200 };
 
@@ -125,8 +122,4 @@ void link_entry(ei_widget_t *tab_entry[], int nb_entry)
                 }
         }
 }
-                
-
-
-
 
