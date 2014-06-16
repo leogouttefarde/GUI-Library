@@ -221,12 +221,34 @@ void ei_invalidate_reset()
 }
 
 ei_linked_rect_t* ei_get_update_rects()
-{
+{/*
         ei_linked_rect_t *result = NULL;
         ei_linked_elem_t *head = ei_update_rects.head;
 
         if (head)
                 result = (ei_linked_rect_t*)head->elem;
+
+        return result;
+        Fix : remake linked list
+*/
+        ei_linked_rect_t *result = NULL;
+        ei_linked_elem_t *head = ei_update_rects.head;
+
+        if (head) {
+                result = (ei_linked_rect_t*)head->elem;
+
+                ei_linked_elem_t *link = ei_update_rects.head;
+                ei_linked_rect_t *prev = result;
+
+                while (link) {
+                        ei_linked_rect_t *lrect = (ei_linked_rect_t*)link->elem;
+                        if (lrect)
+                                prev->next = lrect, prev = lrect;
+
+                        link = link->next;
+                }
+                prev->next = NULL;
+        }
 
         return result;
 }
