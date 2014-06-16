@@ -1,4 +1,13 @@
-Note aux correcteurs : il est possible de générer la documentation de nos fonctions avec make doc 
+/*
+ * Equipe 28 :
+ * BUREL Eric - DELAITE Antoine - GOUTTEFARDE Léo
+ *
+ * Projet C IG
+ */
+
+
+Note aux correcteurs : il est possible de générer la documentation de nos fonctions avec make doc
+
 
 Test_inter
 Valide les fonctions d'intersections de rectangle et de verification d'existence d'une intersection
@@ -35,3 +44,8 @@ Ensiskype étendu, un niveau d'imbrication supplémentaire et ajout des extensio
 
 Tag
 Verification rapide du fonctionnement des tag et du untag
+
+Entry
+Test du fonctionnement de l'extension de champs de saisie "Entry"
+
+

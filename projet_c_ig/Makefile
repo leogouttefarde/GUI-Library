@@ -9,8 +9,8 @@ SRCDIR		:= ./src
 TESTS		= ./tests
 INCLUDES	= ./include
 INCFLAGS	:= -I${INCLUDES} -I${SRCDIR}
-#OPTFLAGS	:= -O3 -DNDEBUG -Werror
-OPTFLAGS	:= -g
+OPTFLAGS	:= -O3 -DNDEBUG -Werror
+#OPTFLAGS	:= -g
 CCFLAGS		:= -c ${OPTFLAGS} -Werror -Wall -std=c99
 MATHFLAGS 	:= -lm
 

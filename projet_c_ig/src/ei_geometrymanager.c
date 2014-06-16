@@ -182,15 +182,16 @@ static void ei_place_runfunc(struct ei_widget_t *widget)
                         rh = (int)floor((float)rh * *param->rel_h);
                         h = rh;
                 }
+
                 // Calcul de la position du point d'ancrage
                 // Vérification de la longueur
                 // Assignation des champs du widget
                 // x1, y1 = top_left du widget
                 // x2, y2 = bottom_right
-                int x1;
-                int x2;
-                int y1;
-                int y2;
+                int x1 = 0;
+                int x2 = 0;
+                int y1 = 0;
+                int y2 = 0;
 
                 // Definition de l'ancrage
                 anc = ei_anc_northwest;
