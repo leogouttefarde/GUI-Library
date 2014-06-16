@@ -3,6 +3,10 @@
 #include "ei_radiobutton.h"
 #include "ei_common.h"
 #include "ei_widgetclass_pv.h"
+#include "ei_entry.h"
+#include "ei_application.h"
+#include <stdio.h>
+#include <string.h>
 
 
 /*
@@ -15,7 +19,11 @@ static ei_widget_t *pressed = NULL;
  */
 static ei_callback_t callback = NULL;
 
-
+ei_bool_t all_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
+{
+	reinit_top_entry(ei_app_root_widget());
+	return EI_FALSE;
+}
 /* Gestion du move */
 ei_bool_t all_callback_move_move(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param)
@@ -238,3 +246,51 @@ ei_bool_t radiobutton_callback_click(ei_widget_t *widget, struct ei_event_t *eve
 
         return EI_FALSE;
 }
+
+/*******************entry*********************/
+ei_bool_t entry_callback_click(ei_widget_t *widget, struct ei_event_t *event,
+                void *user_param)
+{
+        UNUSED(user_param);
+
+        if (ei_has_widgetclass(widget, "entry")) {
+
+                ei_entry_t *entry = (ei_entry_t*)widget;
+					 entry->top_entry=EI_TRUE;
+                ei_invalidate_rect(&widget->screen_location);
+        }
+        return EI_FALSE;
+}
+
+ei_bool_t entry_callback_keyboard(ei_widget_t *widget, struct ei_event_t *event,
+                void *user_param)
+{
+        UNUSED(user_param);
+		  widget= find_top_entry(ei_app_root_widget());
+		  if (widget) {
+			 	 ei_entry_t *entry = (ei_entry_t*)widget;
+				 //concaténer entry->txt et l'event reçu
+				 char chaine[50]={0};
+				 char nv_car=(char)event->param.key.key_sym;
+				 printf("nv_car:%c\n",nv_car);
+				 char str[2];
+				 str[0]=nv_car;
+				 str[1]='\0';
+				 if (entry->txt) {
+					 printf("callback :entry txt non null et vaut %s \n",entry->txt);
+					 printf("chaine :%s \n",chaine);
+					 strcat(chaine,entry->txt);
+					 printf("chaine :%s \n",chaine);
+					 strcat(chaine,str);
+					 printf("chaine :%s \n",chaine);
+					 entry->txt=chaine;
+					 printf("entry->txt :%s \n",entry->txt);
+				 } else {
+					 printf("coucou\n");
+					 entry->txt=str;
+				 }
+				 ei_invalidate_rect(&widget->screen_location);
+			}
+	  return EI_FALSE;
+}
+

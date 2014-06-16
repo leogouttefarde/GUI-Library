@@ -32,6 +32,11 @@ ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name);
  */
 void ei_radiobutton_register_class();
 
-
+/**
+ * \brief       Registers the "entry" widget class in the program. This must be called only
+ *              once before widgets of the class "entry" can be created and configured with
+ *              \ref ei_entry_configure.
+ */
+void 			ei_entry_register_class ();
 
 #endif

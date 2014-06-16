@@ -198,14 +198,14 @@ ei_point_t find_anchor(ei_rect_t rectangle, int width, int height, ei_anchor_t p
         int longueur = rectangle.size.width;
         int hauteur = rectangle.size.height;
 
-        ei_point_t top_mid     =       { top_gauche.x + longueur / 2, top_gauche.y };
-        ei_point_t centre      =       { top_gauche.x + longueur / 2, top_gauche.y + hauteur / 2 };
-        ei_point_t top_droite  =       { top_gauche.x + longueur, top_gauche.y + hauteur * 0 };
-        ei_point_t droite_mid  =       { top_gauche.x + longueur, top_gauche.y + hauteur / 2 };
-        ei_point_t bot_droite  =       { top_gauche.x + longueur, top_gauche.y + hauteur };
-        ei_point_t bot_mid     =       { top_gauche.x + longueur / 2, top_gauche.y + hauteur };
-        ei_point_t bot_gauche  =       { top_gauche.x + longueur * 0, top_gauche.y + hauteur };
-        ei_point_t gauche_mid  =       { top_gauche.x + longueur * 0, top_gauche.y + hauteur / 2 };
+        ei_point_t top_mid     =  plus(top_gauche,longueur/2,0);
+        ei_point_t centre      =  plus(top_gauche,longueur/2,hauteur/2);
+        ei_point_t top_droite  =  plus(top_gauche,longueur,0);
+        ei_point_t droite_mid  =  plus(top_gauche,longueur,hauteur/2);
+        ei_point_t bot_droite  =  plus(top_gauche,longueur,hauteur);
+        ei_point_t bot_mid     =  plus(top_gauche,longueur/2,hauteur);
+        ei_point_t bot_gauche  =  plus(top_gauche,0,hauteur);
+        ei_point_t gauche_mid  =  plus(top_gauche,0,hauteur/2);
 
         switch (position) {
         case ei_anc_none:

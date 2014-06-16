@@ -18,6 +18,7 @@
 #include "ei_radiobutton.h"
 #include "ei_core.h"
 #include "ei_tag.h"
+#include "ei_entry.h"
 
 
 /* Widgetclasses' linked list */
@@ -725,4 +726,107 @@ void ei_radiobutton_register_class()
         radiobutton_class->next = NULL;
 
         ei_widgetclass_register(radiobutton_class);
+}
+
+/***** Entry ******/
+void *entry_alloc()
+{
+        ei_entry_t *entry = CALLOC_TYPE(ei_entry_t);
+        assert(entry);
+
+        return entry;
+}
+
+void entry_release(struct ei_widget_t* widget)
+{
+        if (widget) {
+			  int i=0;
+			  i++;
+        }
+}
+
+void entry_draw(struct ei_widget_t* widget, ei_surface_t surface,
+                ei_surface_t pick_surface, ei_rect_t* clipper)
+{
+        ei_entry_t *entry = (ei_entry_t*)widget;
+        assert(entry);
+        assert(clipper);
+        assert(pick_surface);
+        assert(surface);
+
+        if (surface){
+                // lock de la surface
+                hw_surface_lock(surface);
+
+                ei_entry_draw(surface,entry->widget.screen_location,entry, clipper);
+
+                //unlock de la surface
+                hw_surface_unlock(surface);
+        }
+
+        if (pick_surface){
+                /* Dessin de la surface de picking */
+                pick_surface_draw(pick_surface, widget, clipper);
+        }
+}
+
+void entry_setdefaults(struct ei_widget_t* widget)
+{
+        assert(widget);
+        ei_entry_t *entry = (ei_entry_t*)widget;
+		  entry->top_entry = EI_FALSE;
+		  entry->next_entry = entry;
+		  entry->txt = NULL;
+		  entry->font = ei_default_font;
+		  int border_width=3;
+		  entry->border_width=border_width;
+		  int w,h;
+		  hw_text_compute_size("Veuillez ecrire ici",ei_default_font,&w,&h);
+		  ei_size_t s = { w +2*border_width +4, h+2*border_width+4 };
+        entry->widget.requested_size = s;
+}
+
+void entry_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
+{
+        ei_invalidate_rect(&widget->screen_location);
+        ei_rect_t* content_rect = NULL;
+
+        if (    widget->content_rect
+                        && (widget->content_rect != &widget->screen_location))
+                content_rect = widget->content_rect;
+
+        else
+                content_rect = CALLOC_TYPE(ei_rect_t);
+
+        if (content_rect != NULL) {
+                if (rect.size.width !=0 && rect.size.height != 0){
+                        widget->screen_location = rect;
+                        *content_rect = rect;
+                }
+                else{
+                        widget->screen_location = ei_rect_zero();
+                        content_rect = &widget->screen_location;
+                }
+                widget->content_rect = content_rect;
+        }
+        ei_invalidate_rect(&widget->screen_location);
+}
+
+void    ei_entry_register_class()
+{
+        ei_widgetclass_t *entry_class = NULL;
+
+        // Allocation
+        entry_class = CALLOC_TYPE(ei_widgetclass_t);
+        assert(entry_class);
+
+        entry_class->allocfunc= entry_alloc;
+        entry_class->drawfunc = entry_draw;
+        entry_class->releasefunc = entry_release;
+        entry_class->setdefaultsfunc = entry_setdefaults;
+        entry_class->geomnotifyfunc = entry_geomnotify;
+        strcpy(entry_class->name, "entry");
+        entry_class->next = NULL;
+
+        ei_widgetclass_register(entry_class);
 }

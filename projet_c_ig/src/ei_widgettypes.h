@@ -88,5 +88,4 @@ typedef struct ei_toplevel_t {
         ei_bool_t   close;
 } ei_toplevel_t;
 
-
 #endif
