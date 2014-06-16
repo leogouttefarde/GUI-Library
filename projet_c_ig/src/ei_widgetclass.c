@@ -496,7 +496,7 @@ static void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
         // Le bouton de resize doit rester visible et les toplevel ne pas
         // devenir infiniment petite
         screen_location.size.width = MAX(toplevel->resize_size, screen_location.size.width);
-        screen_location.size.height = MAX(toplevel->resize_size, screen_location.size.height);
+        screen_location.size.height = MAX(toplevel->resize_size + toplevel->bar_height, screen_location.size.height);
 
 
         ei_rect_t* content_rect = widget->content_rect;
@@ -519,9 +519,6 @@ static void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                 content_rect->size.height = widget->screen_location.size.height
                                             - toplevel->bar_height - (2 * bw) - 1;
                 content_rect->size.width = widget->screen_location.size.width - (2 * bw) -1;
-
-                if (content_rect->size.height < toplevel->bar_height + 1)
-                        content_rect->size.height = toplevel->bar_height + 1;
         } else {
                 if (content_rect != &widget->screen_location)
                         SAFE_FREE(content_rect);
