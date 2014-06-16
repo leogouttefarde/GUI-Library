@@ -19,11 +19,13 @@ static ei_widget_t *pressed = NULL;
  */
 static ei_callback_t callback = NULL;
 
+
 ei_bool_t all_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
-	reinit_top_entry(ei_app_root_widget());
-	return EI_FALSE;
+        reinit_top_entry(ei_app_root_widget());
+        return EI_FALSE;
 }
+
 /* Gestion du move */
 ei_bool_t all_callback_move_move(ei_widget_t *widget, struct ei_event_t
                 *event, void *user_param)
@@ -64,7 +66,7 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
                 int t_h = toplevel->bar_height;
 
                 // Le bouton close est a top_left + 1/4 * bar_height
-                int c_s =   (int)floor((float)t_h * 1. / 4.);
+                int c_s = (int)floor((float)t_h * 1. / 4.);
                 int r_s = toplevel->resize_size;
                 int y = widget->screen_location.top_left.y;
                 int x = widget->screen_location.top_left.x;
@@ -83,8 +85,7 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
                         // Si resize, on bind ce widget et la fonction de resize
                         callback = all_callback_move_resize;
                         if (pressed)
-                                ei_bind(ei_ev_mouse_move, NULL, "all", callback,
-                                                (void*)toplevel);
+                                ei_bind(ei_ev_mouse_move, NULL, "all", callback, (void*)toplevel);
 
                 } else if (toplevel->closable
                                 && m_y >= y + c_s
@@ -112,8 +113,6 @@ ei_bool_t toplevel_callback_click(ei_widget_t *widget, struct ei_event_t *event,
 
         return EI_FALSE;
 }
-
-
 
 /* Enfonce les boutons */
 ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event,
@@ -247,58 +246,91 @@ ei_bool_t radiobutton_callback_click(ei_widget_t *widget, struct ei_event_t *eve
         return EI_FALSE;
 }
 
-/*******************entry*********************/
-ei_bool_t entry_callback_click(ei_widget_t *widget, struct ei_event_t *event,
-                void *user_param)
+
+/*
+ *
+ * Entry
+ *
+ */
+
+ei_bool_t entry_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
         UNUSED(user_param);
 
         if (ei_has_widgetclass(widget, "entry")) {
 
                 ei_entry_t *entry = (ei_entry_t*)widget;
-					 entry->top_entry=EI_TRUE;
+                entry->top_entry = EI_TRUE;
                 ei_invalidate_rect(&widget->screen_location);
         }
+
         return EI_FALSE;
 }
 
-ei_bool_t entry_callback_keyboard(ei_widget_t *widget, struct ei_event_t *event,
-                void *user_param)
+ei_bool_t entry_callback_keyboard(ei_widget_t *widget, struct ei_event_t *event, void *user_param)
 {
         UNUSED(user_param);
-		  widget= find_top_entry(ei_app_root_widget());
-		  if (widget) {
-				ei_entry_t *entry = (ei_entry_t*)widget;
-			  if (event->param.key.key_sym == SDLK_TAB) {
-				  entry->top_entry=EI_FALSE;
-				  entry->next_entry->top_entry=EI_TRUE;
-					ei_widget_t *widget2 = (ei_widget_t*)(entry->next_entry);
-				 ei_invalidate_rect(&widget2->screen_location);
-				} else {
+        widget = find_top_entry(ei_app_root_widget());
 
-				 //concaténer entry->txt et l'event reçu
-				 char chaine[50]={0};
-				 char nv_car=(char)event->param.key.key_sym;
-				 printf("nv_car:%c\n",nv_car);
-				 char str[2];
-				 str[0]=nv_car;
-				 str[1]='\0';
-				 if (entry->txt) {
-					 printf("callback :entry txt non null et vaut %s \n",entry->txt);
-					 printf("chaine :%s \n",chaine);
-					 strcat(chaine,entry->txt);
-					 printf("chaine :%s \n",chaine);
-					 strcat(chaine,str);
-					 printf("chaine :%s \n",chaine);
-					 entry->txt=chaine;
-					 printf("entry->txt :%s \n",entry->txt);
-				 } else {
-					 printf("coucou\n");
-					 entry->txt=str;
-				 }
-				}
-				 ei_invalidate_rect(&widget->screen_location);
-		  }
-	  return EI_FALSE;
+        if (widget && event) {
+
+                ei_entry_t *entry = (ei_entry_t*)widget;
+                char new_char = (char)event->param.key.key_sym;
+
+                if (new_char == SDLK_TAB) {
+
+                        entry->top_entry = EI_FALSE;
+                        entry->next_entry->top_entry = EI_TRUE;
+                        ei_widget_t *widget2 = (ei_widget_t*)entry->next_entry;
+                        ei_invalidate_rect(&widget2->screen_location);
+
+                } else {
+                        char *text = entry->txt;
+                        uint32_t size = 1;
+
+                        if (text) {
+                                size += strlen(text);
+                        }
+
+                        if (new_char == SDLK_BACKSPACE) {
+                                if (size > 1)
+                                        --size;
+                        }
+
+                        else {
+                                if ((new_char >= SDLK_a
+                                    && new_char <= SDLK_z)
+                                    || new_char == SDLK_SPACE) {
+
+                                        if (new_char >= SDLK_a
+                                            && new_char <= SDLK_z
+                                            && ei_has_modifier(event->param.key.modifier_mask, ei_mod_shift_left))
+                                                new_char -= 'a' - 'A';
+
+                                        ++size;
+                                        text = realloc(text, size);
+
+                                        #ifdef LEAK_TRACKER
+                                                if (entry->txt != text)
+                                                        ++ALLOCATION_COUNTER;
+                                        #endif
+
+                                        text[size-2] = new_char;
+                                }
+                        }
+
+                        if (size > 1)
+                                text[size-1] = '\0';
+
+                        else if (text)
+                                SAFE_FREE(text);
+
+                        entry->txt = text;
+                }
+
+                ei_invalidate_rect(&widget->screen_location);
+        }
+
+        return EI_FALSE;
 }
 

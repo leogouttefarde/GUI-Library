@@ -26,7 +26,8 @@ extern int ALLOCATION_COUNTER;
 #else
 
 #define SAFE_FREE(p) do { if (p != NULL) { free(p), p = NULL; } } while (0)
-#define CALLOC_TYPE(type) calloc(1, sizeof(type))
+#define CALLOC(num, size) calloc(num, size)
+#define CALLOC_TYPE(type) CALLOC(1, sizeof(type))
 #define MALLOC(size) malloc(size)
 
 #endif

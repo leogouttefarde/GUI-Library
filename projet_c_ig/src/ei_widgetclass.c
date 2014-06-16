@@ -740,8 +740,9 @@ void *entry_alloc()
 void entry_release(struct ei_widget_t* widget)
 {
         if (widget) {
-			  int i=0;
-			  i++;
+                ei_entry_t *entry = (ei_entry_t*)widget;
+
+                SAFE_FREE(entry->txt);
         }
 }
 
@@ -773,46 +774,52 @@ void entry_draw(struct ei_widget_t* widget, ei_surface_t surface,
 void entry_setdefaults(struct ei_widget_t* widget)
 {
         assert(widget);
+
         ei_entry_t *entry = (ei_entry_t*)widget;
-		  entry->top_entry = EI_FALSE;
-		  entry->next_entry = entry;
-		  entry->txt = NULL;
-		  entry->font = ei_default_font;
-		  int border_width=3;
-		  entry->border_width=border_width;
-		  int w,h;
-		  hw_text_compute_size("Veuillez ecrire ici",ei_default_font,&w,&h);
-		  ei_size_t s = { w +2*border_width +4, h+2*border_width+4 };
+
+        entry->top_entry = EI_FALSE;
+        entry->next_entry = entry;
+        entry->txt = NULL;
+        entry->font = ei_default_font;
+
+        int border_width = 3;
+        entry->border_width = border_width;
+
+        int w, h;
+        hw_text_compute_size("Veuillez ecrire ici      ", ei_default_font, &w, &h);
+
+        ei_size_t s = { w + 2 * border_width + 4, h + 2 * border_width + 4 };
+
         entry->widget.requested_size = s;
 }
 
 void entry_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
         ei_invalidate_rect(&widget->screen_location);
-        ei_rect_t* content_rect = NULL;
+        ei_rect_t *content_rect = widget->content_rect;
 
-        if (    widget->content_rect
-                        && (widget->content_rect != &widget->screen_location))
-                content_rect = widget->content_rect;
+        if (rect.size.width !=0 && rect.size.height != 0) {
 
-        else
-                content_rect = CALLOC_TYPE(ei_rect_t);
+                if ((content_rect == &widget->screen_location)
+                    || (content_rect == NULL))
+                        content_rect = CALLOC_TYPE(ei_rect_t);
 
-        if (content_rect != NULL) {
-                if (rect.size.width !=0 && rect.size.height != 0){
-                        widget->screen_location = rect;
-                        *content_rect = rect;
-                }
-                else{
-                        widget->screen_location = ei_rect_zero();
-                        content_rect = &widget->screen_location;
-                }
-                widget->content_rect = content_rect;
+
+                widget->screen_location = rect;
+                *content_rect = rect;
         }
-        ei_invalidate_rect(&widget->screen_location);
+        else{
+                if (content_rect != &widget->screen_location)
+                        SAFE_FREE(content_rect);
+
+                widget->screen_location = ei_rect_zero();
+                content_rect = &widget->screen_location;
+        }
+
+        widget->content_rect = content_rect;
 }
 
-void    ei_entry_register_class()
+void ei_entry_register_class()
 {
         ei_widgetclass_t *entry_class = NULL;
 
