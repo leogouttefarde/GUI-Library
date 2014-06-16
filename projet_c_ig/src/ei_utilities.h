@@ -21,31 +21,9 @@ typedef enum {
         basse = -1
 } part_rect_t;
 
-/**
- *  @brief      Converts a part of a circle, given by cenre, radius,
- *              and two angles in a list of linked points.
- *              Usage : The second angle given must be greater than the first.
- *
- *  @param      center       The center of the circle.
- *  @param      radius       The radius of the circle.
- *  @param      head_angle   The angle of the point which will be head of the list/
- *  @param      tail_angle   The angle of the point which will end the list, will be linked to suivant.
- *  @param      next         The element after the end of the list, in case you need to chain this segment with others points, else put NULL.
- *
- *  @return             The head of the list
- */
 ei_linked_point_t* ei_button_arc(ei_point_t center, int radius, int head_angle,
                                  int tail_angle, ei_linked_point_t *next);
 
-/**
- *@brief Algorithm inspired by bresenham but much lighter. It creates a list of points which are between two points. Works well with vertical, horizontal or diagonal segment.
- *
- *@param queue The point which will end the list, will be linked to suivant
- *@param tete The point which will be head of the list
- *@param suivant The element after the end of the list, in case you need to chain this segment with others points, else put NULL
- *
- * @return a linked list of points which represents a segment
- */
 ei_linked_point_t* trait(ei_point_t queue, ei_point_t tete, ei_linked_point_t *suivant);
 
 /**

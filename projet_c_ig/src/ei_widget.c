@@ -24,7 +24,7 @@
 static ei_color_t ei_next_picking_color = { 0x00, 0x00, 0x00, 0xFF };
 
 /* Incrémente la couleur de picking actuelle */
-void ei_color_increase(ei_color_t *color)
+static void ei_color_increase(ei_color_t *color)
 {
         if (color != NULL) {
 
@@ -179,7 +179,7 @@ void ei_widget_destroy(ei_widget_t* widget)
 }
 
 /* Selectionne un widget en connaissant son pick_id */
-ei_widget_t* ei_widget_find_by_pick_id(uint32_t pick_id, ei_widget_t *widget)
+static ei_widget_t* ei_widget_find_by_pick_id(uint32_t pick_id, ei_widget_t *widget)
 {
         ei_widget_t* result;
 
@@ -204,7 +204,7 @@ ei_widget_t* ei_widget_find_by_pick_id(uint32_t pick_id, ei_widget_t *widget)
 
 /* Calcule la couleur correspondant au point du clic et cherche le widget
  * correspondant*/
-ei_widget_t* ei_widget_pick (ei_point_t* where)
+ei_widget_t* ei_widget_pick(ei_point_t* where)
 {
         ei_widget_t *selection = NULL;
         ei_size_t size;
@@ -430,24 +430,6 @@ void    ei_toplevel_configure   (ei_widget_t*   widget,
                         SAFE_FREE(toplevel->min_size);
                 }
         }
-}
-
-/* Renvoie true si child est un fils de widget */
-ei_bool_t ei_is_widget_child(ei_widget_t *widget, ei_widget_t *child)
-{
-        if (widget) {
-                ei_widget_t *cur = widget->children_head;
-                while (cur) {
-                        if (cur == child)
-                                return EI_TRUE;
-                        if (cur->next_sibling)
-                                cur = cur->next_sibling;
-                        else
-                                cur = cur->children_head;
-                }
-        }
-
-        return EI_FALSE;
 }
 
 

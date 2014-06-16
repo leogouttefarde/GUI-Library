@@ -14,6 +14,48 @@
 
 
 /**
+ * @brief       Radiobutton linked string.
+ */
+typedef struct ei_linked_rdbtn_txt_t {
+        char* txt;
+        struct ei_linked_rdbtn_txt_t *next;
+} ei_linked_rdbtn_txt_t;
+
+/**
+ * @brief       Radiobutton linked rectangle.
+ */
+typedef struct ei_linked_rdbtn_rec_t {
+        ei_rect_t rec;
+        ei_relief_t rel;
+        struct ei_linked_rdbtn_rec_t *next;
+        struct ei_linked_rdbtn_rec_t *prev;
+} ei_linked_rdbtn_rec_t;
+
+/**
+ * @brief       A radiobutton.
+ */
+typedef struct ei_radiobutton_t {
+        ei_widget_t widget;
+        int nb_buttons;
+        int nb_btn_pl;
+        ei_color_t bg_color;
+        ei_color_t btn_color;
+        ei_font_t font;
+        ei_color_t txt_color;
+        char* txt_default;
+        int bar_height;
+        ei_color_t bar_color;
+        ei_size_t btn_size;
+        int border_width;
+        int btn_bdw;
+        ei_linked_rdbtn_txt_t *ltxt;
+        int nb_radios;
+        ei_linked_rdbtn_rec_t *lrec;
+        void *  user_param;
+} ei_radiobutton_t;
+
+
+/**
  *  @brief free a linked list of the buttons of the radiobutton
  *
  *  @param The list to be freed
@@ -102,4 +144,6 @@ void ei_radiobutton_configure (ei_widget_t *widget,
                 int *nb_radios,
                 char **tab[],
                 ei_font_t *font);
+
+
 #endif

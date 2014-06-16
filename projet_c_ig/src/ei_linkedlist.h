@@ -5,6 +5,7 @@
  *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 07.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
+ *
  */
 
 #ifndef EI_LINKEDLIST_H
