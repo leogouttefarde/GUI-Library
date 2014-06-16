@@ -4,6 +4,7 @@
 #include "ei_utils.h"
 #include "ei_core.h"
 #include "ei_button.h"
+#include <assert.h>
 
 void reinit_top_entry(ei_widget_t *widget) {
 	if (widget) {
@@ -69,4 +70,23 @@ void ei_entry_draw(ei_surface_t surface, ei_rect_t rectangle, ei_entry_t *entry,
 		}
 	}	
 }
+
+void link_entry( ei_widget_t *tab_entry[], int nb_entry) {
+	ei_entry_t *entry;
+	ei_entry_t *entry_next;
+	for (int i=0; i<=nb_entry-1; i++) {
+		assert(ei_has_widgetclass(tab_entry[i], "entry"));
+		entry = (ei_entry_t*)tab_entry[i]; 
+		if (i != nb_entry-1) {
+			entry_next = (ei_entry_t*)tab_entry[i+1]; 
+			assert(ei_has_widgetclass(tab_entry[i+1], "entry"));
+			entry->next_entry = entry_next;
+		}
+		else entry->next_entry = (ei_entry_t*)tab_entry[0];
+	}
+}
+		
+
+
+
 

@@ -268,7 +268,14 @@ ei_bool_t entry_callback_keyboard(ei_widget_t *widget, struct ei_event_t *event,
         UNUSED(user_param);
 		  widget= find_top_entry(ei_app_root_widget());
 		  if (widget) {
-			 	 ei_entry_t *entry = (ei_entry_t*)widget;
+				ei_entry_t *entry = (ei_entry_t*)widget;
+			  if (event->param.key.key_sym == SDLK_TAB) {
+				  entry->top_entry=EI_FALSE;
+				  entry->next_entry->top_entry=EI_TRUE;
+					ei_widget_t *widget2 = (ei_widget_t*)(entry->next_entry);
+				 ei_invalidate_rect(&widget2->screen_location);
+				} else {
+
 				 //concaténer entry->txt et l'event reçu
 				 char chaine[50]={0};
 				 char nv_car=(char)event->param.key.key_sym;
@@ -289,8 +296,9 @@ ei_bool_t entry_callback_keyboard(ei_widget_t *widget, struct ei_event_t *event,
 					 printf("coucou\n");
 					 entry->txt=str;
 				 }
+				}
 				 ei_invalidate_rect(&widget->screen_location);
-			}
+		  }
 	  return EI_FALSE;
 }
 
