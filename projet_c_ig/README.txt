@@ -1,9 +1,14 @@
 /*
- * Equipe 28 :
+ * Equipe 29 :
  * BUREL Eric - DELAITE Antoine - GOUTTEFARDE Léo
  *
  * Projet C IG
  */
+
+
+Pas de leaks :
+Système de détection des leaks intégré utilisé pendant le développement,
+voir le fichier ei_memory.h
 
 
 Note aux correcteurs : il est possible de générer la documentation de nos fonctions avec make doc

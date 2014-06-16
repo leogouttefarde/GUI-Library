@@ -77,7 +77,7 @@ TARGETS		=	${LIBEI} \
 PERSO_TESTS	=	ensiskype toplevel test_placer test_relative \
 			test_button2 test_geom ensiskype test_inter \
 			ensigrid test_button3 radiobutton \
-			extension tag entry
+			extension tag entry gridder
 
 all : ${TARGETS} ${PERSO_TESTS}
 
@@ -225,6 +225,12 @@ extension : ${OBJDIR}/extension.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/extension.o : ${TESTS}/extension.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/extension.c -o ${OBJDIR}/extension.o
+
+gridder : ${OBJDIR}/gridder.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o gridder ${OBJDIR}/gridder.o ${LIBEI} ${LIBS}
+
+${OBJDIR}/gridder.o : ${TESTS}/gridder.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/gridder.c -o ${OBJDIR}/gridder.o
 
 ########## Compilation séparée des sources
 
