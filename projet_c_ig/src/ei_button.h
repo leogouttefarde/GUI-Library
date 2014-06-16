@@ -23,14 +23,14 @@ void ei_button_draw(ei_surface_t window, ei_rect_t rectangle, ei_button_t *butto
 void ei_toplevel_draw(ei_surface_t surface, ei_toplevel_t *toplevel, ei_rect_t *clipper);
 
 /**
- *\brief Trace un bouton en relief (enfoncé ou relevé) ou plat
- *@param window surface sur laquelle on dessine le bouton
- *@param rectangle le rectangle que l'on transforme en bouton
- *@param couleur la couleur du bouton central
- *@param relief si raised =>relevé,none=>plat,sinon enfoncé
- *@param le rayon des angles
- *@param la marge
- *@param le clipper qui restreint le bouton
+ * \brief       Trace un bouton en relief (enfoncé ou relevé) ou plat
+ * @param       window          Window surface sur laquelle on dessine le bouton
+ * @param       rectangle       Rectangle le rectangle que l'on transforme en bouton
+ * @param       couleur         Couleur la couleur du bouton central
+ * @param       relief          Relief si raised =>relevé,none=>plat,sinon enfoncé
+ * @param       rayon           Le rayon des angles
+ * @param       marge           La marge
+ * @param       clipper         Le clipper qui restreint le bouton
  */
 void ei_button_draw_loc(ei_surface_t window,
                 ei_rect_t rectangle,

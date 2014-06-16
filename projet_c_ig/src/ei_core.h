@@ -37,7 +37,7 @@ ei_linked_rect_t* ei_get_update_rects();
  * \brief       Adds a rectangle to the list of rectangles that must be updated on screen. The real
  *              update on the screen will be done at the right moment in the main loop.
  *
- * @param       rect            The rectangle to add, expressed in the root window coordinates.
+ * @param       invalid_rect    The rectangle to add, expressed in the root window coordinates.
  *                              A copy is made, so it is safe to release the rectangle on return.
  */
 void ei_invalidate_rect(ei_rect_t* invalid_rect);

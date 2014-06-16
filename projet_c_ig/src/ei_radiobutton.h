@@ -105,12 +105,12 @@ ei_linked_rdbtn_rec_t* rdbtn_rec_create(ei_radiobutton_t *radiobutton);
 ei_linked_rdbtn_rec_t* place_rdbtn_rec(ei_radiobutton_t *radiobutton);
 
 /**
- *  @brief Display the content of a linked list of rect
+ *  @brief      Display the content of a linked list of rect
  *
- *  @param lrec The list to be displayed
+ *  @param      lrec    The list to be displayed
  *
  */
-void aff_liste(ei_linked_rdbtn_rec_t *rec);
+void aff_liste(ei_linked_rdbtn_rec_t *lrec);
 
 /**
  * @brief Called in radiobuttion callback, it changes the id buttons relief to sunk and put the others to raised
