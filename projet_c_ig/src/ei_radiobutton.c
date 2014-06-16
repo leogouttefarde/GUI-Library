@@ -4,6 +4,7 @@
 #include "ei_core.h"
 #include "ei_utilities.h"
 #include "ei_widgetclass_pv.h"
+#include "ei_button.h"
 
 void free_rdbtn_ltxt(ei_linked_rdbtn_txt_t *ltxt)
 {
@@ -80,6 +81,13 @@ ei_linked_rdbtn_txt_t* rdbtn_txt_create(char* tab[],int taille)
         return ltxt;    
 }
 
+/**
+ *  @brief Updates the linked list of text of a radiobutton
+ *
+ *  @param tab The tab which contains the new names of radio
+ *  @param radiobutton The principal widget
+ *
+ */
 static void rdbtn_txt_maj(char** tab[],ei_radiobutton_t *radiobutton)
 {
         ei_linked_rdbtn_txt_t* ltxt = radiobutton->ltxt;

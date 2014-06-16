@@ -15,9 +15,23 @@
 #include "ei_widget.h"
 
 
-
+/*
+ * \brief       Frees all widgetclasses.
+ */
 void ei_widgetclass_free();
+
+/*
+ * \brief       Indicates if a widget belongs to a specified widgetclass.
+ */
 ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name);
-void ei_radiobutton_register_class ();
+
+/**
+ * \brief       Registers the "radiobutton" widget class in the program. This must be called only
+ *              once before widgets of the class "radiobutton" can be created and configured with
+ *              \ref ei_button_configure.
+ */
+void ei_radiobutton_register_class();
+
+
 
 #endif

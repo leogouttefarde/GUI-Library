@@ -1,3 +1,4 @@
+
 #include "ei_common.h"
 #include "ei_widgettypes.h"
 #include "ei_widgetclass_pv.h"
@@ -5,8 +6,9 @@
 #include "ei_params.h"
 #include "ei_gridder.h"
 
+
 /* Calcule le point d'ancrage a partir du top_left et du bottom_right*/
-ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc)
+static ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc)
 {
         int x = 0;
         int y = 0;
@@ -72,7 +74,7 @@ ei_point_t top_left_to_anchor(ei_point_t tl, ei_point_t br, ei_anchor_t anc)
 }
 
 /* Fonction de resize pour le placer*/
-void resize_placer(ei_widget_t *widget, ei_point_t where)
+static void resize_placer(ei_widget_t *widget, ei_point_t where)
 {
         ei_geometrymanager_t *placer = ei_geometrymanager_from_name("placer");
 
@@ -220,9 +222,8 @@ void resize_placer(ei_widget_t *widget, ei_point_t where)
 }
 
 /* Fonction de resize pour le gridder*/
-void resize_gridder(ei_widget_t *widget, ei_point_t where){
-
-
+static void resize_gridder(ei_widget_t *widget, ei_point_t where)
+{
         ei_gridder_param_t *param = (ei_gridder_param_t*)widget->geom_params;
 
         /* Position du curseur relativement au widget */
@@ -266,13 +267,12 @@ void resize_gridder(ei_widget_t *widget, ei_point_t where){
         SAFE_FREE(force_h);
 }
 
-
-
-/* Fonction de redimensionnement
- * Conserve les proportions des fils 
+/*
+ * \brief       Fonction de redimensionnement
+ *              Conserve les proportions des fils.
+ *              Pendant le redimensionnement, on ancre
+ *              le coin northwest pour plus de confort.
  *
- * Pendant le redimensionnement, on ancre
- * le coin northwest pour plus de confort
  * */
 void resize(ei_widget_t *widget, ei_point_t where)
 {
@@ -291,7 +291,7 @@ void resize(ei_widget_t *widget, ei_point_t where)
 }
 
 /* Fonction de déplacement du placer */
-void move_placer(ei_widget_t *widget, ei_point_t where)
+static void move_placer(ei_widget_t *widget, ei_point_t where)
 {
         ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
 
@@ -383,7 +383,7 @@ void move_placer(ei_widget_t *widget, ei_point_t where)
 }
 
 /* Deplacement pour le gridder */
-void move_gridder(ei_widget_t *widget, ei_point_t where){
+static void move_gridder(ei_widget_t *widget, ei_point_t where){
 
         ei_gridder_param_t *param =
                 (ei_gridder_param_t*)widget->geom_params;

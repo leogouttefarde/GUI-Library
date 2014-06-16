@@ -40,7 +40,7 @@ void ei_geometrymanager_register(ei_geometrymanager_t* geometrymanager)
  *
  * @return                      The structure describing the geometry manager.
  */
-ei_geometrymanager_t*   ei_geometrymanager_from_name    (ei_geometrymanager_name_t name)
+ei_geometrymanager_t* ei_geometrymanager_from_name(ei_geometrymanager_name_t name)
 {
         ei_geometrymanager_t *current = NULL;
         ei_geometrymanager_t *geometrymanager = NULL;
@@ -78,7 +78,7 @@ ei_geometrymanager_t*   ei_geometrymanager_from_name    (ei_geometrymanager_name
  *
  * @param       widget          The widget to unmap from the screen.
  */
-void ei_geometrymanager_unmap(ei_widget_t* widget)
+void ei_geometrymanager_unmap(ei_widget_t *widget)
 {
         if (widget) {
                 if (widget->geom_params
@@ -95,9 +95,8 @@ void ei_geometrymanager_unmap(ei_widget_t* widget)
 }
 
 /*  Gere le clipping */
-void ei_place_runfunc(struct ei_widget_t*       widget)
+static void ei_place_runfunc(struct ei_widget_t *widget)
 {
-
         /* On calcule la nouvelle screen_location */
 
         // Placement
@@ -114,11 +113,11 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         ei_rect_t screen_location;
 
         // Récupération des paramètres pour l'ancrage
-        ei_placer_param_t *param =
-                (ei_placer_param_t*)widget->geom_params;
+        ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
 
         // Definition du rectangle contenant le widget
-        if (widget->parent){
+        if (widget->parent) {
+
                 // Theoriquement le second cas n'arrive jamais
                 if (widget->parent->content_rect) 
                         parent_rect = *(widget->parent->content_rect);
@@ -139,15 +138,20 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 // Assignation x_anx, y_anc
                 if (param->x)
                         x_anc = *param->x + xmin;
-                else if(param->rel_x)
+
+                else if (param->rel_x)
                         x_anc = xmin + (int)floor(*param->rel_x * ((float)xmax - (float)xmin));
+
                 else
                         x_anc = 0;
-                if(param->y)
+
+
+                if (param->y)
                         y_anc = *param->y + ymin;
+
                 else if (param->rel_y)
-                        y_anc = ymin + (int)floor(*param->rel_y
-                                        * ((float)ymax - (float)ymin));
+                        y_anc = ymin + (int)floor(*param->rel_y * ((float)ymax - (float)ymin));
+
                 else
                         y_anc = 0;
 
@@ -157,22 +161,23 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                 // Priorité : taille fournie en argument > requested >
                 // defaut
                 screen_location.size = widget->requested_size;
+
                 int w;
                 int h;
-                w= widget->requested_size.width;
+                w = widget->requested_size.width;
                 h = widget->requested_size.height;
 
-                if (param->w){
+                if (param->w) {
                         w = *param->w;
-                } else if(param->rel_w){
+                } else if (param->rel_w) {
                         int rw = parent_rect.size.width;
                         rw = (int)floor((float)rw * *param->rel_w);
                         w = rw;
                 }
 
-                if(param->h){
+                if (param->h) {
                         h = *param->h;
-                } else if(param->rel_h ){
+                } else if (param->rel_h ) {
                         int rh = parent_rect.size.height;
                         rh = (int)floor((float)rh * *param->rel_h);
                         h = rh;
@@ -204,30 +209,35 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                         y1 = y_anc - (h / 2) + 1;
                         y2 = y_anc + (h / 2);
                         break;                  ///< Anchor in the center.
+
                 case ei_anc_north :
                         x1 = x_anc - (w / 2) - 1;
                         x2 = x_anc + (w / 2);
                         y1 = y_anc;
                         y2 = y_anc + h -1 ;
                         break;  ///< Anchor on the top side, centered horizontally.
+
                 case ei_anc_northeast :
                         x1 = x_anc - w + 1;
                         x2 = x_anc;
                         y1 = y_anc;
                         y2 = y_anc + h - 1;
                         break;  ///< Anchor on the top-right corner.
+
                 case ei_anc_east :
                         x1 = x_anc - w +1;
                         x2 = x_anc;
                         y1 = y_anc - (h / 2) +1;
                         y2 = y_anc + (h / 2);
                         break;          ///< Anchor on the right side, centered vertically.
+
                 case ei_anc_southeast:
                         x1 = x_anc - w + 1;
                         x2 = x_anc;
                         y1 = y_anc - h + 1;
                         y2 = y_anc;
                         break;  ///< Anchor on the bottom-right corner.
+
                 case ei_anc_south:
                         x1 = x_anc - ( w / 2)  + 1;
                         x2 = x_anc + ( w / 2);
@@ -240,23 +250,28 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
                         y1 = y_anc -h +1;
                         y2 = y_anc;
                         break;  ///< Anchor on the bottom-left corner.
+
                 case ei_anc_west:
                         x1 = x_anc;
                         x2 = x_anc + w -1;
                         y1 = y_anc - (h / 2) + 1;
                         y2 = y_anc + (h / 2);
                         break;          ///< Anchor on the left side, centered vertically.
+
                 case ei_anc_northwest:
                         x1 = x_anc;
                         x2 = x_anc + w -1;
                         y1 = y_anc;
                         y2 = y_anc + h - 1;
                         break;
-                default : exit(-1);
-                          break;
+
+                default :
+                        ;
                 }
+
                 w = x2 - x1 + 1;
                 h = y2 - y1 + 1;
+
                 // on assigne enfin les valeurs calculées
                 screen_location.top_left.x = x1;
                 screen_location.top_left.y = y1;
@@ -276,16 +291,18 @@ void ei_place_runfunc(struct ei_widget_t*       widget)
         /* Appels récursifs sur les enfants */
         // Appel récursif sur les enfants pour les replacer
         ei_widget_t *current = widget->children_head;
+
         while(current && current->geom_params &&
                         current->geom_params->manager &&
                         current->geom_params->manager->runfunc) {
+
                 current->geom_params->manager->runfunc(current);
                 current = current->next_sibling;
         }
 
 }
 
-void ei_place_releasefunc(struct ei_widget_t* widget)
+static void ei_place_releasefunc(struct ei_widget_t* widget)
 {
         ei_placer_param_t *param = (ei_placer_param_t*)widget->geom_params;
 

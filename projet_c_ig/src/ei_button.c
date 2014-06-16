@@ -15,6 +15,11 @@
 #include "ei_utils.h"
 
 
+
+static void print_image(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
+                        ei_rect_t * img_rect, ei_anchor_t img_anchor, ei_rect_t * clipper);
+
+
 /* Frame draw */
 void ei_frame_draw(ei_surface_t window, ei_rect_t rectangle, ei_frame_t *frame, ei_rect_t *clipper)
 {
@@ -214,8 +219,8 @@ void ei_insert_text(ei_surface_t window, ei_rect_t rectangle, char *text,
         ei_draw_text(window, &ancre, text, font, &color, clipper);
 }
 
-void print_image(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
-                 ei_rect_t * img_rect, ei_anchor_t img_anchor, ei_rect_t * clipper)
+static void print_image(ei_surface_t window, ei_rect_t rectangle, ei_surface_t img,
+                        ei_rect_t * img_rect, ei_anchor_t img_anchor, ei_rect_t * clipper)
 {
         ei_rect_t new_img_rect;
         ei_rect_t real_img_rect = hw_surface_get_rect(img);
