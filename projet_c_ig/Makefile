@@ -23,7 +23,7 @@ LIBEIOBJS	:= ${OBJDIR}/ei_application.o ${OBJDIR}/ei_widget.o \
 		   ${OBJDIR}/ei_linkedlist.o ${OBJDIR}/ei_callback.o \
 		   ${OBJDIR}/ei_utilities.o ${OBJDIR}/ei_tag.o \
 		   ${OBJDIR}/ei_gridder.o ${OBJDIR}/ei_dynamics.o \
-		   ${OBJDIR}/ei_root.o
+		   ${OBJDIR}/ei_root.o ${OBJDIR}/ei_entry.o
 
 
 # Platform specific definitions (OS X, Linux, Windows)
@@ -77,7 +77,7 @@ TARGETS		=	${LIBEI} \
 PERSO_TESTS	=	ensiskype toplevel test_placer test_relative \
 			test_button2 test_geom ensiskype test_inter \
 			ensigrid test_button3 radiobutton \
-			extension tag
+			extension tag entry
 
 all : ${TARGETS} ${PERSO_TESTS}
 
@@ -183,6 +183,12 @@ radiobutton : ${OBJDIR}/radiobutton.o ${LIBEIBASE} ${LIBEI}
 
 ${OBJDIR}/radiobutton.o : ${TESTS}/radiobutton.c
 	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/radiobutton.c -o ${OBJDIR}/radiobutton.o
+
+entry : ${OBJDIR}/entry.o ${LIBEIBASE} ${LIBEI}
+	${LINK} -o entry ${OBJDIR}/entry.o ${LIBEI} ${LIBS}
+
+${OBJDIR}/entry.o : ${TESTS}/entry.c
+	${CC} ${CCFLAGS} ${INCFLAGS} ${TESTS}/entry.c -o ${OBJDIR}/entry.o
 
 test_frame_2 : ${OBJDIR}/test_frame_2.o ${LIBEIBASE} ${LIBEI}
 	${LINK} -o test_frame_2 ${OBJDIR}/test_frame_2.o ${LIBEI} ${LIBS}

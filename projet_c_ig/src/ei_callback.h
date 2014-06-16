@@ -24,6 +24,8 @@
 #include <string.h>
 
 
+ei_bool_t all_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param);
+
 /**
  * @brief       callback to move a toplevel when the mouse moves    
  *
@@ -89,5 +91,9 @@ ei_bool_t all_callback_release(ei_widget_t *widget, struct ei_event_t
  */
 ei_bool_t button_callback_click(ei_widget_t *widget, struct ei_event_t *event, void *user_param);
 
+ei_bool_t entry_callback_click(ei_widget_t *widget, struct ei_event_t *event,void *user_param);
+
+ei_bool_t entry_callback_keyboard(ei_widget_t *widget, struct ei_event_t *event,
+                void *user_param);
 
 #endif

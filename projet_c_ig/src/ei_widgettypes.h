@@ -121,6 +121,13 @@ typedef struct ei_radiobutton_t {
          void *  user_param;
 } ei_radiobutton_t;
 
-
+typedef struct ei_entry_t {
+			ei_widget_t widget;
+			ei_bool_t top_entry;
+			struct ei_entry_t* next_entry;
+			char* txt;
+			ei_font_t font;
+			int border_width;
+} ei_entry_t;
 #endif
 
