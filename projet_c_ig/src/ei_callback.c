@@ -298,24 +298,28 @@ ei_bool_t entry_callback_keyboard(ei_widget_t *widget, struct ei_event_t *event,
                         }
 
                         else {
-                                if ((new_char >= SDLK_a
-                                    && new_char <= SDLK_z)
-                                    || new_char == SDLK_SPACE) {
+                                if (size < 25) {
+                                        if ((new_char >= SDLK_a
+                                            && new_char <= SDLK_z)
+                                            || new_char == SDLK_SPACE) {
 
-                                        if (new_char >= SDLK_a
-                                            && new_char <= SDLK_z
-                                            && ei_has_modifier(event->param.key.modifier_mask, ei_mod_shift_left))
-                                                new_char -= 'a' - 'A';
+                                                ei_modifier_key_t mask = event->param.key.modifier_mask;
+                                                if (new_char >= SDLK_a
+                                                    && new_char <= SDLK_z
+                                                    && (ei_has_modifier(mask, ei_mod_shift_left)
+                                                        || ei_has_modifier(mask, ei_mod_shift_right)))
+                                                        new_char -= 'a' - 'A';
 
-                                        ++size;
-                                        text = realloc(text, size);
+                                                ++size;
+                                                text = realloc(text, size);
 
-                                        #ifdef LEAK_TRACKER
-                                                if (entry->txt != text)
-                                                        ++ALLOCATION_COUNTER;
-                                        #endif
+                                                #ifdef LEAK_TRACKER
+                                                        if (entry->txt != text)
+                                                                ++ALLOCATION_COUNTER;
+                                                #endif
 
-                                        text[size-2] = new_char;
+                                                text[size-2] = new_char;
+                                        }
                                 }
                         }
 
