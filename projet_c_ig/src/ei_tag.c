@@ -1,6 +1,6 @@
 /**
- *  @file	ei_tag.c
- *  @brief	Tag API
+ *  @file       ei_tag.c
+ *  @brief      Tag API
  *
  *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 14.06.14.
@@ -28,7 +28,7 @@ void ei_tag_create(ei_tag_t tag_name)
 }
 
 // Requires link != NULL
-ei_bool_t ei_tag_destroy_link(ei_linked_elem_t *link, void *user_param)
+static ei_bool_t ei_tag_destroy_link(ei_linked_elem_t *link, void *user_param)
 {
         ei_bool_t done = EI_FALSE;
         ei_tag_t tag_name = (ei_tag_t)user_param;
@@ -58,7 +58,7 @@ void ei_tag_free()
         ei_linkedlist_applyfunc(&tags, ei_tag_destroy_link, NULL);
 }
 
-ei_bool_t ei_tag_link(ei_linked_elem_t *link, void *user_param)
+static ei_bool_t ei_tag_link(ei_linked_elem_t *link, void *user_param)
 {
         ei_bool_t done = EI_FALSE;
 
@@ -80,7 +80,7 @@ void ei_tag(ei_widget_t *widget, ei_tag_t tag_name)
         ei_linkedlist_applyfunc(&tags, ei_tag_link, (void*)&params);
 }
 
-ei_bool_t ei_untag_link(ei_linked_elem_t *link, void *user_param)
+static ei_bool_t ei_untag_link(ei_linked_elem_t *link, void *user_param)
 {
         ei_bool_t done = EI_FALSE;
 
@@ -102,7 +102,7 @@ void ei_untag(ei_widget_t *widget, ei_tag_t tag_name)
         ei_linkedlist_applyfunc(&tags, ei_untag_link, (void*)&params);
 }
 
-ei_bool_t ei_has_tag_link(ei_linked_elem_t *link, void *user_param)
+static ei_bool_t ei_has_tag_link(ei_linked_elem_t *link, void *user_param)
 {
         ei_bool_t done = EI_FALSE;
 

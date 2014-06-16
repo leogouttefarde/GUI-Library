@@ -1,7 +1,7 @@
 /**
- *  @file	ei_callback.h
+ *  @file       ei_callback.h
  *
- *  @brief 	Defines the callbacks needed to resize and move toplevels, to click buttons and handle mouse release.
+ *  @brief      Defines the callbacks needed to resize and move toplevels, to click buttons and handle mouse release.
  * 
  *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 13.06.14.

@@ -1,6 +1,6 @@
 /**
- *  @file	ei_core.h
- *  @brief	Manages the update rectangles
+ *  @file       ei_core.h
+ *  @brief      Manages the update rectangles
  *
  *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 05.06.14.

@@ -1,6 +1,6 @@
 /**
- *  @file	ei_geometrymanager_pv.h
- *  @brief	Private geometry manager declarations
+ *  @file       ei_geometrymanager_pv.h
+ *  @brief      Private geometry manager declarations
  *
  *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 12.06.14.

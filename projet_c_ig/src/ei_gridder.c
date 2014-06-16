@@ -15,7 +15,7 @@
 
 
 /* Renvoie le screen_location en partant des paramètres géométriques du widget */
-ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_point_t tl)
+static ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_point_t tl)
 {
         ei_rect_t screen_location;
 
@@ -49,7 +49,7 @@ ei_rect_t get_screen_location(ei_gridder_param_t *param, ei_point_t tl)
 
 /* Affecte elem_width et elem_height de la taille du rectangle elementaire
  * flottant */
-void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height)
+static void get_elem_rect(ei_widget_t *parent, float* elem_width, float* elem_height)
 {
         ei_geometrymanager_t *gridder = ei_geometrymanager_from_name("gridder");
 
@@ -264,7 +264,7 @@ void ei_grid_releasefunc(struct ei_widget_t* widget)
  * \brief       Registers the "gridder" geometry manager in the program. This must be called only
  *              once before the \ref ei_place function can be called.
  */
-void  ei_register_gridder_manager()
+void ei_register_gridder_manager()
 {
         ei_geometrymanager_t *gridder = CALLOC_TYPE(ei_geometrymanager_t);
         assert(gridder);

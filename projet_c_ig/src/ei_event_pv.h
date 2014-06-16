@@ -27,8 +27,6 @@ void ei_event_init();
 
 void ei_event_process(ei_event_t *event);
 
-void ei_unbind_link(ei_linkedlist_t *list, ei_linked_elem_t *link);
-
 void ei_unbind_all();
 
 

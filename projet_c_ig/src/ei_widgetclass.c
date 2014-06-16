@@ -1,5 +1,5 @@
 /**
- *  @file       widgetclass.c
+ *  @file       ei_widgetclass.c
  *  @brief      Definition and registration of widget classes.
  *
  *  \author
@@ -20,8 +20,10 @@
 #include "ei_tag.h"
 #include "ei_entry.h"
 
-/* widgetclass linked list */
+
+/* Widgetclasses' linked list */
 static ei_linkedlist_t ei_class_list = { NULL, NULL };
+
 
 /* Libération des classes */
 void ei_widgetclass_free()
@@ -30,7 +32,7 @@ void ei_widgetclass_free()
 }
 
 /* Enregistre une classe quelconque */
-void ei_widgetclass_register    (ei_widgetclass_t* widgetclass)
+void ei_widgetclass_register(ei_widgetclass_t* widgetclass)
 {
         if (widgetclass) {
                 ei_tag_create(widgetclass->name);
@@ -43,7 +45,6 @@ ei_bool_t ei_has_widgetclass(ei_widget_t *widget, ei_widgetclass_name_t name)
 {
         return (widget && widget->wclass && !strcmp(widget->wclass->name, name));
 }
-
 
 /* Renvoie la structure décrivant une classe en fonction du nom */
 ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
@@ -69,7 +70,7 @@ ei_widgetclass_t* ei_widgetclass_from_name (ei_widgetclass_name_t name)
 
 
 /* Dessin de pick_surface */
-void pick_surface_draw(ei_surface_t pick_surface, ei_widget_t *widget, ei_rect_t *clipper)
+static void pick_surface_draw(ei_surface_t pick_surface, ei_widget_t *widget, ei_rect_t *clipper)
 {
         hw_surface_lock(pick_surface);
 
@@ -78,10 +79,8 @@ void pick_surface_draw(ei_surface_t pick_surface, ei_widget_t *widget, ei_rect_t
         hw_surface_unlock(pick_surface);
 }
 
-/***** Frame *****/
-
 /* Allocation */
-void *frame_alloc()
+static void *frame_alloc()
 {
         ei_frame_t *frame = CALLOC_TYPE(ei_frame_t);
         assert(frame);
@@ -90,7 +89,7 @@ void *frame_alloc()
 }
 
 /* Dessin */
-void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
+static void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 ei_surface_t pick_surface, ei_rect_t* clipper)
 {
         ei_frame_t *frame = (ei_frame_t*)widget;
@@ -100,26 +99,26 @@ void frame_draw(struct ei_widget_t* widget, ei_surface_t surface,
         assert(pick_surface);
 
         /* Dessin visible */
+        if (surface) {
 
-        // lock de la surface
-        if (surface){
+                /* Lock de la surface */
                 hw_surface_lock(surface);
 
                 ei_rect_t rec;
                 rec = frame->widget.screen_location;
                 ei_frame_draw(surface,rec,frame,clipper);
 
-                //unlock de la surface
+                /* Unlock de la surface */
                 hw_surface_unlock(surface);
         }
-        if (pick_surface){
-                /* Dessin de la surface de picking */
+
+        /* Dessin de la surface de picking */
+        if (pick_surface)
                 pick_surface_draw(pick_surface, widget, clipper);
-        }
 }
 
 /* Release */
-void frame_release(struct ei_widget_t* widget)
+static void frame_release(struct ei_widget_t* widget)
 {
         if (widget) {
                 ei_frame_t *frame = (ei_frame_t*)widget;
@@ -130,7 +129,7 @@ void frame_release(struct ei_widget_t* widget)
 }
 
 /* Paramètres par défaut */
-void frame_setdefaults(struct ei_widget_t* widget)
+static void frame_setdefaults(struct ei_widget_t* widget)
 {
         assert(widget);
 
@@ -157,7 +156,7 @@ void frame_setdefaults(struct ei_widget_t* widget)
 }
 
 /* Calcule du content_rect, de la screen_location */
-void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
+static void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
         // On invalide l'ancienne position
         ei_invalidate_rect(&widget->screen_location);
@@ -165,28 +164,25 @@ void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 
         ei_rect_t* content_rect = widget->content_rect;
 
-        if (rect.size.width !=0 && rect.size.height != 0){
+        if (rect.size.width != 0 && rect.size.height != 0) {
 
-                if (    (content_rect == &widget->screen_location)
-                                || (content_rect == NULL))
+                if ((content_rect == &widget->screen_location)
+                    || (content_rect == NULL))
                         content_rect = CALLOC_TYPE(ei_rect_t);
 
-
+                /* La screen_location est copiée telle quelle */
                 widget->screen_location = rect;
-                // La screen_location est copiée tel quel
+
                 ei_frame_t *frame = (ei_frame_t*)widget;
-                // Gestion des bordures pour le content_rect
+
+                /* Gestion des bordures pour le content_rect */
                 int bw = frame->border_width;
                 *content_rect = rect;
-                content_rect->top_left.x =  content_rect->top_left.x +
-                        bw;
-                content_rect->top_left.y =  content_rect->top_left.y +
-                        bw;
+                content_rect->top_left.x = content_rect->top_left.x + bw;
+                content_rect->top_left.y = content_rect->top_left.y + bw;
 
-                content_rect->size.width =  content_rect->size.width +
-                        - 2*bw;
-                content_rect->size.height =  content_rect->size.height +
-                        -2*bw;
+                content_rect->size.width = content_rect->size.width - 2 * bw;
+                content_rect->size.height = content_rect->size.height - 2 * bw;
         } else{
                 if (content_rect != &widget->screen_location)
                         SAFE_FREE(widget->content_rect);
@@ -202,7 +198,7 @@ void frame_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 }
 
 /* Enregistre la classe frame */
-void    ei_frame_register_class ()
+void ei_frame_register_class ()
 {
         // Declaration des fonctions liées à la classe frame
         ei_widgetclass_t *frame_class = NULL;
@@ -225,7 +221,7 @@ void    ei_frame_register_class ()
 /***** Boutons *****/
 
 /* Allocation */
-void *button_alloc()
+static void* button_alloc()
 {
         ei_button_t *button = CALLOC_TYPE(ei_button_t);
         assert(button);
@@ -234,7 +230,7 @@ void *button_alloc()
 }
 
 /* Libération */
-void button_release(struct ei_widget_t* widget)
+static void button_release(struct ei_widget_t* widget)
 {
         if (widget) {
                 ei_button_t *button = (ei_button_t*)widget;
@@ -246,7 +242,7 @@ void button_release(struct ei_widget_t* widget)
 }
 
 /* Dessin */
-void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
+static void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
                 ei_surface_t pick_surface, ei_rect_t* clipper)
 {
         ei_button_t *button = (ei_button_t*)widget;
@@ -255,22 +251,25 @@ void button_draw(struct ei_widget_t* widget, ei_surface_t surface,
         assert(pick_surface);
         assert(surface);
 
-        if (surface){
-                // lock de la surface
+
+        if (surface) {
+
+                /* Lock de la surface */
                 hw_surface_lock(surface);
-                ei_button_draw(surface,button->widget.screen_location,button,
-                                clipper);
-                //unlock de la surface
+
+                ei_button_draw(surface, button->widget.screen_location, button, clipper);
+
+                /* Unlock de la surface */
                 hw_surface_unlock(surface);
         }
-        if (pick_surface){
-                /* Dessin de la surface de picking */
+
+        /* Dessin de la surface de picking */
+        if (pick_surface)
                 pick_surface_draw(pick_surface, widget, clipper);
-        }
 }
 
 /* Defaut */
-void button_setdefaults(struct ei_widget_t* widget)
+static void button_setdefaults(struct ei_widget_t* widget)
 {
         assert(widget);
 
@@ -296,7 +295,7 @@ void button_setdefaults(struct ei_widget_t* widget)
         button->relief = ei_relief_raised;
         button->text = NULL;
         button->text_font = ei_default_font;
-        ei_color_t tc = {0xFF, 0xFF, 0xFF, 0xFF};
+        ei_color_t tc = { 0xFF, 0xFF, 0xFF, 0xFF };
         button->text_color = tc;
         button->text_anchor = ei_anc_center;
 
@@ -325,14 +324,14 @@ void button_setdefaults(struct ei_widget_t* widget)
 }
 
 /* Calcul screen_location, content_rect */
-void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
+static void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
         ei_invalidate_rect(&widget->screen_location);
 
         ei_rect_t* content_rect = widget->content_rect;
 
 
-        if (rect.size.width !=0 && rect.size.height != 0) {
+        if (rect.size.width != 0 && rect.size.height != 0) {
 
                 if ((content_rect == &widget->screen_location)
                                 || (content_rect == NULL))
@@ -341,19 +340,16 @@ void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 
                 widget->screen_location = rect;
                 ei_button_t *button = (ei_button_t*)widget;
+
                 // Gestion des bordures pour le content_rect
                 int bw = button->border_width;
                 *content_rect = rect;
-                content_rect->top_left.x =  content_rect->top_left.x +
-                        bw;
+                content_rect->top_left.x =  content_rect->top_left.x + bw;
 
-                content_rect->top_left.y =  content_rect->top_left.y +
-                        bw;
+                content_rect->top_left.y =  content_rect->top_left.y + bw;
 
-                content_rect->size.width =  content_rect->size.width +
-                        - 2*bw;
-                content_rect->size.height =  content_rect->size.height +
-                        -2*bw;
+                content_rect->size.width =  content_rect->size.width - 2 * bw;
+                content_rect->size.height =  content_rect->size.height - 2 * bw;
         } else {
                 if (content_rect != &widget->screen_location)
                         SAFE_FREE(content_rect);
@@ -369,11 +365,11 @@ void button_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 }
 
 /* Enregistre la classe bouton */
-void    ei_button_register_class()
+void ei_button_register_class()
 {
         ei_widgetclass_t *button_class = NULL;
 
-        // Allocation
+        /* Allocation */
         button_class = CALLOC_TYPE(ei_widgetclass_t);
         assert(button_class);
 
@@ -388,11 +384,8 @@ void    ei_button_register_class()
         ei_widgetclass_register(button_class);
 }
 
-
-/***** Toplevels *****/
-
 /* Allocation */
-void *toplevel_alloc()
+static void *toplevel_alloc()
 {
         ei_toplevel_t *toplevel = CALLOC_TYPE(ei_toplevel_t);
         assert(toplevel);
@@ -401,7 +394,7 @@ void *toplevel_alloc()
 }
 
 /* Libération */
-void toplevel_release(ei_widget_t *widget)
+static void toplevel_release(ei_widget_t *widget)
 {
         if (widget) {
                 ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
@@ -412,7 +405,7 @@ void toplevel_release(ei_widget_t *widget)
 }
 
 /* Dessin */
-void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
+static void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
                 ei_surface_t pick_surface, ei_rect_t *clipper)
 {
         ei_toplevel_t *toplevel;
@@ -422,24 +415,23 @@ void toplevel_draw(ei_widget_t *widget, ei_surface_t surface,
         assert(pick_surface);
         assert(surface);
 
-        if (surface){
-                // lock de la surface
+        if (surface) {
+                /* Lock de la surface */
                 hw_surface_lock(surface);
 
                 ei_toplevel_draw(surface,toplevel,clipper);
 
-                //unlock de la surface
+                /* Unlock de la surface */
                 hw_surface_unlock(surface);
         }
 
-        if (pick_surface){
-                /* Dessin de la surface de picking */
+        /* Dessin de la surface de picking */
+        if (pick_surface)
                 pick_surface_draw(pick_surface, widget, clipper);
-        }
 }
 
 /* Defaut */
-void toplevel_setdefaults(struct ei_widget_t* widget)
+static void toplevel_setdefaults(struct ei_widget_t* widget)
 {
         // on commence par effectuer un recast
         ei_toplevel_t *toplevel;
@@ -487,7 +479,7 @@ void toplevel_setdefaults(struct ei_widget_t* widget)
 }
 
 /* Calculs screen_location, content_rect */
-void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
+static void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
         // On invalide l'ancienne screen_location
         ei_invalidate_rect(&widget->screen_location);
@@ -496,19 +488,15 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 
         //Gestion de la min_size
         ei_toplevel_t *toplevel = (ei_toplevel_t*)widget;
-        if(toplevel->min_size){
-                screen_location.size.width = MAX(toplevel->min_size->width,
-                                screen_location.size.width);
-                screen_location.size.height = MAX(toplevel->min_size->height,
-                                screen_location.size.height);
+        if(toplevel->min_size) {
+                screen_location.size.width = MAX(toplevel->min_size->width, screen_location.size.width);
+                screen_location.size.height = MAX(toplevel->min_size->height, screen_location.size.height);
         }
 
         // Le bouton de resize doit rester visible et les toplevel ne pas
         // devenir infiniment petite
-        screen_location.size.width = MAX(toplevel->resize_size,
-                        screen_location.size.width);
-        screen_location.size.height = MAX(toplevel->resize_size,
-                        screen_location.size.height);
+        screen_location.size.width = MAX(toplevel->resize_size, screen_location.size.width);
+        screen_location.size.height = MAX(toplevel->resize_size, screen_location.size.height);
 
 
         ei_rect_t* content_rect = widget->content_rect;
@@ -526,12 +514,11 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
                 // Gestion des bordures pour le content_rect
                 int bw = toplevel->border_width;
                 *content_rect = screen_location;
-                content_rect->top_left = plus(screen_location.top_left, bw , bw
-                                + toplevel->bar_height);
+                content_rect->top_left = plus(screen_location.top_left, bw , bw + toplevel->bar_height);
+
                 content_rect->size.height = widget->screen_location.size.height
-                        - toplevel->bar_height - (2 * bw) - 1;
-                content_rect->size.width =widget->screen_location.size.width
-                        - (2 * bw) -1;
+                                            - toplevel->bar_height - (2 * bw) - 1;
+                content_rect->size.width = widget->screen_location.size.width - (2 * bw) -1;
         } else {
                 if (content_rect != &widget->screen_location)
                         SAFE_FREE(content_rect);
@@ -548,12 +535,8 @@ void toplevel_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
         widget->content_rect = content_rect;
 }
 
-
-
-
-
 /* Enregistrement de la classe */
-void    ei_toplevel_register_class()
+void ei_toplevel_register_class()
 {
         ei_widgetclass_t *toplevel_class = NULL;
 
@@ -573,11 +556,7 @@ void    ei_toplevel_register_class()
         ei_widgetclass_register(toplevel_class);
 }
 
-
-
-
-/***** Radiobutton ******/
-void *radiobutton_alloc()
+static void* radiobutton_alloc()
 {
         ei_radiobutton_t *radiobutton = CALLOC_TYPE(ei_radiobutton_t);
         assert(radiobutton);
@@ -585,7 +564,7 @@ void *radiobutton_alloc()
         return radiobutton;
 }
 
-void radiobutton_release(struct ei_widget_t* widget)
+static void radiobutton_release(struct ei_widget_t* widget)
 {
         if (widget) {
                 ei_radiobutton_t *radiobutton = (ei_radiobutton_t*)widget;
@@ -594,8 +573,8 @@ void radiobutton_release(struct ei_widget_t* widget)
         }
 }
 
-void radiobutton_draw(struct ei_widget_t* widget, ei_surface_t surface,
-                ei_surface_t pick_surface, ei_rect_t* clipper)
+static void radiobutton_draw(struct ei_widget_t* widget, ei_surface_t surface,
+                      ei_surface_t pick_surface, ei_rect_t* clipper)
 {
         ei_radiobutton_t *radiobutton = (ei_radiobutton_t*)widget;
         assert(radiobutton);
@@ -603,23 +582,22 @@ void radiobutton_draw(struct ei_widget_t* widget, ei_surface_t surface,
         assert(pick_surface);
         assert(surface);
 
-        if (surface){
-                // lock de la surface
+        if (surface) {
+                /* Lock de la surface */
                 hw_surface_lock(surface);
 
-                ei_radiobutton_draw(surface,radiobutton->widget.screen_location,radiobutton, clipper);
+                ei_radiobutton_draw(surface, radiobutton->widget.screen_location, radiobutton, clipper);
 
-                //unlock de la surface
+                /* Unlock de la surface */
                 hw_surface_unlock(surface);
         }
 
-        if (pick_surface){
-                /* Dessin de la surface de picking */
+        /* Dessin de la surface de picking */
+        if (pick_surface)
                 pick_surface_draw(pick_surface, widget, clipper);
-        }
 }
 
-void radiobutton_setdefaults(struct ei_widget_t* widget)
+static void radiobutton_setdefaults(struct ei_widget_t* widget)
 {
         assert(widget);
 
@@ -638,16 +616,16 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
         ei_color_t bar_color = { 255, 255, 255, 255 };
         radiobutton->bar_color = bar_color;
 
-        ei_size_t btn_size = {25,25};
+        ei_size_t btn_size = { 25, 25 };
         radiobutton->btn_size = btn_size;
         radiobutton->btn_bdw = 3;
 
         int border_width = 6;
         radiobutton->border_width = border_width;
 
-        int nb_buttons=7;
+        int nb_buttons = 7;
         radiobutton->nb_buttons = nb_buttons;
-        int nb_radios=5;
+        int nb_radios = 5;
         radiobutton->nb_radios = nb_radios;
         char* tab_chaine[radiobutton->nb_radios];
 
@@ -684,7 +662,7 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
 
         radiobutton->bar_height = h + 6;
 
-        s.width = MAX((2*nb_col-1)*btn_size.width+2*border_width,w);
+        s.width = MAX((2 * nb_col - 1) * btn_size.width + 2 * border_width, w);
         s.height = radiobutton->bar_height
                    + (nb_lignes + 2) * radiobutton->border_width
                    + nb_lignes * radiobutton->btn_size.height;
@@ -692,48 +670,46 @@ void radiobutton_setdefaults(struct ei_widget_t* widget)
         radiobutton->widget.requested_size = s;
 }
 
-void radiobutton_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
+static void radiobutton_geomnotify(struct ei_widget_t* widget, ei_rect_t rect)
 {
         ei_invalidate_rect(&widget->screen_location);
-        ei_rect_t* content_rect = NULL;
 
-        if (    widget->content_rect
-                        && (widget->content_rect != &widget->screen_location))
-                content_rect = widget->content_rect;
+        ei_rect_t* content_rect = widget->content_rect;
 
-        else
-                content_rect = CALLOC_TYPE(ei_rect_t);
+        if (rect.size.width != 0 && rect.size.height != 0) {
 
-        if (content_rect != NULL) {
-                if (rect.size.width !=0 && rect.size.height != 0){
-                        widget->screen_location = rect;
-                        ei_radiobutton_t *radiobutton = (ei_radiobutton_t*)widget;
-                        // Gestion des bordures pour le content_rect
+                if ((content_rect == &widget->screen_location)
+                    || (content_rect == NULL))
+                        content_rect = CALLOC_TYPE(ei_rect_t);
 
-                        int bw = radiobutton->border_width;
-                        *content_rect = rect;
-                        content_rect->top_left.x =  content_rect->top_left.x +
-                                bw;
 
-                        content_rect->top_left.y =  content_rect->top_left.y +
-                                bw;
+                widget->screen_location = rect;
+                ei_radiobutton_t *radiobutton = (ei_radiobutton_t*)widget;
 
-                        content_rect->size.width =  content_rect->size.width +
-                                - 2*bw;
-                        content_rect->size.height =  content_rect->size.height +
-                                -2*bw;
+                // Gestion des bordures pour le content_rect
+                int bw = radiobutton->border_width;
 
-                }
-                else{
-                        widget->screen_location = ei_rect_zero();
-                        content_rect = &widget->screen_location;
-                }
-                widget->content_rect = content_rect;
+                *content_rect = rect;
+                content_rect->top_left.x = content_rect->top_left.x + bw;
+                content_rect->top_left.y = content_rect->top_left.y + bw;
+
+                content_rect->size.width = content_rect->size.width - 2 * bw;
+                content_rect->size.height = content_rect->size.height - 2 * bw;
         }
+        else {
+                if (content_rect != &widget->screen_location)
+                        SAFE_FREE(content_rect);
+
+                widget->screen_location = ei_rect_zero();
+                content_rect = &widget->screen_location;
+        }
+
+        widget->content_rect = content_rect;
+
         ei_invalidate_rect(&widget->screen_location);
 }
 
-void    ei_radiobutton_register_class()
+void ei_radiobutton_register_class()
 {
         ei_widgetclass_t *radiobutton_class = NULL;
 

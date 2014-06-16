@@ -1,11 +1,11 @@
 /**
  *  @file       ei_linkedlist.c
- *
- *  @brief      Doubly linked lists.
+ *  @brief      Doubly linked list generic class.
  *
  *  \author
  *  Created by Antoine DELAITE, Eric BUREL, Léo GOUTTEFARDE on 07.06.14.
  *  Copyright 2014 Ensimag. All rights reserved.
+ *
  */
 
 #include "ei_linkedlist.h"
@@ -24,11 +24,14 @@ void ei_linkedlist_add(ei_linkedlist_t *list, ei_elem_t elem)
                 link->elem = elem;
                 link->next = NULL;
 
+                /* If there is a tail, chain after it */
                 if (list->tail) {
                         link->prev = list->tail;
                         list->tail->next = link;
                         list->tail = link;
                 }
+
+                /* Else, unique element */
                 else {
                         list->head = link;
                         list->tail = link;
@@ -43,6 +46,7 @@ ei_bool_t ei_linkedlist_has(ei_linkedlist_t *list, ei_elem_t elem)
         if (list) {
                 ei_linked_elem_t *link = list->head;
 
+                /* Check if any element corresponds to the searched one */
                 while (link && !has) {
                         if (elem == link->elem)
                                 has = EI_TRUE;
@@ -60,13 +64,25 @@ void ei_linkedlist_add_unique(ei_linkedlist_t *list, ei_elem_t elem)
                 ei_linkedlist_add(list, elem);
 }
 
+/**
+ * \brief       The ei_linkedlist_pop_elem_link callback parameters.
+ */
 typedef struct ei_linkedlist_pop_elem_t {
         ei_linkedlist_t *list;
         ei_elem_t elem;
         ei_bool_t free_elem;
 } ei_linkedlist_pop_elem_t;
 
-ei_bool_t ei_linkedlist_pop_elem_link(ei_linked_elem_t *link, void *user_param)
+/**
+ * \brief       Removes a link from a list if it matches a specific element.
+ *
+ * @param       link            The link to remove.
+ * @param       user_param      A valid ei_linkedlist_pop_elem_t pointer.
+ *
+ * @return                      Returns EI_TRUE once the element has been
+ *                              removed, else EI_FALSE.
+ */
+static ei_bool_t ei_linkedlist_pop_elem_link(ei_linked_elem_t *link, void *user_param)
 {
         ei_bool_t done = EI_FALSE;
 
@@ -142,6 +158,7 @@ void ei_linkedlist_empty(ei_linkedlist_t *list, ei_bool_t free_elem)
         if (list) {
                 ei_linked_elem_t *link = list->head, *next = NULL;
 
+                /* Free all links */
                 while (link) {
                         if (free_elem)
                                 SAFE_FREE(link->elem);
@@ -162,6 +179,7 @@ void ei_linkedlist_applyfunc(ei_linkedlist_t *list, ei_function_t function, void
                 ei_bool_t done = EI_FALSE;
                 ei_linked_elem_t *link = list->head, *next = NULL;
 
+                /* Apply the function to all links until EI_TRUE is returned */
                 while (link && !done) {
                         next = link->next;
 

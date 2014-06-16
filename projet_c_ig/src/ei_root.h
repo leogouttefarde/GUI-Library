@@ -1,6 +1,6 @@
 /**
- *  @file	ei_root.h
- *  @brief	Contains the root widget address, the root surface and the
+ *  @file       ei_root.h
+ *  @brief      Contains the root widget address, the root surface and the
  *              picking surface as global variables.
  *              Strangely looks like a Java class.
  *
@@ -16,18 +16,22 @@
 #include "hw_interface.h"
 #include "ei_widget.h"
 #include "ei_common.h"
+
+
 /**
  * @brief   Set root to the widget in argument
  *                  
  * @param   root_set        Pointer to the root
  */
 void ei_set_root(ei_widget_t *root_set);
+
 /**
  * @brief   Set the root surface
  *                  
  * @param   root_surface_set    Root surface
  */
 void ei_set_root_surface(ei_surface_t root_surface_set);
+
 /**
  * @brief   Set the picking surface
  *                  

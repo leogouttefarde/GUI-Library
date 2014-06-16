@@ -16,24 +16,11 @@
 
 
 typedef enum {
-	complet = 0,
-	haute = 1,
-	basse = -1
+        complet = 0,
+        haute = 1,
+        basse = -1
 } part_rect_t;
 
-/**
- *  @brief      Converts a part of a circle, given by cenre, radius,
- *              and two angles in a list of linked points.
- *              Usage : The second angle given must be greater than the first.
- *
- *  @param      center       The center of the circle.
- *  @param      radius       The radius of the circle.
- *  @param      head_angle   The angle of the point which will be head of the list/
- *  @param      tail_angle   The angle of the point which will end the list, will be linked to suivant.
- *  @param      next         The element after the end of the list, in case you need to chain this segment with others points, else put NULL.
- *
- *  @return             The head of the list
- */
 ei_linked_point_t* ei_button_arc(ei_point_t center, int radius, int head_angle,
                                  int tail_angle, ei_linked_point_t *next);
 

@@ -51,7 +51,7 @@ void ei_bind(ei_eventtype_t eventtype,
         }
 }
 
-void ei_unbind_link(ei_linkedlist_t *list, ei_linked_elem_t *link)
+static void ei_unbind_link(ei_linkedlist_t *list, ei_linked_elem_t *link)
 {
         if (list && link) {
                 ei_binding_t *binding = (ei_binding_t*)link->elem;
